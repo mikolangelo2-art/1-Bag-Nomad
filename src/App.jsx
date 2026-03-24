@@ -1376,17 +1376,17 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           {/* Main row — tap to expand */}
           <div onClick={()=>setOpen(o=>!o)} style={{flex:1,display:"flex",alignItems:"center",gap:12,padding:"12px 8px 12px 4px",cursor:"pointer",minWidth:0}}>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:13,fontWeight:700,color:item.owned?"rgba(105,240,174,0.85)":"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:3}}>{item.name||"Unnamed"}</div>
+              <div style={{fontSize:15,fontWeight:700,color:item.owned?"rgba(105,240,174,0.85)":"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:4}}>{item.name||"Unnamed"}</div>
               <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
-                {parseFloat(item.weight)>0&&<span style={{fontSize:10,color:"rgba(255,255,255,0.55)",fontFamily:"monospace"}}>{(parseFloat(item.weight)*wM).toFixed(2)}{unit}</span>}
-                {parseFloat(item.cost)>0&&<span style={{fontSize:10,color:"rgba(255,217,61,0.65)",fontFamily:"monospace"}}>${item.cost}</span>}
-                <span style={{fontSize:9,color:BAG_C[item.bag]||"rgba(255,159,67,0.5)",fontFamily:"monospace"}}>{item.bag}</span>
+                {parseFloat(item.weight)>0&&<span style={{fontSize:13,color:"rgba(255,255,255,0.65)",fontFamily:"monospace"}}>{(parseFloat(item.weight)*wM).toFixed(2)}{unit}</span>}
+                {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(255,217,61,0.75)",fontFamily:"monospace"}}>${item.cost}</span>}
+                <span style={{fontSize:12,color:BAG_C[item.bag]||"rgba(255,159,67,0.6)",fontFamily:"monospace"}}>{item.bag}</span>
               </div>
             </div>
             <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
-              <div style={{padding:"3px 10px",borderRadius:10,background:item.owned?"rgba(105,240,174,0.08)":"rgba(196,87,30,0.1)",border:`1px solid ${item.owned?"rgba(105,240,174,0.3)":"rgba(196,87,30,0.3)"}`,fontSize:10,fontWeight:700,color:item.owned?"#69F0AE":"#C4571E",letterSpacing:0.5}}>{item.owned?"OWNED":"NEED"}</div>
-              <div style={{width:16,height:16,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.15)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <span style={{fontSize:7,color:"rgba(255,255,255,0.5)",transform:open?"rotate(180deg)":"none",display:"inline-block",transition:"transform 0.2s"}}>▼</span>
+              <div style={{padding:"5px 14px",borderRadius:10,background:item.owned?"rgba(105,240,174,0.08)":"rgba(196,87,30,0.1)",border:`1px solid ${item.owned?"rgba(105,240,174,0.3)":"rgba(196,87,30,0.3)"}`,fontSize:12,fontWeight:700,color:item.owned?"#69F0AE":"#C4571E",letterSpacing:0.5}}>{item.owned?"OWNED":"NEED"}</div>
+              <div style={{width:22,height:22,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <span style={{fontSize:10,color:"rgba(255,255,255,0.6)",transform:open?"rotate(180deg)":"none",display:"inline-block",transition:"transform 0.2s"}}>▼</span>
               </div>
             </div>
           </div>
@@ -1435,11 +1435,11 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         <div onClick={()=>toggleCat(cat.id)} style={{display:"flex",alignItems:"center",gap:12,padding:"16px 18px",cursor:"pointer",minHeight:64,borderLeft:`3px solid ${open?cat.color:cat.color+"44"}`}}>
           <div style={{fontSize:22,flexShrink:0}}>{cat.icon}</div>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:16,fontWeight:700,color:open?cat.color:"#FFF",fontFamily:"'Space Mono',monospace",marginBottom:4,transition:"color 0.2s"}}>{cat.label}</div>
+            <div style={{fontSize:18,fontWeight:700,color:open?cat.color:"#FFF",fontFamily:"'Space Mono',monospace",marginBottom:5,transition:"color 0.2s"}}>{cat.label}</div>
             <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
-              <span style={{fontSize:11,color:"rgba(255,255,255,0.55)",fontFamily:"monospace"}}>{catItems.length} item{catItems.length!==1?"s":""}</span>
-              {catW>0&&<span style={{fontSize:11,color:cat.color,fontWeight:700,fontFamily:"monospace"}}>{catW.toFixed(2)}{unit}</span>}
-              <span style={{fontSize:11,color:"rgba(255,255,255,0.4)",fontFamily:"monospace"}}>{ownedInCat}/{catItems.length} owned</span>
+              <span style={{fontSize:13,color:"rgba(255,255,255,0.65)",fontFamily:"monospace"}}>{catItems.length} item{catItems.length!==1?"s":""}</span>
+              {catW>0&&<span style={{fontSize:13,color:cat.color,fontWeight:700,fontFamily:"monospace"}}>{catW.toFixed(2)}{unit}</span>}
+              <span style={{fontSize:13,color:"rgba(255,255,255,0.55)",fontFamily:"monospace"}}>{ownedInCat}/{catItems.length} owned</span>
             </div>
           </div>
           <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
@@ -1457,7 +1457,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           <div style={{animation:"slideOpen 0.2s ease",background:"rgba(0,0,0,0.2)"}}>
             <div style={{padding:"6px 18px 6px 18px",borderTop:`1px solid ${cat.color}15`,borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",gap:6}}>
               <div style={{width:4,height:4,borderRadius:"50%",background:cat.color,flexShrink:0}}/>
-              <span style={{fontSize:8,color:cat.color,letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{catItems.length} ITEM{catItems.length!==1?"S":""} · TAP TO EXPAND</span>
+              <span style={{fontSize:11,color:cat.color,letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{catItems.length} ITEM{catItems.length!==1?"S":""} · TAP TO EXPAND</span>
             </div>
             {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1}/>)}
             {/* Add item row */}
@@ -1482,11 +1482,11 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
       {!isFullscreen&&<div style={{display:"flex",borderBottom:"1px solid rgba(196,87,30,0.3)",flexShrink:0}}>
         <div onClick={onExpedition} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",borderRight:"1px solid rgba(196,87,30,0.2)"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.06)"} onMouseOut={e=>e.currentTarget.style.background="transparent"}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(0,229,255,0.4)"}}/>
-          <span style={{fontSize:7,fontWeight:700,color:"rgba(0,229,255,0.5)",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>TRIP CONSOLE</span>
+          <span style={{fontSize:12,fontWeight:700,color:"rgba(0,229,255,0.6)",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>TRIP CONSOLE</span>
         </div>
         <div style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,background:"rgba(196,87,30,0.06)"}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"#FF9F43",boxShadow:"0 0 6px rgba(196,87,30,0.8)",animation:"launchPulse 2.5s ease-in-out infinite"}}/>
-          <span style={{fontSize:7,fontWeight:700,color:"#FF9F43",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>PACK CONSOLE</span>
+          <span style={{fontSize:12,fontWeight:700,color:"#FF9F43",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>PACK CONSOLE</span>
         </div>
       </div>}
       {/* Hero stats */}
@@ -1495,7 +1495,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           {/* Weight hero */}
           <div style={{background:"rgba(21,101,255,0.07)",border:"1px solid rgba(77,159,255,0.3)",borderRadius:10,padding:"12px 14px"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-              <div style={{fontSize:10,fontWeight:700,color:"#4D9FFF",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>⚖️ PACK WEIGHT</div>
+              <div style={{fontSize:13,fontWeight:700,color:"#4D9FFF",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>⚖️ PACK WEIGHT</div>
               <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{display:"flex",borderRadius:8,border:"1px solid rgba(77,159,255,0.4)",overflow:"hidden",cursor:"pointer"}}>
                 {["lbs","kg"].map(u=><div key={u} style={{padding:"3px 9px",fontSize:9,fontWeight:700,background:unit===u?"rgba(77,159,255,0.3)":"rgba(77,159,255,0.05)",color:unit===u?"#4D9FFF":"rgba(77,159,255,0.3)",borderLeft:u==="kg"?"1px solid rgba(77,159,255,0.3)":"none"}}>{u.toUpperCase()}</div>)}
               </div>
@@ -1508,7 +1508,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             <div style={{height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,overflow:"hidden",marginBottom:5}}>
               <div style={{height:"100%",width:Math.min((bpW/wLim)*100,100)+"%",background:`linear-gradient(90deg,#1565FF,${(bpW*wM)>wLim?"#FF6B6B":"#4D9FFF"})`,borderRadius:4,transition:"width 0.4s ease"}}/>
             </div>
-            <div style={{fontSize:10,color:"rgba(77,159,255,0.6)",fontFamily:"monospace",fontWeight:700}}>{Math.round((bpW/wLim)*100)}% of {wLim}{unit} limit</div>
+            <div style={{fontSize:12,color:"rgba(77,159,255,0.7)",fontFamily:"monospace",fontWeight:700}}>{Math.round((bpW/wLim)*100)}% of {wLim}{unit} limit</div>
           </div>
           {/* Volume hero */}
           {(()=>{
@@ -1518,7 +1518,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             const dV=Math.min(bpV,VL),vPct=Math.min((bpV/VL)*100,100);
             return(<div style={{background:"rgba(169,70,29,0.08)",border:"1px solid rgba(196,87,30,0.5)",borderRadius:10,padding:"12px 14px"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                <div style={{fontSize:10,fontWeight:700,color:"#FFD93D",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>📦 PACK VOLUME</div>
+                <div style={{fontSize:13,fontWeight:700,color:"#FFD93D",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>📦 PACK VOLUME</div>
                 {incomplete&&<div style={{padding:"3px 8px",borderRadius:8,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:9,fontFamily:"monospace",fontWeight:700}}>⚠ PARTIAL</div>}
               </div>
               <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
@@ -1537,8 +1537,8 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.4)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
-              <div style={{fontSize:isMobile?7:8,fontWeight:700,color:"rgba(255,255,255,0.45)",letterSpacing:0.5,marginBottom:3,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
-              <div style={{fontSize:isMobile?13:16,fontWeight:900,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
+              <div style={{fontSize:isMobile?8:10,fontWeight:700,color:"rgba(255,255,255,0.55)",letterSpacing:0.5,marginBottom:4,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
+              <div style={{fontSize:isMobile?15:18,fontWeight:900,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
             </div>
           ))}
         </div>
@@ -1552,7 +1552,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         {[{id:"pack",label:"PACK LIST",emoji:"🎒"},{id:"refine",label:"✦ REFINE",emoji:""},{id:"weight",label:"BREAKDOWN",emoji:"⚖️"}].map(t=>(
           <button key={t.id} onClick={()=>setPackTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Space Mono',monospace",position:"relative"}}>
             {t.emoji&&<span style={{fontSize:14,lineHeight:1}}>{t.emoji}</span>}
-            <span style={{fontSize:10,letterSpacing:1,fontWeight:700}}>{t.label}</span>
+            <span style={{fontSize:13,letterSpacing:1,fontWeight:700}}>{t.label}</span>
             {t.id==="refine"&&suggestions.length>0&&<div style={{position:"absolute",top:6,right:"20%",width:7,height:7,borderRadius:"50%",background:"#4D9FFF",boxShadow:"0 0 8px #4D9FFF"}}/>}
           </button>
         ))}
