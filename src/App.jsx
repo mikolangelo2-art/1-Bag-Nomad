@@ -1288,17 +1288,23 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
 // ─── PackConsole ──────────────────────────────────────────────────
 function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
   const isMobile=useMobile();
-  const CATS=[{id:"all",label:"All",icon:"📋",color:"#FFF"},{id:"docs",label:"Docs",icon:"📄",color:"#E0E0E0"},{id:"tech",label:"Tech",icon:"💻",color:"#00D4FF"},{id:"creator",label:"Creator",icon:"🎥",color:"#FF9F43"},{id:"dive",label:"Dive",icon:"🤿",color:"#00E5FF"},{id:"clothes",label:"Clothes",icon:"👕",color:"#FFD93D"},{id:"health",label:"Health",icon:"🏥",color:"#69F0AE"},{id:"travel",label:"Travel",icon:"🧳",color:"#55EFC4"}];
+  const CATS=[
+    {id:"clothes",label:"Clothes",icon:"👕",color:"#FFD93D"},
+    {id:"tech",label:"Tech",icon:"💻",color:"#00D4FF"},
+    {id:"creator",label:"Creator",icon:"🎥",color:"#FF9F43"},
+    {id:"dive",label:"Dive",icon:"🤿",color:"#00E5FF"},
+    {id:"health",label:"Health",icon:"🏥",color:"#69F0AE"},
+    {id:"travel",label:"Travel",icon:"🧳",color:"#55EFC4"},
+    {id:"docs",label:"Docs",icon:"📄",color:"#E0E0E0"},
+  ];
   const BAGS=["Backpack","Global Briefcase","Worn","Digital","Day Bag"];
   const WL=15,KGL=7,VL=45;
-  const CAT_COLORS_P={docs:"#E0E0E0",tech:"#00D4FF",clothes:"#FFD93D",health:"#69F0AE",travel:"#55EFC4",creator:"#FF9F43",dive:"#00E5FF"};
   const BAG_C={"Backpack":"#00E5FF","Global Briefcase":"#A29BFE","Worn":"#FFD93D","Digital":"#69F0AE","Day Bag":"#FF9F43"};
 
   const [packTab,setPackTab]=useState("pack");
   const [items,setItems]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_v5");if(s){const p=JSON.parse(s);if(p?.length>0)return p;}}catch(e){}return getDefaultPack();});
   const [filterCat,setFilterCat]=useState("all");
-  const [filterOwned,setFilterOwned]=useState("all");
-  const [sortBy,setSortBy]=useState("cat");
+  const [openCats,setOpenCats]=useState({});
   const [unit,setUnit]=useState("lbs");
   const [expandedItem,setExpandedItem]=useState(null);
   const [resetConfirm,setResetConfirm]=useState(false);
@@ -1327,13 +1333,15 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
   const ownedCount=items.filter(i=>i.owned).length;
   const gearPct=items.length>0?Math.round((ownedCount/items.length)*100):0;
 
-  const addItem=()=>{const c=filterCat==="all"?"travel":filterCat;setItems(p=>[...p,{id:Date.now(),name:"New Item",cat:c,weight:"0",cost:"0",volume:"0",owned:false,bag:"Backpack",status:"needed"}]);};
-  const updateItem=(id,f,v)=>setItems(p=>p.map(it=>it.id===id?{...it,[f]:v}:it));
-  const removeItem=id=>setItems(p=>p.filter(it=>it.id!==id));
   const toggleOwned=id=>setItems(p=>p.map(it=>it.id===id?{...it,owned:!it.owned,status:it.owned?"needed":"owned"}:it));
+  const removeItem=id=>setItems(p=>p.filter(it=>it.id!==id));
+  const updateItem=(id,f,v)=>setItems(p=>p.map(it=>it.id===id?{...it,[f]:v}:it));
+  const addItemToCat=cat=>{setItems(p=>[...p,{id:Date.now(),name:"New Item",cat,weight:"0",cost:"0",volume:"0",owned:false,bag:"Backpack",status:"needed"}]);setOpenCats(o=>({...o,[cat]:true}));};
+  const toggleCat=id=>setOpenCats(o=>({...o,[id]:!o[id]}));
 
-  const visible=items.filter(i=>filterCat==="all"||i.cat===filterCat).filter(i=>filterOwned==="all"||(filterOwned==="owned"&&i.owned)||(filterOwned==="needed"&&!i.owned)).sort((a,b)=>sortBy==="cat"?(a.cat||"").localeCompare(b.cat||""):sortBy==="weight"?(parseFloat(b.weight)||0)-(parseFloat(a.weight)||0):(parseFloat(b.cost)||0)-(parseFloat(a.cost)||0));
-  const grouped={};visible.forEach(item=>{const cat=CATS.find(c=>c.id===item.cat)||{id:"misc",label:"Misc",icon:"📦",color:"#FFF"};if(!grouped[cat.id])grouped[cat.id]={cat,items:[]};grouped[cat.id].items.push(item);});
+  // filter logic
+  const visibleCats=filterCat==="all"?CATS:CATS.filter(c=>c.id===filterCat);
+  const itemsForCat=catId=>items.filter(i=>i.cat===catId);
 
   async function genSuggestions(){
     setSuggestLoading(true);
@@ -1352,13 +1360,125 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
     setChat(p=>[...p,{role:"ai",text:res}]);setChatLoading(false);
   }
 
+  // ─── Item Row (inline expand like SegmentRow) ──────────────────
+  function PackItemRow({item,catColor,isLast}) {
+    const [open,setOpen]=useState(false);
+    const CAT_COLORS_P={docs:"#E0E0E0",tech:"#00D4FF",clothes:"#FFD93D",health:"#69F0AE",travel:"#55EFC4",creator:"#FF9F43",dive:"#00E5FF"};
+    return(
+      <div style={{borderBottom:isLast?"none":"1px solid rgba(255,255,255,0.04)"}}>
+        <div style={{display:"flex",alignItems:"center",minHeight:52,borderLeft:`2px solid ${catColor}${open?"88":"22"}`}}>
+          {/* Owned toggle */}
+          <button onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:44,height:"100%",minHeight:52,display:"flex",alignItems:"center",justifyContent:"center",background:"none",border:"none",cursor:"pointer",flexShrink:0}}>
+            <div style={{width:20,height:20,borderRadius:4,border:`1.5px solid ${item.owned?"#69F0AE":"rgba(255,255,255,0.2)"}`,background:item.owned?"rgba(105,240,174,0.12)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.15s"}}>
+              {item.owned&&<span style={{color:"#69F0AE",fontSize:12,fontWeight:900,lineHeight:1}}>✓</span>}
+            </div>
+          </button>
+          {/* Main row — tap to expand */}
+          <div onClick={()=>setOpen(o=>!o)} style={{flex:1,display:"flex",alignItems:"center",gap:12,padding:"12px 8px 12px 4px",cursor:"pointer",minWidth:0}}>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:13,fontWeight:700,color:item.owned?"rgba(105,240,174,0.85)":"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:3}}>{item.name||"Unnamed"}</div>
+              <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+                {parseFloat(item.weight)>0&&<span style={{fontSize:10,color:"rgba(255,255,255,0.55)",fontFamily:"monospace"}}>{(parseFloat(item.weight)*wM).toFixed(2)}{unit}</span>}
+                {parseFloat(item.cost)>0&&<span style={{fontSize:10,color:"rgba(255,217,61,0.65)",fontFamily:"monospace"}}>${item.cost}</span>}
+                <span style={{fontSize:9,color:BAG_C[item.bag]||"rgba(255,159,67,0.5)",fontFamily:"monospace"}}>{item.bag}</span>
+              </div>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
+              <div style={{padding:"3px 10px",borderRadius:10,background:item.owned?"rgba(105,240,174,0.08)":"rgba(196,87,30,0.1)",border:`1px solid ${item.owned?"rgba(105,240,174,0.3)":"rgba(196,87,30,0.3)"}`,fontSize:10,fontWeight:700,color:item.owned?"#69F0AE":"#C4571E",letterSpacing:0.5}}>{item.owned?"OWNED":"NEED"}</div>
+              <div style={{width:16,height:16,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.15)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <span style={{fontSize:7,color:"rgba(255,255,255,0.5)",transform:open?"rotate(180deg)":"none",display:"inline-block",transition:"transform 0.2s"}}>▼</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Expanded edit drawer */}
+        {open&&(
+          <div style={{padding:"12px 16px 16px 44px",background:"rgba(0,0,0,0.25)",borderTop:`1px solid ${catColor}15`,animation:"slideOpen 0.18s ease",display:"flex",flexDirection:"column",gap:10}}>
+            <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:7,color:"#FFF",fontSize:13,padding:"10px 13px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%"}} placeholder="Item name"/>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+              {[{label:"WEIGHT (lbs)",f:"weight"},{label:"COST ($)",f:"cost"},{label:"VOLUME (L)",f:"volume"}].map(({label,f})=>(
+                <div key={f}>
+                  <div style={{fontSize:8,color:"rgba(255,159,67,0.65)",letterSpacing:2,marginBottom:5,fontFamily:"monospace"}}>{label}</div>
+                  <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.3)",borderRadius:5,color:"#FFD93D",fontSize:13,padding:"8px 10px",outline:"none",fontFamily:"monospace",width:"100%"}}/>
+                </div>
+              ))}
+            </div>
+            <div>
+              <div style={{fontSize:8,color:"rgba(255,159,67,0.65)",letterSpacing:2,marginBottom:5,fontFamily:"monospace"}}>BAG</div>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                {BAGS.map(b=>(
+                  <button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:"6px 12px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.12)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.45)",fontSize:10,cursor:"pointer",fontFamily:"monospace",fontWeight:item.bag===b?700:400,transition:"all 0.15s"}}>{b}</button>
+                ))}
+              </div>
+            </div>
+            <div style={{display:"flex",gap:8,paddingTop:4}}>
+              <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"10px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#FF9F43",fontSize:12,cursor:"pointer",fontFamily:"monospace",fontWeight:700,letterSpacing:1}}>{item.owned?"✓ OWNED — TAP TO UNMARK":"TAP TO MARK OWNED"}</button>
+              <button onClick={()=>removeItem(item.id)} style={{padding:"10px 16px",borderRadius:7,border:"1px solid rgba(255,107,107,0.3)",background:"rgba(255,107,107,0.06)",color:"rgba(255,107,107,0.7)",fontSize:13,cursor:"pointer",fontFamily:"monospace",fontWeight:700}}>✕</button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ─── Category Accordion Card (mirrors PhaseCard) ───────────────
+  function CatCard({cat,idx}) {
+    const catItems=itemsForCat(cat.id);
+    const open=!!openCats[cat.id];
+    const ownedInCat=catItems.filter(i=>i.owned).length;
+    const catW=catItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM;
+    const catCost=catItems.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
+    if(catItems.length===0&&filterCat!=="all"&&filterCat!==cat.id)return null;
+    return(
+      <div style={{borderRadius:13,border:open?`1.5px solid ${cat.color}`:"1px solid rgba(255,255,255,0.07)",boxShadow:open?`0 0 0 1px ${cat.color}22,0 4px 28px ${cat.color}18,inset 0 1px 0 ${cat.color}12`:"none",background:open?`linear-gradient(145deg,${cat.color}06,rgba(8,3,0,0.98))`:"rgba(18,8,0,0.85)",overflow:"hidden",transition:"all 0.25s",animation:`fadeUp 0.3s ease ${idx*.05}s both`,marginBottom:8}}>
+        {/* Header row — tap to open */}
+        <div onClick={()=>toggleCat(cat.id)} style={{display:"flex",alignItems:"center",gap:12,padding:"16px 18px",cursor:"pointer",minHeight:64,borderLeft:`3px solid ${open?cat.color:cat.color+"44"}`}}>
+          <div style={{fontSize:22,flexShrink:0}}>{cat.icon}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:16,fontWeight:700,color:open?cat.color:"#FFF",fontFamily:"'Space Mono',monospace",marginBottom:4,transition:"color 0.2s"}}>{cat.label}</div>
+            <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+              <span style={{fontSize:11,color:"rgba(255,255,255,0.55)",fontFamily:"monospace"}}>{catItems.length} item{catItems.length!==1?"s":""}</span>
+              {catW>0&&<span style={{fontSize:11,color:cat.color,fontWeight:700,fontFamily:"monospace"}}>{catW.toFixed(2)}{unit}</span>}
+              <span style={{fontSize:11,color:"rgba(255,255,255,0.4)",fontFamily:"monospace"}}>{ownedInCat}/{catItems.length} owned</span>
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
+            {catCost>0&&<div style={{fontSize:14,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>${catCost.toLocaleString()}</div>}
+            <div style={{display:"flex",alignItems:"center",gap:6}}>
+              <div style={{width:60,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:(catItems.length>0?(ownedInCat/catItems.length)*100:0)+"%",background:`linear-gradient(90deg,${cat.color}66,${cat.color})`,borderRadius:2,transition:"width 0.4s ease"}}/></div>
+            </div>
+          </div>
+          <div style={{width:22,height:22,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.2":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginLeft:4}}>
+            <span style={{fontSize:8,color:open?cat.color:"rgba(255,255,255,0.45)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
+          </div>
+        </div>
+        {/* Items */}
+        {open&&(
+          <div style={{animation:"slideOpen 0.2s ease",background:"rgba(0,0,0,0.2)"}}>
+            <div style={{padding:"6px 18px 6px 18px",borderTop:`1px solid ${cat.color}15`,borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",gap:6}}>
+              <div style={{width:4,height:4,borderRadius:"50%",background:cat.color,flexShrink:0}}/>
+              <span style={{fontSize:8,color:cat.color,letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{catItems.length} ITEM{catItems.length!==1?"S":""} · TAP TO EXPAND</span>
+            </div>
+            {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1}/>)}
+            {/* Add item row */}
+            <div style={{padding:"10px 18px",borderTop:"1px solid rgba(255,255,255,0.04)",display:"flex",justifyContent:"center"}}>
+              <button onClick={()=>addItemToCat(cat.id)} style={{padding:"8px 20px",borderRadius:8,border:`1px dashed ${cat.color}44`,background:"transparent",color:`${cat.color}88`,fontSize:11,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,transition:"all 0.15s"}} onMouseOver={e=>{e.currentTarget.style.background=`${cat.color}10`;e.currentTarget.style.color=cat.color;}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=`${cat.color}88`;}}>+ ADD ITEM</button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return(
     <div style={{fontFamily:"'Space Mono',monospace",background:"radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 28%,#0d0500 58%,#060200 100%)",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column"}}>
+      {/* Header */}
       {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} rightSlot={
         <button onClick={onExpedition} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.55)",background:"linear-gradient(135deg,rgba(0,20,45,0.92),rgba(0,40,70,0.8))",color:"#00E5FF",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,animation:"consolePulse 3s ease-in-out infinite",minHeight:34,flexShrink:0}}>
           <span style={{fontSize:12,lineHeight:1}}>🔭</span><span style={{fontSize:6,letterSpacing:1.5,whiteSpace:"nowrap"}}>{isMobile?"TRIP":"TRIP CONSOLE"}</span>
         </button>
       }/>}
+      {/* Console switcher */}
       {!isFullscreen&&<div style={{display:"flex",borderBottom:"1px solid rgba(196,87,30,0.3)",flexShrink:0}}>
         <div onClick={onExpedition} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",borderRight:"1px solid rgba(196,87,30,0.2)"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.06)"} onMouseOut={e=>e.currentTarget.style.background="transparent"}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(0,229,255,0.4)"}}/>
@@ -1369,247 +1489,204 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           <span style={{fontSize:7,fontWeight:700,color:"#FF9F43",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>PACK CONSOLE</span>
         </div>
       </div>}
-      {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 14px 6px",background:"linear-gradient(180deg,rgba(35,14,0,0.6),rgba(20,8,0,0.8))"}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}}>
-          <div style={{background:"rgba(21,101,255,0.06)",border:"1px solid rgba(77,159,255,0.25)",borderRadius:8,padding:"8px 10px"}}>
-            <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:5}}>
-              <div style={{fontSize:11,fontWeight:700,color:"#4D9FFF",letterSpacing:1.5,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>⚖️ WEIGHT</div>
-              <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{marginLeft:"auto",display:"flex",borderRadius:10,border:"1px solid rgba(77,159,255,0.45)",overflow:"hidden",cursor:"pointer",flexShrink:0}}>
-                {["lbs","kg"].map(u=><div key={u} style={{padding:"3px 8px",fontSize:8,fontWeight:700,background:unit===u?"rgba(77,159,255,0.35)":"rgba(77,159,255,0.06)",color:unit===u?"#4D9FFF":"rgba(77,159,255,0.35)",borderLeft:u==="kg"?"1px solid rgba(77,159,255,0.3)":"none"}}>{u.toUpperCase()}</div>)}
+      {/* Hero stats */}
+      {!isFullscreen&&<div style={{padding:isMobile?"8px 14px 6px":"12px 20px 8px",background:"linear-gradient(180deg,rgba(35,14,0,0.6),rgba(20,8,0,0.8))"}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+          {/* Weight hero */}
+          <div style={{background:"rgba(21,101,255,0.07)",border:"1px solid rgba(77,159,255,0.3)",borderRadius:10,padding:"12px 14px"}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#4D9FFF",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>⚖️ PACK WEIGHT</div>
+              <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{display:"flex",borderRadius:8,border:"1px solid rgba(77,159,255,0.4)",overflow:"hidden",cursor:"pointer"}}>
+                {["lbs","kg"].map(u=><div key={u} style={{padding:"3px 9px",fontSize:9,fontWeight:700,background:unit===u?"rgba(77,159,255,0.3)":"rgba(77,159,255,0.05)",color:unit===u?"#4D9FFF":"rgba(77,159,255,0.3)",borderLeft:u==="kg"?"1px solid rgba(77,159,255,0.3)":"none"}}>{u.toUpperCase()}</div>)}
               </div>
             </div>
-            <div style={{display:"flex",alignItems:"baseline",gap:3,marginBottom:5}}><div style={{fontSize:isMobile?26:32,fontWeight:900,color:"#69F0AE",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{(bpW*wM).toFixed(1)}</div><div style={{fontSize:10,color:"rgba(77,159,255,0.8)",fontWeight:700}}>{unit}</div><div style={{fontSize:9,color:"rgba(255,255,255,0.65)",marginLeft:2}}>/ {wLim}</div></div>
-            <div style={{height:7,background:"rgba(255,255,255,0.06)",borderRadius:3,overflow:"hidden",marginBottom:4}}><div style={{height:"100%",width:Math.min((bpW/wLim)*100,100)+"%",background:"linear-gradient(90deg,#1565FF,#4D9FFF)",borderRadius:3}}/></div>
-            <div style={{fontSize:8,color:"rgba(77,159,255,0.6)",fontFamily:"monospace",fontWeight:700}}>{Math.round((bpW/wLim)*100)}% of {wLim}{unit}</div>
+            <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
+              <div style={{fontSize:isMobile?28:34,fontWeight:900,color:"#69F0AE",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{(bpW*wM).toFixed(1)}</div>
+              <div style={{fontSize:13,color:"rgba(77,159,255,0.75)",fontWeight:700}}>{unit}</div>
+              <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {wLim}</div>
+            </div>
+            <div style={{height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,overflow:"hidden",marginBottom:5}}>
+              <div style={{height:"100%",width:Math.min((bpW/wLim)*100,100)+"%",background:`linear-gradient(90deg,#1565FF,${(bpW*wM)>wLim?"#FF6B6B":"#4D9FFF"})`,borderRadius:4,transition:"width 0.4s ease"}}/>
+            </div>
+            <div style={{fontSize:10,color:"rgba(77,159,255,0.6)",fontFamily:"monospace",fontWeight:700}}>{Math.round((bpW/wLim)*100)}% of {wLim}{unit} limit</div>
           </div>
+          {/* Volume hero */}
           {(()=>{
             const zeroV=items.filter(i=>i.bag==="Backpack"&&(parseFloat(i.volume)||0)===0).length;
             const bpItems=items.filter(i=>i.bag==="Backpack").length;
             const incomplete=bpItems>0&&(zeroV/bpItems)>0.4;
             const dV=Math.min(bpV,VL),vPct=Math.min((bpV/VL)*100,100);
-            return(<div style={{background:"rgba(169,70,29,0.08)",border:"1px solid rgba(196,87,30,0.52)",borderRadius:8,padding:"8px 10px"}}>
-              <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:5}}>
-                <div style={{fontSize:11,fontWeight:700,color:"#FFD93D",letterSpacing:1.5,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>📦 VOLUME</div>
-                {incomplete&&<div style={{marginLeft:"auto",padding:"3px 7px",borderRadius:10,border:"1px solid rgba(255,159,67,0.45)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:7,fontFamily:"monospace",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>⚠ PARTIAL</div>}
+            return(<div style={{background:"rgba(169,70,29,0.08)",border:"1px solid rgba(196,87,30,0.5)",borderRadius:10,padding:"12px 14px"}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                <div style={{fontSize:10,fontWeight:700,color:"#FFD93D",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>📦 PACK VOLUME</div>
+                {incomplete&&<div style={{padding:"3px 8px",borderRadius:8,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:9,fontFamily:"monospace",fontWeight:700}}>⚠ PARTIAL</div>}
               </div>
-              <div style={{display:"flex",alignItems:"baseline",gap:3,marginBottom:5}}><div style={{fontSize:isMobile?26:32,fontWeight:900,color:"#FFD93D",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{dV.toFixed(1)}</div><div style={{fontSize:10,color:"rgba(255,217,61,0.8)",fontWeight:700}}>L</div><div style={{fontSize:9,color:"rgba(255,255,255,0.65)",marginLeft:2}}>/ {VL}L</div></div>
-              <div style={{height:7,background:"rgba(255,255,255,0.06)",borderRadius:3,overflow:"hidden",marginBottom:4}}><div style={{height:"100%",width:vPct+"%",background:"linear-gradient(90deg,#A9461D,#FFD93D)",borderRadius:3}}/></div>
-              {incomplete?<div style={{fontSize:8,color:"rgba(255,159,67,0.75)",fontFamily:"monospace",fontWeight:700}}>⚠ {zeroV} items need vol data</div>:<div style={{fontSize:8,color:"rgba(255,217,61,0.6)",fontFamily:"monospace",fontWeight:700}}>{Math.round(vPct)}% of 45L</div>}
+              <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
+                <div style={{fontSize:isMobile?28:34,fontWeight:900,color:"#FFD93D",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{dV.toFixed(1)}</div>
+                <div style={{fontSize:13,color:"rgba(255,217,61,0.75)",fontWeight:700}}>L</div>
+                <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {VL}L</div>
+              </div>
+              <div style={{height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,overflow:"hidden",marginBottom:5}}>
+                <div style={{height:"100%",width:vPct+"%",background:"linear-gradient(90deg,#A9461D,#FFD93D)",borderRadius:4,transition:"width 0.4s ease"}}/>
+              </div>
+              {incomplete?<div style={{fontSize:10,color:"rgba(255,159,67,0.7)",fontFamily:"monospace",fontWeight:700}}>⚠ {zeroV} items missing volume data</div>:<div style={{fontSize:10,color:"rgba(255,217,61,0.55)",fontFamily:"monospace",fontWeight:700}}>{Math.round(vPct)}% of 45L</div>}
             </div>);
           })()}
         </div>
-        <div style={{display:"flex",gap:6}}>
-          {[{label:"BRIEFCASE",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"ITEMS",value:items.length,color:"#FF9F43"}].map(s=><div key={s.label} style={{flex:1,background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.45)",borderRadius:6,padding:"5px 7px",textAlign:"center"}}><div style={{fontSize:isMobile?8:10,fontWeight:700,color:"rgba(255,255,255,0.55)",letterSpacing:1,marginBottom:1}}>{s.label}</div><div style={{fontSize:isMobile?14:17,fontWeight:900,color:s.color,fontFamily:"monospace"}}>{s.value}</div></div>)}
+        {/* 4 mini stats */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
+          {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
+            <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.4)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
+              <div style={{fontSize:isMobile?7:8,fontWeight:700,color:"rgba(255,255,255,0.45)",letterSpacing:0.5,marginBottom:3,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
+              <div style={{fontSize:isMobile?13:16,fontWeight:900,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
+            </div>
+          ))}
         </div>
       </div>}
+      {/* Tab bar */}
       <div style={{display:"flex",alignItems:"stretch",background:"rgba(12,5,0,0.98)",borderBottom:"1px solid rgba(196,87,30,0.2)"}}>
-        <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(255,159,67,0.15)":"rgba(255,159,67,0.06)",border:"none",borderRight:"1px solid rgba(196,87,30,0.3)",cursor:"pointer",flexShrink:0,color:"#FFD93D"}} onMouseOver={e=>e.currentTarget.style.background="rgba(255,159,67,0.2)"} onMouseOut={e=>e.currentTarget.style.background=isFullscreen?"rgba(255,159,67,0.15)":"rgba(255,159,67,0.06)"}>
-          <span style={{fontSize:14,lineHeight:1,textShadow:"0 0 12px rgba(255,217,61,0.9)"}}>{isFullscreen?"⊡":"⛶"}</span>
-          <span style={{fontSize:7,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap",textShadow:"0 0 8px rgba(255,217,61,0.7)"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
+        <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(255,159,67,0.15)":"rgba(255,159,67,0.06)",border:"none",borderRight:"1px solid rgba(196,87,30,0.3)",cursor:"pointer",flexShrink:0,color:"#FFD93D"}}>
+          <span style={{fontSize:14,lineHeight:1}}>{isFullscreen?"⊡":"⛶"}</span>
+          <span style={{fontSize:7,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
         </button>
-        {[{id:"pack",label:"PACK LIST",emoji:"🎒"},{id:"refine",label:"✦ Refine List",emoji:""},{id:"weight",label:"WEIGHT",emoji:"⚖️"}].map(t=>(
-          <button key={t.id} onClick={()=>setPackTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.65)",cursor:"pointer",fontFamily:"'Space Mono',monospace",position:"relative"}}>
+        {[{id:"pack",label:"PACK LIST",emoji:"🎒"},{id:"refine",label:"✦ REFINE",emoji:""},{id:"weight",label:"BREAKDOWN",emoji:"⚖️"}].map(t=>(
+          <button key={t.id} onClick={()=>setPackTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Space Mono',monospace",position:"relative"}}>
             {t.emoji&&<span style={{fontSize:14,lineHeight:1}}>{t.emoji}</span>}
-            <span style={{fontSize:9,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{t.label}</span>
+            <span style={{fontSize:10,letterSpacing:1,fontWeight:700}}>{t.label}</span>
             {t.id==="refine"&&suggestions.length>0&&<div style={{position:"absolute",top:6,right:"20%",width:7,height:7,borderRadius:"50%",background:"#4D9FFF",boxShadow:"0 0 8px #4D9FFF"}}/>}
           </button>
         ))}
       </div>
-      {isMobile&&<div style={{display:"flex",gap:6,padding:"8px 12px",overflowX:"auto",borderBottom:"1px solid rgba(169,70,29,0.3)",background:"rgba(15,5,0,0.8)",flexShrink:0,WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
-        {CATS.map(c=><button key={c.id} onClick={()=>setFilterCat(c.id)} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 13px",borderRadius:20,border:"1px solid "+(filterCat===c.id?c.color+"80":"rgba(169,70,29,0.52)"),background:filterCat===c.id?"rgba(169,70,29,0.48)":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}><span style={{fontSize:12}}>{c.icon}</span><span style={{fontSize:12,color:filterCat===c.id?c.color:"rgba(255,255,255,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat===c.id?700:400}}>{c.label}</span></button>)}
+      {/* Category filter pills */}
+      {packTab==="pack"&&<div style={{display:"flex",gap:6,padding:"10px 16px",overflowX:"auto",borderBottom:"1px solid rgba(169,70,29,0.25)",background:"rgba(10,4,0,0.8)",flexShrink:0,WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
+        <button onClick={()=>{setFilterCat("all");setOpenCats({});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat==="all"?"rgba(255,255,255,0.5)":"rgba(255,255,255,0.12)"),background:filterCat==="all"?"rgba(255,255,255,0.08)":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
+          <span style={{fontSize:12}}>📋</span><span style={{fontSize:11,color:filterCat==="all"?"#FFF":"rgba(255,255,255,0.45)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="all"?700:400}}>All</span>
+        </button>
+        {CATS.map(c=>(
+          <button key={c.id} onClick={()=>{setFilterCat(c.id);setOpenCats({[c.id]:true});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat===c.id?c.color+"80":"rgba(169,70,29,0.4)"),background:filterCat===c.id?c.color+"14":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
+            <span style={{fontSize:12}}>{c.icon}</span>
+            <span style={{fontSize:11,color:filterCat===c.id?c.color:"rgba(255,255,255,0.5)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat===c.id?700:400}}>{c.label}</span>
+          </button>
+        ))}
       </div>}
-      <div style={{display:"flex",flex:1,overflow:"hidden",minHeight:0}}>
-        {!isMobile&&<div style={{display:"flex",flexDirection:"column",gap:1,padding:"8px 5px",borderRight:"1px solid rgba(169,70,29,0.3)",flexShrink:0,minWidth:108,background:"rgba(15,5,0,0.6)"}}>
-          {CATS.map(c=><button key={c.id} onClick={()=>setFilterCat(c.id)} style={{display:"flex",alignItems:"center",gap:6,padding:"9px 10px",borderRadius:5,border:"none",background:filterCat===c.id?"rgba(169,70,29,0.25)":"transparent",cursor:"pointer",textAlign:"left",borderLeft:filterCat===c.id?"2px solid "+c.color:"2px solid transparent"}}><span style={{fontSize:12}}>{c.icon}</span><span style={{fontSize:13,color:filterCat===c.id?c.color:"rgba(255,255,255,0.85)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat===c.id?700:400}}>{c.label}</span></button>)}
-        </div>}
-        <div style={{flex:1,display:"flex",flexDirection:"column",minWidth:0}}>
-          <div style={{borderBottom:"1px solid rgba(169,70,29,0.2)",background:"rgba(10,4,0,0.7)",flexShrink:0}}>
-            <div style={{display:"flex",gap:5,padding:isMobile?"6px 10px 4px":"5px 10px",alignItems:"center"}}>
-              <div style={{display:"flex",gap:5}}>
-                {["all","owned","needed"].map(f=><button key={f} onClick={()=>setFilterOwned(f)} style={{padding:isMobile?"6px 11px":"3px 9px",borderRadius:20,border:"1px solid "+(filterOwned===f?"rgba(255,217,61,0.6)":"rgba(255,217,61,0.32)"),background:filterOwned===f?"rgba(169,70,29,0.25)":"transparent",color:filterOwned===f?"#FFD93D":"rgba(255,217,61,0.35)",fontSize:isMobile?10:9,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,minHeight:isMobile?36:30,fontWeight:filterOwned===f?700:400}}>{f.toUpperCase()}</button>)}
-              </div>
-              <div style={{flex:1}}/>
-              <button onClick={addItem} style={{padding:isMobile?"7px 14px":"3px 10px",borderRadius:5,border:"1px solid rgba(255,217,61,0.4)",background:"rgba(169,70,29,0.18)",color:"#FFD93D",fontSize:isMobile?10:9,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,minHeight:isMobile?36:30,fontWeight:700,whiteSpace:"nowrap"}}>+ ADD ITEM</button>
-            </div>
-            <div style={{display:"flex",alignItems:"center",gap:8,padding:isMobile?"3px 10px 6px":"2px 10px 4px",borderTop:"1px solid rgba(255,217,61,0.08)"}}>
-              <div style={{fontSize:7,color:"rgba(255,217,61,0.3)",letterSpacing:2,fontFamily:"monospace"}}>SORT</div>
-              {["cat","weight","cost"].map(s=><button key={s} onClick={()=>setSortBy(s)} style={{padding:"2px 8px",borderRadius:3,border:"none",background:sortBy===s?"rgba(169,70,29,0.48)":"transparent",color:sortBy===s?"#FFD93D":"rgba(255,217,61,0.3)",fontSize:isMobile?8:7,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,fontWeight:sortBy===s?700:400}}>{s==="cat"?"CAT":s==="weight"?"WT":"COST"}</button>)}
-              <div style={{flex:1}}/>
-              <button onClick={()=>{if(resetConfirm){setItems(getDefaultPack());setResetConfirm(false);}else{setResetConfirm(true);setTimeout(()=>setResetConfirm(false),3000);}}} style={{padding:"3px 10px",borderRadius:5,border:resetConfirm?"1px solid rgba(255,107,107,0.7)":"1px solid rgba(255,217,61,0.3)",background:resetConfirm?"rgba(255,107,107,0.12)":"rgba(169,70,29,0.1)",color:resetConfirm?"#FF6B6B":"rgba(255,217,61,0.5)",fontSize:7.5,cursor:"pointer",fontFamily:"monospace",whiteSpace:"nowrap",fontWeight:700,minHeight:26}}>{resetConfirm?"↺ RESTORE LIST?":"↺ RESTORE"}</button>
-            </div>
+      {/* Main content */}
+      {packTab==="pack"&&(
+        <div style={{overflowY:"auto",flex:1,padding:"12px 16px 32px"}}>
+          {visibleCats.map((cat,i)=><CatCard key={cat.id} cat={cat} idx={i}/>)}
+          <div style={{textAlign:"center",marginTop:8,padding:"8px 0",borderTop:"1px solid rgba(169,70,29,0.12)"}}>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:10,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.25)",letterSpacing:2}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
           </div>
-          {packTab==="pack"&&(
-            <div style={{overflowY:"auto",flex:1}}>
-              {!isMobile&&<div style={{display:"grid",gridTemplateColumns:"22px 1fr 85px 60px 60px 70px 60px 22px",gap:3,padding:"5px 10px",background:"rgba(169,70,29,0.15)",borderBottom:"1px solid rgba(196,87,30,0.6)",position:"sticky",top:0,zIndex:5}}>{["","ITEM","CAT","WEIGHT","COST","BAG","STATUS",""].map((h,i)=><div key={i} style={{fontSize:12,color:"rgba(255,159,67,0.85)",letterSpacing:1.5,fontWeight:700,textAlign:["","left","center","right","right","center","center","left"][i]}}>{h}</div>)}</div>}
-              {visible.length===0&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"50px 20px",textAlign:"center"}}><div style={{fontSize:36,marginBottom:12}}>🎒</div><div style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:300,fontStyle:"italic",color:"rgba(255,217,61,0.5)",marginBottom:6}}>No items match this filter.</div><button onClick={()=>{setFilterCat("all");setFilterOwned("all");}} style={{padding:"7px 16px",borderRadius:6,border:"1px solid rgba(196,87,30,0.4)",background:"rgba(169,70,29,0.1)",color:"#FF9F43",fontSize:8,cursor:"pointer",fontFamily:"'Space Mono',monospace",marginTop:10,minHeight:40}}>CLEAR FILTERS</button></div>}
-              {Object.values(grouped).map(({cat,items:catItems})=>(
-                <div key={cat.id}>
-                  {!isMobile?<div style={{display:"grid",gridTemplateColumns:"22px 1fr 85px 60px 60px 70px 60px 22px",gap:3,padding:"5px 10px",background:`linear-gradient(90deg,${cat.color}14,rgba(8,3,0,0.9))`,borderBottom:`1px solid ${cat.color}55`,borderLeft:`3px solid ${cat.color}`,alignItems:"center"}}>
-                    <span style={{fontSize:11}}>{cat.icon}</span><span style={{fontSize:8,color:cat.color,letterSpacing:2,fontWeight:700}}>{cat.label.toUpperCase()}</span><span/><span style={{fontSize:7,color:cat.color,opacity:0.7,textAlign:"right"}}>{(catItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM).toFixed(1)}{unit}</span><span style={{fontSize:7,color:"#FFD93D",opacity:0.7,textAlign:"right"}}>${catItems.reduce((s,i)=>s+(parseFloat(i.cost)||0),0).toLocaleString()}</span><span/><span style={{fontSize:7,color:"rgba(255,255,255,0.75)",fontWeight:700}}>{catItems.filter(i=>i.owned).length}/{catItems.length}</span><span/>
-                  </div>:<div style={{padding:"6px 12px",background:`linear-gradient(90deg,${cat.color}14,rgba(8,3,0,0.9))`,borderBottom:`1px solid ${cat.color}55`,borderLeft:`3px solid ${cat.color}`,display:"flex",alignItems:"center",gap:8}}>
-                    <span style={{fontSize:12}}>{cat.icon}</span><span style={{fontSize:9,color:cat.color,letterSpacing:2,fontWeight:700}}>{cat.label.toUpperCase()}</span><span style={{fontSize:8,color:"rgba(255,255,255,0.75)",fontWeight:700,marginLeft:"auto"}}>{catItems.filter(i=>i.owned).length}/{catItems.length} owned</span>
-                  </div>}
-                  {catItems.map((item,idx)=>{
-                    const isExp=expandedItem===item.id;
-                    if(isMobile) return(
-                      <div key={item.id}>
-                        <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px 10px 14px",background:idx%2===0?"rgba(20,8,0,0.7)":"rgba(30,11,0,0.6)",borderBottom:"1px solid rgba(169,70,29,0.25)",borderLeft:"3px solid "+cat.color+"77",minHeight:46}} onClick={()=>setExpandedItem(isExp?null:item.id)}>
-                          <button onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:22,height:22,borderRadius:4,border:"1.5px solid "+(item.owned?"#69F0AE":"rgba(196,87,30,0.5)"),background:item.owned?"rgba(105,240,174,0.15)":"rgba(169,70,29,0.08)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                            {item.owned&&<span style={{color:"#69F0AE",fontSize:12,fontWeight:900,lineHeight:1}}>✓</span>}
-                          </button>
-                          <div style={{flex:1,minWidth:0}}>
-                            <div style={{fontSize:12,color:item.owned?"rgba(105,240,174,0.9)":"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.name||"Unnamed"}</div>
-                            <div style={{fontSize:9,color:"rgba(255,255,255,0.35)",marginTop:2}}>{parseFloat(item.weight)>0&&<span>{(parseFloat(item.weight)*wM).toFixed(2)}{unit} · </span>}<span style={{color:BAG_C[item.bag]||"rgba(255,159,67,0.5)"}}>{item.bag}</span></div>
-                          </div>
-                          <div style={{textAlign:"right",flexShrink:0}}><div style={{fontSize:11,fontWeight:700,color:"#FFD93D"}}>{parseFloat(item.cost)>0?"$"+item.cost:""}</div><div style={{fontSize:8,color:item.owned?"#69F0AE":"#C4571E"}}>{item.owned?"OWNED":"NEED"}</div></div>
-                          <span style={{fontSize:9,color:"rgba(255,255,255,0.6)",marginLeft:4}}>{isExp?"▲":"▼"}</span>
-                        </div>
-                        {isExp&&<div style={{padding:"10px 12px",background:"rgba(45,18,0,0.5)",borderBottom:"1px solid rgba(169,70,29,0.2)",display:"flex",flexDirection:"column",gap:8}}>
-                          <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:6,color:"#FFF",fontSize:13,padding:"8px 12px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%"}}/>
-                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-                            {[{label:"WEIGHT",f:"weight"},{label:"COST $",f:"cost"},{label:"VOL L",f:"volume"}].map(({label,f})=><div key={f}><div style={{fontSize:7,color:"rgba(255,159,67,0.7)",letterSpacing:2,marginBottom:4}}>{label}</div><input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.3)",borderRadius:5,color:"#FFD93D",fontSize:12,padding:"7px 8px",outline:"none",fontFamily:"monospace",width:"100%"}}/></div>)}
-                          </div>
-                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-                            <div><div style={{fontSize:7,color:"rgba(255,159,67,0.7)",letterSpacing:2,marginBottom:4}}>CATEGORY</div><select value={item.cat||"travel"} onChange={e=>updateItem(item.id,"cat",e.target.value)} style={{background:"rgba(15,5,0,0.9)",border:"1px solid rgba(169,70,29,0.3)",borderRadius:5,color:cat.color,fontSize:11,padding:"7px 8px",outline:"none",fontFamily:"monospace",width:"100%"}}>{CATS.filter(c=>c.id!=="all").map(c=><option key={c.id} value={c.id}>{c.icon} {c.label}</option>)}</select></div>
-                            <div><div style={{fontSize:7,color:"rgba(255,159,67,0.7)",letterSpacing:2,marginBottom:4}}>BAG</div><select value={item.bag||"Backpack"} onChange={e=>updateItem(item.id,"bag",e.target.value)} style={{background:"rgba(15,5,0,0.9)",border:"1px solid rgba(169,70,29,0.3)",borderRadius:5,color:BAG_C[item.bag]||"rgba(255,159,67,0.5)",fontSize:11,padding:"7px 8px",outline:"none",fontFamily:"monospace",width:"100%"}}>{BAGS.map(b=><option key={b} value={b}>{b}</option>)}</select></div>
-                          </div>
-                          <div style={{display:"flex",gap:8}}>
-                            <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:9,borderRadius:6,border:"1px solid "+(item.owned?"rgba(105,240,174,0.5)":"rgba(196,87,30,0.5)"),background:item.owned?"rgba(105,240,174,0.1)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#C4571E",fontSize:11,cursor:"pointer",fontFamily:"monospace",minHeight:40}}>{item.owned?"✓ OWNED":"MARK OWNED"}</button>
-                            <button onClick={()=>{removeItem(item.id);setExpandedItem(null);}} style={{padding:"9px 16px",borderRadius:6,border:"1px solid rgba(196,87,30,0.52)",background:"transparent",color:"rgba(196,87,30,0.5)",fontSize:11,cursor:"pointer",fontFamily:"monospace",minHeight:40}}>✕</button>
-                          </div>
-                        </div>}
+        </div>
+      )}
+      {packTab==="refine"&&(
+        <div style={{overflowY:"auto",flex:1,padding:"12px 16px"}}>
+          <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.15),rgba(255,217,61,0.05))",border:"1px solid rgba(169,70,29,0.35)",borderRadius:12,padding:"14px 16px",marginBottom:16}}>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.6,marginBottom:8}}>Reviewing your pack for a <span style={{color:"#FF9F43"}}>{goalLabel}</span> trip across <span style={{color:"#FFD93D"}}>{countries.slice(0,3).join(", ")}{countries.length>3?" +"+(countries.length-3)+" more":""}</span> — {totalNights} nights.</div>
+            <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{tripTypes.map(t=><span key={t} style={{fontSize:9,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.18)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:10,padding:"3px 9px",letterSpacing:1,fontWeight:700}}>{TI[t]||"🗺️"} {t}</span>)}</div>
+          </div>
+          {suggestLoading&&<div style={{textAlign:"center",padding:"36px 20px"}}>
+            <div style={{position:"relative",width:72,height:72,margin:"0 auto 20px"}}>
+              <div style={{position:"absolute",inset:-8,borderRadius:"50%",border:"1.5px solid rgba(255,159,67,0.5)",animation:"amberPulse 1.8s ease-in-out infinite"}}/>
+              <div style={{position:"absolute",inset:-2,borderRadius:"50%",border:"1px solid rgba(255,159,67,0.35)",animation:"amberPulse 1.8s ease-in-out infinite 0.4s"}}/>
+              <div style={{width:72,height:72,borderRadius:"50%",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(255,159,67,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,animation:"logoPulse 2s ease-in-out infinite"}}>✦</div>
+            </div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:6}}>Reviewing your pack...</div>
+            <div style={{fontSize:9,color:"rgba(255,159,67,0.7)",letterSpacing:2}}>Checking what your trip needs</div>
+          </div>}
+          {!suggestLoading&&suggestions.length>0&&<div>
+            <div style={{fontSize:9,color:"rgba(255,159,67,0.9)",letterSpacing:3,marginBottom:12,fontWeight:700}}>SUGGESTED FOR YOUR TRIP</div>
+            {suggestions.map(s=>{
+              const CAT_COLORS_P={docs:"#E0E0E0",tech:"#00D4FF",clothes:"#FFD93D",health:"#69F0AE",travel:"#55EFC4",creator:"#FF9F43",dive:"#00E5FF"};
+              const c=CAT_COLORS_P[s.cat]||"#FF9F43";
+              return(<div key={s.id} style={{borderRadius:12,marginBottom:9,background:"rgba(18,8,0,0.85)",border:"1px solid "+(s.priority==="essential"?"rgba(255,159,67,0.4)":"rgba(255,255,255,0.08)"),animation:"fadeUp 0.4s ease"}}>
+                <div style={{padding:"14px 16px"}}>
+                  <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
+                    <div style={{flex:1}}>
+                      <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}>
+                        {s.priority==="essential"&&<span style={{fontSize:8,color:"#FF9F43",background:"rgba(255,159,67,0.18)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:8,padding:"2px 8px",letterSpacing:1,fontWeight:700}}>ESSENTIAL</span>}
+                        <span style={{fontSize:8,color:c,background:c+"14",border:`1px solid ${c}44`,borderRadius:8,padding:"2px 8px",letterSpacing:1,fontWeight:700}}>{s.cat}</span>
                       </div>
-                    );
-                    return(
-                      <div key={item.id} style={{display:"grid",gridTemplateColumns:"22px 1fr 85px 60px 60px 70px 60px 22px",gap:3,padding:"7px 10px",background:idx%2===0?"rgba(20,8,0,0.6)":"rgba(30,11,0,0.5)",borderBottom:"1px solid rgba(169,70,29,0.25)",alignItems:"center",borderLeft:"3px solid "+cat.color+"55"}}>
-                        <button onClick={()=>toggleOwned(item.id)} style={{width:13,height:13,borderRadius:2,border:"1.5px solid "+(item.owned?"#69F0AE":"rgba(196,87,30,0.4)"),background:item.owned?"rgba(105,240,174,0.15)":"transparent",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{item.owned&&<span style={{color:"#69F0AE",fontSize:8,fontWeight:900,lineHeight:1}}>✓</span>}</button>
-                        <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"transparent",border:"none",color:item.owned?"rgba(105,240,174,0.85)":"rgba(255,255,255,0.88)",fontSize:10,fontFamily:"'Space Mono',monospace",outline:"none",width:"100%"}}/>
-                        <select value={item.cat||"travel"} onChange={e=>updateItem(item.id,"cat",e.target.value)} style={{background:"rgba(15,5,0,0.9)",border:"1px solid "+cat.color+"30",borderRadius:3,color:cat.color,fontSize:12,padding:"3px 5px",outline:"none",fontFamily:"monospace"}}>{CATS.filter(c=>c.id!=="all").map(c=><option key={c.id} value={c.id} style={{background:"#0d0400"}}>{c.icon} {c.label}</option>)}</select>
-                        <input value={item.weight} onChange={e=>updateItem(item.id,"weight",e.target.value)} style={{background:"transparent",border:"1px solid rgba(169,70,29,0.2)",borderRadius:3,color:parseFloat(item.weight)>2?"#FFD93D":"rgba(255,255,255,0.65)",fontSize:12,padding:"3px 5px",outline:"none",fontFamily:"monospace",width:"100%",textAlign:"right"}}/>
-                        <input value={item.cost} onChange={e=>updateItem(item.id,"cost",e.target.value)} style={{background:"transparent",border:"1px solid rgba(169,70,29,0.2)",borderRadius:3,color:"#FFD93D",fontSize:12,padding:"3px 5px",outline:"none",fontFamily:"monospace",width:"100%",textAlign:"right"}}/>
-                        <select value={item.bag||"Backpack"} onChange={e=>updateItem(item.id,"bag",e.target.value)} style={{background:"rgba(15,5,0,0.9)",border:"1px solid rgba(169,70,29,0.48)",borderRadius:3,color:BAG_C[item.bag]||"rgba(255,159,67,0.5)",fontSize:12,padding:"3px 5px",outline:"none",fontFamily:"monospace"}}>{BAGS.map(b=><option key={b} value={b} style={{background:"#0d0400"}}>{b}</option>)}</select>
-                        <div onClick={()=>toggleOwned(item.id)} style={{padding:"4px 8px",borderRadius:12,background:item.owned?"rgba(105,240,174,0.08)":"rgba(196,87,30,0.12)",border:"1px solid "+(item.owned?"rgba(105,240,174,0.3)":"rgba(196,87,30,0.35)"),fontSize:12,color:item.owned?"#69F0AE":"#C4571E",textAlign:"center",cursor:"pointer"}}>{item.owned?"OWNED":"NEED"}</div>
-                        <button onClick={()=>removeItem(item.id)} style={{background:"none",border:"none",color:"rgba(196,87,30,0.35)",fontSize:13,cursor:"pointer",padding:0,lineHeight:1}}>×</button>
-                      </div>
-                    );
-                  })}
+                      <div style={{fontSize:13,fontWeight:700,color:"#FFF",marginBottom:5}}>{s.name}</div>
+                      <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",lineHeight:1.6}}>{s.reason}</div>
+                    </div>
+                    <div style={{textAlign:"right",flexShrink:0}}>{s.cost>0&&<div style={{fontSize:13,fontWeight:700,color:"#FFD93D",marginBottom:3}}>${s.cost}</div>}{s.weight>0&&<div style={{fontSize:10,color:"rgba(255,255,255,0.5)"}}>{s.weight}lb</div>}</div>
+                  </div>
+                  <div style={{display:"flex",gap:8}}>
+                    <button onClick={()=>acceptSuggestion(s)} style={{flex:1,padding:"10px",borderRadius:8,border:"1px solid rgba(105,240,174,0.5)",background:"rgba(105,240,174,0.08)",color:"#69F0AE",fontSize:11,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,fontWeight:700,minHeight:40}}>+ ADD TO PACK</button>
+                    <button onClick={()=>dismissSuggestion(s.id)} style={{padding:"10px 16px",borderRadius:8,border:"1px solid rgba(255,255,255,0.12)",background:"transparent",color:"rgba(255,255,255,0.5)",fontSize:11,cursor:"pointer",fontFamily:"monospace",minHeight:40}}>SKIP</button>
+                  </div>
+                </div>
+              </div>);
+            })}
+          </div>}
+          {!suggestLoading&&suggestions.length===0&&suggestDone&&<div style={{marginBottom:16}}>
+            <div style={{textAlign:"center",padding:"24px 0 18px"}}>
+              <div style={{fontSize:22,marginBottom:10,color:"#FF9F43"}}>✦</div>
+              <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:5}}>{accepted.length>0?`${accepted.length} item${accepted.length>1?"s":""} added.`:"Your pack looks solid for this trip."}</div>
+              <div style={{fontSize:9,color:"rgba(255,159,67,0.75)",letterSpacing:2}}>Anything else? I'm here.</div>
+            </div>
+            <button onClick={()=>{setSuggestions([]);setSuggestDone(false);setAccepted([]);genSuggestions();}} style={{width:"100%",padding:10,borderRadius:8,border:"1px solid rgba(169,70,29,0.35)",background:"rgba(169,70,29,0.1)",color:"rgba(255,159,67,0.75)",fontSize:9,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,marginBottom:18,fontWeight:700}}>↺ REFRESH SUGGESTIONS</button>
+          </div>}
+          {suggestDone&&!suggestLoading&&<div style={{borderTop:"1px solid rgba(196,87,30,0.25)",paddingTop:16}}>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",fontWeight:300,color:"#FFD93D",marginBottom:12,lineHeight:1.4}}>Refine packing list with your co-architect</div>
+            <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:12,maxHeight:220,overflowY:"auto"}}>
+              {chat.length===0&&<div style={{fontFamily:"'Fraunces',serif",fontSize:12,fontStyle:"italic",color:"rgba(255,200,120,0.82)",lineHeight:1.7,padding:"4px 0"}}>"Need help staying under 15 lbs? Tell me and I'll refine your list."</div>}
+              {chat.map((m,i)=>(
+                <div key={i} style={{display:"flex",gap:7,flexDirection:m.role==="user"?"row-reverse":"row"}}>
+                  <div style={{width:20,height:20,borderRadius:"50%",background:m.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,flexShrink:0}}>{m.role==="ai"?"✦":"M"}</div>
+                  <div style={{borderRadius:9,padding:"8px 11px",fontSize:11,color:"#FFF",lineHeight:1.65,maxWidth:"86%",background:m.role==="ai"?"rgba(169,70,29,0.22)":"rgba(255,255,255,0.08)",border:`1px solid ${m.role==="ai"?"rgba(169,70,29,0.5)":"rgba(255,255,255,0.14)"}`}}>{m.text}</div>
                 </div>
               ))}
-              <div style={{padding:"8px 10px",borderTop:"1px solid rgba(169,70,29,0.2)",display:"flex",gap:8,alignItems:"center",background:"rgba(10,4,0,0.6)"}}>
-                <button onClick={addItem} style={{padding:isMobile?"8px 16px":"5px 12px",borderRadius:5,border:"1px dashed rgba(196,87,30,0.35)",background:"transparent",color:"rgba(255,159,67,0.5)",fontSize:isMobile?10:7.5,cursor:"pointer",letterSpacing:1.5,fontFamily:"'Space Mono',monospace",minHeight:isMobile?40:28}}>+ ADD ITEM</button>
-                <div style={{marginLeft:"auto",fontFamily:"'Fraunces',serif",fontSize:isMobile?10:9,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.3)"}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
-              </div>
+              {chatLoading&&<div style={{fontSize:10,color:"rgba(169,70,29,0.75)",animation:"shimmer 1s infinite",padding:"4px 0",letterSpacing:1}}>✦ thinking...</div>}
+              <div ref={chatEnd}/>
             </div>
-          )}
-          {packTab==="refine"&&(
-            <div style={{overflowY:"auto",flex:1,padding:"10px 14px"}}>
-              <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.15),rgba(255,217,61,0.05))",border:"1px solid rgba(169,70,29,0.35)",borderRadius:12,padding:"13px 14px",marginBottom:16}}>
-                <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.6,marginBottom:8}}>Reviewing your pack for a <span style={{color:"#FF9F43"}}>{goalLabel}</span> trip across <span style={{color:"#FFD93D"}}>{countries.slice(0,3).join(", ")}{countries.length>3?" +"+(countries.length-3)+" more":""}</span> — {totalNights} nights.</div>
-                <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{tripTypes.map(t=><span key={t} style={{fontSize:8,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.18)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:10,padding:"3px 9px",letterSpacing:1,fontWeight:700}}>{TI[t]||"🗺️"} {t}</span>)}</div>
-              </div>
-              {suggestLoading&&<div style={{textAlign:"center",padding:"36px 20px"}}>
-                <div style={{position:"relative",width:72,height:72,margin:"0 auto 20px"}}>
-                  <div style={{position:"absolute",inset:-8,borderRadius:"50%",border:"1.5px solid rgba(255,159,67,0.5)",animation:"amberPulse 1.8s ease-in-out infinite"}}/>
-                  <div style={{position:"absolute",inset:-2,borderRadius:"50%",border:"1px solid rgba(255,159,67,0.35)",animation:"amberPulse 1.8s ease-in-out infinite 0.4s"}}/>
-                  <div style={{width:72,height:72,borderRadius:"50%",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(255,159,67,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,animation:"logoPulse 2s ease-in-out infinite"}}>✦</div>
-                </div>
-                <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:6}}>Reviewing your pack...</div>
-                <div style={{fontSize:9,color:"rgba(255,159,67,0.7)",letterSpacing:2}}>Checking what your trip needs</div>
-              </div>}
-              {!suggestLoading&&suggestions.length>0&&<div>
-                <div style={{fontSize:8,color:"rgba(255,159,67,0.9)",letterSpacing:3,marginBottom:12,fontWeight:700}}>SUGGESTED FOR YOUR TRIP</div>
-                {suggestions.map(s=>{
-                  const c=CAT_COLORS_P[s.cat]||"#FF9F43";
-                  return(<div key={s.id} style={{borderRadius:12,marginBottom:9,background:"#0C1520",border:"1px solid "+(s.priority==="essential"?"rgba(255,159,67,0.4)":"rgba(255,255,255,0.09)"),animation:"fadeUp 0.4s ease"}}>
-                    <div style={{padding:"13px 14px"}}>
-                      <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
-                        <div style={{flex:1}}>
-                          <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:5}}>
-                            {s.priority==="essential"&&<span style={{fontSize:7,color:"#FF9F43",background:"rgba(255,159,67,0.18)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:8,padding:"2px 7px",letterSpacing:1,fontWeight:700}}>ESSENTIAL</span>}
-                            <span style={{fontSize:8,color:c,background:c+"14",border:`1px solid ${c}44`,borderRadius:8,padding:"2px 7px",letterSpacing:1,fontWeight:700}}>{s.cat}</span>
-                          </div>
-                          <div style={{fontSize:isMobile?13:12,fontWeight:700,color:"#FFF",marginBottom:5}}>{s.name}</div>
-                          <div style={{fontSize:10,color:"rgba(255,255,255,0.8)",lineHeight:1.55}}>{s.reason}</div>
-                        </div>
-                        <div style={{textAlign:"right",flexShrink:0}}>{s.cost>0&&<div style={{fontSize:12,fontWeight:700,color:"#FFD93D",marginBottom:2}}>${s.cost}</div>}{s.weight>0&&<div style={{fontSize:8,color:"rgba(255,255,255,0.65)"}}>{s.weight}lb</div>}</div>
-                      </div>
-                      <div style={{display:"flex",gap:8}}>
-                        <button onClick={()=>acceptSuggestion(s)} style={{flex:1,padding:9,borderRadius:8,border:"1px solid rgba(105,240,174,0.5)",background:"rgba(105,240,174,0.1)",color:"#69F0AE",fontSize:9,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,fontWeight:700,minHeight:38}} onMouseOver={e=>e.currentTarget.style.background="rgba(105,240,174,0.2)"} onMouseOut={e=>e.currentTarget.style.background="rgba(105,240,174,0.1)"}>+ ADD TO PACK</button>
-                        <button onClick={()=>dismissSuggestion(s.id)} style={{padding:"9px 14px",borderRadius:8,border:"1px solid rgba(255,255,255,0.15)",background:"transparent",color:"rgba(255,255,255,0.6)",fontSize:9,cursor:"pointer",fontFamily:"monospace",minHeight:38}}>SKIP</button>
-                      </div>
-                    </div>
-                  </div>);
-                })}
-              </div>}
-              {!suggestLoading&&suggestions.length===0&&suggestDone&&<div style={{marginBottom:16}}>
-                <div style={{textAlign:"center",padding:"24px 0 18px"}}>
-                  <div style={{fontSize:22,marginBottom:10,color:"#FF9F43"}}>✦</div>
-                  <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:5}}>{accepted.length>0?`${accepted.length} item${accepted.length>1?"s":""} added.`:"Your pack looks solid for this trip."}</div>
-                  <div style={{fontSize:9,color:"rgba(255,159,67,0.75)",letterSpacing:2}}>Anything else? I'm here.</div>
-                </div>
-                <button onClick={()=>{setSuggestions([]);setSuggestDone(false);setAccepted([]);genSuggestions();}} style={{width:"100%",padding:9,borderRadius:8,border:"1px solid rgba(169,70,29,0.35)",background:"rgba(169,70,29,0.1)",color:"rgba(255,159,67,0.75)",fontSize:8,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,marginBottom:18,fontWeight:700}}>↺ REFRESH SUGGESTIONS</button>
-              </div>}
-              {suggestDone&&!suggestLoading&&<div style={{borderTop:"1px solid rgba(196,87,30,0.25)",paddingTop:16}}>
-                <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",fontWeight:300,color:"#FFD93D",marginBottom:12,lineHeight:1.4}}>Refine packing list with your co-architect</div>
-                <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:12,maxHeight:220,overflowY:"auto"}}>
-                  {chat.length===0&&<div style={{fontFamily:"'Fraunces',serif",fontSize:12,fontStyle:"italic",color:"rgba(255,200,120,0.82)",lineHeight:1.7,padding:"4px 0"}}>"Need help staying under 15 lbs? Tell me and I'll refine your list."</div>}
-                  {chat.map((m,i)=>(
-                    <div key={i} style={{display:"flex",gap:7,flexDirection:m.role==="user"?"row-reverse":"row"}}>
-                      <div style={{width:20,height:20,borderRadius:"50%",background:m.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,flexShrink:0}}>{m.role==="ai"?"✦":"M"}</div>
-                      <div style={{borderRadius:9,padding:"8px 11px",fontSize:10,color:"#FFF",lineHeight:1.65,maxWidth:"86%",background:m.role==="ai"?"rgba(169,70,29,0.22)":"rgba(255,255,255,0.08)",border:`1px solid ${m.role==="ai"?"rgba(169,70,29,0.5)":"rgba(255,255,255,0.14)"}`}}>{m.text}</div>
-                    </div>
-                  ))}
-                  {chatLoading&&<div style={{fontSize:9,color:"rgba(169,70,29,0.75)",animation:"shimmer 1s infinite",padding:"4px 0",letterSpacing:1}}>✦ thinking...</div>}
-                  <div ref={chatEnd}/>
-                </div>
-                <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
-                  {["Keep me under 15 lbs","I do laundry weekly","Add rain gear","Pack for heat"].map(p=><button key={p} onClick={()=>setChatInput(p)} style={{padding:"5px 10px",borderRadius:14,border:"1px solid rgba(196,87,30,0.35)",background:"rgba(169,70,29,0.12)",color:"rgba(255,159,67,0.9)",fontSize:8,cursor:"pointer",fontFamily:"monospace",whiteSpace:"nowrap",fontWeight:700}}>{p}</button>)}
-                </div>
-                <div style={{display:"flex",gap:7}}>
-                  <input value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendChat();}} placeholder="Ask anything about your pack..." style={{flex:1,background:"rgba(20,8,0,0.85)",border:"1px solid rgba(196,87,30,0.35)",borderRadius:8,color:"#FFF",fontSize:isMobile?13:10,padding:"10px 12px",fontFamily:"monospace",outline:"none",minHeight:42}}/>
-                  <button onClick={sendChat} style={{background:"rgba(169,70,29,0.25)",border:"1px solid rgba(196,87,30,0.45)",borderRadius:8,color:"#FF9F43",fontSize:16,padding:"8px 13px",cursor:"pointer",minWidth:42,minHeight:42,fontWeight:700}}>↑</button>
-                </div>
-              </div>}
+            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
+              {["Keep me under 15 lbs","I do laundry weekly","Add rain gear","Pack for heat"].map(p=><button key={p} onClick={()=>setChatInput(p)} style={{padding:"6px 12px",borderRadius:14,border:"1px solid rgba(196,87,30,0.35)",background:"rgba(169,70,29,0.12)",color:"rgba(255,159,67,0.9)",fontSize:10,cursor:"pointer",fontFamily:"monospace",whiteSpace:"nowrap",fontWeight:700}}>{p}</button>)}
             </div>
-          )}
-          {packTab==="weight"&&(
-            <div style={{overflowY:"auto",flex:1,padding:"10px 14px"}}>
-              <div style={{display:"flex",justifyContent:"flex-end",marginBottom:14}}>
-                <button onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:9,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:6,padding:"6px 14px",cursor:"pointer",fontFamily:"monospace",letterSpacing:1,fontWeight:700}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
-              </div>
-              {["Backpack","Global Briefcase","Worn","Digital"].map(bagName=>{
-                const bagItems=items.filter(i=>i.bag===bagName);
-                const bagW=bagItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM;
-                const bagV=bagName==="Backpack"?bpV:0;
-                const isOver=bagName==="Backpack"&&bagW>wLim;
-                const bagColor=bagName==="Backpack"?"#69F0AE":bagName==="Global Briefcase"?"#A29BFE":bagName==="Worn"?"#FFD93D":"#69F0AE";
-                return(
-                  <div key={bagName} style={{background:"#0C1520",border:"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:14,marginBottom:11}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-                      <div style={{fontSize:11,fontWeight:700,color:bagColor}}>{bagName}</div>
-                      <div style={{textAlign:"right"}}>
-                        <div style={{fontSize:17,fontWeight:900,color:isOver?"#4D9FFF":bagColor,letterSpacing:-1,lineHeight:1}}>{bagW.toFixed(1)}<span style={{fontSize:9,fontWeight:400,opacity:0.8}}> {unit}</span></div>
-                        {bagName==="Backpack"&&<div style={{fontSize:8,color:"#FFD93D",marginTop:1,fontWeight:700}}>{bagV.toFixed(1)}L / {VL}L</div>}
-                      </div>
-                    </div>
-                    {bagName==="Backpack"&&<div style={{height:4,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden",marginBottom:9}}><div style={{height:"100%",background:isOver?"#4D9FFF":"linear-gradient(90deg,#1565FF,#4D9FFF)",borderRadius:2,width:Math.min(bagW/wLim*100,100)+"%",transition:"width 0.5s ease"}}/></div>}
-                    {bagItems.length===0?<div style={{fontSize:9,color:"rgba(255,255,255,0.6)",textAlign:"center",padding:"8px 0"}}>No items</div>
-                    :bagItems.sort((a,b)=>(parseFloat(b.weight)||0)-(parseFloat(a.weight)||0)).map(item=>(
-                      <div key={item.id} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
-                        <div style={{fontSize:isMobile?11:10,color:item.owned?"rgba(255,255,255,0.72)":"#FFF"}}>{item.owned?"✓ ":""}{item.name}</div>
-                        <div style={{fontSize:10,color:"rgba(255,255,255,0.7)",flexShrink:0,marginLeft:8,fontWeight:700}}>{parseFloat(item.weight)>0?(parseFloat(item.weight)*wM).toFixed(2)+unit:"—"}</div>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })}
+            <div style={{display:"flex",gap:7}}>
+              <input value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendChat();}} placeholder="Ask anything about your pack..." style={{flex:1,background:"rgba(20,8,0,0.85)",border:"1px solid rgba(196,87,30,0.35)",borderRadius:8,color:"#FFF",fontSize:13,padding:"11px 14px",fontFamily:"monospace",outline:"none",minHeight:44}}/>
+              <button onClick={sendChat} style={{background:"rgba(169,70,29,0.25)",border:"1px solid rgba(196,87,30,0.45)",borderRadius:8,color:"#FF9F43",fontSize:16,padding:"8px 14px",cursor:"pointer",minWidth:44,minHeight:44,fontWeight:700}}>↑</button>
             </div>
-          )}
+          </div>}
         </div>
-      </div>
+      )}
+      {packTab==="weight"&&(
+        <div style={{overflowY:"auto",flex:1,padding:"12px 16px"}}>
+          <div style={{display:"flex",justifyContent:"flex-end",marginBottom:14}}>
+            <button onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:10,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:6,padding:"7px 16px",cursor:"pointer",fontFamily:"monospace",letterSpacing:1,fontWeight:700}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
+          </div>
+          {["Backpack","Global Briefcase","Worn","Digital"].map(bagName=>{
+            const bagItems=items.filter(i=>i.bag===bagName);
+            const bagW=bagItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM;
+            const bagV=bagName==="Backpack"?bpV:0;
+            const isOver=bagName==="Backpack"&&bagW>wLim;
+            const bagColor=bagName==="Backpack"?"#69F0AE":bagName==="Global Briefcase"?"#A29BFE":bagName==="Worn"?"#FFD93D":"#69F0AE";
+            return(
+              <div key={bagName} style={{background:"rgba(18,8,0,0.85)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:16,marginBottom:12}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                  <div style={{fontSize:13,fontWeight:700,color:bagColor}}>{bagName}</div>
+                  <div style={{textAlign:"right"}}>
+                    <div style={{fontSize:20,fontWeight:900,color:isOver?"#FF6B6B":bagColor,letterSpacing:-1,lineHeight:1}}>{bagW.toFixed(1)}<span style={{fontSize:11,fontWeight:400,opacity:0.8}}> {unit}</span></div>
+                    {bagName==="Backpack"&&<div style={{fontSize:10,color:"#FFD93D",marginTop:1,fontWeight:700}}>{bagV.toFixed(1)}L / {VL}L</div>}
+                  </div>
+                </div>
+                {bagName==="Backpack"&&<div style={{height:5,background:"rgba(255,255,255,0.06)",borderRadius:3,overflow:"hidden",marginBottom:11}}><div style={{height:"100%",background:isOver?"linear-gradient(90deg,#1565FF,#FF6B6B)":"linear-gradient(90deg,#1565FF,#4D9FFF)",borderRadius:3,width:Math.min(bagW/wLim*100,100)+"%",transition:"width 0.5s ease"}}/></div>}
+                {bagItems.length===0?<div style={{fontSize:10,color:"rgba(255,255,255,0.35)",textAlign:"center",padding:"10px 0"}}>No items</div>
+                :bagItems.sort((a,b)=>(parseFloat(b.weight)||0)-(parseFloat(a.weight)||0)).map(item=>(
+                  <div key={item.id} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+                    <div style={{fontSize:12,color:item.owned?"rgba(255,255,255,0.65)":"#FFF"}}>{item.owned?"✓ ":""}{item.name}</div>
+                    <div style={{fontSize:11,color:"rgba(255,255,255,0.65)",flexShrink:0,marginLeft:8,fontWeight:700}}>{parseFloat(item.weight)>0?(parseFloat(item.weight)*wM).toFixed(2)+unit:"—"}</div>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
+
 
 // ─── Root App ─────────────────────────────────────────────────────
 export default function App() {
