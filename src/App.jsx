@@ -77,7 +77,7 @@ function toSegPhases(phases=[]) {
 }
 
 async function askAI(prompt,max=900) {
-  const r = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:max,messages:[{role:"user",content:prompt}]})});
+  const r = await fetch("/api/ask",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:max,messages:[{role:"user",content:prompt}]})});
   const d = await r.json();
   return d.content?.find(c=>c.type==="text")?.text||"";
 }
