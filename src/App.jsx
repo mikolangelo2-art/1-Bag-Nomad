@@ -318,7 +318,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,children}) {
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:700,color:"#FFF",letterSpacing:2,lineHeight:1}}>1 Bag Nomad</div>
           <div style={{display:"flex",alignItems:"center",gap:4}}>
             <div style={{width:4,height:4,borderRadius:"50%",background:dot,boxShadow:`0 0 5px ${dot}`}}/>
-            <div style={{fontSize:6,fontWeight:700,color:sub,letterSpacing:2.5,fontFamily:"'Space Mono',monospace"}}>{sublabel} · <span style={{fontFamily:"'Fraunces',serif",fontWeight:100,fontStyle:"italic",letterSpacing:1}}>Sharegood Co.</span></div>
+            <div style={{fontSize:10,fontWeight:700,color:sub,letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>{sublabel} · <span style={{fontFamily:"'Fraunces',serif",fontWeight:100,fontStyle:"italic",letterSpacing:1}}>Sharegood Co.</span></div>
           </div>
         </div>
         <div style={{flex:1}}/>{rightSlot}
@@ -1457,7 +1457,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           <div style={{animation:"slideOpen 0.2s ease",background:"rgba(0,0,0,0.2)"}}>
             <div style={{padding:"6px 18px 6px 18px",borderTop:`1px solid ${cat.color}15`,borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",gap:6}}>
               <div style={{width:4,height:4,borderRadius:"50%",background:cat.color,flexShrink:0}}/>
-              <span style={{fontSize:11,color:cat.color,letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{catItems.length} ITEM{catItems.length!==1?"S":""} · TAP TO EXPAND</span>
+              <span style={{fontSize:13,color:cat.color,letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{catItems.length} ITEM{catItems.length!==1?"S":""} · TAP TO EXPAND</span>
             </div>
             {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1}/>)}
             {/* Add item row */}
@@ -1497,7 +1497,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
               <div style={{fontSize:13,fontWeight:700,color:"#4D9FFF",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>⚖️ PACK WEIGHT</div>
               <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{display:"flex",borderRadius:8,border:"1px solid rgba(77,159,255,0.4)",overflow:"hidden",cursor:"pointer"}}>
-                {["lbs","kg"].map(u=><div key={u} style={{padding:"3px 9px",fontSize:9,fontWeight:700,background:unit===u?"rgba(77,159,255,0.3)":"rgba(77,159,255,0.05)",color:unit===u?"#4D9FFF":"rgba(77,159,255,0.3)",borderLeft:u==="kg"?"1px solid rgba(77,159,255,0.3)":"none"}}>{u.toUpperCase()}</div>)}
+                {["lbs","kg"].map(u=><div key={u} style={{padding:"4px 10px",fontSize:11,fontWeight:700,background:unit===u?"rgba(77,159,255,0.3)":"rgba(77,159,255,0.05)",color:unit===u?"#4D9FFF":"rgba(77,159,255,0.3)",borderLeft:u==="kg"?"1px solid rgba(77,159,255,0.3)":"none"}}>{u.toUpperCase()}</div>)}
               </div>
             </div>
             <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
@@ -1508,7 +1508,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             <div style={{height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,overflow:"hidden",marginBottom:5}}>
               <div style={{height:"100%",width:Math.min((bpW/wLim)*100,100)+"%",background:`linear-gradient(90deg,#1565FF,${(bpW*wM)>wLim?"#FF6B6B":"#4D9FFF"})`,borderRadius:4,transition:"width 0.4s ease"}}/>
             </div>
-            <div style={{fontSize:12,color:"rgba(77,159,255,0.7)",fontFamily:"monospace",fontWeight:700}}>{Math.round((bpW/wLim)*100)}% of {wLim}{unit} limit</div>
+            <div style={{fontSize:13,color:"rgba(77,159,255,0.75)",fontFamily:"monospace",fontWeight:700}}>{Math.round((bpW/wLim)*100)}% of {wLim}{unit} limit</div>
           </div>
           {/* Volume hero */}
           {(()=>{
@@ -1537,8 +1537,8 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.4)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
-              <div style={{fontSize:isMobile?8:10,fontWeight:700,color:"rgba(255,255,255,0.55)",letterSpacing:0.5,marginBottom:4,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
-              <div style={{fontSize:isMobile?15:18,fontWeight:900,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
+              <div style={{fontSize:isMobile?10:12,fontWeight:700,color:"rgba(255,255,255,0.6)",letterSpacing:0.5,marginBottom:5,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
+              <div style={{fontSize:isMobile?16:20,fontWeight:900,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
             </div>
           ))}
         </div>
@@ -1560,12 +1560,12 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
       {/* Category filter pills */}
       {packTab==="pack"&&<div style={{display:"flex",gap:6,padding:"10px 16px",overflowX:"auto",borderBottom:"1px solid rgba(169,70,29,0.25)",background:"rgba(10,4,0,0.8)",flexShrink:0,WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
         <button onClick={()=>{setFilterCat("all");setOpenCats({});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat==="all"?"rgba(255,255,255,0.5)":"rgba(255,255,255,0.12)"),background:filterCat==="all"?"rgba(255,255,255,0.08)":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
-          <span style={{fontSize:12}}>📋</span><span style={{fontSize:11,color:filterCat==="all"?"#FFF":"rgba(255,255,255,0.45)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="all"?700:400}}>All</span>
+          <span style={{fontSize:12}}>📋</span><span style={{fontSize:13,color:filterCat==="all"?"#FFF":"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="all"?700:400}}>All</span>
         </button>
         {CATS.map(c=>(
           <button key={c.id} onClick={()=>{setFilterCat(c.id);setOpenCats({[c.id]:true});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat===c.id?c.color+"80":"rgba(169,70,29,0.4)"),background:filterCat===c.id?c.color+"14":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
             <span style={{fontSize:12}}>{c.icon}</span>
-            <span style={{fontSize:11,color:filterCat===c.id?c.color:"rgba(255,255,255,0.5)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat===c.id?700:400}}>{c.label}</span>
+            <span style={{fontSize:13,color:filterCat===c.id?c.color:"rgba(255,255,255,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat===c.id?700:400}}>{c.label}</span>
           </button>
         ))}
       </div>}
@@ -1574,7 +1574,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         <div style={{overflowY:"auto",flex:1,padding:"12px 16px 32px"}}>
           {visibleCats.map((cat,i)=><CatCard key={cat.id} cat={cat} idx={i}/>)}
           <div style={{textAlign:"center",marginTop:8,padding:"8px 0",borderTop:"1px solid rgba(169,70,29,0.12)"}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:10,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.25)",letterSpacing:2}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:12,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.35)",letterSpacing:2}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
           </div>
         </div>
       )}
