@@ -127,8 +127,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
   .chat-bubble{font-size:12px}
   .intel-section-label{font-size:12px}
 }
-@media(min-width:900px){
-html,body{font-size:18px}
+
 .dream-content{max-width:800px;padding:40px 52px 70px}
 .mc-content{padding:22px 36px}
 .g-label{font-size:16px}
@@ -141,6 +140,20 @@ html,body{font-size:18px}
 .launch-btn{font-size:15px;padding:20px}
 .mc-tab{font-size:11px;padding:12px 16px}
 .chat-bubble{font-size:12px}}
+@media(min-width:900px){
+html,body{font-size:18px}
+.dream-root,.mc-root,.build-root{max-width:900px!important;margin:0 auto!important}
+.dream-content{padding:40px 52px 70px!important}
+.mc-content{padding:22px 36px!important}
+.g-label{font-size:16px!important}
+.g-desc{font-size:11px!important}
+.sec-label{font-size:12px!important;letter-spacing:5px!important}
+.f-label{font-size:11px!important}
+.f-input{font-size:15px!important;padding:12px 16px!important}
+.vision-ta{font-size:15px!important;padding:16px 20px!important}
+.launch-btn{font-size:15px!important;padding:20px!important}
+.mc-tab{font-size:11px!important;padding:12px 16px!important}
+.chat-bubble{font-size:12px!important}}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#060A0F}::-webkit-scrollbar-thumb{background:#1a2d42;border-radius:2px}
 .dream-root{font-family:'Space Mono',monospace;background:radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 25%,#0d0500 55%,#060200 100%);min-height:100vh;color:#FFF;position:relative}
 .dream-glow{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:280px;background:radial-gradient(ellipse,rgba(169,70,29,0.4) 0%,rgba(255,217,61,0.07) 45%,transparent 70%);pointer-events:none;z-index:0;animation:glowPulse 7s ease-in-out infinite}
