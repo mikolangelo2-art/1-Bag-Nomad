@@ -430,7 +430,7 @@ function DreamScreen({onGoGen,onLoadDemo}) {
             {[{id:"dream",icon:"💭",label:"Build the dream",sub:"We'll figure budget later"},{id:"rough",icon:"💰",label:"I have a rough number",sub:"Give me a ballpark"},{id:"strict",icon:"🎯",label:"Keep it under...",sub:"I have a firm limit"}].map(b=>(
               <button key={b.id} onClick={()=>setBudgetMode(b.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 13px",borderRadius:9,border:"1px solid "+(budgetMode===b.id?"rgba(255,217,61,0.5)":"rgba(169,70,29,0.52)"),background:budgetMode===b.id?"rgba(255,217,61,0.06)":"rgba(169,70,29,0.05)",cursor:"pointer",textAlign:"left",transition:"all 0.2s",minHeight:44}}>
                 <span style={{fontSize:16}}>{b.icon}</span>
-                <div><div style={{fontSize:11,fontWeight:700,color:budgetMode===b.id?"#FFD93D":"#FFF"}}>{b.label}</div><div style={{fontSize:9,color:"rgba(255,255,255,0.4)",marginTop:1}}>{b.sub}</div></div>
+                <div><div style={{fontSize:11,fontWeight:700,color:budgetMode===b.id?"#FFD93D":"#FFF"}}>{b.label}</div><div style={{fontSize:12,color:"rgba(255,255,255,0.55)",marginTop:2}}>{b.sub}</div></div>
                 <div style={{marginLeft:"auto",width:14,height:14,borderRadius:"50%",border:"1.5px solid "+(budgetMode===b.id?"#FFD93D":"rgba(255,255,255,0.2)"),background:budgetMode===b.id?"rgba(255,217,61,0.2)":"transparent",display:"flex",alignItems:"center",justifyContent:"center"}}>
                   {budgetMode===b.id&&<div style={{width:6,height:6,borderRadius:"50%",background:"#FFD93D"}}/>}
                 </div>
