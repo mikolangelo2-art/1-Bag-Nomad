@@ -112,7 +112,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#060A0F}::-webkit-scrollbar-thumb{background:#1a2d42;border-radius:2px}
 .dream-root{font-family:'Space Mono',monospace;background:radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 25%,#0d0500 55%,#060200 100%);min-height:100vh;color:#FFF;position:relative}
 .dream-glow{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:280px;background:radial-gradient(ellipse,rgba(169,70,29,0.4) 0%,rgba(255,217,61,0.07) 45%,transparent 70%);pointer-events:none;z-index:0;animation:glowPulse 7s ease-in-out infinite}
-.dream-content{position:relative;z-index:1;padding:26px 20px 44px;max-width:600px;margin:0 auto}
+.dream-content{position:relative;z-index:1;padding:26px 20px 44px;max-width:720px;margin:0 auto}@media(min-width:900px){.dream-content{padding:36px 48px 60px;max-width:780px}.mc-content{padding:20px 32px}.build-root,.mc-root{font-size:15px}.g-label{font-size:15px}.g-desc{font-size:10px}.launch-btn{font-size:15px}.sec-label{font-size:11px}.f-input{font-size:14px}.f-label{font-size:10px}}
 .hero-cursor{color:#FFD93D;animation:blink 0.9s infinite}
 .sec-label{font-size:9px;color:rgba(255,159,67,0.85);letter-spacing:4px;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid rgba(169,70,29,0.22)}
 .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:28px}
