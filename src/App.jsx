@@ -1075,7 +1075,7 @@ function PhaseCard({phase,intelData,idx}) {
           <div style={{padding:"6px 16px 6px 20px",borderTop:`1px solid ${phase.color}15`,borderBottom:"1px solid rgba(0,229,255,0.055)",display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
             <div style={{width:4,height:4,borderRadius:"50%",background:phase.color,flexShrink:0}}/>
             <span style={{fontSize:15,color:phase.color,letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{phase.segments.length} SEGMENT{phase.segments.length>1?"S":""}</span>
-            <span style={{fontSize:15,color:`${phase.color}88`,letterSpacing:2,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>· TAP SEGMENT TO EXPAND</span>
+            <span style={{fontSize:isMobile?8:11,color:`${phase.color}66`,letterSpacing:0,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>· TAP TO EXPAND</span>
           </div>
           {phase.segments.map((seg,i)=><SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1}/>)}
         </div>
@@ -1143,11 +1143,11 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
       {!isFullscreen&&<div style={{display:"flex",borderBottom:"1px solid rgba(0,229,255,0.1)",flexShrink:0}}>
         <div style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,borderRight:"1px solid rgba(0,229,255,0.1)",background:"rgba(0,229,255,0.04)"}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"#00E5FF",boxShadow:"0 0 6px #00E5FF",animation:"consolePulse 2.5s ease-in-out infinite"}}/>
-          <span style={{fontSize:isMobile?10:15,fontWeight:700,color:"#00E5FF",letterSpacing:isMobile?1:2,fontFamily:"'Space Mono',monospace"}}>TRIP CONSOLE</span>
+          <span style={{fontSize:isMobile?9:13,fontWeight:700,color:"#00E5FF",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
         </div>
         <div onClick={onPackConsole} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",background:"transparent"}} onMouseOver={e=>e.currentTarget.style.background="rgba(196,87,30,0.08)"} onMouseOut={e=>e.currentTarget.style.background="transparent"}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(196,87,30,0.4)"}}/>
-          <span style={{fontSize:15,fontWeight:700,color:"rgba(255,159,67,0.65)",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>PACK CONSOLE</span>
+          <span style={{fontSize:isMobile?9:13,fontWeight:700,color:"rgba(255,159,67,0.65)",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>PACK CONSOLE</span>
         </div>
       </div>}
       {/* Tab bar */}
@@ -1514,11 +1514,11 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
       {!isFullscreen&&<div style={{display:"flex",borderBottom:"1px solid rgba(196,87,30,0.3)",flexShrink:0}}>
         <div onClick={onExpedition} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",borderRight:"1px solid rgba(196,87,30,0.2)"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.06)"} onMouseOut={e=>e.currentTarget.style.background="transparent"}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(0,229,255,0.4)"}}/>
-          <span style={{fontSize:15,fontWeight:700,color:"rgba(0,229,255,0.6)",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>TRIP CONSOLE</span>
+          <span style={{fontSize:isMobile?9:13,fontWeight:700,color:"rgba(0,229,255,0.6)",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
         </div>
         <div style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,background:"rgba(196,87,30,0.06)"}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"#FF9F43",boxShadow:"0 0 6px rgba(196,87,30,0.8)",animation:"launchPulse 2.5s ease-in-out infinite"}}/>
-          <span style={{fontSize:isMobile?10:15,fontWeight:700,color:"#FF9F43",letterSpacing:isMobile?1:2,fontFamily:"'Space Mono',monospace"}}>PACK CONSOLE</span>
+          <span style={{fontSize:isMobile?9:13,fontWeight:700,color:"#FF9F43",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>PACK CONSOLE</span>
         </div>
       </div>}
       {/* Hero stats */}
