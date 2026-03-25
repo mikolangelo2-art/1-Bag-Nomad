@@ -820,9 +820,9 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
     <div style={{borderTop:"1px solid rgba(0,229,255,0.06)"}}>
       <div style={{display:"flex",background:"rgba(0,4,12,0.8)",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
         {CATS.map(c=>{const on=cat===c.id;return(
-          <button key={c.id} onClick={()=>setCat(on?null:c.id)} style={{flex:1,minWidth:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"9px 2px",border:"none",cursor:"pointer",background:on?c.w:"transparent",borderBottom:on?`2px solid ${c.a}`:"2px solid transparent",transition:"all 0.15s",position:"relative"}}>
+          <button key={c.id} onClick={()=>setCat(on?null:c.id)} style={{flexShrink:0,minWidth:52,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"9px 4px",border:"none",cursor:"pointer",background:on?c.w:"transparent",borderBottom:on?`2px solid ${c.a}`:"2px solid transparent",transition:"all 0.15s",position:"relative"}}>
             <span style={{fontSize:15,lineHeight:1}}>{c.icon}</span>
-            <span style={{fontSize:15,letterSpacing:0.5,fontFamily:"'Space Mono',monospace",fontWeight:700,color:on?c.a:"rgba(255,255,255,0.7)",whiteSpace:"nowrap"}}>{c.label}</span>
+            <span style={{fontSize:9,letterSpacing:0,fontFamily:"'Space Mono',monospace",fontWeight:700,color:on?c.a:"rgba(255,255,255,0.65)",whiteSpace:"nowrap"}}>{c.label}</span>
             {done[c.id]&&<div style={{position:"absolute",top:4,right:"14%",width:5,height:5,borderRadius:"50%",background:c.a,boxShadow:`0 0 5px ${c.a}`}}/>}
           </button>
         );})}
@@ -1412,7 +1412,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           {/* Main row — tap to expand */}
           <div onClick={()=>setOpen(o=>!o)} style={{flex:1,display:"flex",alignItems:"center",gap:12,padding:"12px 8px 12px 4px",cursor:"pointer",minWidth:0}}>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:15,fontWeight:700,color:item.owned?"rgba(105,240,174,0.85)":"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:4}}>{item.name||"Unnamed"}</div>
+              <div style={{fontSize:13,fontWeight:600,color:item.owned?"rgba(105,240,174,0.85)":"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:3}}>{item.name||"Unnamed"}</div>
               <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
                 {parseFloat(item.weight)>0&&<span style={{fontSize:16,color:"rgba(255,255,255,0.65)",fontFamily:"monospace"}}>{(parseFloat(item.weight)*wM).toFixed(2)}{unit}</span>}
                 {parseFloat(item.cost)>0&&<span style={{fontSize:15,color:"rgba(255,217,61,0.75)",fontFamily:"monospace"}}>${item.cost}</span>}
@@ -1706,8 +1706,8 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
                 {bagItems.length===0?<div style={{fontSize:15,color:"rgba(255,255,255,0.35)",textAlign:"center",padding:"10px 0"}}>No items</div>
                 :bagItems.sort((a,b)=>(parseFloat(b.weight)||0)-(parseFloat(a.weight)||0)).map(item=>(
                   <div key={item.id} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
-                    <div style={{fontSize:15,color:item.owned?"rgba(255,255,255,0.65)":"#FFF"}}>{item.owned?"✓ ":""}{item.name}</div>
-                    <div style={{fontSize:15,color:"rgba(255,255,255,0.65)",flexShrink:0,marginLeft:8,fontWeight:700}}>{parseFloat(item.weight)>0?(parseFloat(item.weight)*wM).toFixed(2)+unit:"—"}</div>
+                    <div style={{fontSize:13,color:item.owned?"rgba(255,255,255,0.65)":"#FFF",flex:1,minWidth:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.owned?"✓ ":""}{item.name}</div>
+                    <div style={{fontSize:13,color:"rgba(255,255,255,0.65)",flexShrink:0,marginLeft:8,fontWeight:700}}>{parseFloat(item.weight)>0?(parseFloat(item.weight)*wM).toFixed(2)+unit:"—"}</div>
                   </div>
                 ))}
               </div>
