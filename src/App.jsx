@@ -597,6 +597,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   const [mounted,setMounted]=useState(false);
   useEffect(()=>{const t=setTimeout(()=>setMounted(true),60);return()=>clearTimeout(t);},[]);
   useEffect(()=>{window.scrollTo(0,0);},[]);
+  useEffect(()=>{window.scrollTo(0,0);},[]);
   function estCost(dest,country,type,nights){
     const d=(dest||"").toLowerCase(),c=(country||"").toLowerCase();
     if(["maldives","norway","switzerland","iceland","japan","australia"].some(r=>d.includes(r)||c.includes(r)))return Math.round(nights*220);
