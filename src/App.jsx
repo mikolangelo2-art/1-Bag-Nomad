@@ -1052,7 +1052,7 @@ function PhaseCard({phase,intelData,idx}) {
             <span style={{fontSize:15,fontWeight:700,color:open?phase.color:"#FFF",fontFamily:"'Space Mono',monospace",transition:"color 0.2s"}}>{phase.name}</span>
             {isNow&&<span style={{fontSize:15,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:8,padding:"1px 6px",letterSpacing:1,fontWeight:700}}>● ACTIVE</span>}
           </div>
-          <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"nowrap",marginBottom:5}}>
+          <div style={{display:"flex",gap:isMobile?5:6,alignItems:"center",marginBottom:isMobile?2:5,flexWrap:"nowrap",overflow:"hidden"}}>
             <span style={{fontSize:15,color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{isMobile?fD(phase.arrival):fDS(phase.arrival)} → {isMobile?fD(phase.departure):fDS(phase.departure)}</span>
             <span style={{fontSize:15,color:phase.color,fontWeight:900}}>🌙 {phase.totalNights}n</span>
             {phase.totalDives>0&&<span style={{fontSize:15,color:"#00E5FF"}}>🤿 {phase.totalDives}</span>}
@@ -1062,7 +1062,7 @@ function PhaseCard({phase,intelData,idx}) {
             <span style={{fontSize:15,color:`${phase.color}CC`,fontFamily:"monospace",fontWeight:700}}>{pct}% planned</span>
           </div>}
         </div>
-        <div style={{display:"flex",flexDirection:isMobile?"row":"column",alignItems:isMobile?"center":"flex-end",gap:isMobile?8:4,flexShrink:0}}>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:3,flexShrink:0,marginLeft:6}}>
           <div style={{fontSize:16,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</div>
           <div style={{fontSize:15,color:"rgba(255,255,255,0.7)",fontFamily:"monospace"}}>{isPast?"COMPLETE":isNow?"IN PROGRESS":`${dUntil}d away`}</div>
         </div>
