@@ -1043,9 +1043,9 @@ function PhaseCard({phase,intelData,idx}) {
   return(
     <div style={{borderRadius:13,border:open?`1.5px solid ${phase.color}`:"1px solid rgba(0,229,255,0.08)",boxShadow:open?`0 0 0 1px ${phase.color}22, 0 4px 28px ${phase.color}28, inset 0 1px 0 ${phase.color}18`:"none",background:open?`linear-gradient(145deg,${phase.color}07,rgba(0,4,14,0.98))`:"rgba(3,7,16,0.88)",overflow:"hidden",transition:"all 0.25s",animation:`fadeUp 0.3s ease ${idx*.04}s both`}}>
       <div onClick={()=>setOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",cursor:"pointer",minHeight:62,borderLeft:`3px solid ${open?phase.color:phase.color+"50"}`}}>
-        <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
-          <div style={{width:26,height:26,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace"}}>{phase.id}</div>
-          <div style={{fontSize:15}}>{phase.flag}</div>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,flexShrink:0}}>
+          <div style={{width:22,height:22,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace"}}>{phase.id}</div>
+          <div style={{fontSize:13}}>{phase.flag}</div>
         </div>
         <div style={{flex:1,minWidth:0}}>
           <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:4}}>
@@ -1222,9 +1222,9 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
             <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr 1fr":"1fr 1fr 1fr",gap:8,marginBottom:16}}>
               {[{label:"EXPEDITION TOTAL",value:fmt(totalBudget),color:"#FFD93D",sub:`across ${flatPhases.length} phases`},{label:"AVG / NIGHT",value:fmt(totalBudget/Math.max(totalNights,1)),color:"#A29BFE",sub:`${totalNights} nights`},{label:"AVG / PHASE",value:fmt(totalBudget/Math.max(flatPhases.length,1)),color:"#00E5FF",sub:"per destination"}].map((s,si)=>(
                 <div key={s.label} style={{background:"linear-gradient(135deg,rgba(0,8,20,0.8),rgba(0,20,40,0.6))",border:"1px solid rgba(0,229,255,0.12)",borderRadius:10,padding:isMobile?"8px 10px":"12px 14px",textAlign:"center",gridColumn:isMobile&&si===2?"1 / -1":"auto"}}>
-                  <div style={{fontSize:15,color:"rgba(255,255,255,0.65)",letterSpacing:2,marginBottom:4}}>{s.label}</div>
-                  <div style={{fontSize:isMobile?13:22,fontWeight:900,color:s.color}}>{s.value}</div>
-                  <div style={{fontSize:15,color:"rgba(255,255,255,0.55)",marginTop:3}}>{s.sub}</div>
+                  <div style={{fontSize:isMobile?10:13,color:"rgba(255,255,255,0.6)",letterSpacing:isMobile?0:1,marginBottom:3,fontFamily:"'Space Mono',monospace",fontWeight:600}}>{s.label}</div>
+                  <div style={{fontSize:isMobile?16:22,fontWeight:900,color:s.color}}>{s.value}</div>
+                  <div style={{fontSize:isMobile?10:13,color:"rgba(255,255,255,0.45)",marginTop:2}}>{s.sub}</div>
                 </div>
               ))}
             </div>
@@ -1236,12 +1236,12 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,flex:1,minWidth:0}}>
                       <span style={{fontSize:15}}>{phase.flag}</span>
-                      <div><div style={{fontSize:15,fontWeight:700,color:"#FFF"}}>{phase.name}</div><div style={{fontSize:15,color:"rgba(255,255,255,0.6)"}}>{phase.nights}n · {phase.country}</div></div>
+                      <div><div style={{fontSize:isMobile?13:15,fontWeight:700,color:"#FFF"}}>{phase.name}</div><div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.55)"}}>{phase.nights}n · {phase.country}</div></div>
                     </div>
                     <span style={{fontSize:15,fontWeight:900,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0,marginLeft:8}}>{fmt(budget)}</span>
                   </div>
                   <div style={{height:6,background:"rgba(255,255,255,0.05)",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}88,${phase.color})`,borderRadius:3,transition:"width 0.6s ease"}}/></div>
-                  <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}><div style={{fontSize:15,color:"rgba(255,255,255,0.55)"}}>{fmt(Math.round(budget/Math.max(phase.nights,1)))}/night</div><div style={{fontSize:15,color:"rgba(255,255,255,0.45)"}}>{Math.round(pct)}% of highest</div></div>
+                  <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}><div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.5)"}}>{fmt(Math.round(budget/Math.max(phase.nights,1)))}/night</div><div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.4)"}}>{Math.round(pct)}% of max</div></div>
                 </div>
               );
             })}
@@ -1401,8 +1401,8 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
     const [open,setOpen]=useState(false);
     const CAT_COLORS_P={docs:"#E0E0E0",tech:"#00D4FF",clothes:"#FFD93D",health:"#69F0AE",travel:"#55EFC4",creator:"#FF9F43",dive:"#00E5FF"};
     return(
-      <div style={{borderBottom:isLast?"none":"1px solid rgba(255,255,255,0.04)"}}>
-        <div style={{display:"flex",alignItems:"center",minHeight:52,borderLeft:`2px solid ${catColor}${open?"88":"22"}`}}>
+      <div style={{borderBottom:isLast?"none":"1px solid rgba(255,255,255,0.12)"}}>
+        <div style={{display:"flex",alignItems:"center",minHeight:48,borderLeft:`2px solid ${catColor}${open?"88":"33"}`}}>
           {/* Owned toggle */}
           <button onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:44,height:"100%",minHeight:52,display:"flex",alignItems:"center",justifyContent:"center",background:"none",border:"none",cursor:"pointer",flexShrink:0}}>
             <div style={{width:20,height:20,borderRadius:4,border:`1.5px solid ${item.owned?"#69F0AE":"rgba(255,255,255,0.2)"}`,background:item.owned?"rgba(105,240,174,0.12)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.15s"}}>
@@ -1448,7 +1448,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
               </div>
             </div>
             <div style={{display:"flex",gap:8,paddingTop:4}}>
-              <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"10px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#FF9F43",fontSize:15,cursor:"pointer",fontFamily:"monospace",fontWeight:700,letterSpacing:1}}>{item.owned?"✓ OWNED — TAP TO UNMARK":"TAP TO MARK OWNED"}</button>
+              <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"9px 8px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#FF9F43",fontSize:12,cursor:"pointer",fontFamily:"monospace",fontWeight:700,letterSpacing:0,whiteSpace:"nowrap"}}>{item.owned?"✓ OWNED":"MARK OWNED"}</button>
               <button onClick={()=>removeItem(item.id)} style={{padding:"10px 16px",borderRadius:7,border:"1px solid rgba(255,107,107,0.3)",background:"rgba(255,107,107,0.06)",color:"rgba(255,107,107,0.7)",fontSize:15,cursor:"pointer",fontFamily:"monospace",fontWeight:700}}>✕</button>
             </div>
           </div>
