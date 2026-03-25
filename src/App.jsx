@@ -1062,7 +1062,7 @@ function PhaseCard({phase,intelData,idx}) {
             <span style={{fontSize:15,color:`${phase.color}CC`,fontFamily:"monospace",fontWeight:700}}>{pct}% planned</span>
           </div>}
         </div>
-        <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:3,flexShrink:0,marginLeft:6}}>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2,flexShrink:0,marginLeft:4,maxWidth:isMobile?"28%":"auto"}}>
           <div style={{fontSize:16,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</div>
           <div style={{fontSize:15,color:"rgba(255,255,255,0.7)",fontFamily:"monospace"}}>{!isMobile&&(isPast?"COMPLETE":isNow?"IN PROGRESS":`${dUntil}d away`)}</div>
         </div>
