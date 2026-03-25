@@ -444,7 +444,7 @@ function DreamScreen({onGoGen,onLoadDemo}) {
       <DreamHeader step={1}/>
       <div className="dream-content">
         <div style={{textAlign:"center",marginBottom:isMobile?20:28,animation:"fadeUp 0.6s ease"}}>
-          <span style={{fontSize:isMobile?13:46,display:"block",marginBottom:8,animation:"spinGlobe 14s linear infinite",filter:"drop-shadow(0 0 22px rgba(169,70,29,0.65))"}}>🌍</span>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:8,animation:loading?"logoPulse 1.6s ease-in-out infinite":"float 5s ease-in-out infinite"}}><SharegoodLogo size={isMobile?72:96} animate={false} glowColor={loading?"rgba(255,159,67,0.8)":"rgba(169,70,29,0.55)"} opacity={loading?1:0.88}/></div>
           <div style={{minHeight:isMobile?80:110}}>
             {heroPhase>=1&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:34,fontWeight:100,color:"rgba(255,255,255,0.88)",lineHeight:1.2,letterSpacing:2,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>Your expedition</div>}
             {heroPhase>=2&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:34,fontWeight:300,color:"#FFF",lineHeight:1.2,letterSpacing:1,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>starts now.</div>}
@@ -596,6 +596,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   const [mobileTab,setMobileTab]=useState(data.isRevision?"chat":"itinerary");
   const [mounted,setMounted]=useState(false);
   useEffect(()=>{const t=setTimeout(()=>setMounted(true),60);return()=>clearTimeout(t);},[]);
+  useEffect(()=>{window.scrollTo(0,0);},[]);
   function estCost(dest,country,type,nights){
     const d=(dest||"").toLowerCase(),c=(country||"").toLowerCase();
     if(["maldives","norway","switzerland","iceland","japan","australia"].some(r=>d.includes(r)||c.includes(r)))return Math.round(nights*220);
@@ -738,18 +739,20 @@ function HandoffScreen({tripData,onComplete}) {
       <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 0%,#001830 0%,#000d1a 30%,#000810 60%,#030810 100%)",opacity:ph>=1?1:0,transition:"opacity 1.4s ease",zIndex:2}}/>
       <div style={{position:"absolute",inset:0,zIndex:3,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:40}}>
         <div style={{opacity:ph<1?1:0,transition:"opacity 0.9s ease",position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",pointerEvents:"none"}}>
-          <div style={{fontSize:isMobile?13:56,marginBottom:24,animation:"spinGlobe 14s linear infinite",filter:"drop-shadow(0 0 30px rgba(255,217,61,0.5))"}}>🌍</div>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:24,animation:"logoPulse 2.4s ease-in-out infinite"}}><SharegoodLogo size={isMobile?80:110} animate={false} glowColor="rgba(255,217,61,0.55)" opacity={0.9}/></div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:22,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.6,maxWidth:560,textAlign:"center"}}>"{(tripData.visionNarrative||"").slice(0,120)}..."</div>
           <div style={{marginTop:28,fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,217,61,0.45)",letterSpacing:3}}>Now becoming real.</div>
         </div>
         <div style={{opacity:ph>=1&&ph<2?1:0,transition:"opacity 0.8s ease",position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",pointerEvents:"none"}}>
-          <div style={{fontSize:isMobile?13:72,filter:"drop-shadow(0 0 40px rgba(0,229,255,0.5))",marginBottom:24}}>🌍</div>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:24,animation:"logoPulse 2.4s ease-in-out infinite"}}><SharegoodLogo size={isMobile?80:110} animate={false} glowColor="rgba(0,229,255,0.55)" opacity={0.9}/></div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:16,fontWeight:100,fontStyle:"italic",color:"rgba(0,229,255,0.6)",letterSpacing:4,textAlign:"center"}}>Building your expedition...</div>
         </div>
         <div style={{opacity:ph>=2?1:0,transition:"opacity 0.8s ease 0.2s",display:"flex",flexDirection:"column",alignItems:"center",width:"100%",maxWidth:520}}>
           <div style={{position:"relative",marginBottom:isMobile?28:36}}>
-            {[0,1,2].map(i=><div key={i} style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:isMobile?90+i*40:110+i*50,height:isMobile?90+i*40:110+i*50,borderRadius:"50%",border:`1px solid rgba(0,229,255,${0.15-i*.04})`}}/>)}
-            <div style={{width:isMobile?72:88,height:isMobile?72:88,borderRadius:"50%",background:"radial-gradient(circle at 38% 32%,#0d3a5c 0%,#071420 60%,#030810 100%)",border:"2px solid rgba(0,229,255,0.7)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:isMobile?13:36,position:"relative",zIndex:1}}>🌍</div>
+            {[0,1,2].map(i=><div key={i} style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:isMobile?90+i*40:110+i*50,height:isMobile?90+i*40:110+i*50,borderRadius:"50%",border:`1px solid rgba(0,229,255,${0.15-i*.04})`,animation:"consolePulse 2.8s ease-in-out infinite"}}/>)}
+            <div style={{position:"relative",zIndex:1,animation:"logoPulse 2.4s ease-in-out infinite"}}>
+              <SharegoodLogo size={isMobile?72:88} animate={false} glowColor="rgba(0,229,255,0.5)" opacity={1}/>
+            </div>
           </div>
           <div style={{textAlign:"center",marginBottom:isMobile?16:20}}>
             <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:22,fontWeight:900,color:"#FFD93D",letterSpacing:3,textShadow:"0 0 30px rgba(255,217,61,0.5)",lineHeight:1}}>DREAM BIG</div>
