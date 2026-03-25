@@ -301,8 +301,8 @@ function ConsoleHeader({console:which,isMobile,rightSlot,children}) {
   const dot=isDream?"#C4571E":isTrip?"#00E5FF":"#C4571E";
   const sub=isDream?"#C4571E":isTrip?"#00E5FF":"#FF9F43";
   const sublabel=isDream?"DREAM CONSOLE":isTrip?"TRIP CONSOLE":"PACK CONSOLE";
-  const dbSize=isMobile?(isDream?22:17):(isDream?36:26);
-  const tlSize=isMobile?(isPack?22:17):(isPack?36:26);
+  const dbSize=isMobile?(isDream?18:14):(isDream?36:26);
+  const tlSize=isMobile?(isPack?18:14):(isPack?36:26);
   const dbColor=isDream?"#FFD93D":isTrip?"rgba(255,217,61,0.5)":"rgba(255,217,61,0.2)";
   const dbWeight=isDream?900:isTrip?700:300;
   const tlColor=isPack?"#FFD93D":isTrip?"rgba(255,217,61,0.65)":"#FFD93D";
