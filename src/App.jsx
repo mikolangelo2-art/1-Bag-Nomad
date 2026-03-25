@@ -1675,7 +1675,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
                 :bagItems.sort((a,b)=>(parseFloat(b.weight)||0)-(parseFloat(a.weight)||0)).map(item=>(
                   <div key={item.id} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
                     <div style={{fontSize:12,color:item.owned?"rgba(255,255,255,0.65)":"#FFF"}}>{item.owned?"✓ ":""}{item.name}</div>
-                    <div style={{fontSize:11,color:"rgba(255,255,255,0.65)",flexShrink:0,marginLeft:8,fontWeight:700}}>{parseFloat(item.weight)>0?(parseFloat(item.weight)*wM).toFixed(2)+unit:"—"}</div>
+                    <div style={{fontSize:14,color:"rgba(255,255,255,0.65)",flexShrink:0,marginLeft:8,fontWeight:700}}>{parseFloat(item.weight)>0?(parseFloat(item.weight)*wM).toFixed(2)+unit:"—"}</div>
                   </div>
                 ))}
               </div>
