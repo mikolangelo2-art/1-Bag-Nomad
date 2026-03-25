@@ -405,11 +405,11 @@ function DreamScreen({onGoGen,onLoadDemo}) {
       <DreamHeader step={1}/>
       <div className="dream-content">
         <div style={{textAlign:"center",marginBottom:isMobile?20:28,animation:"fadeUp 0.6s ease"}}>
-          <span style={{fontSize:isMobile?36:46,display:"block",marginBottom:8,animation:"spinGlobe 14s linear infinite",filter:"drop-shadow(0 0 22px rgba(169,70,29,0.65))"}}>🌍</span>
+          <span style={{fontSize:isMobile?13:46,display:"block",marginBottom:8,animation:"spinGlobe 14s linear infinite",filter:"drop-shadow(0 0 22px rgba(169,70,29,0.65))"}}>🌍</span>
           <div style={{minHeight:isMobile?80:110}}>
-            {heroPhase>=1&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?26:34,fontWeight:100,color:"rgba(255,255,255,0.88)",lineHeight:1.2,letterSpacing:2,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>Your expedition</div>}
-            {heroPhase>=2&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?26:34,fontWeight:300,color:"#FFF",lineHeight:1.2,letterSpacing:1,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>starts now.</div>}
-            {heroPhase>=3&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?28:36,fontWeight:300,fontStyle:"italic",color:"#FFD93D",lineHeight:1.25,marginTop:8,letterSpacing:3,animation:"slideUp 0.8s cubic-bezier(0.22,1,0.36,1) both"}}>Let's go.</div>}
+            {heroPhase>=1&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:34,fontWeight:100,color:"rgba(255,255,255,0.88)",lineHeight:1.2,letterSpacing:2,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>Your expedition</div>}
+            {heroPhase>=2&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:34,fontWeight:300,color:"#FFF",lineHeight:1.2,letterSpacing:1,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>starts now.</div>}
+            {heroPhase>=3&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:36,fontWeight:300,fontStyle:"italic",color:"#FFD93D",lineHeight:1.25,marginTop:8,letterSpacing:3,animation:"slideUp 0.8s cubic-bezier(0.22,1,0.36,1) both"}}>Let's go.</div>}
           </div>
           {heroPhase>=4&&<p style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:100,fontStyle:"italic",color:"#FFD93D",lineHeight:1.6,marginTop:10,animation:"fadeUp 0.8s ease both"}}>Every expedition starts with a feeling — tell me what's driving yours.</p>}
         </div>
@@ -503,7 +503,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
         {showStats&&(
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16,animation:"fadeUp 0.5s ease"}}>
             {[{label:"COUNTRIES",value:vd.countries,color:"#00E5FF"},{label:"PHASES",value:vd.phases?.length,color:"#FFD93D"},{label:"NIGHTS",value:vd.totalNights,color:"#A29BFE"},{label:"BUDGET",value:fmt(vd.totalBudget||0),color:"#FF9F43"}].map(s=>(
-              <div key={s.label} className="stat-card"><div style={{fontSize:15,color:"rgba(255,255,255,0.45)",letterSpacing:1.5,marginBottom:4}}>{s.label}</div><div style={{fontSize:isMobile?14:16,fontWeight:700,color:s.color}}>{s.value}</div></div>
+              <div key={s.label} className="stat-card"><div style={{fontSize:15,color:"rgba(255,255,255,0.45)",letterSpacing:1.5,marginBottom:4}}>{s.label}</div><div style={{fontSize:isMobile?13:16,fontWeight:700,color:s.color}}>{s.value}</div></div>
             ))}
           </div>
         )}
@@ -537,7 +537,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
               </div>
             </div>
             <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.1),rgba(255,217,61,0.04))",border:"1px solid rgba(169,70,29,0.4)",borderRadius:16,padding:22,textAlign:"center"}}>
-              <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?18:20,fontWeight:300,color:"#FFF",marginBottom:6,lineHeight:1.3}}>This is your <em style={{color:"#FFD93D"}}>expedition.</em></div>
+              <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:20,fontWeight:300,color:"#FFF",marginBottom:6,lineHeight:1.3}}>This is your <em style={{color:"#FFD93D"}}>expedition.</em></div>
               <div style={{fontSize:15,color:"rgba(255,255,255,0.88)",letterSpacing:1,marginBottom:20,lineHeight:1.8}}>Does this feel right? Refine above until it does.<br/>When your gut says yes — it's time to build.</div>
               <button className="cta-build-btn" style={{minHeight:52,opacity:launching?0.7:1}} onClick={()=>{if(!launching){setLaunching(true);onBuild(vd);}}}>
                 {launching?"✨  Building...":"✅  YES — BUILD THIS EXPEDITION"}
@@ -699,22 +699,22 @@ function HandoffScreen({tripData,onComplete}) {
       <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 0%,#001830 0%,#000d1a 30%,#000810 60%,#030810 100%)",opacity:ph>=1?1:0,transition:"opacity 1.4s ease",zIndex:2}}/>
       <div style={{position:"absolute",inset:0,zIndex:3,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:40}}>
         <div style={{opacity:ph<1?1:0,transition:"opacity 0.9s ease",position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",pointerEvents:"none"}}>
-          <div style={{fontSize:isMobile?44:56,marginBottom:24,animation:"spinGlobe 14s linear infinite",filter:"drop-shadow(0 0 30px rgba(255,217,61,0.5))"}}>🌍</div>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?17:22,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.6,maxWidth:560,textAlign:"center"}}>"{(tripData.visionNarrative||"").slice(0,120)}..."</div>
+          <div style={{fontSize:isMobile?13:56,marginBottom:24,animation:"spinGlobe 14s linear infinite",filter:"drop-shadow(0 0 30px rgba(255,217,61,0.5))"}}>🌍</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:22,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.6,maxWidth:560,textAlign:"center"}}>"{(tripData.visionNarrative||"").slice(0,120)}..."</div>
           <div style={{marginTop:28,fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,217,61,0.45)",letterSpacing:3}}>Now becoming real.</div>
         </div>
         <div style={{opacity:ph>=1&&ph<2?1:0,transition:"opacity 0.8s ease",position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",pointerEvents:"none"}}>
-          <div style={{fontSize:isMobile?56:72,filter:"drop-shadow(0 0 40px rgba(0,229,255,0.5))",marginBottom:24}}>🌍</div>
+          <div style={{fontSize:isMobile?13:72,filter:"drop-shadow(0 0 40px rgba(0,229,255,0.5))",marginBottom:24}}>🌍</div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:16,fontWeight:100,fontStyle:"italic",color:"rgba(0,229,255,0.6)",letterSpacing:4,textAlign:"center"}}>Building your expedition...</div>
         </div>
         <div style={{opacity:ph>=2?1:0,transition:"opacity 0.8s ease 0.2s",display:"flex",flexDirection:"column",alignItems:"center",width:"100%",maxWidth:520}}>
           <div style={{position:"relative",marginBottom:isMobile?28:36}}>
             {[0,1,2].map(i=><div key={i} style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:isMobile?90+i*40:110+i*50,height:isMobile?90+i*40:110+i*50,borderRadius:"50%",border:`1px solid rgba(0,229,255,${0.15-i*.04})`}}/>)}
-            <div style={{width:isMobile?72:88,height:isMobile?72:88,borderRadius:"50%",background:"radial-gradient(circle at 38% 32%,#0d3a5c 0%,#071420 60%,#030810 100%)",border:"2px solid rgba(0,229,255,0.7)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:isMobile?28:36,position:"relative",zIndex:1}}>🌍</div>
+            <div style={{width:isMobile?72:88,height:isMobile?72:88,borderRadius:"50%",background:"radial-gradient(circle at 38% 32%,#0d3a5c 0%,#071420 60%,#030810 100%)",border:"2px solid rgba(0,229,255,0.7)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:isMobile?13:36,position:"relative",zIndex:1}}>🌍</div>
           </div>
           <div style={{textAlign:"center",marginBottom:isMobile?16:20}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?18:22,fontWeight:900,color:"#FFD93D",letterSpacing:3,textShadow:"0 0 30px rgba(255,217,61,0.5)",lineHeight:1}}>DREAM BIG</div>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?18:22,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.7)",letterSpacing:2,lineHeight:1.2}}>travel light</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:22,fontWeight:900,color:"#FFD93D",letterSpacing:3,textShadow:"0 0 30px rgba(255,217,61,0.5)",lineHeight:1}}>DREAM BIG</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:22,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.7)",letterSpacing:2,lineHeight:1.2}}>travel light</div>
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:6,justifyContent:"center",maxWidth:isMobile?320:480,marginBottom:isMobile?20:28}}>
             {tripData.phases?.map((p,i)=>(
@@ -725,12 +725,12 @@ function HandoffScreen({tripData,onComplete}) {
             ))}
           </div>
           <div style={{opacity:ph>=3?1:0,transform:ph>=3?"translateY(0)":"translateY(16px)",transition:"opacity 0.7s ease,transform 0.7s ease",textAlign:"center",width:"100%"}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?22:32,fontWeight:300,fontStyle:"italic",color:"#FFD93D",marginBottom:6,textShadow:"0 0 40px rgba(255,217,61,0.4)"}}>{tripData.tripName}</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:32,fontWeight:300,fontStyle:"italic",color:"#FFD93D",marginBottom:6,textShadow:"0 0 40px rgba(255,217,61,0.4)"}}>{tripData.tripName}</div>
             <div style={{width:80,height:1,background:"linear-gradient(90deg,transparent,rgba(255,217,61,0.5),transparent)",margin:"10px auto 16px"}}/>
             <div style={{display:"flex",justifyContent:"center",gap:isMobile?16:28,marginBottom:isMobile?28:36,flexWrap:"wrap"}}>
               {[{value:totalNights,label:"NIGHTS"},{value:"$"+Math.round(totalBudget/1000)+"k",label:"BUDGET"},{value:countries,label:"COUNTRIES"}].map((s,i)=>(
                 <div key={i} style={{textAlign:"center"}}>
-                  <div style={{fontSize:isMobile?22:28,fontWeight:900,color:"#00E5FF",fontFamily:"'Space Mono',monospace"}}>{s.value}</div>
+                  <div style={{fontSize:isMobile?13:28,fontWeight:900,color:"#00E5FF",fontFamily:"'Space Mono',monospace"}}>{s.value}</div>
                   <div style={{fontSize:15,color:"rgba(0,229,255,0.9)",letterSpacing:2,fontWeight:700}}>{s.label}</div>
                 </div>
               ))}
@@ -1091,14 +1091,14 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
       {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:"linear-gradient(180deg,rgba(0,20,45,0.95),rgba(0,8,20,0.98))",borderBottom:"1px solid rgba(0,229,255,0.15)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.04) 0%,transparent 60%)",pointerEvents:"none"}}/>
         {tripData.tripName&&<div style={{marginBottom:isMobile?5:7,position:"relative"}}>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:17,fontWeight:300,fontStyle:"italic",color:"#FFD93D",lineHeight:1,textShadow:"0 0 28px rgba(255,217,61,0.35)"}}>{tripData.tripName}</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:17,fontWeight:300,fontStyle:"italic",color:"#FFD93D",lineHeight:1,textShadow:"0 0 28px rgba(255,217,61,0.35)"}}>{tripData.tripName}</div>
           {!isMobile&&<div style={{fontSize:15,color:"rgba(0,229,255,0.55)",letterSpacing:2,marginTop:3,fontFamily:"'Space Mono',monospace"}}>{[...new Set(flatPhases.map(p=>p.country))].join(" · ")}</div>}
         </div>}
         <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
           {heroStats.map((s,i)=>(
             <div key={s.label} style={{textAlign:"center",padding:isMobile?"2px 3px":"4px 6px",borderLeft:i>0?"1px solid rgba(0,229,255,0.1)":"none"}}>
               <div style={{fontSize:isMobile?13:15,fontWeight:700,color:"rgba(255,255,255,0.65)",letterSpacing:isMobile?0.5:2,marginBottom:isMobile?2:4,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
-              <div style={{fontSize:isMobile?16:26,fontWeight:900,lineHeight:1,color:s.color,textShadow:`0 0 20px ${s.glow}`,fontFamily:"'Space Mono',monospace"}}>{s.value}</div>
+              <div style={{fontSize:isMobile?13:26,fontWeight:900,lineHeight:1,color:s.color,textShadow:`0 0 20px ${s.glow}`,fontFamily:"'Space Mono',monospace"}}>{s.value}</div>
               <div style={{fontSize:isMobile?13:15,fontWeight:700,color:s.color,opacity:0.7,letterSpacing:isMobile?0.5:2,marginTop:isMobile?2:3,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
             </div>
           ))}
@@ -1187,7 +1187,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
               {[{label:"EXPEDITION TOTAL",value:fmt(totalBudget),color:"#FFD93D",sub:`across ${flatPhases.length} phases`},{label:"AVG / NIGHT",value:fmt(totalBudget/Math.max(totalNights,1)),color:"#A29BFE",sub:`${totalNights} nights`},{label:"AVG / PHASE",value:fmt(totalBudget/Math.max(flatPhases.length,1)),color:"#00E5FF",sub:"per destination"}].map((s,si)=>(
                 <div key={s.label} style={{background:"linear-gradient(135deg,rgba(0,8,20,0.8),rgba(0,20,40,0.6))",border:"1px solid rgba(0,229,255,0.12)",borderRadius:10,padding:isMobile?"8px 10px":"12px 14px",textAlign:"center",gridColumn:isMobile&&si===2?"1 / -1":"auto"}}>
                   <div style={{fontSize:15,color:"rgba(255,255,255,0.65)",letterSpacing:2,marginBottom:4}}>{s.label}</div>
-                  <div style={{fontSize:isMobile?14:22,fontWeight:900,color:s.color}}>{s.value}</div>
+                  <div style={{fontSize:isMobile?13:22,fontWeight:900,color:s.color}}>{s.value}</div>
                   <div style={{fontSize:15,color:"rgba(255,255,255,0.55)",marginTop:3}}>{s.sub}</div>
                 </div>
               ))}
@@ -1501,7 +1501,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
               </div>
             </div>
             <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
-              <div style={{fontSize:isMobile?28:34,fontWeight:900,color:"#69F0AE",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{(bpW*wM).toFixed(1)}</div>
+              <div style={{fontSize:isMobile?13:34,fontWeight:900,color:"#69F0AE",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{(bpW*wM).toFixed(1)}</div>
               <div style={{fontSize:15,color:"rgba(77,159,255,0.75)",fontWeight:700}}>{unit}</div>
               <div style={{fontSize:15,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {wLim}</div>
             </div>
@@ -1522,7 +1522,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
                 {incomplete&&<div style={{padding:"3px 8px",borderRadius:8,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:15,fontFamily:"monospace",fontWeight:700}}>⚠ PARTIAL</div>}
               </div>
               <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
-                <div style={{fontSize:isMobile?28:34,fontWeight:900,color:"#FFD93D",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{dV.toFixed(1)}</div>
+                <div style={{fontSize:isMobile?13:34,fontWeight:900,color:"#FFD93D",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{dV.toFixed(1)}</div>
                 <div style={{fontSize:15,color:"rgba(255,217,61,0.75)",fontWeight:700}}>L</div>
                 <div style={{fontSize:15,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {VL}L</div>
               </div>
@@ -1538,7 +1538,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.4)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
               <div style={{fontSize:isMobile?13:15,fontWeight:700,color:"rgba(255,255,255,0.6)",letterSpacing:0.5,marginBottom:5,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
-              <div style={{fontSize:isMobile?16:20,fontWeight:900,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
+              <div style={{fontSize:isMobile?13:20,fontWeight:900,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
             </div>
           ))}
         </div>
