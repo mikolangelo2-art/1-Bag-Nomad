@@ -775,7 +775,7 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
   const ac=CATS.find(c=>c.id===cat);
   return(
     <div style={{borderTop:"1px solid rgba(0,229,255,0.06)"}}>
-      <div style={{display:"flex",background:"rgba(0,4,12,0.8)"}}>
+      <div style={{display:"flex",background:"rgba(0,4,12,0.8)",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
         {CATS.map(c=>{const on=cat===c.id;return(
           <button key={c.id} onClick={()=>setCat(on?null:c.id)} style={{flex:1,minWidth:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"9px 2px",border:"none",cursor:"pointer",background:on?c.w:"transparent",borderBottom:on?`2px solid ${c.a}`:"2px solid transparent",transition:"all 0.15s",position:"relative"}}>
             <span style={{fontSize:12,lineHeight:1}}>{c.icon}</span>
@@ -1083,7 +1083,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
       {!isFullscreen&&<ConsoleHeader console="trip" isMobile={isMobile} rightSlot={
         <div style={{display:"flex",alignItems:"center",gap:isMobile?6:8,flexShrink:0}}>
           {!isMobile&&<><div style={{display:"flex",alignItems:"center",gap:3}}><div style={{width:3,height:3,borderRadius:"50%",background:"#69F0AE",boxShadow:"0 0 5px #69F0AE80"}}/><span style={{fontSize:11,color:"#69F0AE",letterSpacing:1.5,fontFamily:"'Space Mono',monospace"}}>LIVE</span></div><div style={{fontSize:11,color:"rgba(255,255,255,0.6)",letterSpacing:1,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{TODAY.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}).toUpperCase()}</div><div style={{width:1,height:12,background:"rgba(0,229,255,0.15)"}}/></>}
-          <button onClick={onPackConsole} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:"5px 10px",borderRadius:6,border:"1px solid rgba(196,87,30,0.65)",background:"linear-gradient(135deg,rgba(45,18,0,0.9),rgba(26,9,0,0.85))",color:"#FF9F43",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,animation:"launchPulse 3s ease-in-out infinite",minHeight:34,flexShrink:0}}>
+          <button onClick={onPackConsole} style={{display:"flex",flexDirection:"row",alignItems:"center",gap:6,padding:"5px 10px",borderRadius:6,border:"1px solid rgba(196,87,30,0.65)",background:"linear-gradient(135deg,rgba(45,18,0,0.9),rgba(26,9,0,0.85))",color:"#FF9F43",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,animation:"launchPulse 3s ease-in-out infinite",minHeight:34,flexShrink:0}}>
             <span style={{fontSize:12,lineHeight:1}}>🎒</span><span style={{fontSize:12,letterSpacing:1.5,whiteSpace:"nowrap"}}>{isMobile?"PACK":"PACK CONSOLE"}</span>
           </button>
         </div>
@@ -1474,7 +1474,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
     <div style={{fontFamily:"'Space Mono',monospace",background:"radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 28%,#0d0500 58%,#060200 100%)",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column"}}>
       {/* Header */}
       {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} rightSlot={
-        <button onClick={onExpedition} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.55)",background:"linear-gradient(135deg,rgba(0,20,45,0.92),rgba(0,40,70,0.8))",color:"#00E5FF",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,animation:"consolePulse 3s ease-in-out infinite",minHeight:34,flexShrink:0}}>
+        <button onClick={onExpedition} style={{display:"flex",flexDirection:"row",alignItems:"center",gap:6,padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.55)",background:"linear-gradient(135deg,rgba(0,20,45,0.92),rgba(0,40,70,0.8))",color:"#00E5FF",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,animation:"consolePulse 3s ease-in-out infinite",minHeight:34,flexShrink:0}}>
           <span style={{fontSize:12,lineHeight:1}}>🔭</span><span style={{fontSize:12,letterSpacing:1.5,whiteSpace:"nowrap"}}>{isMobile?"TRIP":"TRIP CONSOLE"}</span>
         </button>
       }/>}
