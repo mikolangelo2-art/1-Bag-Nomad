@@ -1053,9 +1053,9 @@ function PhaseCard({phase,intelData,idx}) {
             {isNow&&<span style={{fontSize:15,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:8,padding:"1px 6px",letterSpacing:1,fontWeight:700}}>● ACTIVE</span>}
           </div>
           <div style={{display:"flex",gap:isMobile?5:6,alignItems:"center",marginBottom:isMobile?2:5,flexWrap:"nowrap",overflow:"hidden"}}>
-            <span style={{fontSize:15,color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
-            <span style={{fontSize:15,color:phase.color,fontWeight:900}}>🌙 {phase.totalNights}n</span>
-            {phase.totalDives>0&&<span style={{fontSize:15,color:"#00E5FF"}}>🤿 {phase.totalDives}</span>}
+            <span style={{fontSize:11,color:"rgba(255,255,255,0.8)",fontFamily:"'Space Mono',monospace",fontWeight:600,whiteSpace:"nowrap",fontSize:11}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
+            <span style={{fontSize:11,color:phase.color,fontWeight:900}}>🌙 {phase.totalNights}n</span>
+            {phase.totalDives>0&&<span style={{fontSize:11,color:"#00E5FF"}}>🤿 {phase.totalDives}</span>}
           </div>
           {pct>0&&<div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"nowrap"}}>
             <div style={{width:100,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}66,${phase.color})`,borderRadius:2,transition:"width 0.4s ease"}}/></div>
