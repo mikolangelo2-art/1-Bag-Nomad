@@ -1537,7 +1537,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.4)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
-              <div style={{fontSize:isMobile?10:12,fontWeight:700,color:"rgba(255,255,255,0.6)",letterSpacing:0.5,marginBottom:5,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
+              <div style={{fontSize:isMobile?10:13,fontWeight:700,color:"rgba(255,255,255,0.6)",letterSpacing:0.5,marginBottom:5,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
               <div style={{fontSize:isMobile?16:20,fontWeight:900,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
             </div>
           ))}
