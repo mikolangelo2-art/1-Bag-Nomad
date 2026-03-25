@@ -312,10 +312,10 @@ function ConsoleHeader({console:which,isMobile,rightSlot,children}) {
   const divLine=isDream?"rgba(255,217,61,0.5)":isTrip?"rgba(0,229,255,0.35)":"rgba(255,159,67,0.4)";
   return (
     <div style={{background:bg,borderBottom:`1px solid ${bc}`,backdropFilter:"blur(10px)",flexShrink:0}}>
-      <div style={{display:"flex",alignItems:"center",padding:isMobile?"7px 14px":"8px 16px",gap:10}}>
-        <SharegoodLogo size={isMobile?36:44} opacity={0.88} glowColor={logoGlow} animate={isDream}/>
+      <div style={{display:"flex",alignItems:"center",padding:isMobile?"5px 8px":"8px 16px",gap:6}}>
+        <SharegoodLogo size={isMobile?28:44} opacity={0.88} glowColor={logoGlow} animate={isDream}/>
         <div style={{display:"flex",flexDirection:"column",gap:3,flexShrink:0}}>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:700,color:"#FFF",letterSpacing:2,lineHeight:1}}>1 Bag Nomad</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?11:15,fontWeight:700,color:"#FFF",letterSpacing:1,lineHeight:1}}>1 Bag Nomad</div>
           <div style={{display:"flex",alignItems:"center",gap:4}}>
             <div style={{width:4,height:4,borderRadius:"50%",background:dot,boxShadow:`0 0 5px ${dot}`}}/>
             <div style={{fontSize:15,fontWeight:700,color:sub,letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>{sublabel} · <span style={{fontFamily:"'Fraunces',serif",fontWeight:100,fontStyle:"italic",letterSpacing:1}}>Sharegood Co.</span></div>
