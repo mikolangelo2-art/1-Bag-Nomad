@@ -972,10 +972,10 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
               <span style={{fontSize:9,color:tc,background:`${tc}14`,border:`1px solid ${tc}28`,borderRadius:8,padding:"1px 6px",letterSpacing:0.5,fontWeight:600,whiteSpace:"nowrap",flexShrink:0}}>{segment.type?.toUpperCase()}</span>
               {segment.note&&<span style={{fontSize:15,color:"rgba(255,255,255,0.72)",fontStyle:"italic"}}>{segment.note}</span>}
             </div>
-            <div style={{display:"flex",gap:9,fontSize:15,alignItems:"center",flexWrap:"wrap"}}>
-              <span style={{color:"rgba(255,255,255,0.75)",fontWeight:500,fontFamily:"'Space Mono',monospace",fontSize:11}}>{fD(segment.arrival)} → {fD(segment.departure)}</span>
-              <span style={{color:tc,fontWeight:700,fontSize:11,whiteSpace:"nowrap"}}>🌙 {segment.nights}n</span>
-              {segment.diveCount>0&&<span style={{color:"#00E5FF",fontSize:15}}>🤿 {segment.diveCount}</span>}
+            <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"nowrap",overflow:"hidden"}}>
+              <span style={{color:"rgba(255,255,255,0.75)",fontWeight:500,fontFamily:"'Space Mono',monospace",fontSize:10,whiteSpace:"nowrap",flexShrink:1,minWidth:0,overflow:"hidden",textOverflow:"ellipsis"}}>{fD(segment.arrival)}→{fD(segment.departure)}</span>
+              <span style={{color:tc,fontWeight:700,fontSize:10,whiteSpace:"nowrap",flexShrink:0}}>🌙{segment.nights}n</span>
+              {segment.diveCount>0&&<span style={{color:"#00E5FF",fontSize:10,whiteSpace:"nowrap",flexShrink:0}}>🤿{segment.diveCount}</span>}
             </div>
           </div>
           <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
