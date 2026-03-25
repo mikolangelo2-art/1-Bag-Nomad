@@ -1064,7 +1064,7 @@ function PhaseCard({phase,intelData,idx}) {
         </div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:3,flexShrink:0,marginLeft:6}}>
           <div style={{fontSize:16,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</div>
-          <div style={{fontSize:15,color:"rgba(255,255,255,0.7)",fontFamily:"monospace"}}>{isPast?"COMPLETE":isNow?"IN PROGRESS":`${dUntil}d away`}</div>
+          <div style={{fontSize:15,color:"rgba(255,255,255,0.7)",fontFamily:"monospace"}}>{!isMobile&&(isPast?"COMPLETE":isNow?"IN PROGRESS":`${dUntil}d away`)}</div>
         </div>
         <div style={{width:20,height:20,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.18":"0.07"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
           <span style={{fontSize:15,color:open?phase.color:"rgba(255,255,255,0.55)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
