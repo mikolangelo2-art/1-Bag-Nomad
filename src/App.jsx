@@ -1591,7 +1591,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
               <div style={{width:72,height:72,borderRadius:"50%",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(255,159,67,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,animation:"logoPulse 2s ease-in-out infinite"}}>✦</div>
             </div>
             <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:6}}>Reviewing your pack...</div>
-            <div style={{fontSize:9,color:"rgba(255,159,67,0.7)",letterSpacing:2}}>Checking what your trip needs</div>
+            <div style={{fontSize:13,color:"rgba(255,159,67,0.7)",letterSpacing:2}}>Checking what your trip needs</div>
           </div>}
           {!suggestLoading&&suggestions.length>0&&<div>
             <div style={{fontSize:9,color:"rgba(255,159,67,0.9)",letterSpacing:3,marginBottom:12,fontWeight:700}}>SUGGESTED FOR YOUR TRIP</div>
