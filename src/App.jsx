@@ -325,9 +325,9 @@ function ConsoleHeader({console:which,isMobile,rightSlot,children}) {
       </div>
       <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:isMobile?10:28,padding:isMobile?"10px 14px":"14px 32px",borderTop:`1px solid ${bc}`,background:`linear-gradient(90deg,transparent,${isDream?"rgba(32,15,0,0.75)":isTrip?"rgba(0,20,45,0.65)":"rgba(40,16,0,0.65)"},transparent)`,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"80%",height:80,background:`radial-gradient(ellipse,${radial} 0%,transparent 70%)`,pointerEvents:"none"}}/>
-        <div style={{fontFamily:"'Fraunces',serif",fontSize:dbSize,fontWeight:dbWeight,color:dbColor,letterSpacing:isMobile?1:7,lineHeight:1,whiteSpace:"nowrap",textShadow:isDream?"0 0 32px rgba(255,217,61,0.7),0 0 64px rgba(169,70,29,0.4)":"none",position:"relative",textTransform:"uppercase"}}>Dream Big</div>
+        <div style={{fontFamily:"'Fraunces',serif",fontSize:dbSize,fontWeight:dbWeight,color:dbColor,letterSpacing:isMobile?0:7,lineHeight:1,whiteSpace:"nowrap",textShadow:isDream?"0 0 32px rgba(255,217,61,0.7),0 0 64px rgba(169,70,29,0.4)":"none",position:"relative",textTransform:"uppercase"}}>Dream Big</div>
         <div style={{width:1,height:isMobile?22:30,background:`linear-gradient(180deg,transparent,${divLine},transparent)`,flexShrink:0}}/>
-        <div style={{fontFamily:"'Fraunces',serif",fontSize:tlSize,fontWeight:isPack?300:100,fontStyle:"italic",color:tlColor,letterSpacing:isMobile?1:8,lineHeight:1,whiteSpace:"nowrap",position:"relative",textShadow:tlShadow}}>travel light</div>
+        <div style={{fontFamily:"'Fraunces',serif",fontSize:tlSize,fontWeight:isPack?300:100,fontStyle:"italic",color:tlColor,letterSpacing:isMobile?0:8,lineHeight:1,whiteSpace:"nowrap",position:"relative",textShadow:tlShadow}}>travel light</div>
       </div>
       {children}
     </div>
@@ -1121,7 +1121,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
             {TABS.map(t=>(
               <button key={t.id} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 4px",minWidth:0}}>
                 <span style={{fontSize:16,lineHeight:1}}>{t.label.split(" ")[0]}</span>
-                <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap",color:tab===t.id?"#00E5FF":"rgba(255,255,255,0.5)"}}>{t.label.split(" ").slice(1).join(" ")}</span>
+                <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap",color:tab===t.id?"#00E5FF":"rgba(255,255,255,0.5)"}}>{isMobile?"":t.label.split(" ").slice(1).join(" ")}</span>
               </button>
             ))}
             <button onClick={()=>setShowMobileMenu(m=>!m)} style={{width:48,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 6px",background:showMobileMenu?"rgba(0,229,255,0.1)":"transparent",border:"none",borderLeft:"1px solid rgba(0,229,255,0.15)",cursor:"pointer",flexShrink:0}}>
@@ -1155,7 +1155,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
             {TABS.map(t=>(
               <button key={t.id} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1,padding:"9px 12px",minWidth:44}}>
                 <span style={{fontSize:15}}>{t.label.split(" ")[0]}</span>
-                <span style={{fontSize:15,letterSpacing:1.5}}>{t.label.split(" ").slice(1).join(" ")}</span>
+                <span style={{fontSize:15,letterSpacing:1.5}}>{isMobile?"":t.label.split(" ").slice(1).join(" ")}</span>
               </button>
             ))}
           </div>
