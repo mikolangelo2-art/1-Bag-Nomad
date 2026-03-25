@@ -159,7 +159,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .dream-glow{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:280px;background:radial-gradient(ellipse,rgba(169,70,29,0.4) 0%,rgba(255,217,61,0.07) 45%,transparent 70%);pointer-events:none;z-index:0;animation:glowPulse 7s ease-in-out infinite}
 .dream-content{position:relative;z-index:1;padding:26px 20px 44px;max-width:720px;margin:0 auto}.mc-content{padding:20px 32px}.build-root,.mc-root{font-size:15px}.g-label{font-size:15px}.g-desc{font-size:10px}.launch-btn{font-size:15px}.sec-label{font-size:11px}.f-input{font-size:14px}.f-label{font-size:10px}}
 .hero-cursor{color:#FFD93D;animation:blink 0.9s infinite}
-.sec-label{font-size:9px;color:rgba(255,159,67,0.85);letter-spacing:4px;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid rgba(169,70,29,0.22)}
+.sec-label{font-size:12px;color:rgba(255,159,67,0.85);letter-spacing:4px;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid rgba(169,70,29,0.22)}
 .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:28px}
 .g-card{position:relative;border-radius:12px;padding:13px 12px;cursor:pointer;transition:all 0.24s cubic-bezier(0.34,1.56,0.64,1);text-align:left;border:none;outline:none;overflow:hidden}
 .g-card.off{background:linear-gradient(148deg,#B04E22,#8d3c18,#6d2c11);box-shadow:0 4px 18px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.07)}
@@ -168,11 +168,11 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .g-icon{font-size:22px;margin-bottom:6px;display:block}
 .g-label{font-family:'Fraunces',serif;font-size:13px;font-weight:700;margin-bottom:4px;line-height:1.2}
 .g-card.off .g-label{color:#FFF}.g-card.on .g-label{color:#FFD93D}
-.g-desc{font-size:8.5px;line-height:1.5}
+.g-desc{font-size:12px;line-height:1.5}
 .g-card.off .g-desc{color:rgba(255,255,255,0.78)}.g-card.on .g-desc{color:rgba(255,217,61,0.7)}
 .vision-ta{width:100%;background:rgba(169,70,29,0.07);border:1px solid rgba(169,70,29,0.48);border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.2s,box-shadow 0.2s;margin-bottom:6px}
 .vision-ta::placeholder{color:rgba(255,255,255,0.27)}.vision-ta:focus{border-color:rgba(255,217,61,0.48);box-shadow:0 0 0 3px rgba(255,217,61,0.07)}
-.f-label{font-size:8px;color:rgba(255,159,67,0.75);letter-spacing:2.5px}
+.f-label{font-size:12px;color:rgba(255,159,67,0.75);letter-spacing:2.5px}
 .f-input{background:rgba(18,11,0,0.85);border:1px solid rgba(169,70,29,0.38);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Space Mono',monospace;outline:none;width:100%;transition:border-color 0.2s}
 .f-input:focus{border-color:rgba(255,217,61,0.42)}.f-input::placeholder{color:rgba(255,255,255,0.22)}
 .launch-btn{width:100%;padding:17px;border-radius:14px;border:none;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:2.5px;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s}
@@ -180,21 +180,21 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .launch-btn.on:hover{transform:translateY(-2px);box-shadow:0 10px 34px rgba(169,70,29,0.65);animation:none}
 .launch-btn.loading{background:linear-gradient(135deg,#6b2a0e,#8a3515,#6b2a0e);color:rgba(255,255,255,0.85);cursor:wait}
 .narrative-card{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(169,70,29,0.14),rgba(255,217,61,0.04));border:2px solid #FFD93D;box-shadow:0 0 20px rgba(255,217,61,0.15);border-radius:16px;padding:22px;margin-bottom:18px;animation:fadeUp 0.5s ease}
-.vibe-tag{background:rgba(169,70,29,0.22);border:1px solid rgba(169,70,29,0.55);border-radius:20px;padding:4px 12px;font-size:9px;color:#FFD93D;letter-spacing:2.5px}
+.vibe-tag{background:rgba(169,70,29,0.22);border:1px solid rgba(169,70,29,0.55);border-radius:20px;padding:4px 12px;font-size:12px;color:#FFD93D;letter-spacing:2.5px}
 .stat-card{background:#0C1520;border:1px solid #1a2535;border-radius:9px;padding:9px 7px;text-align:center}
 .phase-row{display:flex;gap:10px;padding:12px 14px;background:#0C1520;border-radius:11px;align-items:flex-start;border-left:3px solid transparent}
 .cta-build-btn{width:100%;padding:16px;border-radius:13px;border:none;background:linear-gradient(135deg,#A9461D 0%,#C4571E 38%,#69F0AE 100%);color:#060A0F;font-size:12px;font-weight:900;cursor:pointer;letter-spacing:2.5px;font-family:'Space Mono',monospace;animation:consolePulse 2.8s ease-in-out infinite;transition:transform 0.2s}
 .cta-build-btn:hover{transform:translateY(-2px);animation:none}
 .build-root{font-family:'Space Mono',monospace;background:#060A0F;min-height:100vh;color:#FFF;display:flex;flex-direction:column}
 .mc-root{font-family:'Space Mono',monospace;background:radial-gradient(ellipse at 20% 0%,#001830 0%,#000d1a 30%,#000810 60%,#030810 100%);min-height:100vh;color:#FFF;display:flex;flex-direction:column}
-.mc-tab{background:none;border:none;cursor:pointer;padding:9px 12px;font-size:9px;letter-spacing:2px;white-space:nowrap;color:#FFF;border-bottom:2px solid transparent;transition:all 0.15s;font-family:'Space Mono',monospace;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
+.mc-tab{background:none;border:none;cursor:pointer;padding:9px 12px;font-size:11px;letter-spacing:2px;white-space:nowrap;color:#FFF;border-bottom:2px solid transparent;transition:all 0.15s;font-family:'Space Mono',monospace;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
 .mc-tab.active{color:#00E5FF;border-bottom-color:#00E5FF}
 .mc-content{padding:14px 16px;overflow-y:auto;flex:1;min-height:0}
 .intel-section{background:#0C1520;border:1px solid #1a2d42;border-radius:8px;padding:11px;margin-bottom:10px}
-.intel-section-label{font-size:10px;letter-spacing:2px;margin-bottom:7px}
+.intel-section-label{font-size:12px;letter-spacing:2px;margin-bottom:7px}
 .street-card{display:flex;gap:9px;padding:9px 11px;background:rgba(0,0,0,0.25);border-radius:8px;margin-bottom:7px}
 .loading-skeleton{height:13px;background:#111D2A;border-radius:4px;animation:shimmer 1.5s infinite;margin-bottom:8px}
-.chat-bubble{border-radius:10px;padding:8px 10px;font-size:10px;color:#FFF;line-height:1.7;max-width:86%}
+.chat-bubble{border-radius:10px;padding:8px 10px;font-size:12px;color:#FFF;line-height:1.7;max-width:86%}
 @media(max-width:599px){.dream-content{padding:18px 14px 40px}.goal-grid{gap:7px}.mc-content{padding:10px 12px}}`;
 
 // ─── Michael's Expedition (compact) ──────────────────────────────
