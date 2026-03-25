@@ -1053,7 +1053,7 @@ function PhaseCard({phase,intelData,idx}) {
             {isNow&&<span style={{fontSize:15,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:8,padding:"1px 6px",letterSpacing:1,fontWeight:700}}>● ACTIVE</span>}
           </div>
           <div style={{display:"flex",gap:isMobile?5:6,alignItems:"center",marginBottom:isMobile?2:5,flexWrap:"nowrap",overflow:"hidden"}}>
-            <span style={{fontSize:15,color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{isMobile?fD(phase.arrival):fDS(phase.arrival)} → {isMobile?fD(phase.departure):fDS(phase.departure)}</span>
+            <span style={{fontSize:15,color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
             <span style={{fontSize:15,color:phase.color,fontWeight:900}}>🌙 {phase.totalNights}n</span>
             {phase.totalDives>0&&<span style={{fontSize:15,color:"#00E5FF"}}>🤿 {phase.totalDives}</span>}
           </div>
