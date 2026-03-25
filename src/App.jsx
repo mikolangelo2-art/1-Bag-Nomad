@@ -318,7 +318,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,children}) {
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:700,color:"#FFF",letterSpacing:2,lineHeight:1}}>1 Bag Nomad</div>
           <div style={{display:"flex",alignItems:"center",gap:4}}>
             <div style={{width:4,height:4,borderRadius:"50%",background:dot,boxShadow:`0 0 5px ${dot}`}}/>
-            <div style={{fontSize:13,fontWeight:700,color:sub,letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>{sublabel} · <span style={{fontFamily:"'Fraunces',serif",fontWeight:100,fontStyle:"italic",letterSpacing:1}}>Sharegood Co.</span></div>
+            <div style={{fontSize:15,fontWeight:700,color:sub,letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>{sublabel} · <span style={{fontFamily:"'Fraunces',serif",fontWeight:100,fontStyle:"italic",letterSpacing:1}}>Sharegood Co.</span></div>
           </div>
         </div>
         <div style={{flex:1}}/>{rightSlot}
@@ -351,12 +351,12 @@ function GenerationScreen({onComplete}) {
       <div style={{position:"absolute",top:"5%",left:"50%",width:700,height:500,background:"radial-gradient(ellipse,rgba(169,70,29,0.5) 0%,transparent 65%)",animation:"ambientGlow 3s ease-in-out infinite",transform:"translateX(-50%)",pointerEvents:"none"}}/>
       <div style={{animation:"logoPulse 2.4s ease-in-out infinite",marginBottom:36,zIndex:1}}><SharegoodLogo size={200} animate={false} glowColor="rgba(169,70,29,0.52)" opacity={0.9}/></div>
       <div key={mi} style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:100,fontStyle:"italic",color:"rgba(255,255,255,0.92)",letterSpacing:1,marginBottom:10,animation:"fadeUp 0.5s ease",textAlign:"center",zIndex:1,opacity:ph>=1?1:0,transition:"opacity 0.6s ease"}}>{msgs[mi]}</div>
-      <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.5)",letterSpacing:3,marginBottom:40,textAlign:"center",zIndex:1}}>The co-architect is working its magic ✦</div>
+      <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.5)",letterSpacing:3,marginBottom:40,textAlign:"center",zIndex:1}}>The co-architect is working its magic ✦</div>
       <div style={{width:260,zIndex:1}}>
         <div style={{height:3,background:"rgba(255,255,255,0.07)",borderRadius:2,overflow:"hidden"}}>
           <div style={{height:"100%",borderRadius:2,background:"linear-gradient(90deg,#A9461D,#FFD93D,#A9461D)",backgroundSize:"200% 100%",width:prog+"%",transition:"width 0.3s ease",animation:"shimmerBar 2s linear infinite"}}/>
         </div>
-        <div style={{display:"flex",justifyContent:"space-between",marginTop:6,fontSize:13,color:"rgba(255,255,255,0.2)",letterSpacing:2}}><span>BUILDING</span><span>{Math.round(prog)}%</span></div>
+        <div style={{display:"flex",justifyContent:"space-between",marginTop:6,fontSize:15,color:"rgba(255,255,255,0.2)",letterSpacing:2}}><span>BUILDING</span><span>{Math.round(prog)}%</span></div>
       </div>
     </div>
   );
@@ -411,12 +411,12 @@ function DreamScreen({onGoGen,onLoadDemo}) {
             {heroPhase>=2&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?26:34,fontWeight:300,color:"#FFF",lineHeight:1.2,letterSpacing:1,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>starts now.</div>}
             {heroPhase>=3&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?28:36,fontWeight:300,fontStyle:"italic",color:"#FFD93D",lineHeight:1.25,marginTop:8,letterSpacing:3,animation:"slideUp 0.8s cubic-bezier(0.22,1,0.36,1) both"}}>Let's go.</div>}
           </div>
-          {heroPhase>=4&&<p style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?12:13,fontWeight:100,fontStyle:"italic",color:"#FFD93D",lineHeight:1.6,marginTop:10,animation:"fadeUp 0.8s ease both"}}>Every expedition starts with a feeling — tell me what's driving yours.</p>}
+          {heroPhase>=4&&<p style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:100,fontStyle:"italic",color:"#FFD93D",lineHeight:1.6,marginTop:10,animation:"fadeUp 0.8s ease both"}}>Every expedition starts with a feeling — tell me what's driving yours.</p>}
         </div>
         <div style={{marginBottom:28}}>
           <div className="sec-label">WHAT'S <span style={{color:"#FFD93D",fontWeight:900}}>YOUR</span> VISION?</div>
           <textarea className="vision-ta" value={vision} onChange={e=>setVision(e.target.value)} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder="Pour it all out — the places that call to you, what you need to feel, who you want to become." rows={isMobile?5:6} style={{border:focused?"1px solid rgba(255,217,61,0.55)":"1px solid rgba(169,70,29,0.48)",boxShadow:focused?"0 0 0 3px rgba(255,217,61,0.08)":"none"}}/>
-          {canLaunch&&<div style={{marginTop:8,fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(105,240,174,0.6)",animation:"fadeUp 0.4s ease"}}>✦ Your co-architect is ready to build this.</div>}
+          {canLaunch&&<div style={{marginTop:8,fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(105,240,174,0.6)",animation:"fadeUp 0.4s ease"}}>✦ Your co-architect is ready to build this.</div>}
         </div>
         <div className="sec-label">EXPEDITION DETAILS</div>
         <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:10,marginBottom:10}}>
@@ -430,7 +430,7 @@ function DreamScreen({onGoGen,onLoadDemo}) {
             {[{id:"dream",icon:"💭",label:"Build the dream",sub:"We'll figure budget later"},{id:"rough",icon:"💰",label:"I have a rough number",sub:"Give me a ballpark"},{id:"strict",icon:"🎯",label:"Keep it under...",sub:"I have a firm limit"}].map(b=>(
               <button key={b.id} onClick={()=>setBudgetMode(b.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 13px",borderRadius:9,border:"1px solid "+(budgetMode===b.id?"rgba(255,217,61,0.5)":"rgba(169,70,29,0.52)"),background:budgetMode===b.id?"rgba(255,217,61,0.06)":"rgba(169,70,29,0.05)",cursor:"pointer",textAlign:"left",transition:"all 0.2s",minHeight:44}}>
                 <span style={{fontSize:16}}>{b.icon}</span>
-                <div><div style={{fontSize:13,fontWeight:700,color:budgetMode===b.id?"#FFD93D":"#FFF"}}>{b.label}</div><div style={{fontSize:13,color:"rgba(255,255,255,0.55)",marginTop:2}}>{b.sub}</div></div>
+                <div><div style={{fontSize:15,fontWeight:700,color:budgetMode===b.id?"#FFD93D":"#FFF"}}>{b.label}</div><div style={{fontSize:15,color:"rgba(255,255,255,0.55)",marginTop:2}}>{b.sub}</div></div>
                 <div style={{marginLeft:"auto",width:14,height:14,borderRadius:"50%",border:"1.5px solid "+(budgetMode===b.id?"#FFD93D":"rgba(255,255,255,0.2)"),background:budgetMode===b.id?"rgba(255,217,61,0.2)":"transparent",display:"flex",alignItems:"center",justifyContent:"center"}}>
                   {budgetMode===b.id&&<div style={{width:6,height:6,borderRadius:"50%",background:"#FFD93D"}}/>}
                 </div>
@@ -442,11 +442,11 @@ function DreamScreen({onGoGen,onLoadDemo}) {
         <button className={"launch-btn "+(loading?"loading":canLaunch?"on":"off")} onClick={handleReveal} style={{minHeight:54,cursor:loading?"wait":canLaunch?"pointer":"default"}}>
           {loading?"✨  BUILDING YOUR EXPEDITION...":"🚀  BUILD MY EXPEDITION"}
         </button>
-        {loadError&&<div style={{marginTop:12,padding:"10px 14px",borderRadius:8,background:"rgba(255,107,107,0.1)",border:"1px solid rgba(255,107,107,0.3)",textAlign:"center",fontSize:13,color:"#FF6B6B",letterSpacing:1}}>Connection issue — tap to try again</div>}
+        {loadError&&<div style={{marginTop:12,padding:"10px 14px",borderRadius:8,background:"rgba(255,107,107,0.1)",border:"1px solid rgba(255,107,107,0.3)",textAlign:"center",fontSize:15,color:"#FF6B6B",letterSpacing:1}}>Connection issue — tap to try again</div>}
         <div style={{textAlign:"center",marginTop:30,paddingTop:20,borderTop:"1px solid rgba(169,70,29,0.14)"}}>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,217,61,0.28)",letterSpacing:2}}>Dream Big. Travel Light.</div>
-          <div style={{fontSize:13,color:"rgba(255,255,255,0.12)",letterSpacing:3,marginTop:5}}>A SHAREGOOD COMPANY</div>
-          <button onClick={onLoadDemo} style={{marginTop:16,background:"none",border:"1px solid rgba(255,217,61,0.25)",borderRadius:8,color:"rgba(255,217,61,0.5)",fontSize:13,padding:"10px 16px",cursor:"pointer",letterSpacing:2,fontFamily:"'Space Mono',monospace",width:"100%",minHeight:44}}>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,217,61,0.28)",letterSpacing:2}}>Dream Big. Travel Light.</div>
+          <div style={{fontSize:15,color:"rgba(255,255,255,0.12)",letterSpacing:3,marginTop:5}}>A SHAREGOOD COMPANY</div>
+          <button onClick={onLoadDemo} style={{marginTop:16,background:"none",border:"1px solid rgba(255,217,61,0.25)",borderRadius:8,color:"rgba(255,217,61,0.5)",fontSize:15,padding:"10px 16px",cursor:"pointer",letterSpacing:2,fontFamily:"'Space Mono',monospace",width:"100%",minHeight:44}}>
             🌍 LOAD MY EXPEDITION · Michael's 2026/27 Global Dive
           </button>
         </div>
@@ -496,53 +496,53 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
       <div style={{padding:"22px 18px 44px",maxWidth:640,margin:"0 auto",position:"relative",zIndex:10}}>
         <div className="narrative-card">
           <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"90%",height:"130%",background:"radial-gradient(ellipse,rgba(169,70,29,0.22) 0%,transparent 68%)",pointerEvents:"none"}}/>
-          <div style={{fontSize:13,color:"#C4571E",letterSpacing:3,marginBottom:12,position:"relative"}}>✦ YOUR EXPEDITION VISION</div>
+          <div style={{fontSize:15,color:"#C4571E",letterSpacing:3,marginBottom:12,position:"relative"}}>✦ YOUR EXPEDITION VISION</div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.85,position:"relative",minHeight:80}}>"{narrative}{!narrativeDone&&<span className="hero-cursor">|</span>}"</div>
           {narrativeDone&&<div style={{display:"flex",gap:7,flexWrap:"wrap",marginTop:14,position:"relative"}}>{(vd.vibe||"").split(" · ").filter(Boolean).map((w,i)=><span key={i} className="vibe-tag">{w}</span>)}</div>}
         </div>
         {showStats&&(
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16,animation:"fadeUp 0.5s ease"}}>
             {[{label:"COUNTRIES",value:vd.countries,color:"#00E5FF"},{label:"PHASES",value:vd.phases?.length,color:"#FFD93D"},{label:"NIGHTS",value:vd.totalNights,color:"#A29BFE"},{label:"BUDGET",value:fmt(vd.totalBudget||0),color:"#FF9F43"}].map(s=>(
-              <div key={s.label} className="stat-card"><div style={{fontSize:13,color:"rgba(255,255,255,0.45)",letterSpacing:1.5,marginBottom:4}}>{s.label}</div><div style={{fontSize:isMobile?14:16,fontWeight:700,color:s.color}}>{s.value}</div></div>
+              <div key={s.label} className="stat-card"><div style={{fontSize:15,color:"rgba(255,255,255,0.45)",letterSpacing:1.5,marginBottom:4}}>{s.label}</div><div style={{fontSize:isMobile?14:16,fontWeight:700,color:s.color}}>{s.value}</div></div>
             ))}
           </div>
         )}
-        {narrativeDone&&vd.highlight&&<div style={{background:"rgba(0,229,255,0.04)",border:"1px solid rgba(0,229,255,0.18)",borderRadius:11,padding:"14px 16px",marginBottom:18}}><div style={{fontSize:13,color:"#00E5FF",letterSpacing:2.5,marginBottom:7}}>⚡ EXPEDITION HIGHLIGHT</div><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.7}}>{vd.highlight}</div></div>}
+        {narrativeDone&&vd.highlight&&<div style={{background:"rgba(0,229,255,0.04)",border:"1px solid rgba(0,229,255,0.18)",borderRadius:11,padding:"14px 16px",marginBottom:18}}><div style={{fontSize:15,color:"#00E5FF",letterSpacing:2.5,marginBottom:7}}>⚡ EXPEDITION HIGHLIGHT</div><div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.7}}>{vd.highlight}</div></div>}
         {showPhases&&(
           <div style={{animation:"fadeUp 0.5s ease"}}>
-            <div style={{fontSize:13,color:"rgba(255,159,67,0.8)",letterSpacing:4,marginBottom:12,paddingBottom:7,borderBottom:"1px solid rgba(169,70,29,0.2)"}}>YOUR EXPEDITION PHASES</div>
+            <div style={{fontSize:15,color:"rgba(255,159,67,0.8)",letterSpacing:4,marginBottom:12,paddingBottom:7,borderBottom:"1px solid rgba(169,70,29,0.2)"}}>YOUR EXPEDITION PHASES</div>
             <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:20}}>
               {vd.phases?.map((p,i)=>{
                 const c=TC[p.type]||"#FFD93D";
                 return(<div key={i} className="phase-row" style={{borderLeftColor:c,background:`linear-gradient(90deg,${c}08,#0C1520)`,animation:`phaseIn 0.4s ease ${i*.07}s both`}}>
-                  <div style={{width:22,height:22,borderRadius:"50%",background:`${c}18`,border:`1px solid ${c}44`,color:c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:700,flexShrink:0,marginTop:1}}>{i+1}</div>
+                  <div style={{width:22,height:22,borderRadius:"50%",background:`${c}18`,border:`1px solid ${c}44`,color:c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,flexShrink:0,marginTop:1}}>{i+1}</div>
                   <div style={{flex:1}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2,flexWrap:"wrap"}}>
-                      <span style={{fontSize:13,fontWeight:700,color:"#FFF"}}>{p.flag||"🌍"} {p.destination}</span>
-                      <span style={{fontSize:13,color:c}}>{TI[p.type]||"✈️"} {p.type}</span>
-                      <span style={{fontSize:13,color:"rgba(255,255,255,0.38)",marginLeft:"auto"}}>🌙 {p.nights}n</span>
+                      <span style={{fontSize:15,fontWeight:700,color:"#FFF"}}>{p.flag||"🌍"} {p.destination}</span>
+                      <span style={{fontSize:15,color:c}}>{TI[p.type]||"✈️"} {p.type}</span>
+                      <span style={{fontSize:15,color:"rgba(255,255,255,0.38)",marginLeft:"auto"}}>🌙 {p.nights}n</span>
                     </div>
-                    <div style={{fontSize:13,fontWeight:700,color:"rgba(255,255,255,0.75)",marginBottom:3,letterSpacing:0.5}}>{p.country}</div>
-                    <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.5}}>{p.why}</div>
+                    <div style={{fontSize:15,fontWeight:700,color:"rgba(255,255,255,0.75)",marginBottom:3,letterSpacing:0.5}}>{p.country}</div>
+                    <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.5}}>{p.why}</div>
                   </div>
                 </div>);
               })}
             </div>
             <div style={{background:"#0C1520",border:"1px solid #1a2535",borderRadius:13,padding:14,marginBottom:18}}>
-              <div style={{fontSize:13,color:"rgba(255,255,255,0.9)",letterSpacing:2,marginBottom:10}}>💬 REFINE YOUR VISION</div>
-              {loading&&<div style={{fontSize:13,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",marginBottom:8}}>✨ refining...</div>}
+              <div style={{fontSize:15,color:"rgba(255,255,255,0.9)",letterSpacing:2,marginBottom:10}}>💬 REFINE YOUR VISION</div>
+              {loading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",marginBottom:8}}>✨ refining...</div>}
               <div style={{display:"flex",gap:7}}>
-                <input style={{flex:1,background:"#080D14",border:"1px solid #1a2535",borderRadius:8,color:"#FFF",fontSize:isMobile?12:13,padding:isMobile?"11px":"9px 11px",fontFamily:"'Space Mono',monospace",outline:"none"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Swap a destination, adjust duration..."/>
-                <button style={{background:"rgba(169,70,29,0.2)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:8,color:"#FFD93D",fontSize:14,padding:"8px 12px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={refine}>↑</button>
+                <input style={{flex:1,background:"#080D14",border:"1px solid #1a2535",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:isMobile?"11px":"9px 11px",fontFamily:"'Space Mono',monospace",outline:"none"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Swap a destination, adjust duration..."/>
+                <button style={{background:"rgba(169,70,29,0.2)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:8,color:"#FFD93D",fontSize:15,padding:"8px 12px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={refine}>↑</button>
               </div>
             </div>
             <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.1),rgba(255,217,61,0.04))",border:"1px solid rgba(169,70,29,0.4)",borderRadius:16,padding:22,textAlign:"center"}}>
               <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?18:20,fontWeight:300,color:"#FFF",marginBottom:6,lineHeight:1.3}}>This is your <em style={{color:"#FFD93D"}}>expedition.</em></div>
-              <div style={{fontSize:13,color:"rgba(255,255,255,0.88)",letterSpacing:1,marginBottom:20,lineHeight:1.8}}>Does this feel right? Refine above until it does.<br/>When your gut says yes — it's time to build.</div>
+              <div style={{fontSize:15,color:"rgba(255,255,255,0.88)",letterSpacing:1,marginBottom:20,lineHeight:1.8}}>Does this feel right? Refine above until it does.<br/>When your gut says yes — it's time to build.</div>
               <button className="cta-build-btn" style={{minHeight:52,opacity:launching?0.7:1}} onClick={()=>{if(!launching){setLaunching(true);onBuild(vd);}}}>
                 {launching?"✨  Building...":"✅  YES — BUILD THIS EXPEDITION"}
               </button>
-              <button style={{marginTop:10,background:"none",border:"1px solid #1a2535",borderRadius:8,color:"rgba(255,255,255,0.3)",fontSize:13,padding:"7px 14px",cursor:"pointer",fontFamily:"'Space Mono',monospace",width:"100%",minHeight:44}} onClick={onBack}>{data.isRevision?"← BACK TO CONSOLE":"← START OVER"}</button>
+              <button style={{marginTop:10,background:"none",border:"1px solid #1a2535",borderRadius:8,color:"rgba(255,255,255,0.3)",fontSize:15,padding:"7px 14px",cursor:"pointer",fontFamily:"'Space Mono',monospace",width:"100%",minHeight:44}} onClick={onBack}>{data.isRevision?"← BACK TO CONSOLE":"← START OVER"}</button>
             </div>
           </div>
         )}
@@ -613,70 +613,70 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
       <div style={{display:"flex",border:"none",background:"#080D14",flexShrink:0}}>
         {[{label:"STOPS",val:items.length,c:"#00E5FF"},{label:"COUNTRIES",val:countries.length,c:"#69F0AE"},{label:"NIGHTS",val:totalNights,c:"#A29BFE"},{label:"BUDGET",val:fmt(totalCost),c:"#FFD93D"}].map((s,i)=>(
           <div key={s.label} style={{flex:1,padding:"8px 6px",textAlign:"center",borderRight:i<3?"1px solid #111D2A":"none"}}>
-            <div style={{fontSize:13,color:"rgba(255,255,255,0.35)",letterSpacing:1}}>{s.label}</div>
-            <div style={{fontSize:isMobile?12:14,fontWeight:700,color:s.c}}>{s.val}</div>
+            <div style={{fontSize:15,color:"rgba(255,255,255,0.35)",letterSpacing:1}}>{s.label}</div>
+            <div style={{fontSize:isMobile?13:15,fontWeight:700,color:s.c}}>{s.val}</div>
           </div>
         ))}
       </div>
       <div style={{display:"flex",alignItems:"center",gap:12,padding:"8px 14px",background:"rgba(255,255,255,0.02)",borderBottom:"1px solid #111D2A",flexShrink:0}}>
-        <span style={{fontSize:13,color:"rgba(255,255,255,0.75)",letterSpacing:1}}>DEPARTURE</span>
-        <input type="date" style={{background:"transparent",border:"1px solid rgba(0,229,255,0.28)",borderRadius:6,color:"#00E5FF",fontSize:13,padding:"3px 8px",fontFamily:"monospace",outline:"none"}} value={startDate} onChange={e=>setStartDate(e.target.value)}/>
-        <span style={{fontSize:13,color:"rgba(255,255,255,0.65)",marginLeft:"auto"}}>{totalNights} nights</span>
+        <span style={{fontSize:15,color:"rgba(255,255,255,0.75)",letterSpacing:1}}>DEPARTURE</span>
+        <input type="date" style={{background:"transparent",border:"1px solid rgba(0,229,255,0.28)",borderRadius:6,color:"#00E5FF",fontSize:15,padding:"3px 8px",fontFamily:"monospace",outline:"none"}} value={startDate} onChange={e=>setStartDate(e.target.value)}/>
+        <span style={{fontSize:15,color:"rgba(255,255,255,0.65)",marginLeft:"auto"}}>{totalNights} nights</span>
       </div>
       {isMobile&&<div style={{display:"flex",borderBottom:"1px solid #1a2535",background:"#080D14",flexShrink:0}}>
-        {["itinerary","chat"].map(t=><button key={t} onClick={()=>setMobileTab(t)} style={{flex:1,padding:10,background:"none",border:"none",borderBottom:mobileTab===t?"2px solid #69F0AE":"2px solid transparent",color:mobileTab===t?"#69F0AE":"rgba(255,255,255,0.4)",fontSize:13,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:2,minHeight:44}}>{t==="itinerary"?"🗺️ ITINERARY":"✏️ REFINE"}</button>)}
+        {["itinerary","chat"].map(t=><button key={t} onClick={()=>setMobileTab(t)} style={{flex:1,padding:10,background:"none",border:"none",borderBottom:mobileTab===t?"2px solid #69F0AE":"2px solid transparent",color:mobileTab===t?"#69F0AE":"rgba(255,255,255,0.4)",fontSize:15,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:2,minHeight:44}}>{t==="itinerary"?"🗺️ ITINERARY":"✏️ REFINE"}</button>)}
       </div>}
       <div style={{display:"flex",flex:1,overflow:"hidden",minHeight:0,...(isMobile?{flexDirection:"column"}:{})}}>
         {(!isMobile||mobileTab==="itinerary")&&(
           <div style={{flex:1,overflowY:"auto",padding:12,...(isMobile?{maxHeight:"none"}:{})}}>
-            <div style={{fontSize:13,color:"rgba(255,255,255,0.85)",letterSpacing:3,marginBottom:10}}>YOUR ITINERARY · TAP TO EDIT</div>
+            <div style={{fontSize:15,color:"rgba(255,255,255,0.85)",letterSpacing:3,marginBottom:10}}>YOUR ITINERARY · TAP TO EDIT</div>
             {items.map((item,i)=>{
               const c=item.color,isEd=editingId===item.id;
               return(
                 <div key={item.id} style={{marginBottom:7,background:"#0C1520",borderRadius:11,overflow:"hidden",border:`1px solid ${c}22`,borderLeft:`3px solid ${c}`}}>
                   <div onClick={()=>setEditingId(isEd?null:item.id)} style={{padding:"10px 12px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,minHeight:44}}>
-                    <div style={{width:18,height:18,borderRadius:"50%",background:`${c}18`,border:`1px solid ${c}44`,color:c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:700,flexShrink:0}}>{i+1}</div>
-                    <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:"#FFF"}}>{item.flag} {item.destination}</div><div style={{fontSize:13,color:"rgba(255,255,255,0.75)"}}><span style={{color:"#FFD93D",fontWeight:700}}>{item.country}</span> · {TI[item.type]} {item.type} · {fmtD(dates[i]?.arrival)}→{fmtD(dates[i]?.departure)}</div></div>
-                    <div style={{textAlign:"right",flexShrink:0}}><div style={{fontSize:15,fontWeight:900,color:"#A29BFE"}}>{item.nights}n</div><div style={{fontSize:13,color:"#FFD93D"}}>{fmt(item.cost)}</div></div>
-                    <span style={{fontSize:13,color:"rgba(255,255,255,0.25)",marginLeft:6}}>{isEd?"▲":"▼"}</span>
+                    <div style={{width:18,height:18,borderRadius:"50%",background:`${c}18`,border:`1px solid ${c}44`,color:c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,flexShrink:0}}>{i+1}</div>
+                    <div style={{flex:1}}><div style={{fontSize:15,fontWeight:700,color:"#FFF"}}>{item.flag} {item.destination}</div><div style={{fontSize:15,color:"rgba(255,255,255,0.75)"}}><span style={{color:"#FFD93D",fontWeight:700}}>{item.country}</span> · {TI[item.type]} {item.type} · {fmtD(dates[i]?.arrival)}→{fmtD(dates[i]?.departure)}</div></div>
+                    <div style={{textAlign:"right",flexShrink:0}}><div style={{fontSize:15,fontWeight:900,color:"#A29BFE"}}>{item.nights}n</div><div style={{fontSize:15,color:"#FFD93D"}}>{fmt(item.cost)}</div></div>
+                    <span style={{fontSize:15,color:"rgba(255,255,255,0.25)",marginLeft:6}}>{isEd?"▲":"▼"}</span>
                   </div>
                   {isEd&&<div style={{padding:"10px 12px 12px",borderTop:"1px solid rgba(255,255,255,0.05)",background:"rgba(0,0,0,0.2)",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-                    {[{label:"NIGHTS",field:"nights",type:"number"},{label:"COST ($)",field:"cost",type:"number"}].map(f=><div key={f.field} style={{display:"flex",flexDirection:"column",gap:4}}><div style={{fontSize:13,color:"rgba(255,255,255,0.35)",letterSpacing:1}}>{f.label}</div><input type={f.type} style={{background:"#080D14",border:"1px solid #1a2535",borderRadius:5,color:"#FFF",fontSize:13,padding:"5px 7px",fontFamily:"'Space Mono',monospace",outline:"none"}} value={item[f.field]} onChange={e=>setItems(p=>p.map(it=>it.id===item.id?{...it,[f.field]:parseInt(e.target.value)||1}:it))}/></div>)}
-                    <div style={{display:"flex",flexDirection:"column",gap:4}}><div style={{fontSize:13,color:"rgba(255,255,255,0.35)",letterSpacing:1}}>TYPE</div><select style={{background:"#080D14",border:"1px solid #1a2535",borderRadius:5,color:"#FFF",fontSize:13,padding:"5px 7px",outline:"none",width:"100%"}} value={item.type} onChange={e=>setItems(p=>p.map(it=>it.id===item.id?{...it,type:e.target.value}:it))}>{["Exploration","Culture","Dive","Surf","Nature","Trek","Moto","Relax","Transit"].map(t=><option key={t} value={t}>{TI[t]} {t}</option>)}</select></div>
+                    {[{label:"NIGHTS",field:"nights",type:"number"},{label:"COST ($)",field:"cost",type:"number"}].map(f=><div key={f.field} style={{display:"flex",flexDirection:"column",gap:4}}><div style={{fontSize:15,color:"rgba(255,255,255,0.35)",letterSpacing:1}}>{f.label}</div><input type={f.type} style={{background:"#080D14",border:"1px solid #1a2535",borderRadius:5,color:"#FFF",fontSize:15,padding:"5px 7px",fontFamily:"'Space Mono',monospace",outline:"none"}} value={item[f.field]} onChange={e=>setItems(p=>p.map(it=>it.id===item.id?{...it,[f.field]:parseInt(e.target.value)||1}:it))}/></div>)}
+                    <div style={{display:"flex",flexDirection:"column",gap:4}}><div style={{fontSize:15,color:"rgba(255,255,255,0.35)",letterSpacing:1}}>TYPE</div><select style={{background:"#080D14",border:"1px solid #1a2535",borderRadius:5,color:"#FFF",fontSize:15,padding:"5px 7px",outline:"none",width:"100%"}} value={item.type} onChange={e=>setItems(p=>p.map(it=>it.id===item.id?{...it,type:e.target.value}:it))}>{["Exploration","Culture","Dive","Surf","Nature","Trek","Moto","Relax","Transit"].map(t=><option key={t} value={t}>{TI[t]} {t}</option>)}</select></div>
                   </div>}
                 </div>
               );
             })}
             <div style={{padding:"10px 12px",background:"rgba(105,240,174,0.04)",border:"1px solid rgba(105,240,174,0.14)",borderRadius:10,display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
-              <div><div style={{fontSize:13,color:"rgba(255,255,255,0.35)"}}>{items.length} stops · {countries.length} countries</div><div style={{fontSize:13,color:"#69F0AE"}}>~{fmt(Math.round(totalCost/Math.max(totalNights,1)))}/night</div></div>
+              <div><div style={{fontSize:15,color:"rgba(255,255,255,0.35)"}}>{items.length} stops · {countries.length} countries</div><div style={{fontSize:15,color:"#69F0AE"}}>~{fmt(Math.round(totalCost/Math.max(totalNights,1)))}/night</div></div>
               <div style={{fontSize:20,fontWeight:900,color:"#FFD93D"}}>{fmt(totalCost)}</div>
             </div>
-            {isMobile&&<button style={{margin:"12px 0 0 0",width:"100%",padding:12,borderRadius:10,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#060A0F",fontSize:13,fontWeight:900,cursor:"pointer",letterSpacing:2,fontFamily:"'Space Mono',monospace",animation:"consolePulse 2.8s ease-in-out infinite"}} onClick={()=>onLaunch(buildHandoff())}>{data.isRevision?"✅  UPDATE":"🚀  LAUNCH TRIP CONSOLE"}</button>}
+            {isMobile&&<button style={{margin:"12px 0 0 0",width:"100%",padding:12,borderRadius:10,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#060A0F",fontSize:15,fontWeight:900,cursor:"pointer",letterSpacing:2,fontFamily:"'Space Mono',monospace",animation:"consolePulse 2.8s ease-in-out infinite"}} onClick={()=>onLaunch(buildHandoff())}>{data.isRevision?"✅  UPDATE":"🚀  LAUNCH TRIP CONSOLE"}</button>}
           </div>
         )}
         {(!isMobile||mobileTab==="chat")&&(
           <div style={{width:isMobile?"100%":"44%",display:"flex",flexDirection:"column",borderLeft:isMobile?"none":"1px solid #111D2A",...(isMobile?{flex:1,borderTop:"1px solid #111D2A"}:{})}}>
-            <div style={{padding:"8px 11px",borderBottom:"1px solid #111D2A",fontSize:13,color:"#C4571E",letterSpacing:2,flexShrink:0}}>{data.isRevision?"✏️ REVISE YOUR EXPEDITION":"✨ DREAM CONSOLE"}</div>
+            <div style={{padding:"8px 11px",borderBottom:"1px solid #111D2A",fontSize:15,color:"#C4571E",letterSpacing:2,flexShrink:0}}>{data.isRevision?"✏️ REVISE YOUR EXPEDITION":"✨ DREAM CONSOLE"}</div>
             <div style={{flex:1,overflowY:"auto",padding:10,display:"flex",flexDirection:"column",gap:8}}>
               {chat.map((msg,i)=>(
                 <div key={i} style={{display:"flex",gap:6,alignItems:"flex-start",flexDirection:msg.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>
-                  <div style={{width:20,height:20,borderRadius:"50%",background:msg.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{msg.role==="ai"?"✨":"👤"}</div>
+                  <div style={{width:20,height:20,borderRadius:"50%",background:msg.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flexShrink:0}}>{msg.role==="ai"?"✨":"👤"}</div>
                   {msg.isWelcome
-                    ?<div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.2),rgba(255,217,61,0.07))",border:"1px solid rgba(169,70,29,0.5)",borderRadius:12,padding:"13px 15px",fontSize:13,color:"#FFF",lineHeight:1.8,maxWidth:"92%",whiteSpace:"pre-line",fontFamily:"'Fraunces',serif",fontStyle:"italic",animation:"fadeUp 0.6s ease"}}>{msg.text}</div>
+                    ?<div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.2),rgba(255,217,61,0.07))",border:"1px solid rgba(169,70,29,0.5)",borderRadius:12,padding:"13px 15px",fontSize:15,color:"#FFF",lineHeight:1.8,maxWidth:"92%",whiteSpace:"pre-line",fontFamily:"'Fraunces',serif",fontStyle:"italic",animation:"fadeUp 0.6s ease"}}>{msg.text}</div>
                     :<div className="chat-bubble" style={{background:msg.role==="ai"?"rgba(169,70,29,0.12)":"rgba(255,255,255,0.05)",border:`1px solid ${msg.role==="ai"?"rgba(169,70,29,0.52)":"rgba(255,255,255,0.08)"}`}}>{msg.text}</div>}
                 </div>
               ))}
-              {loading&&<div style={{display:"flex",gap:6,animation:"msgIn 0.25s ease"}}><div style={{width:20,height:20,borderRadius:"50%",background:"#A9461D",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>✨</div><div style={{fontSize:13,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",padding:"4px 0"}}>thinking...</div></div>}
+              {loading&&<div style={{display:"flex",gap:6,animation:"msgIn 0.25s ease"}}><div style={{width:20,height:20,borderRadius:"50%",background:"#A9461D",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>✨</div><div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",padding:"4px 0"}}>thinking...</div></div>}
               <div ref={chatEnd}/>
             </div>
             <div style={{padding:"10px",borderTop:"1px solid #111D2A",display:"flex",gap:5,flexWrap:isMobile?"nowrap":"wrap",overflowX:"auto",flexShrink:0}}>
-              {QUICK_ACTIONS.map(a=><button key={a} onClick={()=>setInput(a)} style={{background:"rgba(169,70,29,0.18)",border:"1px solid rgba(255,217,61,0.35)",borderRadius:20,padding:"7px 14px",fontSize:13,fontWeight:700,color:"#FFD93D",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Space Mono',monospace",minHeight:36}}>{a}</button>)}
+              {QUICK_ACTIONS.map(a=><button key={a} onClick={()=>setInput(a)} style={{background:"rgba(169,70,29,0.18)",border:"1px solid rgba(255,217,61,0.35)",borderRadius:20,padding:"7px 14px",fontSize:15,fontWeight:700,color:"#FFD93D",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Space Mono',monospace",minHeight:36}}>{a}</button>)}
             </div>
             <div style={{padding:"8px 10px",borderTop:"1px solid #111D2A",display:"flex",gap:7,flexShrink:0}}>
-              <input style={{flex:1,background:"#080D14",border:"1px solid #1a2535",borderRadius:8,color:"#FFF",fontSize:isMobile?13:13,padding:"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",minHeight:44}} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendMsg();}} placeholder="Ask anything, request changes..."/>
-              <button style={{background:"rgba(169,70,29,0.2)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:8,color:"#FFD93D",fontSize:14,padding:"8px 11px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={sendMsg}>↑</button>
+              <input style={{flex:1,background:"#080D14",border:"1px solid #1a2535",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",minHeight:44}} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendMsg();}} placeholder="Ask anything, request changes..."/>
+              <button style={{background:"rgba(169,70,29,0.2)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:8,color:"#FFD93D",fontSize:15,padding:"8px 11px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={sendMsg}>↑</button>
             </div>
-            {!isMobile&&<button style={{margin:10,padding:12,borderRadius:10,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#060A0F",fontSize:13,fontWeight:900,cursor:"pointer",letterSpacing:2,fontFamily:"'Space Mono',monospace",animation:"consolePulse 2.8s ease-in-out infinite",flexShrink:0}} onClick={()=>onLaunch(buildHandoff())}>{data.isRevision?"✅  UPDATE MY EXPEDITION":"🚀  LAUNCH TRIP CONSOLE"}</button>}
+            {!isMobile&&<button style={{margin:10,padding:12,borderRadius:10,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#060A0F",fontSize:15,fontWeight:900,cursor:"pointer",letterSpacing:2,fontFamily:"'Space Mono',monospace",animation:"consolePulse 2.8s ease-in-out infinite",flexShrink:0}} onClick={()=>onLaunch(buildHandoff())}>{data.isRevision?"✅  UPDATE MY EXPEDITION":"🚀  LAUNCH TRIP CONSOLE"}</button>}
           </div>
         )}
       </div>
@@ -701,7 +701,7 @@ function HandoffScreen({tripData,onComplete}) {
         <div style={{opacity:ph<1?1:0,transition:"opacity 0.9s ease",position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",pointerEvents:"none"}}>
           <div style={{fontSize:isMobile?44:56,marginBottom:24,animation:"spinGlobe 14s linear infinite",filter:"drop-shadow(0 0 30px rgba(255,217,61,0.5))"}}>🌍</div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?17:22,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.6,maxWidth:560,textAlign:"center"}}>"{(tripData.visionNarrative||"").slice(0,120)}..."</div>
-          <div style={{marginTop:28,fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,217,61,0.45)",letterSpacing:3}}>Now becoming real.</div>
+          <div style={{marginTop:28,fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,217,61,0.45)",letterSpacing:3}}>Now becoming real.</div>
         </div>
         <div style={{opacity:ph>=1&&ph<2?1:0,transition:"opacity 0.8s ease",position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",pointerEvents:"none"}}>
           <div style={{fontSize:isMobile?56:72,filter:"drop-shadow(0 0 40px rgba(0,229,255,0.5))",marginBottom:24}}>🌍</div>
@@ -720,7 +720,7 @@ function HandoffScreen({tripData,onComplete}) {
             {tripData.phases?.map((p,i)=>(
               <div key={i} style={{display:"flex",alignItems:"center",gap:5,opacity:i<lit?1:0.15,transition:"opacity 0.3s ease"}}>
                 <div style={{width:isMobile?8:10,height:isMobile?8:10,borderRadius:"50%",background:p.color||"#00E5FF",boxShadow:i<lit?`0 0 8px ${p.color||"#00E5FF"}`:"none"}}/>
-                {i<lit&&<div style={{fontSize:isMobile?11:13,color:p.color||"#00E5FF",whiteSpace:"nowrap",fontWeight:700}}>{p.flag} {p.name}</div>}
+                {i<lit&&<div style={{fontSize:isMobile?13:15,color:p.color||"#00E5FF",whiteSpace:"nowrap",fontWeight:700}}>{p.flag} {p.name}</div>}
               </div>
             ))}
           </div>
@@ -731,11 +731,11 @@ function HandoffScreen({tripData,onComplete}) {
               {[{value:totalNights,label:"NIGHTS"},{value:"$"+Math.round(totalBudget/1000)+"k",label:"BUDGET"},{value:countries,label:"COUNTRIES"}].map((s,i)=>(
                 <div key={i} style={{textAlign:"center"}}>
                   <div style={{fontSize:isMobile?22:28,fontWeight:900,color:"#00E5FF",fontFamily:"'Space Mono',monospace"}}>{s.value}</div>
-                  <div style={{fontSize:13,color:"rgba(0,229,255,0.9)",letterSpacing:2,fontWeight:700}}>{s.label}</div>
+                  <div style={{fontSize:15,color:"rgba(0,229,255,0.9)",letterSpacing:2,fontWeight:700}}>{s.label}</div>
                 </div>
               ))}
             </div>
-            <button onClick={onComplete} style={{padding:isMobile?"16px 32px":"18px 44px",borderRadius:14,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#030810",fontSize:isMobile?12:13,fontWeight:900,fontFamily:"'Space Mono',monospace",letterSpacing:2.5,cursor:"pointer",animation:"consolePulse 2.8s ease-in-out infinite",minHeight:54}}>ENTER TRIP CONSOLE →</button>
+            <button onClick={onComplete} style={{padding:isMobile?"16px 32px":"18px 44px",borderRadius:14,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#030810",fontSize:isMobile?13:15,fontWeight:900,fontFamily:"'Space Mono',monospace",letterSpacing:2.5,cursor:"pointer",animation:"consolePulse 2.8s ease-in-out infinite",minHeight:54}}>ENTER TRIP CONSOLE →</button>
           </div>
         </div>
       </div>
@@ -745,10 +745,10 @@ function HandoffScreen({tripData,onComplete}) {
 
 // ─── SegmentDetailField ───────────────────────────────────────────
 function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00E5FF"}) {
-  const s={background:"rgba(0,8,20,0.6)",border:`1px solid ${accent}18`,borderRadius:6,color:"#FFF",fontSize:13,padding:multiline?"8px 10px":"7px 10px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",lineHeight:1.6,resize:multiline?"none":undefined};
+  const s={background:"rgba(0,8,20,0.6)",border:`1px solid ${accent}18`,borderRadius:6,color:"#FFF",fontSize:15,padding:multiline?"8px 10px":"7px 10px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",lineHeight:1.6,resize:multiline?"none":undefined};
   return(
     <div style={{display:"flex",flexDirection:"column",gap:3}}>
-      <div style={{fontSize:13,color:`${accent}CC`,letterSpacing:2.5,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{label}</div>
+      <div style={{fontSize:15,color:`${accent}CC`,letterSpacing:2.5,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{label}</div>
       {multiline?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={2} style={s} onFocus={e=>e.target.style.borderColor=`${accent}55`} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>
       :<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={e=>e.target.style.borderColor=`${accent}55`} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>}
     </div>
@@ -778,8 +778,8 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
       <div style={{display:"flex",background:"rgba(0,4,12,0.8)",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
         {CATS.map(c=>{const on=cat===c.id;return(
           <button key={c.id} onClick={()=>setCat(on?null:c.id)} style={{flex:1,minWidth:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"9px 2px",border:"none",cursor:"pointer",background:on?c.w:"transparent",borderBottom:on?`2px solid ${c.a}`:"2px solid transparent",transition:"all 0.15s",position:"relative"}}>
-            <span style={{fontSize:13,lineHeight:1}}>{c.icon}</span>
-            <span style={{fontSize:13,letterSpacing:0.5,fontFamily:"'Space Mono',monospace",fontWeight:700,color:on?c.a:"rgba(255,255,255,0.7)",whiteSpace:"nowrap"}}>{c.label}</span>
+            <span style={{fontSize:15,lineHeight:1}}>{c.icon}</span>
+            <span style={{fontSize:15,letterSpacing:0.5,fontFamily:"'Space Mono',monospace",fontWeight:700,color:on?c.a:"rgba(255,255,255,0.7)",whiteSpace:"nowrap"}}>{c.label}</span>
             {done[c.id]&&<div style={{position:"absolute",top:4,right:"14%",width:5,height:5,borderRadius:"50%",background:c.a,boxShadow:`0 0 5px ${c.a}`}}/>}
           </button>
         );})}
@@ -812,8 +812,8 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
               {det.activities.map(a=>(
                 <div key={a.id} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"8px 0",borderBottom:"1px solid rgba(255,217,61,0.07)"}}>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:13,color:"#FFF",fontFamily:"'Space Mono',monospace",marginBottom:2}}>{a.name}</div>
-                    <div style={{fontSize:13,color:"rgba(255,255,255,0.38)",display:"flex",gap:8,flexWrap:"wrap"}}>
+                    <div style={{fontSize:15,color:"#FFF",fontFamily:"'Space Mono',monospace",marginBottom:2}}>{a.name}</div>
+                    <div style={{fontSize:15,color:"rgba(255,255,255,0.38)",display:"flex",gap:8,flexWrap:"wrap"}}>
                       {a.date&&<span>📅 {fD(a.date)}</span>}{a.cost&&<span style={{color:"#FFD93D"}}>💰 ${a.cost}</span>}{a.transit&&<span>🚕 {a.transit}</span>}
                       {a.link&&<a href={a.link} target="_blank" rel="noopener noreferrer" style={{color:"#00E5FF",textDecoration:"none"}}>🔗 Book</a>}
                     </div>
@@ -822,12 +822,12 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
                 </div>
               ))}
               <div style={{paddingTop:8,display:"flex",justifyContent:"space-between"}}>
-                <span style={{fontSize:13,color:"rgba(255,255,255,0.28)",fontFamily:"monospace",letterSpacing:1}}>TOTAL ACTIVITIES</span>
-                <span style={{fontSize:13,fontWeight:700,color:"#FFD93D",fontFamily:"monospace"}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
+                <span style={{fontSize:15,color:"rgba(255,255,255,0.28)",fontFamily:"monospace",letterSpacing:1}}>TOTAL ACTIVITIES</span>
+                <span style={{fontSize:15,fontWeight:700,color:"#FFD93D",fontFamily:"monospace"}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
               </div>
             </div>}
             <div style={{background:"rgba(255,217,61,0.02)",border:"1px dashed rgba(255,217,61,0.16)",borderRadius:8,padding:"11px 12px"}}>
-              <div style={{fontSize:13,color:"rgba(255,217,61,0.5)",letterSpacing:2,marginBottom:8,fontFamily:"'Space Mono',monospace",fontWeight:700}}>ADD ACTIVITY</div>
+              <div style={{fontSize:15,color:"rgba(255,217,61,0.5)",letterSpacing:2,marginBottom:8,fontFamily:"'Space Mono',monospace",fontWeight:700}}>ADD ACTIVITY</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7,marginBottom:8}}>
                 <SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/>
                 <SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#FFD93D"/>
@@ -835,18 +835,18 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
                 <SDF label="TRANSIT" value={nAct.transit} onChange={v=>setNAct(a=>({...a,transit:v}))} placeholder="Taxi from hotel..." accent="#FFD93D"/>
               </div>
               <SDF label="BOOKING LINK" value={nAct.link} onChange={v=>setNAct(a=>({...a,link:v}))} placeholder="https://klook.com / dive shop..." accent="#FFD93D"/>
-              <button onClick={()=>{if(!nAct.name)return;setDet(d=>({...d,activities:[...d.activities,{...nAct,id:Date.now()}]}));setNAct({name:"",date:"",cost:"",transit:"",link:""});}} style={{marginTop:8,padding:"6px 14px",borderRadius:5,border:`1px solid rgba(255,217,61,${nAct.name?"0.4":"0.14"})`,background:nAct.name?"rgba(255,217,61,0.1)":"transparent",color:nAct.name?"#FFD93D":"rgba(255,255,255,0.18)",fontSize:13,cursor:nAct.name?"pointer":"default",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700}}>+ ADD</button>
+              <button onClick={()=>{if(!nAct.name)return;setDet(d=>({...d,activities:[...d.activities,{...nAct,id:Date.now()}]}));setNAct({name:"",date:"",cost:"",transit:"",link:""});}} style={{marginTop:8,padding:"6px 14px",borderRadius:5,border:`1px solid rgba(255,217,61,${nAct.name?"0.4":"0.14"})`,background:nAct.name?"rgba(255,217,61,0.1)":"transparent",color:nAct.name?"#FFD93D":"rgba(255,255,255,0.18)",fontSize:15,cursor:nAct.name?"pointer":"default",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700}}>+ ADD</button>
             </div>
             <div style={{marginTop:12}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code, best time..." accent="#FFD93D" multiline/></div>
           </div>}
           {cat==="food"&&<div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:9}}>
             <div style={{display:"flex",gap:8,alignItems:"flex-end"}}>
               <div style={{flex:1}}><SDF label="DAILY FOOD BUDGET ($)" type="number" value={det.food.dailyBudget} onChange={v=>uF("dailyBudget",v)} placeholder="e.g. 45" accent="#FF9F43"/></div>
-              <button onClick={aiFood} disabled={aiLoad} style={{padding:"7px 13px",borderRadius:6,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.07)",color:"#FF9F43",fontSize:13,cursor:aiLoad?"wait":"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,whiteSpace:"nowrap",height:32,flexShrink:0}}>{aiLoad?"✦...":"✦ AI EST"}</button>
+              <button onClick={aiFood} disabled={aiLoad} style={{padding:"7px 13px",borderRadius:6,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.07)",color:"#FF9F43",fontSize:15,cursor:aiLoad?"wait":"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,whiteSpace:"nowrap",height:32,flexShrink:0}}>{aiLoad?"✦...":"✦ AI EST"}</button>
             </div>
             {det.food.dailyBudget&&<div style={{display:"flex",justifyContent:"space-between",padding:"8px 12px",background:"rgba(255,159,67,0.05)",border:"1px solid rgba(255,159,67,0.16)",borderRadius:7}}>
-              <span style={{fontSize:13,color:"rgba(255,255,255,0.4)",fontFamily:"monospace"}}>{segment.nights} nights × ${det.food.dailyBudget}/day</span>
-              <span style={{fontSize:13,fontWeight:700,color:"#FFD93D",fontFamily:"monospace"}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
+              <span style={{fontSize:15,color:"rgba(255,255,255,0.4)",fontFamily:"monospace"}}>{segment.nights} nights × ${det.food.dailyBudget}/day</span>
+              <span style={{fontSize:15,fontWeight:700,color:"#FFD93D",fontFamily:"monospace"}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
             </div>}
             <SDF label="FOOD NOTES" value={det.food.notes} onChange={v=>uF("notes",v)} placeholder="Must-try dishes, market days, dietary notes..." accent="#FF9F43" multiline/>
           </div>}
@@ -854,35 +854,35 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
             {det.misc.length>0&&<div style={{marginBottom:12}}>
               {det.misc.map(m=>(
                 <div key={m.id} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 0",borderBottom:"1px solid rgba(162,155,254,0.07)"}}>
-                  <div style={{flex:1,fontSize:13,color:"#FFF",fontFamily:"'Space Mono',monospace"}}>{m.name}</div>
-                  <span style={{fontSize:13,fontWeight:700,color:"#A29BFE",fontFamily:"monospace",flexShrink:0}}>${parseFloat(m.cost||0).toLocaleString()}</span>
+                  <div style={{flex:1,fontSize:15,color:"#FFF",fontFamily:"'Space Mono',monospace"}}>{m.name}</div>
+                  <span style={{fontSize:15,fontWeight:700,color:"#A29BFE",fontFamily:"monospace",flexShrink:0}}>${parseFloat(m.cost||0).toLocaleString()}</span>
                   <button onClick={()=>setDet(d=>({...d,misc:d.misc.filter(x=>x.id!==m.id)}))} style={{background:"none",border:"none",color:"rgba(255,255,255,0.18)",fontSize:16,cursor:"pointer",lineHeight:1,padding:"0 2px",flexShrink:0}}>×</button>
                 </div>
               ))}
-              <div style={{paddingTop:8,display:"flex",justifyContent:"space-between"}}><span style={{fontSize:13,color:"rgba(255,255,255,0.28)",fontFamily:"monospace",letterSpacing:1}}>TOTAL MISC</span><span style={{fontSize:13,fontWeight:700,color:"#A29BFE",fontFamily:"monospace"}}>${det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0).toLocaleString()}</span></div>
+              <div style={{paddingTop:8,display:"flex",justifyContent:"space-between"}}><span style={{fontSize:15,color:"rgba(255,255,255,0.28)",fontFamily:"monospace",letterSpacing:1}}>TOTAL MISC</span><span style={{fontSize:15,fontWeight:700,color:"#A29BFE",fontFamily:"monospace"}}>${det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0).toLocaleString()}</span></div>
             </div>}
             <div style={{background:"rgba(162,155,254,0.02)",border:"1px dashed rgba(162,155,254,0.16)",borderRadius:8,padding:"11px 12px"}}>
-              <div style={{fontSize:13,color:"rgba(162,155,254,0.5)",letterSpacing:2,marginBottom:8,fontFamily:"'Space Mono',monospace",fontWeight:700}}>ADD EXPENSE</div>
+              <div style={{fontSize:15,color:"rgba(162,155,254,0.5)",letterSpacing:2,marginBottom:8,fontFamily:"'Space Mono',monospace",fontWeight:700}}>ADD EXPENSE</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7,marginBottom:8}}>
                 <SDF label="ITEM" value={nMisc.name} onChange={v=>setNMisc(m=>({...m,name:v}))} placeholder="Visa / permit / rental..." accent="#A29BFE"/>
                 <SDF label="COST ($)" type="number" value={nMisc.cost} onChange={v=>setNMisc(m=>({...m,cost:v}))} placeholder="0" accent="#A29BFE"/>
               </div>
-              <button onClick={()=>{if(!nMisc.name)return;setDet(d=>({...d,misc:[...d.misc,{...nMisc,id:Date.now()}]}));setNMisc({name:"",cost:""});}} style={{padding:"6px 14px",borderRadius:5,border:`1px solid rgba(162,155,254,${nMisc.name?"0.4":"0.14"})`,background:nMisc.name?"rgba(162,155,254,0.1)":"transparent",color:nMisc.name?"#A29BFE":"rgba(255,255,255,0.18)",fontSize:13,cursor:nMisc.name?"pointer":"default",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700}}>+ ADD</button>
+              <button onClick={()=>{if(!nMisc.name)return;setDet(d=>({...d,misc:[...d.misc,{...nMisc,id:Date.now()}]}));setNMisc({name:"",cost:""});}} style={{padding:"6px 14px",borderRadius:5,border:`1px solid rgba(162,155,254,${nMisc.name?"0.4":"0.14"})`,background:nMisc.name?"rgba(162,155,254,0.1)":"transparent",color:nMisc.name?"#A29BFE":"rgba(255,255,255,0.18)",fontSize:15,cursor:nMisc.name?"pointer":"default",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700}}>+ ADD</button>
             </div>
           </div>}
           {/* arch #2: inline intel preview */}
           {cat==="intel"&&<div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:9}}>
             {intelSnippet&&!intelSnippet.error?(
               <div style={{padding:"10px 12px",background:"rgba(255,107,107,0.04)",border:"1px solid rgba(255,107,107,0.14)",borderRadius:8}}>
-                {intelSnippet.tagline&&<div style={{fontSize:13,color:"#A29BFE",fontStyle:"italic",marginBottom:8,lineHeight:1.55}}>{intelSnippet.tagline}</div>}
-                {intelSnippet.mustDo?.slice(0,3).map((item,i)=><div key={i} style={{fontSize:13,color:"rgba(255,255,255,0.68)",marginBottom:4,paddingLeft:8}}>• {item}</div>)}
-                {intelSnippet.streetIntel?.[0]&&<div style={{marginTop:8,padding:"6px 9px",background:"rgba(255,107,107,0.07)",border:"1px solid rgba(255,107,107,0.18)",borderRadius:6}}><div style={{fontSize:13,color:"#FF6B6B",fontWeight:700,letterSpacing:1.5,marginBottom:2}}>{intelSnippet.streetIntel[0].type}</div><div style={{fontSize:13,color:"#FFF"}}>{intelSnippet.streetIntel[0].alert}</div></div>}
-                <div style={{marginTop:10,fontSize:13,color:"rgba(0,229,255,0.5)",fontFamily:"'Space Mono',monospace"}}>→ Full briefing in INTEL tab</div>
+                {intelSnippet.tagline&&<div style={{fontSize:15,color:"#A29BFE",fontStyle:"italic",marginBottom:8,lineHeight:1.55}}>{intelSnippet.tagline}</div>}
+                {intelSnippet.mustDo?.slice(0,3).map((item,i)=><div key={i} style={{fontSize:15,color:"rgba(255,255,255,0.68)",marginBottom:4,paddingLeft:8}}>• {item}</div>)}
+                {intelSnippet.streetIntel?.[0]&&<div style={{marginTop:8,padding:"6px 9px",background:"rgba(255,107,107,0.07)",border:"1px solid rgba(255,107,107,0.18)",borderRadius:6}}><div style={{fontSize:15,color:"#FF6B6B",fontWeight:700,letterSpacing:1.5,marginBottom:2}}>{intelSnippet.streetIntel[0].type}</div><div style={{fontSize:15,color:"#FFF"}}>{intelSnippet.streetIntel[0].alert}</div></div>}
+                <div style={{marginTop:10,fontSize:15,color:"rgba(0,229,255,0.5)",fontFamily:"'Space Mono',monospace"}}>→ Full briefing in INTEL tab</div>
               </div>
             ):(
               <div style={{padding:"12px 14px",background:"rgba(255,107,107,0.03)",border:"1px solid rgba(255,107,107,0.09)",borderRadius:8,display:"flex",alignItems:"center",gap:10}}>
                 <span style={{fontSize:18,opacity:0.35}}>🔭</span>
-                <div><div style={{fontSize:13,color:"rgba(255,255,255,0.38)",fontStyle:"italic",marginBottom:2}}>No briefing for {segment.name} yet.</div><div style={{fontSize:13,color:"rgba(0,229,255,0.45)",fontFamily:"'Space Mono',monospace"}}>→ Generate in the INTEL tab</div></div>
+                <div><div style={{fontSize:15,color:"rgba(255,255,255,0.38)",fontStyle:"italic",marginBottom:2}}>No briefing for {segment.name} yet.</div><div style={{fontSize:15,color:"rgba(0,229,255,0.45)",fontFamily:"'Space Mono',monospace"}}>→ Generate in the INTEL tab</div></div>
               </div>
             )}
             <SDF label="YOUR NOTES" value={det.intel.notes} onChange={v=>setDet(d=>({...d,intel:{...d.intel,notes:v}}))} placeholder="Visa requirements, local contacts, personal tips..." accent="#FF6B6B" multiline/>
@@ -925,53 +925,53 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
           <div style={{width:7,height:7,borderRadius:"50%",background:tc,flexShrink:0,boxShadow:open?`0 0 7px ${tc}`:"none"}}/>
           <div style={{flex:1,minWidth:0}}>
             <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"wrap"}}>
-              <span style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Space Mono',monospace"}}>{segment.name}</span>
-              <span style={{fontSize:13,color:tc,background:`${tc}16`,border:`1px solid ${tc}33`,borderRadius:10,padding:"1px 7px",letterSpacing:1,fontWeight:700}}>{TI[segment.type]} {segment.type?.toUpperCase()}</span>
-              {segment.note&&<span style={{fontSize:13,color:"rgba(255,255,255,0.72)",fontStyle:"italic"}}>{segment.note}</span>}
+              <span style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Space Mono',monospace"}}>{segment.name}</span>
+              <span style={{fontSize:15,color:tc,background:`${tc}16`,border:`1px solid ${tc}33`,borderRadius:10,padding:"1px 7px",letterSpacing:1,fontWeight:700}}>{TI[segment.type]} {segment.type?.toUpperCase()}</span>
+              {segment.note&&<span style={{fontSize:15,color:"rgba(255,255,255,0.72)",fontStyle:"italic"}}>{segment.note}</span>}
             </div>
-            <div style={{display:"flex",gap:9,fontSize:13,alignItems:"center",flexWrap:"wrap"}}>
+            <div style={{display:"flex",gap:9,fontSize:15,alignItems:"center",flexWrap:"wrap"}}>
               <span style={{color:"rgba(255,255,255,0.88)",fontWeight:700,fontFamily:"'Space Mono',monospace"}}>{fD(segment.arrival)} → {fD(segment.departure)}</span>
-              <span style={{color:tc,fontWeight:900,fontSize:13}}>🌙 {segment.nights}n</span>
-              {segment.diveCount>0&&<span style={{color:"#00E5FF",fontSize:13}}>🤿 {segment.diveCount}</span>}
+              <span style={{color:tc,fontWeight:900,fontSize:15}}>🌙 {segment.nights}n</span>
+              {segment.diveCount>0&&<span style={{color:"#00E5FF",fontSize:15}}>🤿 {segment.diveCount}</span>}
             </div>
           </div>
           <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
             <ProgDots phaseId={phaseId} segment={segment} intelSnippet={intelSnippet}/>
-            <div style={{fontSize:13,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>{fmt(segment.budget)}</div>
-            <div style={{fontSize:13.5,color:"rgba(255,255,255,0.68)",fontFamily:"monospace"}}>{fmt(Math.round(segment.budget/Math.max(segment.nights,1)))}/night</div>
+            <div style={{fontSize:15,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>{fmt(segment.budget)}</div>
+            <div style={{fontSize:15.5,color:"rgba(255,255,255,0.68)",fontFamily:"monospace"}}>{fmt(Math.round(segment.budget/Math.max(segment.nights,1)))}/night</div>
           </div>
           <div style={{width:18,height:18,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.28":"0.18"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginLeft:4}}>
-            <span style={{fontSize:13,color:open?"#00E5FF":"rgba(255,255,255,0.75)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
+            <span style={{fontSize:15,color:open?"#00E5FF":"rgba(255,255,255,0.75)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
           </div>
         </div>
         <button onClick={e=>{e.stopPropagation();setAskOpen(o=>!o);}} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,padding:"8px 10px",background:askOpen?"rgba(255,217,61,0.1)":"rgba(255,217,61,0.03)",border:"none",borderLeft:`1px solid rgba(255,217,61,${askOpen?"0.45":"0.22"})`,cursor:"pointer",flexShrink:0,height:"100%",minWidth:38,transition:"all 0.15s"}} title="Ask co-architect">
-          <span style={{fontSize:13,color:askOpen?"#FFD93D":"rgba(255,217,61,0.65)",lineHeight:1,textShadow:askOpen?"0 0 8px rgba(255,217,61,0.6)":"none",animation:askOpen?"none":"glowPulse 2.5s ease-in-out infinite"}}>✦</span>
-          <span style={{fontSize:13,color:askOpen?"#FFD93D":"rgba(255,217,61,0.55)",letterSpacing:1,fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>ASK</span>
+          <span style={{fontSize:15,color:askOpen?"#FFD93D":"rgba(255,217,61,0.65)",lineHeight:1,textShadow:askOpen?"0 0 8px rgba(255,217,61,0.6)":"none",animation:askOpen?"none":"glowPulse 2.5s ease-in-out infinite"}}>✦</span>
+          <span style={{fontSize:15,color:askOpen?"#FFD93D":"rgba(255,217,61,0.55)",letterSpacing:1,fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>ASK</span>
         </button>
       </div>
       {askOpen&&(
         <div style={{background:"rgba(0,4,14,0.95)",borderTop:"1px solid rgba(255,217,61,0.12)",padding:"10px 14px",animation:"slideOpen 0.18s ease"}}>
           <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
-            <span style={{fontSize:13,color:"rgba(255,217,61,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1.5}}>✦ CO-ARCHITECT · {segment.name.toUpperCase()}</span>
-            <button onClick={()=>setAskOpen(false)} style={{marginLeft:"auto",background:"none",border:"none",color:"rgba(255,255,255,0.2)",fontSize:14,cursor:"pointer",lineHeight:1}}>×</button>
+            <span style={{fontSize:15,color:"rgba(255,217,61,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1.5}}>✦ CO-ARCHITECT · {segment.name.toUpperCase()}</span>
+            <button onClick={()=>setAskOpen(false)} style={{marginLeft:"auto",background:"none",border:"none",color:"rgba(255,255,255,0.2)",fontSize:15,cursor:"pointer",lineHeight:1}}>×</button>
           </div>
-          {askChat.length===0&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.45)",marginBottom:8,lineHeight:1.6}}>"Ask me anything — best dive ops, where to stay, local tips..."</div>}
+          {askChat.length===0&&<div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,217,61,0.45)",marginBottom:8,lineHeight:1.6}}>"Ask me anything — best dive ops, where to stay, local tips..."</div>}
           {askChat.length>0&&<div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:8,maxHeight:160,overflowY:"auto"}}>
             {askChat.map((m,i)=>(
               <div key={i} style={{display:"flex",gap:6,flexDirection:m.role==="user"?"row-reverse":"row",alignItems:"flex-start"}}>
-                <div style={{width:16,height:16,borderRadius:"50%",background:m.role==="ai"?"#A9461D":"rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{m.role==="ai"?"✦":"·"}</div>
-                <div style={{borderRadius:8,padding:"6px 9px",fontSize:13,color:"#FFF",lineHeight:1.6,maxWidth:"88%",background:m.role==="ai"?"rgba(169,70,29,0.18)":"rgba(255,255,255,0.06)",border:`1px solid ${m.role==="ai"?"rgba(169,70,29,0.35)":"rgba(255,255,255,0.08)"}`}}>{m.text}</div>
+                <div style={{width:16,height:16,borderRadius:"50%",background:m.role==="ai"?"#A9461D":"rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flexShrink:0}}>{m.role==="ai"?"✦":"·"}</div>
+                <div style={{borderRadius:8,padding:"6px 9px",fontSize:15,color:"#FFF",lineHeight:1.6,maxWidth:"88%",background:m.role==="ai"?"rgba(169,70,29,0.18)":"rgba(255,255,255,0.06)",border:`1px solid ${m.role==="ai"?"rgba(169,70,29,0.35)":"rgba(255,255,255,0.08)"}`}}>{m.text}</div>
               </div>
             ))}
-            {askLoading&&<div style={{fontSize:13,color:"rgba(169,70,29,0.6)",fontStyle:"italic",paddingLeft:22}}>✦ thinking...</div>}
+            {askLoading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.6)",fontStyle:"italic",paddingLeft:22}}>✦ thinking...</div>}
             <div ref={askEnd}/>
           </div>}
           <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:7}}>
-            {["Best dive ops?","Where to stay?","What to skip?","Budget tips?","Local food?"].map(p=><button key={p} onClick={()=>setAskInput(p)} style={{padding:"3px 9px",borderRadius:12,border:"1px solid rgba(255,217,61,0.2)",background:"rgba(255,217,61,0.05)",color:"rgba(255,217,61,0.65)",fontSize:13,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{p}</button>)}
+            {["Best dive ops?","Where to stay?","What to skip?","Budget tips?","Local food?"].map(p=><button key={p} onClick={()=>setAskInput(p)} style={{padding:"3px 9px",borderRadius:12,border:"1px solid rgba(255,217,61,0.2)",background:"rgba(255,217,61,0.05)",color:"rgba(255,217,61,0.65)",fontSize:15,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{p}</button>)}
           </div>
           <div style={{display:"flex",gap:6}}>
-            <input value={askInput} onChange={e=>setAskInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendAsk();}} placeholder={`Ask about ${segment.name}...`} style={{flex:1,background:"rgba(0,8,20,0.8)",border:"1px solid rgba(255,217,61,0.2)",borderRadius:7,color:"#FFF",fontSize:13,padding:"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",minHeight:34}}/>
-            <button onClick={sendAsk} style={{background:"rgba(255,217,61,0.12)",border:"1px solid rgba(255,217,61,0.3)",borderRadius:7,color:"#FFD93D",fontSize:13,padding:"6px 11px",cursor:"pointer",minWidth:34,minHeight:34,fontWeight:700}}>↑</button>
+            <input value={askInput} onChange={e=>setAskInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendAsk();}} placeholder={`Ask about ${segment.name}...`} style={{flex:1,background:"rgba(0,8,20,0.8)",border:"1px solid rgba(255,217,61,0.2)",borderRadius:7,color:"#FFF",fontSize:15,padding:"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",minHeight:34}}/>
+            <button onClick={sendAsk} style={{background:"rgba(255,217,61,0.12)",border:"1px solid rgba(255,217,61,0.3)",borderRadius:7,color:"#FFD93D",fontSize:15,padding:"6px 11px",cursor:"pointer",minWidth:34,minHeight:34,fontWeight:700}}>↑</button>
           </div>
         </div>
       )}
@@ -1001,38 +1001,38 @@ function PhaseCard({phase,intelData,idx}) {
     <div style={{borderRadius:13,border:open?`1.5px solid ${phase.color}`:"1px solid rgba(0,229,255,0.08)",boxShadow:open?`0 0 0 1px ${phase.color}22, 0 4px 28px ${phase.color}28, inset 0 1px 0 ${phase.color}18`:"none",background:open?`linear-gradient(145deg,${phase.color}07,rgba(0,4,14,0.98))`:"rgba(3,7,16,0.88)",overflow:"hidden",transition:"all 0.25s",animation:`fadeUp 0.3s ease ${idx*.04}s both`}}>
       <div onClick={()=>setOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",cursor:"pointer",minHeight:62,borderLeft:`3px solid ${open?phase.color:phase.color+"50"}`}}>
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
-          <div style={{width:26,height:26,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace"}}>{phase.id}</div>
+          <div style={{width:26,height:26,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace"}}>{phase.id}</div>
           <div style={{fontSize:15}}>{phase.flag}</div>
         </div>
         <div style={{flex:1,minWidth:0}}>
           <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:4}}>
             <span style={{fontSize:15,fontWeight:700,color:open?phase.color:"#FFF",fontFamily:"'Space Mono',monospace",transition:"color 0.2s"}}>{phase.name}</span>
-            {isNow&&<span style={{fontSize:13,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:8,padding:"1px 6px",letterSpacing:1,fontWeight:700}}>● ACTIVE</span>}
+            {isNow&&<span style={{fontSize:15,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:8,padding:"1px 6px",letterSpacing:1,fontWeight:700}}>● ACTIVE</span>}
           </div>
           <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap",marginBottom:5}}>
-            <span style={{fontSize:13,color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{isMobile?fD(phase.arrival):fDS(phase.arrival)} → {isMobile?fD(phase.departure):fDS(phase.departure)}</span>
-            <span style={{fontSize:13,color:phase.color,fontWeight:900}}>🌙 {phase.totalNights}n</span>
-            {phase.totalDives>0&&<span style={{fontSize:13,color:"#00E5FF"}}>🤿 {phase.totalDives}</span>}
+            <span style={{fontSize:15,color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{isMobile?fD(phase.arrival):fDS(phase.arrival)} → {isMobile?fD(phase.departure):fDS(phase.departure)}</span>
+            <span style={{fontSize:15,color:phase.color,fontWeight:900}}>🌙 {phase.totalNights}n</span>
+            {phase.totalDives>0&&<span style={{fontSize:15,color:"#00E5FF"}}>🤿 {phase.totalDives}</span>}
           </div>
           {pct>0&&<div style={{display:"flex",alignItems:"center",gap:6}}>
             <div style={{width:100,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}66,${phase.color})`,borderRadius:2,transition:"width 0.4s ease"}}/></div>
-            <span style={{fontSize:13,color:`${phase.color}CC`,fontFamily:"monospace",fontWeight:700}}>{pct}% planned</span>
+            <span style={{fontSize:15,color:`${phase.color}CC`,fontFamily:"monospace",fontWeight:700}}>{pct}% planned</span>
           </div>}
         </div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
           <div style={{fontSize:16,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</div>
-          <div style={{fontSize:13,color:"rgba(255,255,255,0.7)",fontFamily:"monospace"}}>{isPast?"COMPLETE":isNow?"IN PROGRESS":`${dUntil}d away`}</div>
+          <div style={{fontSize:15,color:"rgba(255,255,255,0.7)",fontFamily:"monospace"}}>{isPast?"COMPLETE":isNow?"IN PROGRESS":`${dUntil}d away`}</div>
         </div>
         <div style={{width:20,height:20,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.18":"0.07"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-          <span style={{fontSize:13,color:open?phase.color:"rgba(255,255,255,0.55)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
+          <span style={{fontSize:15,color:open?phase.color:"rgba(255,255,255,0.55)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
         </div>
       </div>
       {open&&(
         <div style={{animation:"slideOpen 0.2s ease",background:"rgba(0,3,11,0.55)"}}>
           <div style={{padding:"6px 16px 6px 20px",borderTop:`1px solid ${phase.color}15`,borderBottom:"1px solid rgba(0,229,255,0.055)",display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
             <div style={{width:4,height:4,borderRadius:"50%",background:phase.color,flexShrink:0}}/>
-            <span style={{fontSize:13,color:phase.color,letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{phase.segments.length} SEGMENT{phase.segments.length>1?"S":""}</span>
-            <span style={{fontSize:13,color:`${phase.color}88`,letterSpacing:2,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>· TAP SEGMENT TO EXPAND</span>
+            <span style={{fontSize:15,color:phase.color,letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{phase.segments.length} SEGMENT{phase.segments.length>1?"S":""}</span>
+            <span style={{fontSize:15,color:`${phase.color}88`,letterSpacing:2,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>· TAP SEGMENT TO EXPAND</span>
           </div>
           {phase.segments.map((seg,i)=><SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1}/>)}
         </div>
@@ -1082,9 +1082,9 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
     <div className="mc-root" style={{animation:"fadeIn 0.6s ease both"}}>
       {!isFullscreen&&<ConsoleHeader console="trip" isMobile={isMobile} rightSlot={
         <div style={{display:"flex",alignItems:"center",gap:isMobile?6:8,flexShrink:0}}>
-          {!isMobile&&<><div style={{display:"flex",alignItems:"center",gap:3}}><div style={{width:3,height:3,borderRadius:"50%",background:"#69F0AE",boxShadow:"0 0 5px #69F0AE80"}}/><span style={{fontSize:13,color:"#69F0AE",letterSpacing:1.5,fontFamily:"'Space Mono',monospace"}}>LIVE</span></div><div style={{fontSize:13,color:"rgba(255,255,255,0.6)",letterSpacing:1,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{TODAY.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}).toUpperCase()}</div><div style={{width:1,height:12,background:"rgba(0,229,255,0.15)"}}/></>}
+          {!isMobile&&<><div style={{display:"flex",alignItems:"center",gap:3}}><div style={{width:3,height:3,borderRadius:"50%",background:"#69F0AE",boxShadow:"0 0 5px #69F0AE80"}}/><span style={{fontSize:15,color:"#69F0AE",letterSpacing:1.5,fontFamily:"'Space Mono',monospace"}}>LIVE</span></div><div style={{fontSize:15,color:"rgba(255,255,255,0.6)",letterSpacing:1,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{TODAY.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}).toUpperCase()}</div><div style={{width:1,height:12,background:"rgba(0,229,255,0.15)"}}/></>}
           <button onClick={onPackConsole} style={{display:"flex",flexDirection:"row",alignItems:"center",gap:6,padding:"5px 10px",borderRadius:6,border:"1px solid rgba(196,87,30,0.65)",background:"linear-gradient(135deg,rgba(45,18,0,0.9),rgba(26,9,0,0.85))",color:"#FF9F43",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,animation:"launchPulse 3s ease-in-out infinite",minHeight:34,flexShrink:0}}>
-            <span style={{fontSize:13,lineHeight:1}}>🎒</span><span style={{fontSize:13,letterSpacing:1.5,whiteSpace:"nowrap"}}>{isMobile?"PACK":"PACK CONSOLE"}</span>
+            <span style={{fontSize:15,lineHeight:1}}>🎒</span><span style={{fontSize:15,letterSpacing:1.5,whiteSpace:"nowrap"}}>{isMobile?"PACK":"PACK CONSOLE"}</span>
           </button>
         </div>
       }/>}
@@ -1092,14 +1092,14 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.04) 0%,transparent 60%)",pointerEvents:"none"}}/>
         {tripData.tripName&&<div style={{marginBottom:isMobile?5:7,position:"relative"}}>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:17,fontWeight:300,fontStyle:"italic",color:"#FFD93D",lineHeight:1,textShadow:"0 0 28px rgba(255,217,61,0.35)"}}>{tripData.tripName}</div>
-          {!isMobile&&<div style={{fontSize:13,color:"rgba(0,229,255,0.55)",letterSpacing:2,marginTop:3,fontFamily:"'Space Mono',monospace"}}>{[...new Set(flatPhases.map(p=>p.country))].join(" · ")}</div>}
+          {!isMobile&&<div style={{fontSize:15,color:"rgba(0,229,255,0.55)",letterSpacing:2,marginTop:3,fontFamily:"'Space Mono',monospace"}}>{[...new Set(flatPhases.map(p=>p.country))].join(" · ")}</div>}
         </div>}
         <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
           {heroStats.map((s,i)=>(
             <div key={s.label} style={{textAlign:"center",padding:isMobile?"2px 3px":"4px 6px",borderLeft:i>0?"1px solid rgba(0,229,255,0.1)":"none"}}>
-              <div style={{fontSize:isMobile?11:13,fontWeight:700,color:"rgba(255,255,255,0.65)",letterSpacing:isMobile?0.5:2,marginBottom:isMobile?2:4,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
+              <div style={{fontSize:isMobile?13:15,fontWeight:700,color:"rgba(255,255,255,0.65)",letterSpacing:isMobile?0.5:2,marginBottom:isMobile?2:4,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
               <div style={{fontSize:isMobile?16:26,fontWeight:900,lineHeight:1,color:s.color,textShadow:`0 0 20px ${s.glow}`,fontFamily:"'Space Mono',monospace"}}>{s.value}</div>
-              <div style={{fontSize:isMobile?11:13,fontWeight:700,color:s.color,opacity:0.7,letterSpacing:isMobile?0.5:2,marginTop:isMobile?2:3,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
+              <div style={{fontSize:isMobile?13:15,fontWeight:700,color:s.color,opacity:0.7,letterSpacing:isMobile?0.5:2,marginTop:isMobile?2:3,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
             </div>
           ))}
         </div>
@@ -1107,11 +1107,11 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
       {!isFullscreen&&<div style={{display:"flex",borderBottom:"1px solid rgba(0,229,255,0.1)",flexShrink:0}}>
         <div style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,borderRight:"1px solid rgba(0,229,255,0.1)",background:"rgba(0,229,255,0.04)"}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"#00E5FF",boxShadow:"0 0 6px #00E5FF",animation:"consolePulse 2.5s ease-in-out infinite"}}/>
-          <span style={{fontSize:13,fontWeight:700,color:"#00E5FF",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>TRIP CONSOLE</span>
+          <span style={{fontSize:15,fontWeight:700,color:"#00E5FF",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>TRIP CONSOLE</span>
         </div>
         <div onClick={onPackConsole} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",background:"transparent"}} onMouseOver={e=>e.currentTarget.style.background="rgba(196,87,30,0.08)"} onMouseOut={e=>e.currentTarget.style.background="transparent"}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(196,87,30,0.4)"}}/>
-          <span style={{fontSize:13,fontWeight:700,color:"rgba(255,159,67,0.65)",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>PACK CONSOLE</span>
+          <span style={{fontSize:15,fontWeight:700,color:"rgba(255,159,67,0.65)",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>PACK CONSOLE</span>
         </div>
       </div>}
       {/* Tab bar */}
@@ -1121,7 +1121,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
             {TABS.map(t=>(
               <button key={t.id} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 4px",minWidth:0}}>
                 <span style={{fontSize:16,lineHeight:1}}>{t.label.split(" ")[0]}</span>
-                <span style={{fontSize:13,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap",color:tab===t.id?"#00E5FF":"rgba(255,255,255,0.5)"}}>{t.label.split(" ").slice(1).join(" ")}</span>
+                <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap",color:tab===t.id?"#00E5FF":"rgba(255,255,255,0.5)"}}>{t.label.split(" ").slice(1).join(" ")}</span>
               </button>
             ))}
             <button onClick={()=>setShowMobileMenu(m=>!m)} style={{width:48,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 6px",background:showMobileMenu?"rgba(0,229,255,0.1)":"transparent",border:"none",borderLeft:"1px solid rgba(0,229,255,0.15)",cursor:"pointer",flexShrink:0}}>
@@ -1132,15 +1132,15 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
             <div style={{background:"#060A0F",borderBottom:"1px solid rgba(0,229,255,0.15)",display:"flex",gap:0,animation:"slideOpen 0.15s ease"}}>
               <button onClick={()=>setFullscreen(f=>!f)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"12px 8px",background:isFullscreen?"rgba(0,229,255,0.1)":"transparent",border:"none",borderRight:"1px solid rgba(0,229,255,0.1)",cursor:"pointer",color:"#00E5FF"}}>
                 <span style={{fontSize:16}}>{isFullscreen?"⊡":"⛶"}</span>
-                <span style={{fontSize:13,letterSpacing:1,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
+                <span style={{fontSize:15,letterSpacing:1,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
               </button>
               <button onClick={()=>{onRevise();setShowMobileMenu(false);}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"12px 8px",background:"transparent",border:"none",borderRight:"1px solid rgba(0,229,255,0.1)",cursor:"pointer"}}>
                 <span style={{fontSize:16}}>✏️</span>
-                <span style={{fontSize:13,letterSpacing:1,fontWeight:700,fontFamily:"'Space Mono',monospace",color:"#00E5FF"}}>REVISE</span>
+                <span style={{fontSize:15,letterSpacing:1,fontWeight:700,fontFamily:"'Space Mono',monospace",color:"#00E5FF"}}>REVISE</span>
               </button>
               <button onClick={()=>{handleNewTripClick();}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"12px 8px",background:confirmNewTrip?"rgba(255,107,107,0.15)":"transparent",border:"none",cursor:"pointer"}}>
                 <span style={{fontSize:16,color:confirmNewTrip?"#FF6B6B":"#FFD93D"}}>{confirmNewTrip?"⚠️":"+"}</span>
-                <span style={{fontSize:13,letterSpacing:1,fontWeight:700,fontFamily:"'Space Mono',monospace",color:confirmNewTrip?"#FF6B6B":"#FFD93D"}}>{confirmNewTrip?"CONFIRM?":"NEW TRIP"}</span>
+                <span style={{fontSize:15,letterSpacing:1,fontWeight:700,fontFamily:"'Space Mono',monospace",color:confirmNewTrip?"#FF6B6B":"#FFD93D"}}>{confirmNewTrip?"CONFIRM?":"NEW TRIP"}</span>
               </button>
             </div>
           )}
@@ -1148,36 +1148,36 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
       ):(
         <div style={{display:"flex",borderBottom:"1px solid #111D2A",background:"#060A0F",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch"}}>
           <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)",border:"none",borderRight:"1px solid rgba(0,229,255,0.2)",cursor:"pointer",flexShrink:0,color:"#00E5FF"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.22)"} onMouseOut={e=>e.currentTarget.style.background=isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)"}>
-            <span style={{fontSize:14,lineHeight:1,textShadow:"0 0 10px rgba(0,229,255,0.9)"}}>{isFullscreen?"⊡":"⛶"}</span>
-            <span style={{fontSize:13,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
+            <span style={{fontSize:15,lineHeight:1,textShadow:"0 0 10px rgba(0,229,255,0.9)"}}>{isFullscreen?"⊡":"⛶"}</span>
+            <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
           </button>
           <div style={{display:"flex",flex:1,overflowX:"auto"}}>
             {TABS.map(t=>(
               <button key={t.id} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1,padding:"9px 12px",minWidth:44}}>
-                <span style={{fontSize:13}}>{t.label.split(" ")[0]}</span>
-                <span style={{fontSize:13,letterSpacing:1.5}}>{t.label.split(" ").slice(1).join(" ")}</span>
+                <span style={{fontSize:15}}>{t.label.split(" ")[0]}</span>
+                <span style={{fontSize:15,letterSpacing:1.5}}>{t.label.split(" ").slice(1).join(" ")}</span>
               </button>
             ))}
           </div>
           <button onClick={onRevise} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"8px 12px",background:"rgba(0,229,255,0.06)",border:"none",borderLeft:"1px solid rgba(0,229,255,0.15)",cursor:"pointer",flexShrink:0}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.14)"} onMouseOut={e=>e.currentTarget.style.background="rgba(0,229,255,0.06)"}>
-            <span style={{fontSize:13,lineHeight:1}}>✏️</span><span style={{fontSize:13,letterSpacing:1,fontFamily:"'Space Mono',monospace",color:"#00E5FF",whiteSpace:"nowrap",fontWeight:700}}>REVISE</span>
+            <span style={{fontSize:15,lineHeight:1}}>✏️</span><span style={{fontSize:15,letterSpacing:1,fontFamily:"'Space Mono',monospace",color:"#00E5FF",whiteSpace:"nowrap",fontWeight:700}}>REVISE</span>
           </button>
           <button onClick={handleNewTripClick} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"8px 14px",borderLeft:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(169,70,29,0.4)",background:confirmNewTrip?"rgba(255,107,107,0.15)":"rgba(169,70,29,0.08)",border:"none",cursor:"pointer",flexShrink:0,transition:"all 0.2s",minWidth:confirmNewTrip?72:50}} onMouseOver={e=>e.currentTarget.style.background=confirmNewTrip?"rgba(255,107,107,0.22)":"rgba(169,70,29,0.18)"} onMouseOut={e=>e.currentTarget.style.background=confirmNewTrip?"rgba(255,107,107,0.15)":"rgba(169,70,29,0.08)"}>
-            <span style={{fontSize:13,color:confirmNewTrip?"#FF6B6B":"#FFD93D",lineHeight:1}}>{confirmNewTrip?"⚠️":"+"}</span>
-            <span style={{fontSize:13,fontFamily:"'Space Mono',monospace",color:confirmNewTrip?"#FF6B6B":"#FFD93D",whiteSpace:"nowrap",fontWeight:700,textAlign:"center"}}>{confirmNewTrip?"CONFIRM?":"NEW TRIP"}</span>
+            <span style={{fontSize:15,color:confirmNewTrip?"#FF6B6B":"#FFD93D",lineHeight:1}}>{confirmNewTrip?"⚠️":"+"}</span>
+            <span style={{fontSize:15,fontFamily:"'Space Mono',monospace",color:confirmNewTrip?"#FF6B6B":"#FFD93D",whiteSpace:"nowrap",fontWeight:700,textAlign:"center"}}>{confirmNewTrip?"CONFIRM?":"NEW TRIP"}</span>
           </button>
         </div>
       )}
       {confirmNewTrip&&<div style={{padding:"7px 14px",background:"rgba(255,107,107,0.1)",borderBottom:"1px solid rgba(255,107,107,0.3)",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-        <span style={{fontSize:13,color:"rgba(255,107,107,0.9)",letterSpacing:1}}>⚠️ This will clear your expedition. Tap CONFIRM? again to proceed.</span>
-        <button onClick={()=>setConfirmNewTrip(false)} style={{fontSize:13,color:"rgba(255,255,255,0.4)",background:"none",border:"none",cursor:"pointer",padding:"2px 6px"}}>✕</button>
+        <span style={{fontSize:15,color:"rgba(255,107,107,0.9)",letterSpacing:1}}>⚠️ This will clear your expedition. Tap CONFIRM? again to proceed.</span>
+        <button onClick={()=>setConfirmNewTrip(false)} style={{fontSize:15,color:"rgba(255,255,255,0.4)",background:"none",border:"none",cursor:"pointer",padding:"2px 6px"}}>✕</button>
       </div>}
       <div className="mc-content">
         {tab==="next"&&(
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
-            {tripData.visionNarrative&&<div style={{marginBottom:8}}><div style={{fontSize:13,color:"rgba(255,217,61,0.85)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?12:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.7,borderLeft:"2px solid rgba(255,217,61,0.3)",paddingLeft:10}}>"{tripData.visionNarrative.slice(0,160)}{tripData.visionNarrative.length>160?"...":""}"</div></div>}
-            <div style={{fontSize:isMobile?11:13,color:"#00E5FF",letterSpacing:isMobile?2:3,marginBottom:4,fontWeight:700,fontFamily:"'Space Mono',monospace",whiteSpace:isMobile?"normal":"nowrap"}}>{isMobile?`YOUR EXPEDITION · ${segPhases.length} PHASES`:`YOUR EXPEDITION · ${segPhases.length} PHASES · TAP PHASE TO EXPAND`}</div>
-            {isMobile&&<div style={{fontSize:13,color:"rgba(0,229,255,0.55)",letterSpacing:2,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>TAP PHASE TO EXPAND</div>}
+            {tripData.visionNarrative&&<div style={{marginBottom:8}}><div style={{fontSize:15,color:"rgba(255,217,61,0.85)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.7,borderLeft:"2px solid rgba(255,217,61,0.3)",paddingLeft:10}}>"{tripData.visionNarrative.slice(0,160)}{tripData.visionNarrative.length>160?"...":""}"</div></div>}
+            <div style={{fontSize:isMobile?13:15,color:"#00E5FF",letterSpacing:isMobile?2:3,marginBottom:4,fontWeight:700,fontFamily:"'Space Mono',monospace",whiteSpace:isMobile?"normal":"nowrap"}}>{isMobile?`YOUR EXPEDITION · ${segPhases.length} PHASES`:`YOUR EXPEDITION · ${segPhases.length} PHASES · TAP PHASE TO EXPAND`}</div>
+            {isMobile&&<div style={{fontSize:15,color:"rgba(0,229,255,0.55)",letterSpacing:2,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>TAP PHASE TO EXPAND</div>}
             {segPhases.map((phase,i)=><PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i}/>)}
           </div>
         )}
@@ -1186,9 +1186,9 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
             <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr 1fr":"1fr 1fr 1fr",gap:8,marginBottom:16}}>
               {[{label:"EXPEDITION TOTAL",value:fmt(totalBudget),color:"#FFD93D",sub:`across ${flatPhases.length} phases`},{label:"AVG / NIGHT",value:fmt(totalBudget/Math.max(totalNights,1)),color:"#A29BFE",sub:`${totalNights} nights`},{label:"AVG / PHASE",value:fmt(totalBudget/Math.max(flatPhases.length,1)),color:"#00E5FF",sub:"per destination"}].map((s,si)=>(
                 <div key={s.label} style={{background:"linear-gradient(135deg,rgba(0,8,20,0.8),rgba(0,20,40,0.6))",border:"1px solid rgba(0,229,255,0.12)",borderRadius:10,padding:isMobile?"8px 10px":"12px 14px",textAlign:"center",gridColumn:isMobile&&si===2?"1 / -1":"auto"}}>
-                  <div style={{fontSize:13,color:"rgba(255,255,255,0.65)",letterSpacing:2,marginBottom:4}}>{s.label}</div>
+                  <div style={{fontSize:15,color:"rgba(255,255,255,0.65)",letterSpacing:2,marginBottom:4}}>{s.label}</div>
                   <div style={{fontSize:isMobile?14:22,fontWeight:900,color:s.color}}>{s.value}</div>
-                  <div style={{fontSize:13,color:"rgba(255,255,255,0.55)",marginTop:3}}>{s.sub}</div>
+                  <div style={{fontSize:15,color:"rgba(255,255,255,0.55)",marginTop:3}}>{s.sub}</div>
                 </div>
               ))}
             </div>
@@ -1199,13 +1199,13 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
                 <div key={phase.id} style={{background:"rgba(0,8,20,0.5)",border:"1px solid rgba(0,229,255,0.08)",borderRadius:8,padding:"9px 13px",borderLeft:"3px solid "+phase.color,marginBottom:6}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,flex:1,minWidth:0}}>
-                      <span style={{fontSize:13}}>{phase.flag}</span>
-                      <div><div style={{fontSize:13,fontWeight:700,color:"#FFF"}}>{phase.name}</div><div style={{fontSize:13,color:"rgba(255,255,255,0.6)"}}>{phase.nights}n · {phase.country}</div></div>
+                      <span style={{fontSize:15}}>{phase.flag}</span>
+                      <div><div style={{fontSize:15,fontWeight:700,color:"#FFF"}}>{phase.name}</div><div style={{fontSize:15,color:"rgba(255,255,255,0.6)"}}>{phase.nights}n · {phase.country}</div></div>
                     </div>
-                    <span style={{fontSize:14,fontWeight:900,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0,marginLeft:8}}>{fmt(budget)}</span>
+                    <span style={{fontSize:15,fontWeight:900,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0,marginLeft:8}}>{fmt(budget)}</span>
                   </div>
                   <div style={{height:6,background:"rgba(255,255,255,0.05)",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}88,${phase.color})`,borderRadius:3,transition:"width 0.6s ease"}}/></div>
-                  <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}><div style={{fontSize:13,color:"rgba(255,255,255,0.55)"}}>{fmt(Math.round(budget/Math.max(phase.nights,1)))}/night</div><div style={{fontSize:13,color:"rgba(255,255,255,0.45)"}}>{Math.round(pct)}% of highest</div></div>
+                  <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}><div style={{fontSize:15,color:"rgba(255,255,255,0.55)"}}>{fmt(Math.round(budget/Math.max(phase.nights,1)))}/night</div><div style={{fontSize:15,color:"rgba(255,255,255,0.45)"}}>{Math.round(pct)}% of highest</div></div>
                 </div>
               );
             })}
@@ -1213,18 +1213,18 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
         )}
         {tab==="book"&&(
           <div>
-            <div style={{fontSize:13,color:"#FFD93D",letterSpacing:3,marginBottom:4}}>BOOK YOUR EXPEDITION</div>
-            <div style={{fontSize:13,color:"rgba(255,255,255,0.65)",marginBottom:14}}>Links open in new tab</div>
+            <div style={{fontSize:15,color:"#FFD93D",letterSpacing:3,marginBottom:4}}>BOOK YOUR EXPEDITION</div>
+            <div style={{fontSize:15,color:"rgba(255,255,255,0.65)",marginBottom:14}}>Links open in new tab</div>
             {flatPhases.map(phase=>{
               const dest=encodeURIComponent(phase.name);
               const LINKS=[{icon:"✈️",label:"Google Flights",color:"#00E5FF",url:"https://www.google.com/flights"},{icon:"✈️",label:"Skyscanner",color:"#00E5FF",url:"https://www.skyscanner.com/transport/flights/"+dest},{icon:"🏠",label:"Airbnb",color:"#69F0AE",url:"https://www.airbnb.com/s/"+dest+"/homes"},{icon:"🏨",label:"Booking.com",color:"#69F0AE",url:"https://www.booking.com/searchresults.html?ss="+dest},{icon:"🎯",label:"Klook",color:"#FF9F43",url:"https://www.klook.com/en-US/search/?query="+dest},{icon:"🗺️",label:"Viator",color:"#FF9F43",url:"https://www.viator.com/searchResults/all?text="+dest},{icon:"🤿",label:"PADI Dive Ops",color:"#00E5FF",url:"https://www.padi.com/dive-shop?q="+dest}];
               return(
                 <div key={phase.id} style={{background:"#0C1520",border:"1px solid "+phase.color+"22",borderRadius:10,marginBottom:10,overflow:"hidden"}}>
-                  <div style={{padding:"10px 13px",borderBottom:"1px solid "+phase.color+"22",display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:16}}>{phase.flag}</span><div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:phase.color}}>{phase.name}</div><div style={{fontSize:13,color:"rgba(255,255,255,0.7)"}}>{phase.arrival} · {phase.nights} nights</div></div><div style={{fontSize:13,fontWeight:700,color:"#FFD93D"}}>{fmt(phase.budget||phase.cost||0)}</div></div>
+                  <div style={{padding:"10px 13px",borderBottom:"1px solid "+phase.color+"22",display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:16}}>{phase.flag}</span><div style={{flex:1}}><div style={{fontSize:15,fontWeight:700,color:phase.color}}>{phase.name}</div><div style={{fontSize:15,color:"rgba(255,255,255,0.7)"}}>{phase.arrival} · {phase.nights} nights</div></div><div style={{fontSize:15,fontWeight:700,color:"#FFD93D"}}>{fmt(phase.budget||phase.cost||0)}</div></div>
                   <div style={{padding:"10px 13px",display:"flex",flexWrap:"wrap",gap:6}}>
                     {LINKS.filter(l=>phase.diveCount>0||l.label!=="PADI Dive Ops").map(link=>(
                       <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:5,padding:isMobile?"8px 13px":"6px 11px",background:link.color+"10",border:"1px solid "+link.color+"33",borderRadius:20,textDecoration:"none",minHeight:36}}>
-                        <span style={{fontSize:13}}>{link.icon}</span><span style={{fontSize:isMobile?11:13,color:link.color,fontFamily:"'Space Mono',monospace"}}>{link.label}</span><span style={{fontSize:13,color:"rgba(255,255,255,0.25)"}}>↗</span>
+                        <span style={{fontSize:15}}>{link.icon}</span><span style={{fontSize:isMobile?13:15,color:link.color,fontFamily:"'Space Mono',monospace"}}>{link.label}</span><span style={{fontSize:15,color:"rgba(255,255,255,0.25)"}}>↗</span>
                       </a>
                     ))}
                   </div>
@@ -1238,13 +1238,13 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
           <div>
             {!explorerDest?(
               <div>
-                <div style={{fontSize:13,color:"#FFD93D",letterSpacing:3,marginBottom:14}}>SELECT A PHASE · FOR DESTINATION INTEL</div>
+                <div style={{fontSize:15,color:"#FFD93D",letterSpacing:3,marginBottom:14}}>SELECT A PHASE · FOR DESTINATION INTEL</div>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:8}}>
                   {flatPhases.map(phase=>(
                     <button key={phase.id} onClick={()=>openIntel(phase.name,phase.name,phase.type)} style={{background:phase.color+"08",border:"1px solid "+phase.color+"33",borderRadius:8,padding:"11px 12px",cursor:"pointer",textAlign:"left",minHeight:60}}>
-                      <div style={{fontSize:13,color:phase.color,marginBottom:3}}>{phase.flag} Phase {phase.id}</div>
-                      <div style={{fontSize:13,fontWeight:700,color:"#FFF"}}>{phase.name}</div>
-                      <div style={{fontSize:13,color:"rgba(255,255,255,0.5)",marginTop:2}}>{TI[phase.type]} {phase.type}</div>
+                      <div style={{fontSize:15,color:phase.color,marginBottom:3}}>{phase.flag} Phase {phase.id}</div>
+                      <div style={{fontSize:15,fontWeight:700,color:"#FFF"}}>{phase.name}</div>
+                      <div style={{fontSize:15,color:"rgba(255,255,255,0.5)",marginTop:2}}>{TI[phase.type]} {phase.type}</div>
                     </button>
                   ))}
                 </div>
@@ -1252,28 +1252,28 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
             ):(
               <div>
                 <div style={{display:"flex",alignItems:"center",gap:9,marginBottom:14}}>
-                  <button onClick={()=>setExplorerDest(null)} style={{background:"none",border:"1px solid #111D2A",borderRadius:4,color:"#FFF",fontSize:13,padding:"4px 9px",cursor:"pointer",minHeight:36,marginRight:10}}>← BACK</button>
-                  <div><div style={{fontSize:15,fontWeight:700,color:"#FFF"}}>{explorerDest.destination}</div><div style={{fontSize:13,color:"rgba(255,255,255,0.5)",letterSpacing:2}}>{TI[explorerDest.type]} {explorerDest.type?.toUpperCase()}</div></div>
+                  <button onClick={()=>setExplorerDest(null)} style={{background:"none",border:"1px solid #111D2A",borderRadius:4,color:"#FFF",fontSize:15,padding:"4px 9px",cursor:"pointer",minHeight:36,marginRight:10}}>← BACK</button>
+                  <div><div style={{fontSize:15,fontWeight:700,color:"#FFF"}}>{explorerDest.destination}</div><div style={{fontSize:15,color:"rgba(255,255,255,0.5)",letterSpacing:2}}>{TI[explorerDest.type]} {explorerDest.type?.toUpperCase()}</div></div>
                 </div>
-                {loadingIntel?<div>{[80,65,72,55,68].map((w,i)=><div key={i} className="loading-skeleton" style={{width:w+"%"}}/>)}<div style={{color:"rgba(255,255,255,0.4)",fontSize:13,letterSpacing:2,marginTop:6}}>LOADING INTEL...</div></div>
+                {loadingIntel?<div>{[80,65,72,55,68].map((w,i)=><div key={i} className="loading-skeleton" style={{width:w+"%"}}/>)}<div style={{color:"rgba(255,255,255,0.4)",fontSize:15,letterSpacing:2,marginTop:6}}>LOADING INTEL...</div></div>
                 :explorerData[explorerDest.destination]?(()=>{
                   const d=explorerData[explorerDest.destination];
-                  if(d.error)return(<div style={{textAlign:"center",padding:"30px 20px"}}><div style={{fontSize:32,marginBottom:16}}>📡</div><div style={{fontSize:13,color:"#FF6B6B",marginBottom:8,fontFamily:"'Space Mono',monospace"}}>Intel unavailable</div><div style={{fontSize:13,color:"rgba(255,255,255,0.4)",marginBottom:20,lineHeight:1.6}}>{d.errorMsg}</div><button style={{background:"rgba(255,107,107,0.15)",border:"1px solid #FF6B6B44",borderRadius:8,color:"#FF6B6B",fontSize:13,padding:"10px 20px",cursor:"pointer",fontFamily:"monospace",minHeight:44}} onClick={()=>{setExplorerData(p=>({...p,[explorerDest.destination]:undefined}));openIntel(explorerDest.destination,explorerDest.phaseName,explorerDest.type);}}>↺ RETRY</button></div>);
+                  if(d.error)return(<div style={{textAlign:"center",padding:"30px 20px"}}><div style={{fontSize:32,marginBottom:16}}>📡</div><div style={{fontSize:15,color:"#FF6B6B",marginBottom:8,fontFamily:"'Space Mono',monospace"}}>Intel unavailable</div><div style={{fontSize:15,color:"rgba(255,255,255,0.4)",marginBottom:20,lineHeight:1.6}}>{d.errorMsg}</div><button style={{background:"rgba(255,107,107,0.15)",border:"1px solid #FF6B6B44",borderRadius:8,color:"#FF6B6B",fontSize:15,padding:"10px 20px",cursor:"pointer",fontFamily:"monospace",minHeight:44}} onClick={()=>{setExplorerData(p=>({...p,[explorerDest.destination]:undefined}));openIntel(explorerDest.destination,explorerDest.phaseName,explorerDest.type);}}>↺ RETRY</button></div>);
                   return(<div style={{display:"flex",flexDirection:"column",gap:12}}>
-                    {d.tagline&&<div style={{fontSize:13,color:"#A29BFE",fontStyle:"italic",borderLeft:"3px solid #A29BFE",paddingLeft:11}}>{d.tagline}</div>}
+                    {d.tagline&&<div style={{fontSize:15,color:"#A29BFE",fontStyle:"italic",borderLeft:"3px solid #A29BFE",paddingLeft:11}}>{d.tagline}</div>}
                     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:9}}>
-                      {d.mustDo&&<div className="intel-section"><div className="intel-section-label" style={{color:"#00E5FF"}}>⚡ MUST DO</div>{d.mustDo.map((item,i)=><div key={i} style={{fontSize:isMobile?11:13,color:"#FFF",marginBottom:3}}>• {item}</div>)}</div>}
-                      {d.hiddenGems&&<div className="intel-section"><div className="intel-section-label" style={{color:"#69F0AE"}}>💎 HIDDEN GEMS</div>{d.hiddenGems.map((item,i)=><div key={i} style={{fontSize:isMobile?11:13,color:"#FFF",marginBottom:3}}>• {item}</div>)}</div>}
-                      {d.food&&<div className="intel-section"><div className="intel-section-label" style={{color:"#FFD93D"}}>🍽️ FOOD</div>{d.food.map((item,i)=><div key={i} style={{fontSize:isMobile?11:13,color:"#FFF",marginBottom:3}}>• {item}</div>)}</div>}
-                      {d.warnings?.length>0&&<div className="intel-section"><div className="intel-section-label" style={{color:"#FF6B6B"}}>⚠️ HEADS UP</div>{d.warnings.map((item,i)=><div key={i} style={{fontSize:isMobile?11:13,color:"#FFF",marginBottom:3}}>• {item}</div>)}</div>}
+                      {d.mustDo&&<div className="intel-section"><div className="intel-section-label" style={{color:"#00E5FF"}}>⚡ MUST DO</div>{d.mustDo.map((item,i)=><div key={i} style={{fontSize:isMobile?13:15,color:"#FFF",marginBottom:3}}>• {item}</div>)}</div>}
+                      {d.hiddenGems&&<div className="intel-section"><div className="intel-section-label" style={{color:"#69F0AE"}}>💎 HIDDEN GEMS</div>{d.hiddenGems.map((item,i)=><div key={i} style={{fontSize:isMobile?13:15,color:"#FFF",marginBottom:3}}>• {item}</div>)}</div>}
+                      {d.food&&<div className="intel-section"><div className="intel-section-label" style={{color:"#FFD93D"}}>🍽️ FOOD</div>{d.food.map((item,i)=><div key={i} style={{fontSize:isMobile?13:15,color:"#FFF",marginBottom:3}}>• {item}</div>)}</div>}
+                      {d.warnings?.length>0&&<div className="intel-section"><div className="intel-section-label" style={{color:"#FF6B6B"}}>⚠️ HEADS UP</div>{d.warnings.map((item,i)=><div key={i} style={{fontSize:isMobile?13:15,color:"#FFF",marginBottom:3}}>• {item}</div>)}</div>}
                     </div>
                     {d.streetIntel?.length>0&&<div style={{background:"linear-gradient(135deg,rgba(255,107,107,0.07),rgba(255,159,67,0.05))",border:"1px solid rgba(255,107,107,0.4)",borderRadius:10,padding:13}}>
-                      <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:10}}><div style={{width:7,height:7,borderRadius:"50%",background:"#FF6B6B",boxShadow:"0 0 8px #FF6B6B"}}/><div style={{fontSize:13,color:"#FF6B6B",letterSpacing:3,fontWeight:700}}>STREET INTEL</div></div>
-                      {d.streetIntel.map((intel,i)=>{const tc2={SCAM:"#FF6B6B",LEGAL:"#FFD93D",HEALTH:"#69F0AE",MONEY:"#FF9F43"};const ti2={SCAM:"🎭",LEGAL:"⚖️",HEALTH:"🏥",MONEY:"💸"};const c=tc2[intel.type]||"#FF6B6B";return(<div key={i} className="street-card" style={{borderLeft:`3px solid ${c}`}}><span style={{fontSize:14,flexShrink:0}}>{ti2[intel.type]||"⚠️"}</span><div><div style={{fontSize:13,letterSpacing:2,fontWeight:700,marginBottom:3,color:c}}>{intel.type}</div><div style={{fontSize:13,color:"#FFF",lineHeight:1.6}}>{intel.alert}</div></div></div>);})}
+                      <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:10}}><div style={{width:7,height:7,borderRadius:"50%",background:"#FF6B6B",boxShadow:"0 0 8px #FF6B6B"}}/><div style={{fontSize:15,color:"#FF6B6B",letterSpacing:3,fontWeight:700}}>STREET INTEL</div></div>
+                      {d.streetIntel.map((intel,i)=>{const tc2={SCAM:"#FF6B6B",LEGAL:"#FFD93D",HEALTH:"#69F0AE",MONEY:"#FF9F43"};const ti2={SCAM:"🎭",LEGAL:"⚖️",HEALTH:"🏥",MONEY:"💸"};const c=tc2[intel.type]||"#FF6B6B";return(<div key={i} className="street-card" style={{borderLeft:`3px solid ${c}`}}><span style={{fontSize:15,flexShrink:0}}>{ti2[intel.type]||"⚠️"}</span><div><div style={{fontSize:15,letterSpacing:2,fontWeight:700,marginBottom:3,color:c}}>{intel.type}</div><div style={{fontSize:15,color:"#FFF",lineHeight:1.6}}>{intel.alert}</div></div></div>);})}
                     </div>}
-                    {d.culture&&<div className="intel-section"><div className="intel-section-label" style={{color:"#A29BFE"}}>🏛️ CULTURE & VIBE</div><div style={{fontSize:isMobile?12:13,color:"#FFF",lineHeight:1.6}}>{d.culture}</div></div>}
-                    {d.climate&&<div className="intel-section"><div className="intel-section-label" style={{color:"#FF9F43"}}>🌤️ CLIMATE</div><div style={{fontSize:isMobile?12:13,color:"#FFF"}}>{d.climate}</div></div>}
-                    {d.diveHighlight&&<div className="intel-section" style={{borderColor:"rgba(0,229,255,0.2)"}}><div className="intel-section-label" style={{color:"#00E5FF"}}>🤿 DIVE INTEL</div><div style={{fontSize:isMobile?12:13,color:"#FFF"}}>{d.diveHighlight}</div></div>}
+                    {d.culture&&<div className="intel-section"><div className="intel-section-label" style={{color:"#A29BFE"}}>🏛️ CULTURE & VIBE</div><div style={{fontSize:isMobile?13:15,color:"#FFF",lineHeight:1.6}}>{d.culture}</div></div>}
+                    {d.climate&&<div className="intel-section"><div className="intel-section-label" style={{color:"#FF9F43"}}>🌤️ CLIMATE</div><div style={{fontSize:isMobile?13:15,color:"#FFF"}}>{d.climate}</div></div>}
+                    {d.diveHighlight&&<div className="intel-section" style={{borderColor:"rgba(0,229,255,0.2)"}}><div className="intel-section-label" style={{color:"#00E5FF"}}>🤿 DIVE INTEL</div><div style={{fontSize:isMobile?13:15,color:"#FFF"}}>{d.diveHighlight}</div></div>}
                   </div>);
                 })():null}
               </div>
@@ -1370,7 +1370,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           {/* Owned toggle */}
           <button onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:44,height:"100%",minHeight:52,display:"flex",alignItems:"center",justifyContent:"center",background:"none",border:"none",cursor:"pointer",flexShrink:0}}>
             <div style={{width:20,height:20,borderRadius:4,border:`1.5px solid ${item.owned?"#69F0AE":"rgba(255,255,255,0.2)"}`,background:item.owned?"rgba(105,240,174,0.12)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.15s"}}>
-              {item.owned&&<span style={{color:"#69F0AE",fontSize:13,fontWeight:900,lineHeight:1}}>✓</span>}
+              {item.owned&&<span style={{color:"#69F0AE",fontSize:15,fontWeight:900,lineHeight:1}}>✓</span>}
             </div>
           </button>
           {/* Main row — tap to expand */}
@@ -1379,14 +1379,14 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
               <div style={{fontSize:15,fontWeight:700,color:item.owned?"rgba(105,240,174,0.85)":"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:4}}>{item.name||"Unnamed"}</div>
               <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
                 {parseFloat(item.weight)>0&&<span style={{fontSize:16,color:"rgba(255,255,255,0.65)",fontFamily:"monospace"}}>{(parseFloat(item.weight)*wM).toFixed(2)}{unit}</span>}
-                {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(255,217,61,0.75)",fontFamily:"monospace"}}>${item.cost}</span>}
-                <span style={{fontSize:13,color:BAG_C[item.bag]||"rgba(255,159,67,0.6)",fontFamily:"monospace"}}>{item.bag}</span>
+                {parseFloat(item.cost)>0&&<span style={{fontSize:15,color:"rgba(255,217,61,0.75)",fontFamily:"monospace"}}>${item.cost}</span>}
+                <span style={{fontSize:15,color:BAG_C[item.bag]||"rgba(255,159,67,0.6)",fontFamily:"monospace"}}>{item.bag}</span>
               </div>
             </div>
             <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
-              <div style={{padding:"5px 14px",borderRadius:10,background:item.owned?"rgba(105,240,174,0.08)":"rgba(196,87,30,0.1)",border:`1px solid ${item.owned?"rgba(105,240,174,0.3)":"rgba(196,87,30,0.3)"}`,fontSize:13,fontWeight:700,color:item.owned?"#69F0AE":"#C4571E",letterSpacing:0.5}}>{item.owned?"OWNED":"NEED"}</div>
+              <div style={{padding:"5px 14px",borderRadius:10,background:item.owned?"rgba(105,240,174,0.08)":"rgba(196,87,30,0.1)",border:`1px solid ${item.owned?"rgba(105,240,174,0.3)":"rgba(196,87,30,0.3)"}`,fontSize:15,fontWeight:700,color:item.owned?"#69F0AE":"#C4571E",letterSpacing:0.5}}>{item.owned?"OWNED":"NEED"}</div>
               <div style={{width:22,height:22,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <span style={{fontSize:13,color:"rgba(255,255,255,0.6)",transform:open?"rotate(180deg)":"none",display:"inline-block",transition:"transform 0.2s"}}>▼</span>
+                <span style={{fontSize:15,color:"rgba(255,255,255,0.6)",transform:open?"rotate(180deg)":"none",display:"inline-block",transition:"transform 0.2s"}}>▼</span>
               </div>
             </div>
           </div>
@@ -1394,26 +1394,26 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         {/* Expanded edit drawer */}
         {open&&(
           <div style={{padding:"12px 16px 16px 44px",background:"rgba(0,0,0,0.25)",borderTop:`1px solid ${catColor}15`,animation:"slideOpen 0.18s ease",display:"flex",flexDirection:"column",gap:10}}>
-            <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:7,color:"#FFF",fontSize:13,padding:"10px 13px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%"}} placeholder="Item name"/>
+            <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:7,color:"#FFF",fontSize:15,padding:"10px 13px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%"}} placeholder="Item name"/>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
               {[{label:"WEIGHT (lbs)",f:"weight"},{label:"COST ($)",f:"cost"},{label:"VOLUME (L)",f:"volume"}].map(({label,f})=>(
                 <div key={f}>
-                  <div style={{fontSize:13,color:"rgba(255,159,67,0.65)",letterSpacing:2,marginBottom:5,fontFamily:"monospace"}}>{label}</div>
-                  <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.3)",borderRadius:5,color:"#FFD93D",fontSize:13,padding:"8px 10px",outline:"none",fontFamily:"monospace",width:"100%"}}/>
+                  <div style={{fontSize:15,color:"rgba(255,159,67,0.65)",letterSpacing:2,marginBottom:5,fontFamily:"monospace"}}>{label}</div>
+                  <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.3)",borderRadius:5,color:"#FFD93D",fontSize:15,padding:"8px 10px",outline:"none",fontFamily:"monospace",width:"100%"}}/>
                 </div>
               ))}
             </div>
             <div>
-              <div style={{fontSize:13,color:"rgba(255,159,67,0.65)",letterSpacing:2,marginBottom:5,fontFamily:"monospace"}}>BAG</div>
+              <div style={{fontSize:15,color:"rgba(255,159,67,0.65)",letterSpacing:2,marginBottom:5,fontFamily:"monospace"}}>BAG</div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                 {BAGS.map(b=>(
-                  <button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:"6px 12px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.12)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.45)",fontSize:13,cursor:"pointer",fontFamily:"monospace",fontWeight:item.bag===b?700:400,transition:"all 0.15s"}}>{b}</button>
+                  <button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:"6px 12px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.12)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.45)",fontSize:15,cursor:"pointer",fontFamily:"monospace",fontWeight:item.bag===b?700:400,transition:"all 0.15s"}}>{b}</button>
                 ))}
               </div>
             </div>
             <div style={{display:"flex",gap:8,paddingTop:4}}>
-              <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"10px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#FF9F43",fontSize:13,cursor:"pointer",fontFamily:"monospace",fontWeight:700,letterSpacing:1}}>{item.owned?"✓ OWNED — TAP TO UNMARK":"TAP TO MARK OWNED"}</button>
-              <button onClick={()=>removeItem(item.id)} style={{padding:"10px 16px",borderRadius:7,border:"1px solid rgba(255,107,107,0.3)",background:"rgba(255,107,107,0.06)",color:"rgba(255,107,107,0.7)",fontSize:13,cursor:"pointer",fontFamily:"monospace",fontWeight:700}}>✕</button>
+              <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"10px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#FF9F43",fontSize:15,cursor:"pointer",fontFamily:"monospace",fontWeight:700,letterSpacing:1}}>{item.owned?"✓ OWNED — TAP TO UNMARK":"TAP TO MARK OWNED"}</button>
+              <button onClick={()=>removeItem(item.id)} style={{padding:"10px 16px",borderRadius:7,border:"1px solid rgba(255,107,107,0.3)",background:"rgba(255,107,107,0.06)",color:"rgba(255,107,107,0.7)",fontSize:15,cursor:"pointer",fontFamily:"monospace",fontWeight:700}}>✕</button>
             </div>
           </div>
         )}
@@ -1438,7 +1438,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             <div style={{fontSize:18,fontWeight:700,color:open?cat.color:"#FFF",fontFamily:"'Space Mono',monospace",marginBottom:5,transition:"color 0.2s"}}>{cat.label}</div>
             <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
               <span style={{fontSize:16,color:"rgba(255,255,255,0.65)",fontFamily:"monospace"}}>{catItems.length} item{catItems.length!==1?"s":""}</span>
-              {catW>0&&<span style={{fontSize:13,color:cat.color,fontWeight:700,fontFamily:"monospace"}}>{catW.toFixed(2)}{unit}</span>}
+              {catW>0&&<span style={{fontSize:15,color:cat.color,fontWeight:700,fontFamily:"monospace"}}>{catW.toFixed(2)}{unit}</span>}
               <span style={{fontSize:16,color:"rgba(255,255,255,0.55)",fontFamily:"monospace"}}>{ownedInCat}/{catItems.length} owned</span>
             </div>
           </div>
@@ -1449,7 +1449,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             </div>
           </div>
           <div style={{width:22,height:22,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.2":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginLeft:4}}>
-            <span style={{fontSize:13,color:open?cat.color:"rgba(255,255,255,0.45)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
+            <span style={{fontSize:15,color:open?cat.color:"rgba(255,255,255,0.45)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
           </div>
         </div>
         {/* Items */}
@@ -1457,12 +1457,12 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           <div style={{animation:"slideOpen 0.2s ease",background:"rgba(0,0,0,0.2)"}}>
             <div style={{padding:"6px 18px 6px 18px",borderTop:`1px solid ${cat.color}15`,borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",gap:6}}>
               <div style={{width:4,height:4,borderRadius:"50%",background:cat.color,flexShrink:0}}/>
-              <span style={{fontSize:13,color:cat.color,letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{catItems.length} ITEM{catItems.length!==1?"S":""} · TAP TO EXPAND</span>
+              <span style={{fontSize:15,color:cat.color,letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{catItems.length} ITEM{catItems.length!==1?"S":""} · TAP TO EXPAND</span>
             </div>
             {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1}/>)}
             {/* Add item row */}
             <div style={{padding:"10px 18px",borderTop:"1px solid rgba(255,255,255,0.04)",display:"flex",justifyContent:"center"}}>
-              <button onClick={()=>addItemToCat(cat.id)} style={{padding:"8px 20px",borderRadius:8,border:`1px dashed ${cat.color}44`,background:"transparent",color:`${cat.color}88`,fontSize:13,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,transition:"all 0.15s"}} onMouseOver={e=>{e.currentTarget.style.background=`${cat.color}10`;e.currentTarget.style.color=cat.color;}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=`${cat.color}88`;}}>+ ADD ITEM</button>
+              <button onClick={()=>addItemToCat(cat.id)} style={{padding:"8px 20px",borderRadius:8,border:`1px dashed ${cat.color}44`,background:"transparent",color:`${cat.color}88`,fontSize:15,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,transition:"all 0.15s"}} onMouseOver={e=>{e.currentTarget.style.background=`${cat.color}10`;e.currentTarget.style.color=cat.color;}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=`${cat.color}88`;}}>+ ADD ITEM</button>
             </div>
           </div>
         )}
@@ -1475,18 +1475,18 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
       {/* Header */}
       {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} rightSlot={
         <button onClick={onExpedition} style={{display:"flex",flexDirection:"row",alignItems:"center",gap:6,padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.55)",background:"linear-gradient(135deg,rgba(0,20,45,0.92),rgba(0,40,70,0.8))",color:"#00E5FF",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,animation:"consolePulse 3s ease-in-out infinite",minHeight:34,flexShrink:0}}>
-          <span style={{fontSize:13,lineHeight:1}}>🔭</span><span style={{fontSize:13,letterSpacing:1.5,whiteSpace:"nowrap"}}>{isMobile?"TRIP":"TRIP CONSOLE"}</span>
+          <span style={{fontSize:15,lineHeight:1}}>🔭</span><span style={{fontSize:15,letterSpacing:1.5,whiteSpace:"nowrap"}}>{isMobile?"TRIP":"TRIP CONSOLE"}</span>
         </button>
       }/>}
       {/* Console switcher */}
       {!isFullscreen&&<div style={{display:"flex",borderBottom:"1px solid rgba(196,87,30,0.3)",flexShrink:0}}>
         <div onClick={onExpedition} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",borderRight:"1px solid rgba(196,87,30,0.2)"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.06)"} onMouseOut={e=>e.currentTarget.style.background="transparent"}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(0,229,255,0.4)"}}/>
-          <span style={{fontSize:13,fontWeight:700,color:"rgba(0,229,255,0.6)",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>TRIP CONSOLE</span>
+          <span style={{fontSize:15,fontWeight:700,color:"rgba(0,229,255,0.6)",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>TRIP CONSOLE</span>
         </div>
         <div style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,background:"rgba(196,87,30,0.06)"}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"#FF9F43",boxShadow:"0 0 6px rgba(196,87,30,0.8)",animation:"launchPulse 2.5s ease-in-out infinite"}}/>
-          <span style={{fontSize:13,fontWeight:700,color:"#FF9F43",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>PACK CONSOLE</span>
+          <span style={{fontSize:15,fontWeight:700,color:"#FF9F43",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>PACK CONSOLE</span>
         </div>
       </div>}
       {/* Hero stats */}
@@ -1495,20 +1495,20 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           {/* Weight hero */}
           <div style={{background:"rgba(21,101,255,0.07)",border:"1px solid rgba(77,159,255,0.3)",borderRadius:10,padding:"12px 14px"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-              <div style={{fontSize:13,fontWeight:700,color:"#4D9FFF",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>⚖️ PACK WEIGHT</div>
+              <div style={{fontSize:15,fontWeight:700,color:"#4D9FFF",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>⚖️ PACK WEIGHT</div>
               <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{display:"flex",borderRadius:8,border:"1px solid rgba(77,159,255,0.4)",overflow:"hidden",cursor:"pointer"}}>
-                {["lbs","kg"].map(u=><div key={u} style={{padding:"4px 10px",fontSize:13,fontWeight:700,background:unit===u?"rgba(77,159,255,0.3)":"rgba(77,159,255,0.05)",color:unit===u?"#4D9FFF":"rgba(77,159,255,0.3)",borderLeft:u==="kg"?"1px solid rgba(77,159,255,0.3)":"none"}}>{u.toUpperCase()}</div>)}
+                {["lbs","kg"].map(u=><div key={u} style={{padding:"4px 10px",fontSize:15,fontWeight:700,background:unit===u?"rgba(77,159,255,0.3)":"rgba(77,159,255,0.05)",color:unit===u?"#4D9FFF":"rgba(77,159,255,0.3)",borderLeft:u==="kg"?"1px solid rgba(77,159,255,0.3)":"none"}}>{u.toUpperCase()}</div>)}
               </div>
             </div>
             <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
               <div style={{fontSize:isMobile?28:34,fontWeight:900,color:"#69F0AE",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{(bpW*wM).toFixed(1)}</div>
-              <div style={{fontSize:13,color:"rgba(77,159,255,0.75)",fontWeight:700}}>{unit}</div>
-              <div style={{fontSize:13,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {wLim}</div>
+              <div style={{fontSize:15,color:"rgba(77,159,255,0.75)",fontWeight:700}}>{unit}</div>
+              <div style={{fontSize:15,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {wLim}</div>
             </div>
             <div style={{height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,overflow:"hidden",marginBottom:5}}>
               <div style={{height:"100%",width:Math.min((bpW/wLim)*100,100)+"%",background:`linear-gradient(90deg,#1565FF,${(bpW*wM)>wLim?"#FF6B6B":"#4D9FFF"})`,borderRadius:4,transition:"width 0.4s ease"}}/>
             </div>
-            <div style={{fontSize:13,color:"rgba(77,159,255,0.8)",fontFamily:"monospace",fontWeight:700}}>{Math.round((bpW/wLim)*100)}% of {wLim}{unit} limit</div>
+            <div style={{fontSize:15,color:"rgba(77,159,255,0.8)",fontFamily:"monospace",fontWeight:700}}>{Math.round((bpW/wLim)*100)}% of {wLim}{unit} limit</div>
           </div>
           {/* Volume hero */}
           {(()=>{
@@ -1518,18 +1518,18 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             const dV=Math.min(bpV,VL),vPct=Math.min((bpV/VL)*100,100);
             return(<div style={{background:"rgba(169,70,29,0.08)",border:"1px solid rgba(196,87,30,0.5)",borderRadius:10,padding:"12px 14px"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                <div style={{fontSize:13,fontWeight:700,color:"#FFD93D",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>📦 PACK VOLUME</div>
-                {incomplete&&<div style={{padding:"3px 8px",borderRadius:8,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:13,fontFamily:"monospace",fontWeight:700}}>⚠ PARTIAL</div>}
+                <div style={{fontSize:15,fontWeight:700,color:"#FFD93D",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>📦 PACK VOLUME</div>
+                {incomplete&&<div style={{padding:"3px 8px",borderRadius:8,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:15,fontFamily:"monospace",fontWeight:700}}>⚠ PARTIAL</div>}
               </div>
               <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
                 <div style={{fontSize:isMobile?28:34,fontWeight:900,color:"#FFD93D",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{dV.toFixed(1)}</div>
-                <div style={{fontSize:13,color:"rgba(255,217,61,0.75)",fontWeight:700}}>L</div>
-                <div style={{fontSize:13,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {VL}L</div>
+                <div style={{fontSize:15,color:"rgba(255,217,61,0.75)",fontWeight:700}}>L</div>
+                <div style={{fontSize:15,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {VL}L</div>
               </div>
               <div style={{height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,overflow:"hidden",marginBottom:5}}>
                 <div style={{height:"100%",width:vPct+"%",background:"linear-gradient(90deg,#A9461D,#FFD93D)",borderRadius:4,transition:"width 0.4s ease"}}/>
               </div>
-              {incomplete?<div style={{fontSize:13,color:"rgba(255,159,67,0.7)",fontFamily:"monospace",fontWeight:700}}>⚠ {zeroV} items missing volume data</div>:<div style={{fontSize:13,color:"rgba(255,217,61,0.55)",fontFamily:"monospace",fontWeight:700}}>{Math.round(vPct)}% of 45L</div>}
+              {incomplete?<div style={{fontSize:15,color:"rgba(255,159,67,0.7)",fontFamily:"monospace",fontWeight:700}}>⚠ {zeroV} items missing volume data</div>:<div style={{fontSize:15,color:"rgba(255,217,61,0.55)",fontFamily:"monospace",fontWeight:700}}>{Math.round(vPct)}% of 45L</div>}
             </div>);
           })()}
         </div>
@@ -1537,7 +1537,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.4)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
-              <div style={{fontSize:isMobile?11:13,fontWeight:700,color:"rgba(255,255,255,0.6)",letterSpacing:0.5,marginBottom:5,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
+              <div style={{fontSize:isMobile?13:15,fontWeight:700,color:"rgba(255,255,255,0.6)",letterSpacing:0.5,marginBottom:5,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
               <div style={{fontSize:isMobile?16:20,fontWeight:900,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
             </div>
           ))}
@@ -1546,13 +1546,13 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
       {/* Tab bar */}
       <div style={{display:"flex",alignItems:"stretch",background:"rgba(12,5,0,0.98)",borderBottom:"1px solid rgba(196,87,30,0.2)"}}>
         <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(255,159,67,0.15)":"rgba(255,159,67,0.06)",border:"none",borderRight:"1px solid rgba(196,87,30,0.3)",cursor:"pointer",flexShrink:0,color:"#FFD93D"}}>
-          <span style={{fontSize:14,lineHeight:1}}>{isFullscreen?"⊡":"⛶"}</span>
-          <span style={{fontSize:13,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
+          <span style={{fontSize:15,lineHeight:1}}>{isFullscreen?"⊡":"⛶"}</span>
+          <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
         </button>
         {[{id:"pack",label:"PACK LIST",emoji:"🎒"},{id:"refine",label:"✦ REFINE",emoji:""},{id:"weight",label:"BREAKDOWN",emoji:"⚖️"}].map(t=>(
           <button key={t.id} onClick={()=>setPackTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Space Mono',monospace",position:"relative"}}>
-            {t.emoji&&<span style={{fontSize:14,lineHeight:1}}>{t.emoji}</span>}
-            <span style={{fontSize:13,letterSpacing:1,fontWeight:700}}>{t.label}</span>
+            {t.emoji&&<span style={{fontSize:15,lineHeight:1}}>{t.emoji}</span>}
+            <span style={{fontSize:15,letterSpacing:1,fontWeight:700}}>{t.label}</span>
             {t.id==="refine"&&suggestions.length>0&&<div style={{position:"absolute",top:6,right:"20%",width:7,height:7,borderRadius:"50%",background:"#4D9FFF",boxShadow:"0 0 8px #4D9FFF"}}/>}
           </button>
         ))}
@@ -1560,12 +1560,12 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
       {/* Category filter pills */}
       {packTab==="pack"&&<div style={{display:"flex",gap:6,padding:"10px 16px",overflowX:"auto",borderBottom:"1px solid rgba(169,70,29,0.25)",background:"rgba(10,4,0,0.8)",flexShrink:0,WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
         <button onClick={()=>{setFilterCat("all");setOpenCats({});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat==="all"?"rgba(255,255,255,0.5)":"rgba(255,255,255,0.12)"),background:filterCat==="all"?"rgba(255,255,255,0.08)":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
-          <span style={{fontSize:13}}>📋</span><span style={{fontSize:13,color:filterCat==="all"?"#FFF":"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="all"?700:400}}>All</span>
+          <span style={{fontSize:15}}>📋</span><span style={{fontSize:15,color:filterCat==="all"?"#FFF":"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="all"?700:400}}>All</span>
         </button>
         {CATS.map(c=>(
           <button key={c.id} onClick={()=>{setFilterCat(c.id);setOpenCats({[c.id]:true});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat===c.id?c.color+"80":"rgba(169,70,29,0.4)"),background:filterCat===c.id?c.color+"14":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
-            <span style={{fontSize:13}}>{c.icon}</span>
-            <span style={{fontSize:13,color:filterCat===c.id?c.color:"rgba(255,255,255,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat===c.id?700:400}}>{c.label}</span>
+            <span style={{fontSize:15}}>{c.icon}</span>
+            <span style={{fontSize:15,color:filterCat===c.id?c.color:"rgba(255,255,255,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat===c.id?700:400}}>{c.label}</span>
           </button>
         ))}
       </div>}
@@ -1574,15 +1574,15 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         <div style={{overflowY:"auto",flex:1,padding:"12px 16px 32px"}}>
           {visibleCats.map((cat,i)=><CatCard key={cat.id} cat={cat} idx={i}/>)}
           <div style={{textAlign:"center",marginTop:8,padding:"8px 0",borderTop:"1px solid rgba(169,70,29,0.12)"}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.35)",letterSpacing:2}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.35)",letterSpacing:2}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
           </div>
         </div>
       )}
       {packTab==="refine"&&(
         <div style={{overflowY:"auto",flex:1,padding:"12px 16px"}}>
           <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.15),rgba(255,217,61,0.05))",border:"1px solid rgba(169,70,29,0.35)",borderRadius:12,padding:"14px 16px",marginBottom:16}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.6,marginBottom:8}}>Reviewing your pack for a <span style={{color:"#FF9F43"}}>{goalLabel}</span> trip across <span style={{color:"#FFD93D"}}>{countries.slice(0,3).join(", ")}{countries.length>3?" +"+(countries.length-3)+" more":""}</span> — {totalNights} nights.</div>
-            <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{tripTypes.map(t=><span key={t} style={{fontSize:13,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.18)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:10,padding:"3px 9px",letterSpacing:1,fontWeight:700}}>{TI[t]||"🗺️"} {t}</span>)}</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.6,marginBottom:8}}>Reviewing your pack for a <span style={{color:"#FF9F43"}}>{goalLabel}</span> trip across <span style={{color:"#FFD93D"}}>{countries.slice(0,3).join(", ")}{countries.length>3?" +"+(countries.length-3)+" more":""}</span> — {totalNights} nights.</div>
+            <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{tripTypes.map(t=><span key={t} style={{fontSize:15,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.18)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:10,padding:"3px 9px",letterSpacing:1,fontWeight:700}}>{TI[t]||"🗺️"} {t}</span>)}</div>
           </div>
           {suggestLoading&&<div style={{textAlign:"center",padding:"36px 20px"}}>
             <div style={{position:"relative",width:72,height:72,margin:"0 auto 20px"}}>
@@ -1590,11 +1590,11 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
               <div style={{position:"absolute",inset:-2,borderRadius:"50%",border:"1px solid rgba(255,159,67,0.35)",animation:"amberPulse 1.8s ease-in-out infinite 0.4s"}}/>
               <div style={{width:72,height:72,borderRadius:"50%",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(255,159,67,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,animation:"logoPulse 2s ease-in-out infinite"}}>✦</div>
             </div>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:6}}>Reviewing your pack...</div>
-            <div style={{fontSize:13,color:"rgba(255,159,67,0.7)",letterSpacing:2}}>Checking what your trip needs</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:6}}>Reviewing your pack...</div>
+            <div style={{fontSize:15,color:"rgba(255,159,67,0.7)",letterSpacing:2}}>Checking what your trip needs</div>
           </div>}
           {!suggestLoading&&suggestions.length>0&&<div>
-            <div style={{fontSize:13,color:"rgba(255,159,67,0.9)",letterSpacing:3,marginBottom:12,fontWeight:700}}>SUGGESTED FOR YOUR TRIP</div>
+            <div style={{fontSize:15,color:"rgba(255,159,67,0.9)",letterSpacing:3,marginBottom:12,fontWeight:700}}>SUGGESTED FOR YOUR TRIP</div>
             {suggestions.map(s=>{
               const CAT_COLORS_P={docs:"#E0E0E0",tech:"#00D4FF",clothes:"#FFD93D",health:"#69F0AE",travel:"#55EFC4",creator:"#FF9F43",dive:"#00E5FF"};
               const c=CAT_COLORS_P[s.cat]||"#FF9F43";
@@ -1603,17 +1603,17 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
                   <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
                     <div style={{flex:1}}>
                       <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}>
-                        {s.priority==="essential"&&<span style={{fontSize:13,color:"#FF9F43",background:"rgba(255,159,67,0.18)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:8,padding:"2px 8px",letterSpacing:1,fontWeight:700}}>ESSENTIAL</span>}
-                        <span style={{fontSize:13,color:c,background:c+"14",border:`1px solid ${c}44`,borderRadius:8,padding:"2px 8px",letterSpacing:1,fontWeight:700}}>{s.cat}</span>
+                        {s.priority==="essential"&&<span style={{fontSize:15,color:"#FF9F43",background:"rgba(255,159,67,0.18)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:8,padding:"2px 8px",letterSpacing:1,fontWeight:700}}>ESSENTIAL</span>}
+                        <span style={{fontSize:15,color:c,background:c+"14",border:`1px solid ${c}44`,borderRadius:8,padding:"2px 8px",letterSpacing:1,fontWeight:700}}>{s.cat}</span>
                       </div>
-                      <div style={{fontSize:13,fontWeight:700,color:"#FFF",marginBottom:5}}>{s.name}</div>
-                      <div style={{fontSize:13,color:"rgba(255,255,255,0.75)",lineHeight:1.6}}>{s.reason}</div>
+                      <div style={{fontSize:15,fontWeight:700,color:"#FFF",marginBottom:5}}>{s.name}</div>
+                      <div style={{fontSize:15,color:"rgba(255,255,255,0.75)",lineHeight:1.6}}>{s.reason}</div>
                     </div>
-                    <div style={{textAlign:"right",flexShrink:0}}>{s.cost>0&&<div style={{fontSize:13,fontWeight:700,color:"#FFD93D",marginBottom:3}}>${s.cost}</div>}{s.weight>0&&<div style={{fontSize:13,color:"rgba(255,255,255,0.5)"}}>{s.weight}lb</div>}</div>
+                    <div style={{textAlign:"right",flexShrink:0}}>{s.cost>0&&<div style={{fontSize:15,fontWeight:700,color:"#FFD93D",marginBottom:3}}>${s.cost}</div>}{s.weight>0&&<div style={{fontSize:15,color:"rgba(255,255,255,0.5)"}}>{s.weight}lb</div>}</div>
                   </div>
                   <div style={{display:"flex",gap:8}}>
-                    <button onClick={()=>acceptSuggestion(s)} style={{flex:1,padding:"10px",borderRadius:8,border:"1px solid rgba(105,240,174,0.5)",background:"rgba(105,240,174,0.08)",color:"#69F0AE",fontSize:13,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,fontWeight:700,minHeight:40}}>+ ADD TO PACK</button>
-                    <button onClick={()=>dismissSuggestion(s.id)} style={{padding:"10px 16px",borderRadius:8,border:"1px solid rgba(255,255,255,0.12)",background:"transparent",color:"rgba(255,255,255,0.5)",fontSize:13,cursor:"pointer",fontFamily:"monospace",minHeight:40}}>SKIP</button>
+                    <button onClick={()=>acceptSuggestion(s)} style={{flex:1,padding:"10px",borderRadius:8,border:"1px solid rgba(105,240,174,0.5)",background:"rgba(105,240,174,0.08)",color:"#69F0AE",fontSize:15,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,fontWeight:700,minHeight:40}}>+ ADD TO PACK</button>
+                    <button onClick={()=>dismissSuggestion(s.id)} style={{padding:"10px 16px",borderRadius:8,border:"1px solid rgba(255,255,255,0.12)",background:"transparent",color:"rgba(255,255,255,0.5)",fontSize:15,cursor:"pointer",fontFamily:"monospace",minHeight:40}}>SKIP</button>
                   </div>
                 </div>
               </div>);
@@ -1622,29 +1622,29 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           {!suggestLoading&&suggestions.length===0&&suggestDone&&<div style={{marginBottom:16}}>
             <div style={{textAlign:"center",padding:"24px 0 18px"}}>
               <div style={{fontSize:22,marginBottom:10,color:"#FF9F43"}}>✦</div>
-              <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:5}}>{accepted.length>0?`${accepted.length} item${accepted.length>1?"s":""} added.`:"Your pack looks solid for this trip."}</div>
-              <div style={{fontSize:13,color:"rgba(255,159,67,0.75)",letterSpacing:2}}>Anything else? I'm here.</div>
+              <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:5}}>{accepted.length>0?`${accepted.length} item${accepted.length>1?"s":""} added.`:"Your pack looks solid for this trip."}</div>
+              <div style={{fontSize:15,color:"rgba(255,159,67,0.75)",letterSpacing:2}}>Anything else? I'm here.</div>
             </div>
-            <button onClick={()=>{setSuggestions([]);setSuggestDone(false);setAccepted([]);genSuggestions();}} style={{width:"100%",padding:10,borderRadius:8,border:"1px solid rgba(169,70,29,0.35)",background:"rgba(169,70,29,0.1)",color:"rgba(255,159,67,0.75)",fontSize:13,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,marginBottom:18,fontWeight:700}}>↺ REFRESH SUGGESTIONS</button>
+            <button onClick={()=>{setSuggestions([]);setSuggestDone(false);setAccepted([]);genSuggestions();}} style={{width:"100%",padding:10,borderRadius:8,border:"1px solid rgba(169,70,29,0.35)",background:"rgba(169,70,29,0.1)",color:"rgba(255,159,67,0.75)",fontSize:15,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,marginBottom:18,fontWeight:700}}>↺ REFRESH SUGGESTIONS</button>
           </div>}
           {suggestDone&&!suggestLoading&&<div style={{borderTop:"1px solid rgba(196,87,30,0.25)",paddingTop:16}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",fontWeight:300,color:"#FFD93D",marginBottom:12,lineHeight:1.4}}>Refine packing list with your co-architect</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",fontWeight:300,color:"#FFD93D",marginBottom:12,lineHeight:1.4}}>Refine packing list with your co-architect</div>
             <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:12,maxHeight:220,overflowY:"auto"}}>
-              {chat.length===0&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,200,120,0.82)",lineHeight:1.7,padding:"4px 0"}}>"Need help staying under 15 lbs? Tell me and I'll refine your list."</div>}
+              {chat.length===0&&<div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,200,120,0.82)",lineHeight:1.7,padding:"4px 0"}}>"Need help staying under 15 lbs? Tell me and I'll refine your list."</div>}
               {chat.map((m,i)=>(
                 <div key={i} style={{display:"flex",gap:7,flexDirection:m.role==="user"?"row-reverse":"row"}}>
-                  <div style={{width:20,height:20,borderRadius:"50%",background:m.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{m.role==="ai"?"✦":"M"}</div>
-                  <div style={{borderRadius:9,padding:"8px 11px",fontSize:13,color:"#FFF",lineHeight:1.65,maxWidth:"86%",background:m.role==="ai"?"rgba(169,70,29,0.22)":"rgba(255,255,255,0.08)",border:`1px solid ${m.role==="ai"?"rgba(169,70,29,0.5)":"rgba(255,255,255,0.14)"}`}}>{m.text}</div>
+                  <div style={{width:20,height:20,borderRadius:"50%",background:m.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flexShrink:0}}>{m.role==="ai"?"✦":"M"}</div>
+                  <div style={{borderRadius:9,padding:"8px 11px",fontSize:15,color:"#FFF",lineHeight:1.65,maxWidth:"86%",background:m.role==="ai"?"rgba(169,70,29,0.22)":"rgba(255,255,255,0.08)",border:`1px solid ${m.role==="ai"?"rgba(169,70,29,0.5)":"rgba(255,255,255,0.14)"}`}}>{m.text}</div>
                 </div>
               ))}
-              {chatLoading&&<div style={{fontSize:13,color:"rgba(169,70,29,0.75)",animation:"shimmer 1s infinite",padding:"4px 0",letterSpacing:1}}>✦ thinking...</div>}
+              {chatLoading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.75)",animation:"shimmer 1s infinite",padding:"4px 0",letterSpacing:1}}>✦ thinking...</div>}
               <div ref={chatEnd}/>
             </div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
-              {["Keep me under 15 lbs","I do laundry weekly","Add rain gear","Pack for heat"].map(p=><button key={p} onClick={()=>setChatInput(p)} style={{padding:"6px 12px",borderRadius:14,border:"1px solid rgba(196,87,30,0.35)",background:"rgba(169,70,29,0.12)",color:"rgba(255,159,67,0.9)",fontSize:13,cursor:"pointer",fontFamily:"monospace",whiteSpace:"nowrap",fontWeight:700}}>{p}</button>)}
+              {["Keep me under 15 lbs","I do laundry weekly","Add rain gear","Pack for heat"].map(p=><button key={p} onClick={()=>setChatInput(p)} style={{padding:"6px 12px",borderRadius:14,border:"1px solid rgba(196,87,30,0.35)",background:"rgba(169,70,29,0.12)",color:"rgba(255,159,67,0.9)",fontSize:15,cursor:"pointer",fontFamily:"monospace",whiteSpace:"nowrap",fontWeight:700}}>{p}</button>)}
             </div>
             <div style={{display:"flex",gap:7}}>
-              <input value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendChat();}} placeholder="Ask anything about your pack..." style={{flex:1,background:"rgba(20,8,0,0.85)",border:"1px solid rgba(196,87,30,0.35)",borderRadius:8,color:"#FFF",fontSize:13,padding:"11px 14px",fontFamily:"monospace",outline:"none",minHeight:44}}/>
+              <input value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendChat();}} placeholder="Ask anything about your pack..." style={{flex:1,background:"rgba(20,8,0,0.85)",border:"1px solid rgba(196,87,30,0.35)",borderRadius:8,color:"#FFF",fontSize:15,padding:"11px 14px",fontFamily:"monospace",outline:"none",minHeight:44}}/>
               <button onClick={sendChat} style={{background:"rgba(169,70,29,0.25)",border:"1px solid rgba(196,87,30,0.45)",borderRadius:8,color:"#FF9F43",fontSize:16,padding:"8px 14px",cursor:"pointer",minWidth:44,minHeight:44,fontWeight:700}}>↑</button>
             </div>
           </div>}
@@ -1653,7 +1653,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
       {packTab==="weight"&&(
         <div style={{overflowY:"auto",flex:1,padding:"12px 16px"}}>
           <div style={{display:"flex",justifyContent:"flex-end",marginBottom:14}}>
-            <button onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:13,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:6,padding:"7px 16px",cursor:"pointer",fontFamily:"monospace",letterSpacing:1,fontWeight:700}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
+            <button onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:15,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:6,padding:"7px 16px",cursor:"pointer",fontFamily:"monospace",letterSpacing:1,fontWeight:700}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
           </div>
           {["Backpack","Global Briefcase","Worn","Digital"].map(bagName=>{
             const bagItems=items.filter(i=>i.bag===bagName);
@@ -1664,18 +1664,18 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             return(
               <div key={bagName} style={{background:"rgba(18,8,0,0.85)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:16,marginBottom:12}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-                  <div style={{fontSize:13,fontWeight:700,color:bagColor}}>{bagName}</div>
+                  <div style={{fontSize:15,fontWeight:700,color:bagColor}}>{bagName}</div>
                   <div style={{textAlign:"right"}}>
-                    <div style={{fontSize:20,fontWeight:900,color:isOver?"#FF6B6B":bagColor,letterSpacing:-1,lineHeight:1}}>{bagW.toFixed(1)}<span style={{fontSize:13,fontWeight:400,opacity:0.8}}> {unit}</span></div>
-                    {bagName==="Backpack"&&<div style={{fontSize:13,color:"#FFD93D",marginTop:1,fontWeight:700}}>{bagV.toFixed(1)}L / {VL}L</div>}
+                    <div style={{fontSize:20,fontWeight:900,color:isOver?"#FF6B6B":bagColor,letterSpacing:-1,lineHeight:1}}>{bagW.toFixed(1)}<span style={{fontSize:15,fontWeight:400,opacity:0.8}}> {unit}</span></div>
+                    {bagName==="Backpack"&&<div style={{fontSize:15,color:"#FFD93D",marginTop:1,fontWeight:700}}>{bagV.toFixed(1)}L / {VL}L</div>}
                   </div>
                 </div>
                 {bagName==="Backpack"&&<div style={{height:5,background:"rgba(255,255,255,0.06)",borderRadius:3,overflow:"hidden",marginBottom:11}}><div style={{height:"100%",background:isOver?"linear-gradient(90deg,#1565FF,#FF6B6B)":"linear-gradient(90deg,#1565FF,#4D9FFF)",borderRadius:3,width:Math.min(bagW/wLim*100,100)+"%",transition:"width 0.5s ease"}}/></div>}
-                {bagItems.length===0?<div style={{fontSize:13,color:"rgba(255,255,255,0.35)",textAlign:"center",padding:"10px 0"}}>No items</div>
+                {bagItems.length===0?<div style={{fontSize:15,color:"rgba(255,255,255,0.35)",textAlign:"center",padding:"10px 0"}}>No items</div>
                 :bagItems.sort((a,b)=>(parseFloat(b.weight)||0)-(parseFloat(a.weight)||0)).map(item=>(
                   <div key={item.id} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
-                    <div style={{fontSize:13,color:item.owned?"rgba(255,255,255,0.65)":"#FFF"}}>{item.owned?"✓ ":""}{item.name}</div>
-                    <div style={{fontSize:14,color:"rgba(255,255,255,0.65)",flexShrink:0,marginLeft:8,fontWeight:700}}>{parseFloat(item.weight)>0?(parseFloat(item.weight)*wM).toFixed(2)+unit:"—"}</div>
+                    <div style={{fontSize:15,color:item.owned?"rgba(255,255,255,0.65)":"#FFF"}}>{item.owned?"✓ ":""}{item.name}</div>
+                    <div style={{fontSize:15,color:"rgba(255,255,255,0.65)",flexShrink:0,marginLeft:8,fontWeight:700}}>{parseFloat(item.weight)>0?(parseFloat(item.weight)*wM).toFixed(2)+unit:"—"}</div>
                   </div>
                 ))}
               </div>
