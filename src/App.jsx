@@ -284,7 +284,7 @@ function SharegoodLogo({size=40,opacity=1,glowColor="rgba(169,70,29,0.5)",animat
 }
 
 // ─── ConsoleHeader ────────────────────────────────────────────────
-function ConsoleHeader({console:which,isMobile,rightSlot,children}) {
+function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackConsole,children}) {
   const isDream=which==="dream", isTrip=which==="trip", isPack=which==="pack";
   const bg=isDream?"rgba(8,6,0,0.85)":isTrip?"rgba(0,8,20,0.92)":"rgba(20,8,0,0.95)";
   const bc=isDream?"rgba(169,70,29,0.45)":isTrip?"rgba(0,229,255,0.15)":"rgba(196,87,30,0.5)";
@@ -300,19 +300,68 @@ function ConsoleHeader({console:which,isMobile,rightSlot,children}) {
   const logoGlow=isDream?"rgba(169,70,29,0.55)":isTrip?"rgba(0,229,255,0.35)":"rgba(196,87,30,0.5)";
   const radial=isDream?"rgba(169,70,29,0.4)":isTrip?"rgba(0,229,255,0.1)":"rgba(169,70,29,0.52)";
   const divLine=isDream?"rgba(255,217,61,0.5)":isTrip?"rgba(0,229,255,0.35)":"rgba(255,159,67,0.4)";
+
+  // Console nav buttons — only shown on trip/pack consoles
+  const TripBtn = ({active}) => (
+    <button onClick={active ? undefined : onTripConsole} style={{
+      display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,
+      padding:isMobile?"5px 8px":"6px 12px",borderRadius:7,
+      border:active?"1px solid rgba(0,229,255,0.55)":"1px solid rgba(0,229,255,0.25)",
+      background:active?"rgba(0,229,255,0.08)":"rgba(0,229,255,0.03)",
+      color:active?"#00E5FF":"rgba(0,229,255,0.45)",
+      cursor:active?"default":"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,
+      animation:active?"none":"consolePulse 3s ease-in-out infinite",
+      minHeight:isMobile?34:38,minWidth:isMobile?52:64,flexShrink:0,
+      boxShadow:active?"0 0 10px rgba(0,229,255,0.15)":"none",
+      transition:"all 0.2s",
+    }}>
+      <span style={{fontSize:isMobile?13:15,lineHeight:1}}>🔭</span>
+      <span style={{fontSize:isMobile?7:8,letterSpacing:1.5,whiteSpace:"nowrap"}}>{isMobile?"TRIP":"TRIP"}</span>
+    </button>
+  );
+  const PackBtn = ({active}) => (
+    <button onClick={active ? undefined : onPackConsole} style={{
+      display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,
+      padding:isMobile?"5px 8px":"6px 12px",borderRadius:7,
+      border:active?"1px solid rgba(196,87,30,0.65)":"1px solid rgba(196,87,30,0.28)",
+      background:active?"rgba(196,87,30,0.1)":"rgba(196,87,30,0.03)",
+      color:active?"#FF9F43":"rgba(255,159,67,0.4)",
+      cursor:active?"default":"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,
+      animation:active?"none":"launchPulse 3s ease-in-out infinite",
+      minHeight:isMobile?34:38,minWidth:isMobile?52:64,flexShrink:0,
+      boxShadow:active?"0 0 10px rgba(196,87,30,0.2)":"none",
+      transition:"all 0.2s",
+    }}>
+      <span style={{fontSize:isMobile?13:15,lineHeight:1}}>🎒</span>
+      <span style={{fontSize:isMobile?7:8,letterSpacing:1.5,whiteSpace:"nowrap"}}>{isMobile?"PACK":"PACK"}</span>
+    </button>
+  );
+
   return (
     <div style={{background:bg,borderBottom:`1px solid ${bc}`,backdropFilter:"blur(10px)",flexShrink:0}}>
-      <div style={{display:"flex",alignItems:"center",padding:isMobile?"5px 8px":"8px 16px",gap:6}}>
-        <SharegoodLogo size={isMobile?28:44} opacity={0.88} glowColor={logoGlow} animate={isDream}/>
-        <div style={{display:"flex",flexDirection:"column",gap:3,flexShrink:0}}>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?10:15,fontWeight:700,color:"#FFF",letterSpacing:0,lineHeight:1}}>1 Bag Nomad</div>
-          <div style={{display:"flex",alignItems:"center",gap:4}}>
-            <div style={{width:4,height:4,borderRadius:"50%",background:dot,boxShadow:`0 0 5px ${dot}`}}/>
-            <div style={{fontSize:15,fontWeight:700,color:sub,letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>{sublabel} · <span style={{fontFamily:"'Fraunces',serif",fontWeight:100,fontStyle:"italic",letterSpacing:1}}>Sharegood Co.</span></div>
+      {/* Top row: [left slot] [center: logo+wordmark] [right slot] */}
+      <div style={{display:"flex",alignItems:"center",padding:isMobile?"5px 8px":"7px 14px",gap:6}}>
+        {/* Left slot */}
+        <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"flex-start"}}>
+          {(isTrip||isPack) ? <TripBtn active={isTrip}/> : rightSlot}
+        </div>
+        {/* Center: logo + wordmark */}
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
+          <SharegoodLogo size={isMobile?30:42} opacity={0.88} glowColor={logoGlow} animate={isDream}/>
+          <div style={{textAlign:"center"}}>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?10:13,fontWeight:700,color:"#FFF",letterSpacing:1,lineHeight:1}}>1 Bag Nomad</div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:4,marginTop:2}}>
+              <div style={{width:3,height:3,borderRadius:"50%",background:dot,boxShadow:`0 0 4px ${dot}`}}/>
+              <div style={{fontFamily:"'Fraunces',serif",fontWeight:100,fontStyle:"italic",fontSize:isMobile?6:7,color:sub,letterSpacing:1}}>Sharegood Co.</div>
+            </div>
           </div>
         </div>
-        <div style={{flex:1}}/>{rightSlot}
+        {/* Right slot */}
+        <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
+          {(isTrip||isPack) ? <PackBtn active={isPack}/> : rightSlot}
+        </div>
       </div>
+      {/* Tagline bar */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:isMobile?10:28,padding:isMobile?"10px 14px":"14px 32px",borderTop:`1px solid ${bc}`,background:`linear-gradient(90deg,transparent,${isDream?"rgba(32,15,0,0.75)":isTrip?"rgba(0,20,45,0.65)":"rgba(40,16,0,0.65)"},transparent)`,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"80%",height:80,background:`radial-gradient(ellipse,${radial} 0%,transparent 70%)`,pointerEvents:"none"}}/>
         <div style={{fontFamily:"'Fraunces',serif",fontSize:dbSize,fontWeight:dbWeight,color:dbColor,letterSpacing:isMobile?0:7,lineHeight:1,whiteSpace:"nowrap",textShadow:isDream?"0 0 32px rgba(255,217,61,0.7),0 0 64px rgba(169,70,29,0.4)":"none",position:"relative",textTransform:"uppercase"}}>Dream Big</div>
@@ -1070,14 +1119,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
 
   return(
     <div className="mc-root" style={{animation:"fadeIn 0.6s ease both"}}>
-      {!isFullscreen&&<ConsoleHeader console="trip" isMobile={isMobile} rightSlot={
-        <div style={{display:"flex",alignItems:"center",gap:isMobile?6:8,flexShrink:0}}>
-          {!isMobile&&<><div style={{display:"flex",alignItems:"center",gap:3}}><div style={{width:3,height:3,borderRadius:"50%",background:"#69F0AE",boxShadow:"0 0 5px #69F0AE80"}}/><span style={{fontSize:15,color:"#69F0AE",letterSpacing:1.5,fontFamily:"'Space Mono',monospace"}}>LIVE</span></div><div style={{fontSize:15,color:"rgba(255,255,255,0.6)",letterSpacing:1,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{TODAY.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}).toUpperCase()}</div><div style={{width:1,height:12,background:"rgba(0,229,255,0.15)"}}/></>}
-          <button onClick={onPackConsole} style={{display:"flex",flexDirection:"row",alignItems:"center",gap:6,padding:"5px 10px",borderRadius:6,border:"1px solid rgba(196,87,30,0.65)",background:"linear-gradient(135deg,rgba(45,18,0,0.9),rgba(26,9,0,0.85))",color:"#FF9F43",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,animation:"launchPulse 3s ease-in-out infinite",minHeight:34,flexShrink:0}}>
-            <span style={{fontSize:15,lineHeight:1}}>🎒</span><span style={{fontSize:15,letterSpacing:1.5,whiteSpace:"nowrap"}}>{isMobile?"PACK":"PACK CONSOLE"}</span>
-          </button>
-        </div>
-      }/>}
+      {!isFullscreen&&<ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/>}
       {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:"linear-gradient(180deg,rgba(0,20,45,0.95),rgba(0,8,20,0.98))",borderBottom:"1px solid rgba(0,229,255,0.15)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.04) 0%,transparent 60%)",pointerEvents:"none"}}/>
         {tripData.tripName&&<div style={{marginBottom:isMobile?5:7,position:"relative"}}>
@@ -1463,11 +1505,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
   return(
     <div style={{fontFamily:"'Space Mono',monospace",background:"radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 28%,#0d0500 58%,#060200 100%)",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column"}}>
       {/* Header */}
-      {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} rightSlot={
-        <button onClick={onExpedition} style={{display:"flex",flexDirection:"row",alignItems:"center",gap:6,padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.55)",background:"linear-gradient(135deg,rgba(0,20,45,0.92),rgba(0,40,70,0.8))",color:"#00E5FF",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,animation:"consolePulse 3s ease-in-out infinite",minHeight:34,flexShrink:0}}>
-          <span style={{fontSize:15,lineHeight:1}}>🔭</span><span style={{fontSize:15,letterSpacing:1.5,whiteSpace:"nowrap"}}>{isMobile?"TRIP":"TRIP CONSOLE"}</span>
-        </button>
-      }/>}
+      {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} onTripConsole={onExpedition} onPackConsole={()=>{}}/>}
       {/* Console switcher */}
       {!isFullscreen&&<div style={{display:"flex",borderBottom:"1px solid rgba(196,87,30,0.3)",flexShrink:0}}>
         <div onClick={onExpedition} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",borderRight:"1px solid rgba(196,87,30,0.2)"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.06)"} onMouseOut={e=>e.currentTarget.style.background="transparent"}>
