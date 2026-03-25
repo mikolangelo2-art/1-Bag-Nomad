@@ -1020,7 +1020,7 @@ function PhaseCard({phase,intelData,idx}) {
           </div>}
         </div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
-          <div style={{fontSize:14,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</div>
+          <div style={{fontSize:16,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</div>
           <div style={{fontSize:11,color:"rgba(255,255,255,0.7)",fontFamily:"monospace"}}>{isPast?"COMPLETE":isNow?"IN PROGRESS":`${dUntil}d away`}</div>
         </div>
         <div style={{width:20,height:20,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.18":"0.07"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
@@ -1378,7 +1378,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontSize:15,fontWeight:700,color:item.owned?"rgba(105,240,174,0.85)":"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:4}}>{item.name||"Unnamed"}</div>
               <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
-                {parseFloat(item.weight)>0&&<span style={{fontSize:13,color:"rgba(255,255,255,0.65)",fontFamily:"monospace"}}>{(parseFloat(item.weight)*wM).toFixed(2)}{unit}</span>}
+                {parseFloat(item.weight)>0&&<span style={{fontSize:16,color:"rgba(255,255,255,0.65)",fontFamily:"monospace"}}>{(parseFloat(item.weight)*wM).toFixed(2)}{unit}</span>}
                 {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(255,217,61,0.75)",fontFamily:"monospace"}}>${item.cost}</span>}
                 <span style={{fontSize:12,color:BAG_C[item.bag]||"rgba(255,159,67,0.6)",fontFamily:"monospace"}}>{item.bag}</span>
               </div>
@@ -1437,13 +1437,13 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontSize:18,fontWeight:700,color:open?cat.color:"#FFF",fontFamily:"'Space Mono',monospace",marginBottom:5,transition:"color 0.2s"}}>{cat.label}</div>
             <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
-              <span style={{fontSize:13,color:"rgba(255,255,255,0.65)",fontFamily:"monospace"}}>{catItems.length} item{catItems.length!==1?"s":""}</span>
+              <span style={{fontSize:16,color:"rgba(255,255,255,0.65)",fontFamily:"monospace"}}>{catItems.length} item{catItems.length!==1?"s":""}</span>
               {catW>0&&<span style={{fontSize:13,color:cat.color,fontWeight:700,fontFamily:"monospace"}}>{catW.toFixed(2)}{unit}</span>}
-              <span style={{fontSize:13,color:"rgba(255,255,255,0.55)",fontFamily:"monospace"}}>{ownedInCat}/{catItems.length} owned</span>
+              <span style={{fontSize:16,color:"rgba(255,255,255,0.55)",fontFamily:"monospace"}}>{ownedInCat}/{catItems.length} owned</span>
             </div>
           </div>
           <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
-            {catCost>0&&<div style={{fontSize:14,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>${catCost.toLocaleString()}</div>}
+            {catCost>0&&<div style={{fontSize:16,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>${catCost.toLocaleString()}</div>}
             <div style={{display:"flex",alignItems:"center",gap:6}}>
               <div style={{width:60,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:(catItems.length>0?(ownedInCat/catItems.length)*100:0)+"%",background:`linear-gradient(90deg,${cat.color}66,${cat.color})`,borderRadius:2,transition:"width 0.4s ease"}}/></div>
             </div>
