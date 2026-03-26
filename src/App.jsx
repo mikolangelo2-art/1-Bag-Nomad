@@ -969,7 +969,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
           <div style={{flex:1,minWidth:0}}>
             <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"wrap"}}>
               <span style={{fontSize:12,fontWeight:600,color:"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{segment.name}</span>
-              <span style={{fontSize:9,color:tc,background:`${tc}14`,border:`1px solid ${tc}28`,borderRadius:8,padding:"1px 6px",letterSpacing:0.5,fontWeight:600,whiteSpace:"nowrap",flexShrink:0}}>{segment.type?.toUpperCase()}</span>
+              <span style={{fontSize:8,color:`${tc}bb`,background:`${tc}0e`,border:`1px solid ${tc}1e`,borderRadius:6,padding:"1px 5px",letterSpacing:0.5,fontWeight:500,whiteSpace:"nowrap",flexShrink:0}}>{segment.type?.toUpperCase()}</span>
               {segment.note&&<span style={{fontSize:15,color:"rgba(255,255,255,0.72)",fontStyle:"italic"}}>{segment.note}</span>}
             </div>
             <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"nowrap"}}>
@@ -980,16 +980,16 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
           </div>
           <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
             <ProgDots phaseId={phaseId} segment={segment} intelSnippet={intelSnippet}/>
-            <div style={{fontSize:12,fontWeight:700,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>{fmt(segment.budget)}</div>
-            <div style={{fontSize:10,color:"rgba(255,255,255,0.45)",fontFamily:"monospace"}}>{fmt(Math.round(segment.budget/Math.max(segment.nights,1)))}/n</div>
+            <div style={{fontSize:11,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace"}}>{fmt(segment.budget)}</div>
+            <div style={{fontSize:9,color:"rgba(255,255,255,0.32)",fontFamily:"monospace"}}>{fmt(Math.round(segment.budget/Math.max(segment.nights,1)))}/n</div>
           </div>
-          <div style={{width:18,height:18,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.28":"0.18"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginLeft:4}}>
-            <span style={{fontSize:15,color:open?"#00E5FF":"rgba(255,255,255,0.75)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
+          <div style={{width:16,height:16,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.15":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginLeft:4}}>
+            <span style={{fontSize:8,color:open?"#00E5FF":"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
           </div>
         </div>
         <button onClick={e=>{e.stopPropagation();setAskOpen(o=>!o);}} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,padding:"8px 10px",background:askOpen?"rgba(255,217,61,0.1)":"rgba(255,217,61,0.03)",border:"none",borderLeft:`1px solid rgba(255,217,61,${askOpen?"0.45":"0.22"})`,cursor:"pointer",flexShrink:0,height:"100%",minWidth:38,transition:"all 0.15s"}} title="Ask co-architect">
-          <span style={{fontSize:15,color:askOpen?"#FFD93D":"rgba(255,217,61,0.65)",lineHeight:1,textShadow:askOpen?"0 0 8px rgba(255,217,61,0.6)":"none",animation:askOpen?"none":"glowPulse 2.5s ease-in-out infinite"}}>✦</span>
-          <span style={{fontSize:15,color:askOpen?"#FFD93D":"rgba(255,217,61,0.55)",letterSpacing:1,fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>ASK</span>
+          <span style={{fontSize:11,color:askOpen?"#FFD93D":"rgba(255,217,61,0.55)",lineHeight:1,textShadow:askOpen?"0 0 8px rgba(255,217,61,0.6)":"none",animation:askOpen?"none":"glowPulse 2.5s ease-in-out infinite"}}>✦</span>
+          <span style={{fontSize:8,color:askOpen?"#FFD93D":"rgba(255,217,61,0.4)",letterSpacing:1,fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>ASK</span>
         </button>
       </div>
       {askOpen&&(
@@ -1049,7 +1049,7 @@ function PhaseCard({phase,intelData,idx}) {
         </div>
         <div style={{flex:1,minWidth:0,display:"flex",flexDirection:"column",gap:2}}>
           <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:4}}>
-            <span style={{fontSize:15,fontWeight:700,color:open?phase.color:"#FFF",fontFamily:"'Space Mono',monospace",transition:"color 0.2s",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{phase.name}</span>
+            <span style={{fontSize:15,fontWeight:600,color:open?phase.color:"rgba(255,255,255,0.92)",fontFamily:"'Space Mono',monospace",transition:"color 0.2s",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{phase.name}</span>
             {isNow&&<span style={{fontSize:15,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:8,padding:"1px 6px",letterSpacing:1,fontWeight:700}}>● ACTIVE</span>}
           </div>
           <div style={{display:"flex",gap:isMobile?5:6,alignItems:"center",marginBottom:isMobile?2:5,flexWrap:"nowrap"}}>
@@ -1059,11 +1059,11 @@ function PhaseCard({phase,intelData,idx}) {
           </div>
           {pct>0&&<div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"nowrap"}}>
             <div style={{width:100,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}66,${phase.color})`,borderRadius:2,transition:"width 0.4s ease"}}/></div>
-            <span style={{fontSize:15,color:`${phase.color}CC`,fontFamily:"monospace",fontWeight:600}}>{pct}%</span>
+            <span style={{fontSize:15,color:`${phase.color}CC`,fontFamily:"monospace",fontWeight:400}}>{pct}%</span>
           </div>}
         </div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2,flexShrink:0,marginLeft:4,maxWidth:isMobile?"28%":"auto"}}>
-          <div style={{fontSize:16,fontWeight:700,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</div>
+          <div style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.82)",fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</div>
           <div style={{fontSize:15,color:"rgba(255,255,255,0.7)",fontFamily:"monospace"}}>{!isMobile&&(isPast?"COMPLETE":isNow?"IN PROGRESS":`${dUntil}d away`)}</div>
         </div>
         <div style={{width:20,height:20,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.18":"0.07"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
@@ -1079,8 +1079,8 @@ function PhaseCard({phase,intelData,idx}) {
         <div style={{animation:"slideOpen 0.2s ease",background:"rgba(0,3,11,0.55)"}}>
           <div style={{padding:"6px 16px 6px 20px",borderTop:`1px solid ${phase.color}15`,borderBottom:"1px solid rgba(0,229,255,0.18)",display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
             <div style={{width:4,height:4,borderRadius:"50%",background:phase.color,flexShrink:0}}/>
-            <span style={{fontSize:15,color:phase.color,letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{phase.segments.length} SEGMENT{phase.segments.length>1?"S":""}</span>
-            <span style={{fontSize:isMobile?8:11,color:`${phase.color}66`,letterSpacing:0,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>· TAP TO EXPAND</span>
+            <span style={{fontSize:10,color:`${phase.color}cc`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:600,whiteSpace:"nowrap"}}>{phase.segments.length} SEGMENT{phase.segments.length>1?"S":""}</span>
+            <span style={{fontSize:9,color:`${phase.color}44`,letterSpacing:0,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>· TAP TO EXPAND</span>
           </div>
           {phase.segments.map((seg,i)=><SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1}/>)}
         </div>
@@ -1216,7 +1216,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
       <div className="mc-content">
         {tab==="next"&&(
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
-            {tripData.visionNarrative&&<div style={{marginBottom:8}}><div style={{fontSize:15,color:"rgba(255,217,61,0.85)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.7,borderLeft:"2px solid rgba(255,217,61,0.3)",paddingLeft:10}}>"{tripData.visionNarrative.slice(0,160)}{tripData.visionNarrative.length>160?"...":""}"</div></div>}
+            {tripData.visionNarrative&&<div style={{marginBottom:8}}><div style={{fontSize:10,color:"rgba(255,217,61,0.55)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.68)",lineHeight:1.75,borderLeft:"2px solid rgba(255,217,61,0.18)",paddingLeft:12}}>"{tripData.visionNarrative.slice(0,160)}{tripData.visionNarrative.length>160?"...":""}"</div></div>}
             <div style={{fontSize:isMobile?12:14,color:"#FF9F43",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Space Mono',monospace",whiteSpace:isMobile?"normal":"nowrap"}}>{isMobile?`YOUR EXPEDITION · ${segPhases.length} PHASES`:`YOUR EXPEDITION · ${segPhases.length} PHASES · TAP PHASE TO EXPAND`}</div>
             {isMobile&&<div style={{fontSize:15,color:"rgba(255,159,67,0.55)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>TAP PHASE TO EXPAND</div>}
             {segPhases.map((phase,i)=><PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i}/>)}
@@ -1407,7 +1407,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
     const CAT_COLORS_P={docs:"#E0E0E0",tech:"#00D4FF",clothes:"#FFD93D",health:"#69F0AE",travel:"#55EFC4",creator:"#FF9F43",dive:"#00E5FF"};
     return(
       <div style={{borderBottom:isLast?"none":"1px solid rgba(255,255,255,0.2)"}}>
-        <div style={{display:"flex",alignItems:"center",minHeight:48,borderLeft:`2px solid ${catColor}${open?"88":"33"}`}}>
+        <div style={{display:"flex",alignItems:"center",minHeight:44,borderLeft:`2px solid ${catColor}${open?"88":"33"}`}}>
           {/* Owned toggle */}
           <button onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:44,height:"100%",minHeight:52,display:"flex",alignItems:"center",justifyContent:"center",background:"none",border:"none",cursor:"pointer",flexShrink:0}}>
             <div style={{width:20,height:20,borderRadius:4,border:`1.5px solid ${item.owned?"#69F0AE":"rgba(255,255,255,0.2)"}`,background:item.owned?"rgba(105,240,174,0.12)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.15s"}}>
@@ -1415,19 +1415,19 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             </div>
           </button>
           {/* Main row — tap to expand */}
-          <div onClick={()=>setOpen(o=>!o)} style={{flex:1,display:"flex",alignItems:"center",gap:12,padding:"12px 8px 12px 4px",cursor:"pointer",minWidth:0}}>
+          <div onClick={()=>setOpen(o=>!o)} style={{flex:1,display:"flex",alignItems:"center",gap:10,padding:"10px 8px 10px 4px",cursor:"pointer",minWidth:0}}>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:13,fontWeight:600,color:item.owned?"rgba(105,240,174,0.85)":"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:3}}>{item.name||"Unnamed"}</div>
+              <div style={{fontSize:12,fontWeight:500,color:item.owned?"rgba(105,240,174,0.82)":"rgba(255,255,255,0.92)",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2}}>{item.name||"Unnamed"}</div>
               <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
-                {parseFloat(item.weight)>0&&<span style={{fontSize:16,color:"rgba(255,255,255,0.65)",fontFamily:"monospace"}}>{(parseFloat(item.weight)*wM).toFixed(2)}{unit}</span>}
-                {parseFloat(item.cost)>0&&<span style={{fontSize:15,color:"rgba(255,217,61,0.75)",fontFamily:"monospace"}}>${item.cost}</span>}
-                <span style={{fontSize:15,color:BAG_C[item.bag]||"rgba(255,159,67,0.6)",fontFamily:"monospace"}}>{item.bag}</span>
+                {parseFloat(item.weight)>0&&<span style={{fontSize:11,color:"rgba(255,255,255,0.45)",fontFamily:"monospace"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
+                {parseFloat(item.cost)>0&&<span style={{fontSize:11,color:"rgba(255,217,61,0.55)",fontFamily:"monospace"}}>${item.cost}</span>}
+                <span style={{fontSize:11,color:(BAG_C[item.bag]||"rgba(255,159,67,0.6)")+"aa",fontFamily:"monospace"}}>{item.bag}</span>
               </div>
             </div>
             <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
-              <div style={{padding:"5px 14px",borderRadius:10,background:item.owned?"rgba(105,240,174,0.08)":"rgba(196,87,30,0.1)",border:`1px solid ${item.owned?"rgba(105,240,174,0.3)":"rgba(196,87,30,0.3)"}`,fontSize:15,fontWeight:700,color:item.owned?"#69F0AE":"#C4571E",letterSpacing:0.5}}>{item.owned?"OWNED":"NEED"}</div>
-              <div style={{width:22,height:22,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <span style={{fontSize:15,color:"rgba(255,255,255,0.6)",transform:open?"rotate(180deg)":"none",display:"inline-block",transition:"transform 0.2s"}}>▼</span>
+              <div style={{padding:"3px 9px",borderRadius:8,background:item.owned?"rgba(105,240,174,0.06)":"rgba(196,87,30,0.07)",border:`1px solid ${item.owned?"rgba(105,240,174,0.2)":"rgba(196,87,30,0.22)"}`,fontSize:9,fontWeight:600,color:item.owned?"rgba(105,240,174,0.8)":"rgba(196,87,30,0.75)",letterSpacing:0.5,whiteSpace:"nowrap"}}>{item.owned?"OWNED":"NEED"}</div>
+              <div style={{width:16,height:16,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <span style={{fontSize:7,color:"rgba(255,255,255,0.35)",transform:open?"rotate(180deg)":"none",display:"inline-block",transition:"transform 0.2s"}}>▼</span>
               </div>
             </div>
           </div>
@@ -1473,18 +1473,18 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
     return(
       <div style={{borderRadius:13,border:open?`1.5px solid ${cat.color}`:"1px solid rgba(255,255,255,0.07)",boxShadow:open?`0 0 0 1px ${cat.color}22,0 4px 28px ${cat.color}18,inset 0 1px 0 ${cat.color}12`:"none",background:open?`linear-gradient(145deg,${cat.color}06,rgba(8,3,0,0.98))`:"rgba(18,8,0,0.85)",overflow:"hidden",transition:"all 0.25s",animation:`fadeUp 0.3s ease ${idx*.05}s both`,marginBottom:8}}>
         {/* Header row — tap to open */}
-        <div onClick={()=>toggleCat(cat.id)} style={{display:"flex",alignItems:"center",gap:12,padding:"16px 18px",cursor:"pointer",minHeight:64,borderLeft:`3px solid ${open?cat.color:cat.color+"44"}`}}>
-          <div style={{fontSize:22,flexShrink:0}}>{cat.icon}</div>
+        <div onClick={()=>toggleCat(cat.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 16px",cursor:"pointer",minHeight:52,borderLeft:`3px solid ${open?cat.color:cat.color+"44"}`}}>
+          <div style={{fontSize:18,flexShrink:0}}>{cat.icon}</div>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:18,fontWeight:700,color:open?cat.color:"#FFF",fontFamily:"'Space Mono',monospace",marginBottom:5,transition:"color 0.2s"}}>{cat.label}</div>
+            <div style={{fontSize:15,fontWeight:600,color:open?cat.color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",marginBottom:3,transition:"color 0.2s"}}>{cat.label}</div>
             <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
-              <span style={{fontSize:16,color:"rgba(255,255,255,0.65)",fontFamily:"monospace"}}>{catItems.length} item{catItems.length!==1?"s":""}</span>
-              {catW>0&&<span style={{fontSize:15,color:cat.color,fontWeight:700,fontFamily:"monospace"}}>{catW.toFixed(2)}{unit}</span>}
-              <span style={{fontSize:16,color:"rgba(255,255,255,0.55)",fontFamily:"monospace"}}>{ownedInCat}/{catItems.length} owned</span>
+              <span style={{fontSize:11,color:"rgba(255,255,255,0.5)",fontFamily:"monospace"}}>{catItems.length} items</span>
+              {catW>0&&<span style={{fontSize:11,color:cat.color,fontWeight:600,fontFamily:"monospace"}}>{catW.toFixed(1)}{unit}</span>}
+              <span style={{fontSize:11,color:"rgba(255,255,255,0.38)",fontFamily:"monospace"}}>{ownedInCat}/{catItems.length} owned</span>
             </div>
           </div>
           <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
-            {catCost>0&&<div style={{fontSize:16,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>${catCost.toLocaleString()}</div>}
+            {catCost>0&&<div style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.8)",fontFamily:"'Space Mono',monospace"}}>${catCost.toLocaleString()}</div>}
             <div style={{display:"flex",alignItems:"center",gap:6}}>
               <div style={{width:60,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:(catItems.length>0?(ownedInCat/catItems.length)*100:0)+"%",background:`linear-gradient(90deg,${cat.color}66,${cat.color})`,borderRadius:2,transition:"width 0.4s ease"}}/></div>
             </div>
@@ -1498,7 +1498,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           <div style={{animation:"slideOpen 0.2s ease",background:"rgba(0,0,0,0.2)"}}>
             <div style={{padding:"6px 18px 6px 18px",borderTop:`1px solid ${cat.color}15`,borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",gap:6}}>
               <div style={{width:4,height:4,borderRadius:"50%",background:cat.color,flexShrink:0}}/>
-              <span style={{fontSize:15,color:cat.color,letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{catItems.length} ITEM{catItems.length!==1?"S":""} · TAP TO EXPAND</span>
+              <span style={{fontSize:9,color:`${cat.color}aa`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500,whiteSpace:"nowrap"}}>{catItems.length} ITEM{catItems.length!==1?"S":""} · TAP TO EXPAND</span>
             </div>
             {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1}/>)}
             {/* Add item row */}
@@ -1527,7 +1527,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         </div>
       </div>}
       {/* Hero stats */}
-      {!isFullscreen&&<div style={{padding:isMobile?"8px 14px 6px":"12px 20px 8px",background:"linear-gradient(180deg,rgba(35,14,0,0.6),rgba(20,8,0,0.8))"}}>
+      {!isFullscreen&&<div style={{padding:isMobile?"6px 12px 5px":"10px 18px 7px",background:"linear-gradient(180deg,rgba(35,14,0,0.6),rgba(20,8,0,0.8))"}}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
           {/* Weight hero */}
           <div style={{background:"rgba(21,101,255,0.07)",border:"1px solid rgba(77,159,255,0.3)",borderRadius:10,padding:"12px 14px"}}>
@@ -1574,8 +1574,8 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.4)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
-              <div style={{fontSize:isMobile?8:12,fontWeight:600,color:"rgba(255,255,255,0.5)",letterSpacing:0,marginBottom:3,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
-              <div style={{fontSize:isMobile?13:20,fontWeight:700,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
+              <div style={{fontSize:isMobile?7:11,fontWeight:500,color:"rgba(255,255,255,0.4)",letterSpacing:0,marginBottom:2,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
+              <div style={{fontSize:isMobile?12:18,fontWeight:600,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
             </div>
           ))}
         </div>
