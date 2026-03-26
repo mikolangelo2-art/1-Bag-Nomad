@@ -178,7 +178,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .launch-btn{width:100%;padding:17px;border-radius:14px;border:none;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:2.5px;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s}
 .launch-btn.on{background:linear-gradient(135deg,#A9461D 0%,#C4571E 38%,#E06830 68%,#FF9F43 100%);color:#FFF;animation:launchPulse 2.8s ease-in-out infinite}
 .launch-btn.on:hover{transform:translateY(-2px);box-shadow:0 10px 34px rgba(169,70,29,0.65);animation:none}
-.launch-btn.loading{background:linear-gradient(135deg,#6b2a0e,#8a3515,#6b2a0e);color:rgba(255,255,255,0.85);cursor:wait}
+.launch-btn.loading{background:linear-gradient(135deg,#8a3515,#A9461D,#8a3515);color:rgba(255,255,255,0.92);cursor:wait;animation:launchPulse 1.4s ease-in-out infinite!important}
 .narrative-card{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(169,70,29,0.14),rgba(255,217,61,0.04));border:2px solid #FFD93D;box-shadow:0 0 20px rgba(255,217,61,0.15);border-radius:16px;padding:22px;margin-bottom:18px;animation:fadeUp 0.5s ease}
 .vibe-tag{background:rgba(169,70,29,0.22);border:1px solid rgba(169,70,29,0.55);border-radius:20px;padding:4px 12px;font-size:12px;color:#FFD93D;letter-spacing:2.5px}
 .stat-card{background:#0C1520;border:1px solid #1a2535;border-radius:9px;padding:9px 7px;text-align:center}
@@ -287,66 +287,77 @@ function SharegoodLogo({size=40,opacity=1,glowColor="rgba(169,70,29,0.5)",animat
 // ─── AntiqueGlobe ─────────────────────────────────────────────────
 function AntiqueGlobe({size=120, glowColor="rgba(201,168,76,0.5)", animate=true}) {
   const gold = "#C9A84C";
-  const goldFaint = "rgba(201,168,76,0.25)";
-  const goldMed = "rgba(201,168,76,0.5)";
-  const parchment = "rgba(201,168,76,0.08)";
+  const goldFaint = "rgba(201,168,76,0.22)";
+  const goldMed = "rgba(201,168,76,0.45)";
+  const landFill = "rgba(180,140,60,0.35)";
+  const landStroke = "rgba(201,168,76,0.7)";
+  const parchment = "rgba(201,168,76,0.06)";
   const r = size / 2;
-  // Latitude arc heights (as % of diameter, simulating perspective)
-  const lats = [-0.38, -0.24, -0.08, 0.08, 0.24, 0.38];
-  const longs = [0, 36, 72, 108, 144];
+  const s = size / 200; // scale factor (globe designed at 200px)
+
+  // Simplified continent outlines — designed for 200x200 viewBox
+  // Paths are approximate but recognizable continent shapes
+  const continents = [
+    // North America
+    { d:`M${60*s},${45*s} L${75*s},${40*s} L${90*s},${42*s} L${95*s},${55*s} L${88*s},${70*s} L${80*s},${80*s} L${72*s},${85*s} L${65*s},${78*s} L${58*s},${68*s} L${55*s},${55*s} Z` },
+    // South America
+    { d:`M${75*s},${95*s} L${88*s},${92*s} L${95*s},${100*s} L${92*s},${120*s} L${85*s},${135*s} L${75*s},${140*s} L${68*s},${128*s} L${70*s},${110*s} Z` },
+    // Europe
+    { d:`M${98*s},${42*s} L${110*s},${38*s} L${118*s},${42*s} L${115*s},${52*s} L${105*s},${55*s} L${98*s},${50*s} Z` },
+    // Africa
+    { d:`M${100*s},${62*s} L${115*s},${60*s} L${122*s},${70*s} L${120*s},${90*s} L${115*s},${108*s} L${105*s},${115*s} L${98*s},${105*s} L${96*s},${88*s} L${98*s},${72*s} Z` },
+    // Asia (simplified)
+    { d:`M${118*s},${35*s} L${145*s},${32*s} L${165*s},${40*s} L${170*s},${55*s} L${158*s},${65*s} L${145*s},${68*s} L${130*s},${62*s} L${120*s},${55*s} Z` },
+    // Southeast Asia blob
+    { d:`M${148*s},${72*s} L${160*s},${70*s} L${165*s},${80*s} L${155*s},${85*s} L${145*s},${80*s} Z` },
+    // Australia
+    { d:`M${148*s},${108*s} L${165*s},${105*s} L${172*s},${118*s} L${165*s},${130*s} L${150*s},${132*s} L${142*s},${122*s} Z` },
+    // Greenland
+    { d:`M${72*s},${22*s} L${82*s},${18*s} L${90*s},${25*s} L${85*s},${35*s} L${75*s},${35*s} Z` },
+  ];
+
   return (
     <div style={{
       position:"relative", width:size, height:size, flexShrink:0,
-      filter:`drop-shadow(0 0 ${size*.18}px ${glowColor}) drop-shadow(0 0 ${size*.08}px ${glowColor})`,
-      animation: animate ? "spinGlobe 18s linear infinite" : "none",
+      filter:`drop-shadow(0 0 ${size*.2}px ${glowColor}) drop-shadow(0 0 ${size*.06}px ${glowColor})`,
+      animation: animate ? "spinGlobe 22s linear infinite" : "none",
     }}>
       <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} xmlns="http://www.w3.org/2000/svg">
-        {/* Outer glow ring */}
-        <circle cx={r} cy={r} r={r-1} fill={parchment} stroke={gold} strokeWidth="1.2" opacity="0.9"/>
-        {/* Equator */}
-        <ellipse cx={r} cy={r} rx={r-2} ry={(r-2)*0.18} fill="none" stroke={gold} strokeWidth="0.9" opacity="0.8"/>
+        {/* Ocean base */}
+        <circle cx={r} cy={r} r={r-1} fill={parchment} stroke={gold} strokeWidth="1.5" opacity="0.95"/>
         {/* Latitude lines */}
-        {lats.map((lat, i) => {
+        {[-0.35,-0.18,0,0.18,0.35].map((lat, i) => {
           const cy = r + lat * size;
-          const ry = Math.max(1, (r-2) * 0.18 * (1 - Math.abs(lat)*1.8));
           const rx2 = Math.sqrt(Math.max(0, Math.pow(r-2,2) - Math.pow(lat*size,2)));
-          return rx2 > 2 ? (
-            <ellipse key={i} cx={r} cy={cy} rx={rx2} ry={Math.max(1,ry)}
-              fill="none" stroke={goldMed} strokeWidth="0.6" opacity="0.55"/>
+          const ry = Math.max(1, rx2 * 0.15);
+          return rx2 > 3 ? (
+            <ellipse key={i} cx={r} cy={cy} rx={rx2} ry={ry}
+              fill="none" stroke={i===2?gold:goldMed}
+              strokeWidth={i===2?"0.9":"0.5"} opacity={i===2?"0.7":"0.4"}/>
           ) : null;
         })}
-        {/* Longitude lines - vertical arcs */}
-        {longs.map((angle, i) => {
-          const rad = (angle * Math.PI) / 180;
-          const xOff = (r-2) * Math.sin(rad);
-          return (
-            <ellipse key={i} cx={r} cy={r} rx={Math.abs(xOff) < 3 ? r-2 : Math.abs(xOff)}
-              ry={r-2} fill="none" stroke={goldFaint} strokeWidth="0.6"
-              transform={Math.abs(xOff) < 3 ? "" : `rotate(${angle} ${r} ${r})`}
-              opacity="0.4"/>
-          );
-        })}
-        {/* Prime meridian - slightly brighter */}
-        <ellipse cx={r} cy={r} rx={r-2} ry={r-2} fill="none" stroke={goldMed} strokeWidth="0.8" opacity="0.6"/>
-        {/* Compass cross */}
-        <line x1={r} y1={4} x2={r} y2={size-4} stroke={goldFaint} strokeWidth="0.5" opacity="0.4"/>
-        <line x1={4} y1={r} x2={size-4} y2={r} stroke={goldFaint} strokeWidth="0.5" opacity="0.4"/>
-        {/* Cardinal points */}
-        <text x={r} y={r*.22} textAnchor="middle" fill={gold} fontSize={size*.07} fontFamily="serif" opacity="0.7">N</text>
-        <text x={r} y={size-2} textAnchor="middle" fill={gold} fontSize={size*.07} fontFamily="serif" opacity="0.7">S</text>
-        <text x={size-2} y={r+size*.03} textAnchor="middle" fill={gold} fontSize={size*.07} fontFamily="serif" opacity="0.6">E</text>
-        <text x={3} y={r+size*.03} textAnchor="middle" fill={gold} fontSize={size*.07} fontFamily="serif" opacity="0.6">W</text>
-        {/* Center dot */}
-        <circle cx={r} cy={r} r={size*.025} fill={gold} opacity="0.6"/>
-        {/* Decorative tick marks */}
+        {/* Longitude lines */}
+        {[0,45,90,135].map((angle, i) => (
+          <ellipse key={i} cx={r} cy={r} rx={r-2} ry={r-2}
+            fill="none" stroke={goldFaint} strokeWidth="0.5"
+            transform={`rotate(${angle} ${r} ${r})`} opacity="0.35"/>
+        ))}
+        {/* Continent fills */}
+        {continents.map((c, i) => (
+          <path key={i} d={c.d} fill={landFill} stroke={landStroke} strokeWidth="0.7" opacity="0.85"/>
+        ))}
+        {/* Outer ring */}
+        <circle cx={r} cy={r} r={r-1} fill="none" stroke={gold} strokeWidth="1.5" opacity="0.8"/>
+        {/* Cardinal marks */}
         {[0,90,180,270].map((a,i) => {
           const rad = (a-90)*Math.PI/180;
-          const x1 = r + (r-2)*Math.cos(rad);
-          const y1 = r + (r-2)*Math.sin(rad);
-          const x2 = r + (r-6)*Math.cos(rad);
-          const y2 = r + (r-6)*Math.sin(rad);
-          return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={gold} strokeWidth="1.2" opacity="0.8"/>;
+          const x1 = r + (r-1.5)*Math.cos(rad), y1 = r + (r-1.5)*Math.sin(rad);
+          const x2 = r + (r-5)*Math.cos(rad), y2 = r + (r-5)*Math.sin(rad);
+          return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={gold} strokeWidth="1.5" opacity="0.9"/>;
         })}
+        {/* N marker */}
+        <text x={r} y={r*0.18} textAnchor="middle" fill={gold} fontSize={size*.08}
+          fontFamily="Georgia,serif" fontWeight="bold" opacity="0.85">N</text>
       </svg>
     </div>
   );
@@ -485,6 +496,7 @@ function DreamScreen({onGoGen,onLoadDemo}) {
   const [date,setDate]=useState("");
   const [heroPhase,setHeroPhase]=useState(0);
   const [loading,setLoading]=useState(false);
+  const [fadeOut,setFadeOut]=useState(false);
   const [budgetMode,setBudgetMode]=useState("dream");
   const [budgetAmount,setBudgetAmount]=useState("");
   const [loadError,setLoadError]=useState(false);
@@ -497,6 +509,8 @@ function DreamScreen({onGoGen,onLoadDemo}) {
   const canLaunch=vision.trim().length>20;
   async function handleReveal() {
     if(!canLaunch||loading)return;
+    setFadeOut(true);
+    await new Promise(r=>setTimeout(r,350));
     setLoading(true);setLoadError(false);
     const bl=budgetMode==="dream"?"NO BUDGET SET — set totalBudget to 0.":"Traveler budget: $"+(budgetAmount||"flexible");
     try {
@@ -508,7 +522,7 @@ function DreamScreen({onGoGen,onLoadDemo}) {
   }
   if(visionData) return <VisionReveal data={visionData} onBuild={vd=>onGoGen(visionData,vd)} onBack={()=>{setVisionData(null);setLoading(false);}} freshMount={true}/>;
   return (
-    <div className="dream-root">
+    <div className="dream-root" style={{opacity:fadeOut?0:1,transition:"opacity 0.35s ease"}}>
       <div className="dream-glow"/>
       <DreamHeader step={1}/>
       <div className="dream-content">
@@ -575,7 +589,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
   const [loading,setLoading]=useState(false);
   const [launching,setLaunching]=useState(false);
   const [mounted,setMounted]=useState(!freshMount);
-  useEffect(()=>{if(freshMount){const t=setTimeout(()=>setMounted(true),50);return()=>clearTimeout(t);}});
+  useEffect(()=>{window.scrollTo(0,0);if(freshMount){const t=setTimeout(()=>setMounted(true),50);return()=>clearTimeout(t);}});
   useEffect(()=>{
     let i=0;const txt=vd.narrative||"";
     const t=setTimeout(()=>{
@@ -798,6 +812,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
 function HandoffScreen({tripData,onComplete}) {
   const isMobile=useMobile();
   const [ph,setPh]=useState(0),[lit,setLit]=useState(0);
+  useEffect(()=>{window.scrollTo(0,0);},[]);
   useEffect(()=>{const ts=[setTimeout(()=>setPh(1),2200),setTimeout(()=>setPh(2),7200),setTimeout(()=>setPh(3),10500)];return()=>ts.forEach(clearTimeout);},[]);
   useEffect(()=>{if(ph<2)return;const total=tripData.phases?.length||0;let i=0;const iv=setInterval(()=>{i++;setLit(i);if(i>=total)clearInterval(iv);},180);return()=>clearInterval(iv);},[ph]);
   const totalNights=tripData.phases?.reduce((s,p)=>s+p.nights,0)||0;
@@ -1148,6 +1163,7 @@ function PhaseCard({phase,intelData,idx}) {
 function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,setFullscreen}) {
   const isMobile=useMobile();
   const [tab,setTab]=useState("next");
+  useEffect(()=>{window.scrollTo(0,0);},[]);
   const [confirmNewTrip,setConfirmNewTrip]=useState(false);
   const [showMobileMenu,setShowMobileMenu]=useState(false);
   const [explorerDest,setExplorerDest]=useState(null);
