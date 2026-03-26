@@ -1062,7 +1062,7 @@ function PhaseCard({phase,intelData,idx}) {
             <span style={{fontSize:15,color:`${phase.color}CC`,fontFamily:"monospace",fontWeight:400}}>{pct}%</span>
           </div>}
         </div>
-        <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2,flexShrink:0,marginLeft:4,maxWidth:isMobile?"28%":"auto"}}>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2,flexShrink:0,minWidth:58,marginLeft:4,maxWidth:isMobile?"28%":"auto"}}>
           <div style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.82)",fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</div>
           <div style={{fontSize:15,color:"rgba(255,255,255,0.7)",fontFamily:"monospace"}}>{!isMobile&&(isPast?"COMPLETE":isNow?"IN PROGRESS":`${dUntil}d away`)}</div>
         </div>
@@ -1425,7 +1425,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
               </div>
             </div>
             <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
-              <div style={{padding:"3px 9px",borderRadius:8,background:item.owned?"rgba(105,240,174,0.06)":"rgba(196,87,30,0.07)",border:`1px solid ${item.owned?"rgba(105,240,174,0.2)":"rgba(196,87,30,0.22)"}`,fontSize:9,fontWeight:600,color:item.owned?"rgba(105,240,174,0.8)":"rgba(196,87,30,0.75)",letterSpacing:0.5,whiteSpace:"nowrap"}}>{item.owned?"OWNED":"NEED"}</div>
+              <div style={{padding:"2px 7px",borderRadius:4,background:"transparent",border:`1px solid ${item.owned?"rgba(105,240,174,0.25)":"rgba(196,87,30,0.28)"}`,fontSize:9,fontWeight:600,color:item.owned?"rgba(105,240,174,0.75)":"rgba(196,87,30,0.7)",letterSpacing:1,whiteSpace:"nowrap"}}>{item.owned?"OWNED":"NEED"}</div>
               <div style={{width:16,height:16,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center"}}>
                 <span style={{fontSize:7,color:"rgba(255,255,255,0.35)",transform:open?"rotate(180deg)":"none",display:"inline-block",transition:"transform 0.2s"}}>▼</span>
               </div>
@@ -1621,11 +1621,11 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,padding:"10px 14px",background:"rgba(255,107,107,0.06)",border:"1px solid rgba(255,107,107,0.22)",borderRadius:10}}>
                 <div>
                   <div style={{fontSize:12,color:"rgba(255,107,107,0.85)",letterSpacing:2,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>🛒 NEED TO BUY</div>
-                  <div style={{fontSize:11,color:"rgba(255,255,255,0.45)",marginTop:2}}>{unowned.length} item{unowned.length!==1?"s":""} · sorted by cost</div>
+                  <div style={{fontSize:10,color:"rgba(255,255,255,0.45)",marginTop:2,whiteSpace:"nowrap"}}>{unowned.length} item{unowned.length!==1?"s":""} · sorted by cost</div>
                 </div>
                 <div style={{textAlign:"right"}}>
                   <div style={{fontSize:20,fontWeight:900,color:"#FF6B6B",fontFamily:"'Space Mono',monospace"}}>${total.toLocaleString()}</div>
-                  <div style={{fontSize:10,color:"rgba(255,107,107,0.55)",letterSpacing:1}}>TOTAL TO SPEND</div>
+                  <div style={{fontSize:10,color:"rgba(255,107,107,0.55)",letterSpacing:1,whiteSpace:"nowrap"}}>TOTAL TO SPEND</div>
                 </div>
               </div>
               {unowned.length===0?(<div style={{textAlign:"center",padding:"40px 20px"}}><div style={{fontSize:28,marginBottom:12}}>✅</div><div style={{fontFamily:"'Fraunces',serif",fontSize:16,fontStyle:"italic",color:"rgba(105,240,174,0.75)"}}>You own everything!</div></div>):(
@@ -1635,7 +1635,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
                     const running=unowned.slice(0,i+1).reduce((s,x)=>s+(parseFloat(x.cost)||0),0);
                     return(<div key={item.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:i%2===0?"rgba(18,5,0,0.9)":"rgba(10,3,0,0.9)",borderBottom:i<unowned.length-1?"1px solid rgba(255,255,255,0.06)":"none",borderLeft:`3px solid ${c}`}}>
                       <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontSize:13,fontWeight:600,color:"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.name}</div>
+                        <div style={{fontSize:13,fontWeight:600,color:"#FFF",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{item.name}</div>
                         <div style={{fontSize:10,color:`${c}99`,letterSpacing:1,marginTop:2,fontFamily:"monospace"}}>{item.cat?.toUpperCase()} · {item.bag}</div>
                       </div>
                       <div style={{textAlign:"right",flexShrink:0}}>
