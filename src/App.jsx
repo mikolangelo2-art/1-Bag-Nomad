@@ -788,10 +788,10 @@ function HandoffScreen({tripData,onComplete}) {
 
 // ─── SegmentDetailField ───────────────────────────────────────────
 function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00E5FF"}) {
-  const s={background:"rgba(0,8,20,0.6)",border:`1px solid ${accent}18`,borderRadius:6,color:"#FFF",fontSize:15,padding:multiline?"8px 10px":"7px 10px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",lineHeight:1.6,resize:multiline?"none":undefined};
+  const s={background:"rgba(0,8,20,0.6)",border:`1px solid ${accent}18`,borderRadius:6,color:"#FFF",fontSize:15,padding:multiline?"7px 9px":"6px 9px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",lineHeight:1.6,resize:multiline?"none":undefined};
   return(
     <div style={{display:"flex",flexDirection:"column",gap:3}}>
-      <div style={{fontSize:15,color:`${accent}CC`,letterSpacing:2.5,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{label}</div>
+      <div style={{fontSize:9,color:`${accent}88`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500}}>{label}</div>
       {multiline?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={2} style={s} onFocus={e=>e.target.style.borderColor=`${accent}55`} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>
       :<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={e=>e.target.style.borderColor=`${accent}55`} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>}
     </div>
@@ -820,7 +820,7 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
     <div style={{borderTop:"1px solid rgba(0,229,255,0.06)"}}>
       <div style={{display:"flex",background:"rgba(0,4,12,0.8)",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
         {CATS.map(c=>{const on=cat===c.id;return(
-          <button key={c.id} onClick={()=>setCat(on?null:c.id)} style={{flexShrink:0,minWidth:52,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"9px 4px",border:"none",cursor:"pointer",background:on?c.w:"transparent",borderBottom:on?`2px solid ${c.a}`:"2px solid transparent",transition:"all 0.15s",position:"relative"}}>
+          <button key={c.id} onClick={()=>setCat(on?null:c.id)} style={{flexShrink:0,minWidth:52,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"7px 4px",border:"none",cursor:"pointer",background:on?c.w:"transparent",borderBottom:on?`2px solid ${c.a}`:"2px solid transparent",transition:"all 0.15s",position:"relative"}}>
             <span style={{fontSize:15,lineHeight:1}}>{c.icon}</span>
             <span style={{fontSize:9,letterSpacing:0,fontFamily:"'Space Mono',monospace",fontWeight:700,color:on?c.a:"rgba(255,255,255,0.65)",whiteSpace:"nowrap"}}>{c.label}</span>
             {done[c.id]&&<div style={{position:"absolute",top:4,right:"14%",width:5,height:5,borderRadius:"50%",background:c.a,boxShadow:`0 0 5px ${c.a}`}}/>}
@@ -829,7 +829,7 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
       </div>
       {cat&&ac&&(
         <div style={{background:ac.w,borderTop:`1px solid ${ac.a}15`,animation:"slideOpen 0.18s ease"}}>
-          {cat==="transport"&&<div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:9}}>
+          {cat==="transport"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:7}}>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
               <SDF label="MODE" value={det.transport.mode} onChange={v=>uT("mode",v)} placeholder="Flight / Ferry / Car..." accent="#00E5FF"/>
               <SDF label="COST ($)" type="number" value={det.transport.cost} onChange={v=>uT("cost",v)} placeholder="0" accent="#00E5FF"/>
@@ -840,7 +840,7 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
             </div>
             <SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="Flight number, booking ref..." accent="#00E5FF" multiline/>
           </div>}
-          {cat==="stay"&&<div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:9}}>
+          {cat==="stay"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:7}}>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
               <SDF label="PROPERTY" value={det.stay.name} onChange={v=>uS("name",v)} placeholder="Hotel / hostel / resort..." accent="#69F0AE"/>
               <SDF label="TOTAL COST ($)" type="number" value={det.stay.cost} onChange={v=>uS("cost",v)} placeholder="0" accent="#69F0AE"/>
@@ -850,13 +850,13 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
             <SDF label="BOOKING LINK" value={det.stay.link} onChange={v=>uS("link",v)} placeholder="https://..." accent="#69F0AE"/>
             <SDF label="NOTES" value={det.stay.notes} onChange={v=>uS("notes",v)} placeholder="Room type, included meals, host contact..." accent="#69F0AE" multiline/>
           </div>}
-          {cat==="activities"&&<div style={{padding:"14px 16px"}}>
+          {cat==="activities"&&<div style={{padding:"10px 12px"}}>
             {det.activities.length>0&&<div style={{marginBottom:12}}>
               {det.activities.map(a=>(
                 <div key={a.id} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"8px 0",borderBottom:"1px solid rgba(255,217,61,0.07)"}}>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:15,color:"#FFF",fontFamily:"'Space Mono',monospace",marginBottom:2}}>{a.name}</div>
-                    <div style={{fontSize:15,color:"rgba(255,255,255,0.38)",display:"flex",gap:8,flexWrap:"wrap"}}>
+                    <div style={{fontSize:12,color:"rgba(255,255,255,0.88)",fontFamily:"'Space Mono',monospace",marginBottom:2}}>{a.name}</div>
+                    <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",display:"flex",gap:6,flexWrap:"wrap"}}>
                       {a.date&&<span>📅 {fD(a.date)}</span>}{a.cost&&<span style={{color:"#FFD93D"}}>💰 ${a.cost}</span>}{a.transit&&<span>🚕 {a.transit}</span>}
                       {a.link&&<a href={a.link} target="_blank" rel="noopener noreferrer" style={{color:"#00E5FF",textDecoration:"none"}}>🔗 Book</a>}
                     </div>
@@ -865,12 +865,12 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
                 </div>
               ))}
               <div style={{paddingTop:8,display:"flex",justifyContent:"space-between"}}>
-                <span style={{fontSize:15,color:"rgba(255,255,255,0.28)",fontFamily:"monospace",letterSpacing:1}}>TOTAL ACTIVITIES</span>
-                <span style={{fontSize:15,fontWeight:700,color:"#FFD93D",fontFamily:"monospace"}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
+                <span style={{fontSize:9,color:"rgba(255,255,255,0.25)",fontFamily:"monospace",letterSpacing:1}}>TOTAL ACTIVITIES</span>
+                <span style={{fontSize:11,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"monospace"}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
               </div>
             </div>}
-            <div style={{background:"rgba(255,217,61,0.02)",border:"1px dashed rgba(255,217,61,0.16)",borderRadius:8,padding:"11px 12px"}}>
-              <div style={{fontSize:15,color:"rgba(255,217,61,0.5)",letterSpacing:2,marginBottom:8,fontFamily:"'Space Mono',monospace",fontWeight:700}}>ADD ACTIVITY</div>
+            <div style={{background:"rgba(255,217,61,0.02)",border:"1px dashed rgba(255,217,61,0.12)",borderRadius:8,padding:"9px 10px"}}>
+              <div style={{fontSize:9,color:"rgba(255,217,61,0.4)",letterSpacing:1.5,marginBottom:6,fontFamily:"'Space Mono',monospace",fontWeight:500}}>ADD ACTIVITY</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7,marginBottom:8}}>
                 <SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/>
                 <SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#FFD93D"/>
@@ -882,18 +882,18 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
             </div>
             <div style={{marginTop:12}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code, best time..." accent="#FFD93D" multiline/></div>
           </div>}
-          {cat==="food"&&<div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:9}}>
+          {cat==="food"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:7}}>
             <div style={{display:"flex",gap:8,alignItems:"flex-end"}}>
               <div style={{flex:1}}><SDF label="DAILY FOOD BUDGET ($)" type="number" value={det.food.dailyBudget} onChange={v=>uF("dailyBudget",v)} placeholder="e.g. 45" accent="#FF9F43"/></div>
-              <button onClick={aiFood} disabled={aiLoad} style={{padding:"7px 13px",borderRadius:6,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.07)",color:"#FF9F43",fontSize:15,cursor:aiLoad?"wait":"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,whiteSpace:"nowrap",height:32,flexShrink:0}}>{aiLoad?"✦...":"✦ AI EST"}</button>
+              <button onClick={aiFood} disabled={aiLoad} style={{padding:"5px 10px",borderRadius:5,border:"1px solid rgba(255,159,67,0.3)",background:"rgba(255,159,67,0.05)",color:"rgba(255,159,67,0.8)",fontSize:9,cursor:aiLoad?"wait":"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:600,whiteSpace:"nowrap",height:28,flexShrink:0}}>{aiLoad?"✦...":"✦ AI EST"}</button>
             </div>
             {det.food.dailyBudget&&<div style={{display:"flex",justifyContent:"space-between",padding:"8px 12px",background:"rgba(255,159,67,0.05)",border:"1px solid rgba(255,159,67,0.16)",borderRadius:7}}>
-              <span style={{fontSize:15,color:"rgba(255,255,255,0.4)",fontFamily:"monospace"}}>{segment.nights} nights × ${det.food.dailyBudget}/day</span>
-              <span style={{fontSize:15,fontWeight:700,color:"#FFD93D",fontFamily:"monospace"}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
+              <span style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontFamily:"monospace"}}>{segment.nights} nights × ${det.food.dailyBudget}/day</span>
+              <span style={{fontSize:11,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"monospace"}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
             </div>}
             <SDF label="FOOD NOTES" value={det.food.notes} onChange={v=>uF("notes",v)} placeholder="Must-try dishes, market days, dietary notes..." accent="#FF9F43" multiline/>
           </div>}
-          {cat==="misc"&&<div style={{padding:"14px 16px"}}>
+          {cat==="misc"&&<div style={{padding:"10px 12px"}}>
             {det.misc.length>0&&<div style={{marginBottom:12}}>
               {det.misc.map(m=>(
                 <div key={m.id} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 0",borderBottom:"1px solid rgba(162,155,254,0.07)"}}>
@@ -902,10 +902,10 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
                   <button onClick={()=>setDet(d=>({...d,misc:d.misc.filter(x=>x.id!==m.id)}))} style={{background:"none",border:"none",color:"rgba(255,255,255,0.18)",fontSize:16,cursor:"pointer",lineHeight:1,padding:"0 2px",flexShrink:0}}>×</button>
                 </div>
               ))}
-              <div style={{paddingTop:8,display:"flex",justifyContent:"space-between"}}><span style={{fontSize:15,color:"rgba(255,255,255,0.28)",fontFamily:"monospace",letterSpacing:1}}>TOTAL MISC</span><span style={{fontSize:15,fontWeight:700,color:"#A29BFE",fontFamily:"monospace"}}>${det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0).toLocaleString()}</span></div>
+              <div style={{paddingTop:8,display:"flex",justifyContent:"space-between"}}><span style={{fontSize:9,color:"rgba(255,255,255,0.25)",fontFamily:"monospace",letterSpacing:1}}>TOTAL MISC</span><span style={{fontSize:11,fontWeight:600,color:"rgba(162,155,254,0.8)",fontFamily:"monospace"}}>${det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0).toLocaleString()}</span></div>
             </div>}
             <div style={{background:"rgba(162,155,254,0.02)",border:"1px dashed rgba(162,155,254,0.16)",borderRadius:8,padding:"11px 12px"}}>
-              <div style={{fontSize:15,color:"rgba(162,155,254,0.5)",letterSpacing:2,marginBottom:8,fontFamily:"'Space Mono',monospace",fontWeight:700}}>ADD EXPENSE</div>
+              <div style={{fontSize:9,color:"rgba(162,155,254,0.4)",letterSpacing:1.5,marginBottom:6,fontFamily:"'Space Mono',monospace",fontWeight:500}}>ADD EXPENSE</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7,marginBottom:8}}>
                 <SDF label="ITEM" value={nMisc.name} onChange={v=>setNMisc(m=>({...m,name:v}))} placeholder="Visa / permit / rental..." accent="#A29BFE"/>
                 <SDF label="COST ($)" type="number" value={nMisc.cost} onChange={v=>setNMisc(m=>({...m,cost:v}))} placeholder="0" accent="#A29BFE"/>
@@ -914,7 +914,7 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
             </div>
           </div>}
           {/* arch #2: inline intel preview */}
-          {cat==="intel"&&<div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:9}}>
+          {cat==="intel"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:7}}>
             {intelSnippet&&!intelSnippet.error?(
               <div style={{padding:"10px 12px",background:"rgba(255,107,107,0.04)",border:"1px solid rgba(255,107,107,0.14)",borderRadius:8}}>
                 {intelSnippet.tagline&&<div style={{fontSize:15,color:"#A29BFE",fontStyle:"italic",marginBottom:8,lineHeight:1.55}}>{intelSnippet.tagline}</div>}
