@@ -1069,6 +1069,11 @@ function PhaseCard({phase,intelData,idx}) {
         <div style={{width:20,height:20,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.18":"0.07"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
           <span style={{fontSize:15,color:open?phase.color:"rgba(255,255,255,0.55)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
         </div>
+          {isMobile&&<div style={{display:"flex",gap:6,alignItems:"center",padding:"2px 16px 8px 16px",flexWrap:"nowrap",overflow:"hidden"}}>
+            <span style={{fontSize:11,color:"rgba(255,255,255,0.75)",fontFamily:"'Space Mono',monospace",fontWeight:600,whiteSpace:"nowrap",flexShrink:0}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
+            <span style={{fontSize:11,color:phase.color,fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>🌙{phase.totalNights}n</span>
+            {phase.totalDives>0&&<span style={{fontSize:11,color:"#00E5FF",whiteSpace:"nowrap",flexShrink:0}}>🤿{phase.totalDives}</span>}
+          </div>}
       </div>
       {open&&(
         <div style={{animation:"slideOpen 0.2s ease",background:"rgba(0,3,11,0.55)"}}>
