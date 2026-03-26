@@ -283,6 +283,75 @@ function SharegoodLogo({size=40,opacity=1,glowColor="rgba(169,70,29,0.5)",animat
   );
 }
 
+
+// ─── AntiqueGlobe ─────────────────────────────────────────────────
+function AntiqueGlobe({size=120, glowColor="rgba(201,168,76,0.5)", animate=true}) {
+  const gold = "#C9A84C";
+  const goldFaint = "rgba(201,168,76,0.25)";
+  const goldMed = "rgba(201,168,76,0.5)";
+  const parchment = "rgba(201,168,76,0.08)";
+  const r = size / 2;
+  // Latitude arc heights (as % of diameter, simulating perspective)
+  const lats = [-0.38, -0.24, -0.08, 0.08, 0.24, 0.38];
+  const longs = [0, 36, 72, 108, 144];
+  return (
+    <div style={{
+      position:"relative", width:size, height:size, flexShrink:0,
+      filter:`drop-shadow(0 0 ${size*.18}px ${glowColor}) drop-shadow(0 0 ${size*.08}px ${glowColor})`,
+      animation: animate ? "spinGlobe 18s linear infinite" : "none",
+    }}>
+      <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} xmlns="http://www.w3.org/2000/svg">
+        {/* Outer glow ring */}
+        <circle cx={r} cy={r} r={r-1} fill={parchment} stroke={gold} strokeWidth="1.2" opacity="0.9"/>
+        {/* Equator */}
+        <ellipse cx={r} cy={r} rx={r-2} ry={(r-2)*0.18} fill="none" stroke={gold} strokeWidth="0.9" opacity="0.8"/>
+        {/* Latitude lines */}
+        {lats.map((lat, i) => {
+          const cy = r + lat * size;
+          const ry = Math.max(1, (r-2) * 0.18 * (1 - Math.abs(lat)*1.8));
+          const rx2 = Math.sqrt(Math.max(0, Math.pow(r-2,2) - Math.pow(lat*size,2)));
+          return rx2 > 2 ? (
+            <ellipse key={i} cx={r} cy={cy} rx={rx2} ry={Math.max(1,ry)}
+              fill="none" stroke={goldMed} strokeWidth="0.6" opacity="0.55"/>
+          ) : null;
+        })}
+        {/* Longitude lines - vertical arcs */}
+        {longs.map((angle, i) => {
+          const rad = (angle * Math.PI) / 180;
+          const xOff = (r-2) * Math.sin(rad);
+          return (
+            <ellipse key={i} cx={r} cy={r} rx={Math.abs(xOff) < 3 ? r-2 : Math.abs(xOff)}
+              ry={r-2} fill="none" stroke={goldFaint} strokeWidth="0.6"
+              transform={Math.abs(xOff) < 3 ? "" : `rotate(${angle} ${r} ${r})`}
+              opacity="0.4"/>
+          );
+        })}
+        {/* Prime meridian - slightly brighter */}
+        <ellipse cx={r} cy={r} rx={r-2} ry={r-2} fill="none" stroke={goldMed} strokeWidth="0.8" opacity="0.6"/>
+        {/* Compass cross */}
+        <line x1={r} y1={4} x2={r} y2={size-4} stroke={goldFaint} strokeWidth="0.5" opacity="0.4"/>
+        <line x1={4} y1={r} x2={size-4} y2={r} stroke={goldFaint} strokeWidth="0.5" opacity="0.4"/>
+        {/* Cardinal points */}
+        <text x={r} y={r*.22} textAnchor="middle" fill={gold} fontSize={size*.07} fontFamily="serif" opacity="0.7">N</text>
+        <text x={r} y={size-2} textAnchor="middle" fill={gold} fontSize={size*.07} fontFamily="serif" opacity="0.7">S</text>
+        <text x={size-2} y={r+size*.03} textAnchor="middle" fill={gold} fontSize={size*.07} fontFamily="serif" opacity="0.6">E</text>
+        <text x={3} y={r+size*.03} textAnchor="middle" fill={gold} fontSize={size*.07} fontFamily="serif" opacity="0.6">W</text>
+        {/* Center dot */}
+        <circle cx={r} cy={r} r={size*.025} fill={gold} opacity="0.6"/>
+        {/* Decorative tick marks */}
+        {[0,90,180,270].map((a,i) => {
+          const rad = (a-90)*Math.PI/180;
+          const x1 = r + (r-2)*Math.cos(rad);
+          const y1 = r + (r-2)*Math.sin(rad);
+          const x2 = r + (r-6)*Math.cos(rad);
+          const y2 = r + (r-6)*Math.sin(rad);
+          return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={gold} strokeWidth="1.2" opacity="0.8"/>;
+        })}
+      </svg>
+    </div>
+  );
+}
+
 // ─── ConsoleHeader ────────────────────────────────────────────────
 function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackConsole,children}) {
   const isDream=which==="dream", isTrip=which==="trip", isPack=which==="pack";
@@ -349,10 +418,10 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
           <SharegoodLogo size={isMobile?30:42} opacity={0.88} glowColor={logoGlow} animate={isDream}/>
           <div style={{textAlign:"center"}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?10:13,fontWeight:700,color:"#FFF",letterSpacing:1,lineHeight:1}}>1 Bag Nomad</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?11:14,fontWeight:700,color:"#FFF",letterSpacing:1.5,lineHeight:1}}>1 Bag Nomad</div>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:4,marginTop:2}}>
               <div style={{width:3,height:3,borderRadius:"50%",background:dot,boxShadow:`0 0 4px ${dot}`}}/>
-              <div style={{fontFamily:"'Fraunces',serif",fontWeight:100,fontStyle:"italic",fontSize:isMobile?6:7,color:sub,letterSpacing:1}}>Sharegood Co.</div>
+              <div style={{fontFamily:"'Fraunces',serif",fontWeight:100,fontStyle:"italic",fontSize:isMobile?7:8,color:sub,letterSpacing:1,opacity:0.75}}>Sharegood Co.</div>
             </div>
           </div>
         </div>
@@ -388,7 +457,7 @@ function GenerationScreen({onComplete}) {
   return (
     <div style={{position:"fixed",inset:0,zIndex:9999,background:"radial-gradient(ellipse at 40% 30%,#2d1200 0%,#1a0900 30%,#0a0400 65%,#040100 100%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Space Mono',monospace",overflow:"hidden"}}>
       <div style={{position:"absolute",top:"5%",left:"50%",width:700,height:500,background:"radial-gradient(ellipse,rgba(169,70,29,0.5) 0%,transparent 65%)",animation:"ambientGlow 3s ease-in-out infinite",transform:"translateX(-50%)",pointerEvents:"none"}}/>
-      <div style={{animation:"logoPulse 2.4s ease-in-out infinite",marginBottom:36,zIndex:1}}><SharegoodLogo size={200} animate={false} glowColor="rgba(169,70,29,0.52)" opacity={0.9}/></div>
+      <div style={{animation:"logoPulse 2.4s ease-in-out infinite",marginBottom:36,zIndex:1}}><AntiqueGlobe size={180} glowColor="rgba(201,168,76,0.6)" animate={true}/></div>
       <div key={mi} style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:100,fontStyle:"italic",color:"rgba(255,255,255,0.92)",letterSpacing:1,marginBottom:10,animation:"fadeUp 0.5s ease",textAlign:"center",zIndex:1,opacity:ph>=1?1:0,transition:"opacity 0.6s ease"}}>{msgs[mi]}</div>
       <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.5)",letterSpacing:3,marginBottom:40,textAlign:"center",zIndex:1}}>The co-architect is working its magic ✦</div>
       <div style={{width:260,zIndex:1}}>
@@ -510,7 +579,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
   useEffect(()=>{
     let i=0;const txt=vd.narrative||"";
     const t=setTimeout(()=>{
-      const iv=setInterval(()=>{i++;setNarrative(txt.slice(0,i));if(i>=txt.length){clearInterval(iv);setNarrativeDone(true);setTimeout(()=>setShowStats(true),200);setTimeout(()=>setShowPhases(true),500);}},13);
+      const iv=setInterval(()=>{i++;setNarrative(txt.slice(0,i));if(i>=txt.length){clearInterval(iv);setNarrativeDone(true);setTimeout(()=>setShowStats(true),3200);setTimeout(()=>setShowPhases(true),3800);}},13);
     },400);
     return()=>clearTimeout(t);
   },[]);
@@ -523,7 +592,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
       if(parsed){
         setVd(parsed);setNarrativeDone(false);setShowStats(false);setShowPhases(false);setNarrative("");
         let i=0;const txt=parsed.narrative||"";
-        const iv=setInterval(()=>{i++;setNarrative(txt.slice(0,i));if(i>=txt.length){clearInterval(iv);setNarrativeDone(true);setTimeout(()=>setShowStats(true),200);setTimeout(()=>setShowPhases(true),500);}},13);
+        const iv=setInterval(()=>{i++;setNarrative(txt.slice(0,i));if(i>=txt.length){clearInterval(iv);setNarrativeDone(true);setTimeout(()=>setShowStats(true),3200);setTimeout(()=>setShowPhases(true),3800);}},13);
       } else setRefineInput("⚠ Couldn't apply — try rephrasing");
     }catch(e){setRefineInput("⚠ Connection issue");}
     setLoading(false);
@@ -740,12 +809,12 @@ function HandoffScreen({tripData,onComplete}) {
       <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 0%,#001830 0%,#000d1a 30%,#000810 60%,#030810 100%)",opacity:ph>=1?1:0,transition:"opacity 1.4s ease",zIndex:2}}/>
       <div style={{position:"absolute",inset:0,zIndex:3,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:40}}>
         <div style={{opacity:ph<1?1:0,transition:"opacity 0.9s ease",position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",pointerEvents:"none"}}>
-          <div style={{display:"flex",justifyContent:"center",marginBottom:24,animation:"logoPulse 2.4s ease-in-out infinite"}}><SharegoodLogo size={isMobile?80:110} animate={false} glowColor="rgba(255,217,61,0.55)" opacity={0.9}/></div>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:24,animation:"logoPulse 2.4s ease-in-out infinite"}}><AntiqueGlobe size={isMobile?80:110} glowColor="rgba(201,168,76,0.65)" animate={true}/></div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:22,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.6,maxWidth:560,textAlign:"center"}}>"{(tripData.visionNarrative||"").slice(0,120)}..."</div>
           <div style={{marginTop:28,fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,217,61,0.45)",letterSpacing:3}}>Now becoming real.</div>
         </div>
         <div style={{opacity:ph>=1&&ph<2?1:0,transition:"opacity 0.8s ease",position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",pointerEvents:"none"}}>
-          <div style={{display:"flex",justifyContent:"center",marginBottom:24,animation:"logoPulse 2.4s ease-in-out infinite"}}><SharegoodLogo size={isMobile?80:110} animate={false} glowColor="rgba(0,229,255,0.55)" opacity={0.9}/></div>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:24,animation:"logoPulse 2.4s ease-in-out infinite"}}><AntiqueGlobe size={isMobile?80:110} glowColor="rgba(0,229,255,0.5)" animate={true}/></div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:16,fontWeight:100,fontStyle:"italic",color:"rgba(0,229,255,0.6)",letterSpacing:4,textAlign:"center"}}>Building your expedition...</div>
         </div>
         <div style={{opacity:ph>=2?1:0,transition:"opacity 0.8s ease 0.2s",display:"flex",flexDirection:"column",alignItems:"center",width:"100%",maxWidth:520}}>
@@ -778,7 +847,7 @@ function HandoffScreen({tripData,onComplete}) {
                 </div>
               ))}
             </div>
-            <button onClick={onComplete} style={{padding:isMobile?"16px 32px":"18px 44px",borderRadius:14,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#030810",fontSize:isMobile?13:15,fontWeight:900,fontFamily:"'Space Mono',monospace",letterSpacing:2.5,cursor:"pointer",animation:"consolePulse 2.8s ease-in-out infinite",minHeight:54}}>ENTER TRIP CONSOLE →</button>
+            <button onClick={()=>{const b=document.body;b.style.transition="opacity 0.5s ease";b.style.opacity="0";setTimeout(()=>{b.style.opacity="1";b.style.transition="opacity 0.6s ease";onComplete();},500);}} style={{padding:isMobile?"16px 32px":"18px 44px",borderRadius:14,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#030810",fontSize:isMobile?13:15,fontWeight:900,fontFamily:"'Space Mono',monospace",letterSpacing:2.5,cursor:"pointer",animation:"consolePulse 2.8s ease-in-out infinite",minHeight:54}}>ENTER TRIP CONSOLE →</button>
           </div>
         </div>
       </div>
@@ -1113,7 +1182,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
   const TABS=[{id:"next",label:"🗺️ EXPEDITION"},{id:"budget",label:"💰 BUDGET"},{id:"book",label:"🔗 BOOK"},{id:"intel",label:"🔭 INTEL"}];
 
   return(
-    <div className="mc-root" style={{animation:"fadeIn 0.6s ease both"}}>
+    <div className="mc-root" style={{animation:"fadeIn 0.9s ease both"}}>
       {!isFullscreen&&<ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/>}
       {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:"linear-gradient(180deg,rgba(0,20,45,0.95),rgba(0,8,20,0.98))",borderBottom:"1px solid rgba(0,229,255,0.15)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.04) 0%,transparent 60%)",pointerEvents:"none"}}/>
