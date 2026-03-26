@@ -1042,38 +1042,24 @@ function PhaseCard({phase,intelData,idx}) {
   const pct=total>0?Math.round((filled/total)*100):0;
   return(
     <div style={{borderRadius:13,border:open?`1.5px solid ${phase.color}`:"1px solid rgba(0,229,255,0.08)",boxShadow:open?`0 0 0 1px ${phase.color}22, 0 4px 28px ${phase.color}28, inset 0 1px 0 ${phase.color}18`:"none",background:open?`linear-gradient(145deg,${phase.color}07,rgba(0,4,14,0.98))`:"rgba(3,7,16,0.88)",overflow:"hidden",transition:"all 0.25s",animation:`fadeUp 0.3s ease ${idx*.04}s both`}}>
-      <div onClick={()=>setOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",cursor:"pointer",minHeight:62,borderLeft:`3px solid ${open?phase.color:phase.color+"50"}`}}>
-        <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,flexShrink:0}}>
-          <div style={{width:22,height:22,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace"}}>{phase.id}</div>
-          <div style={{fontSize:13}}>{phase.flag}</div>
-        </div>
-        <div style={{flex:1,minWidth:0,display:"flex",flexDirection:"column",gap:2}}>
-          <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:4}}>
-            <span style={{fontSize:15,fontWeight:600,color:open?phase.color:"rgba(255,255,255,0.92)",fontFamily:"'Space Mono',monospace",transition:"color 0.2s",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{phase.name}</span>
-            {isNow&&<span style={{fontSize:15,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:8,padding:"1px 6px",letterSpacing:1,fontWeight:700}}>● ACTIVE</span>}
+      <div onClick={()=>setOpen(o=>!o)} style={{padding:isMobile?"10px 12px":"14px 16px",cursor:"pointer",minHeight:isMobile?54:62,borderLeft:`3px solid ${open?phase.color:phase.color+"50"}`}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
+          <div style={{width:20,height:20,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
+          <span style={{fontSize:14,flexShrink:0}}>{phase.flag}</span>
+          <span style={{flex:1,fontSize:isMobile?13:15,fontWeight:600,color:open?phase.color:"rgba(255,255,255,0.92)",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",transition:"color 0.2s"}}>{phase.name}</span>
+          {isNow&&<span style={{fontSize:9,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:8,padding:"1px 5px",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>ACTIVE</span>} 
+          <span style={{fontSize:isMobile?12:15,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",flexShrink:0}}>{fmt(phase.totalBudget)}</span>
+          <div style={{width:16,height:16,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.2":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <span style={{fontSize:8,color:open?phase.color:"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
           </div>
-          <div style={{display:"flex",gap:isMobile?5:6,alignItems:"center",marginBottom:isMobile?2:5,flexWrap:"nowrap"}}>
-            <span style={{fontSize:11,color:"rgba(255,255,255,0.8)",fontFamily:"'Space Mono',monospace",fontWeight:600,whiteSpace:"nowrap",fontSize:11}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
-            <span style={{fontSize:11,color:phase.color,fontWeight:900}}>🌙 {phase.totalNights}n</span>
-            {phase.totalDives>0&&<span style={{fontSize:11,color:"#00E5FF"}}>🤿 {phase.totalDives}</span>}
-          </div>
-          {pct>0&&<div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"nowrap"}}>
-            <div style={{width:100,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}66,${phase.color})`,borderRadius:2,transition:"width 0.4s ease"}}/></div>
-            <span style={{fontSize:15,color:`${phase.color}CC`,fontFamily:"monospace",fontWeight:400}}>{pct}%</span>
-          </div>}
         </div>
-        <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2,flexShrink:0,minWidth:58,marginLeft:4,maxWidth:isMobile?"28%":"auto"}}>
-          <div style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.82)",fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</div>
-          <div style={{fontSize:15,color:"rgba(255,255,255,0.7)",fontFamily:"monospace"}}>{!isMobile&&(isPast?"COMPLETE":isNow?"IN PROGRESS":`${dUntil}d away`)}</div>
+        <div style={{display:"flex",alignItems:"center",gap:8,paddingLeft:28,flexWrap:"nowrap"}}>
+          <span style={{fontSize:10,color:"rgba(255,255,255,0.62)",fontFamily:"'Space Mono',monospace",fontWeight:500,whiteSpace:"nowrap"}}>{fD(phase.arrival)}&ndash;{fD(phase.departure)}</span>
+          <span style={{fontSize:10,color:phase.color,fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>🌙{phase.totalNights}n</span>
+          {phase.totalDives>0&&<span style={{fontSize:10,color:"#00E5FF",whiteSpace:"nowrap",flexShrink:0}}>🤿{phase.totalDives}</span>}
+          {pct>0&&<div style={{width:isMobile?40:80,height:2,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden",flexShrink:0}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}55,${phase.color}99)`,borderRadius:2}}/></div>}
+          <span style={{fontSize:9,color:"rgba(255,255,255,0.25)",fontFamily:"monospace",whiteSpace:"nowrap",marginLeft:"auto",flexShrink:0}}>{isPast?"done":isNow?"active":`${dUntil}d`}</span>
         </div>
-        <div style={{width:20,height:20,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.18":"0.07"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-          <span style={{fontSize:15,color:open?phase.color:"rgba(255,255,255,0.55)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
-        </div>
-          {isMobile&&<div style={{display:"flex",gap:6,alignItems:"center",padding:"2px 16px 8px 16px",flexWrap:"nowrap",overflow:"hidden"}}>
-            <span style={{fontSize:11,color:"rgba(255,255,255,0.75)",fontFamily:"'Space Mono',monospace",fontWeight:600,whiteSpace:"nowrap",flexShrink:0}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
-            <span style={{fontSize:11,color:phase.color,fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>🌙{phase.totalNights}n</span>
-            {phase.totalDives>0&&<span style={{fontSize:11,color:"#00E5FF",whiteSpace:"nowrap",flexShrink:0}}>🤿{phase.totalDives}</span>}
-          </div>}
       </div>
       {open&&(
         <div style={{animation:"slideOpen 0.2s ease",background:"rgba(0,3,11,0.55)"}}>
