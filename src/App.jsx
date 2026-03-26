@@ -1047,7 +1047,7 @@ function PhaseCard({phase,intelData,idx}) {
           <div style={{width:22,height:22,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace"}}>{phase.id}</div>
           <div style={{fontSize:13}}>{phase.flag}</div>
         </div>
-        <div style={{flex:1,minWidth:0}}>
+        <div style={{flex:1,minWidth:0,display:"flex",flexDirection:"column",gap:2}}>
           <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:4}}>
             <span style={{fontSize:15,fontWeight:700,color:open?phase.color:"#FFF",fontFamily:"'Space Mono',monospace",transition:"color 0.2s"}}>{phase.name}</span>
             {isNow&&<span style={{fontSize:15,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:8,padding:"1px 6px",letterSpacing:1,fontWeight:700}}>● ACTIVE</span>}
@@ -1059,11 +1059,11 @@ function PhaseCard({phase,intelData,idx}) {
           </div>
           {pct>0&&<div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"nowrap"}}>
             <div style={{width:100,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}66,${phase.color})`,borderRadius:2,transition:"width 0.4s ease"}}/></div>
-            <span style={{fontSize:15,color:`${phase.color}CC`,fontFamily:"monospace",fontWeight:700}}>{pct}% planned</span>
+            <span style={{fontSize:15,color:`${phase.color}CC`,fontFamily:"monospace",fontWeight:600}}>{pct}%</span>
           </div>}
         </div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2,flexShrink:0,marginLeft:4,maxWidth:isMobile?"28%":"auto"}}>
-          <div style={{fontSize:16,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</div>
+          <div style={{fontSize:16,fontWeight:700,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</div>
           <div style={{fontSize:15,color:"rgba(255,255,255,0.7)",fontFamily:"monospace"}}>{!isMobile&&(isPast?"COMPLETE":isNow?"IN PROGRESS":`${dUntil}d away`)}</div>
         </div>
         <div style={{width:20,height:20,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.18":"0.07"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
