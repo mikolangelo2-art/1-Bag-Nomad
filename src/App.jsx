@@ -1049,7 +1049,7 @@ function PhaseCard({phase,intelData,idx}) {
         </div>
         <div style={{flex:1,minWidth:0,display:"flex",flexDirection:"column",gap:2}}>
           <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:4}}>
-            <span style={{fontSize:15,fontWeight:700,color:open?phase.color:"#FFF",fontFamily:"'Space Mono',monospace",transition:"color 0.2s"}}>{phase.name}</span>
+            <span style={{fontSize:15,fontWeight:700,color:open?phase.color:"#FFF",fontFamily:"'Space Mono',monospace",transition:"color 0.2s",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{phase.name}</span>
             {isNow&&<span style={{fontSize:15,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:8,padding:"1px 6px",letterSpacing:1,fontWeight:700}}>● ACTIVE</span>}
           </div>
           <div style={{display:"flex",gap:isMobile?5:6,alignItems:"center",marginBottom:isMobile?2:5,flexWrap:"nowrap",overflow:"hidden"}}>
