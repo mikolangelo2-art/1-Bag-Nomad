@@ -112,17 +112,17 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 
 
   .dream-root,.mc-root,.build-root{font-size:18px}
-  .dream-content{max-width:780px;padding:40px 52px 70px}
+  .dream-content{max-width:780px;padding:40px 52px 70px}@keyframes shimmerOnce{0%{background-position:-200% center}65%{background-position:200% center}100%{background-position:200% center}}.dream-big-shimmer{background:linear-gradient(90deg,#FFD93D 25%,#fff 45%,#FF9F43 55%,#FFD93D 75%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmerOnce 2s ease forwards}.dream-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,159,67,0.22),rgba(0,229,255,0.12),rgba(162,155,254,0.1),transparent);margin:4px 0 16px 0;border:none}.dream-accent-green{color:rgba(105,240,174,0.45)}
   .mc-content{padding:22px 36px}
   .g-label{font-size:16px}
   .g-desc{font-size:11px}
   .g-icon{font-size:28px}
-  .sec-label{font-size:12px;letter-spacing:5px}
-  .f-label{font-size:11px;letter-spacing:3px}
+  .sec-label{font-size:12px;letter-spacing:5px;color:rgba(255,159,67,0.6)}
+  .f-label{font-size:11px;letter-spacing:3px;color:rgba(0,229,255,0.5)}
   .f-input{font-size:15px;padding:12px 16px}
-  .vision-ta{font-size:15px;padding:16px 20px}
-  .launch-btn{font-size:15px;padding:20px}
-  .vibe-tag{font-size:11px;padding:6px 16px}
+  .vision-ta{font-size:15px;padding:16px 20px;border-left:2px solid rgba(255,159,67,0.6);box-shadow:0 0 24px rgba(255,159,67,0.09),inset 0 0 10px rgba(255,159,67,0.03);background:rgba(255,159,67,0.025);transition:box-shadow 0.3s ease,border-color 0.3s ease}.vision-ta:focus{border-left:2px solid rgba(255,159,67,0.9);box-shadow:0 0 32px rgba(255,159,67,0.16),inset 0 0 14px rgba(255,159,67,0.05);outline:none}
+  .launch-btn{font-size:15px;padding:20px;transition:box-shadow 0.2s ease,transform 0.15s ease}.launch-btn:hover{box-shadow:0 0 28px rgba(255,159,67,0.35);transform:translateY(-1px)}
+  .vibe-tag{font-size:11px;padding:6px 16px;transition:transform 0.15s ease,border-color 0.15s ease,background 0.15s ease,box-shadow 0.15s ease}.vibe-tag:hover{transform:scale(1.04);box-shadow:0 0 10px rgba(255,159,67,0.2)}
   .mc-tab{font-size:11px;padding:12px 16px}
   .chat-bubble{font-size:12px}
   .intel-section-label{font-size:12px}
@@ -156,7 +156,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 @media(min-width:900px){html,body{font-size:18px}.dream-content{max-width:860px;margin:0 auto;padding:40px 40px 70px}.mc-content{max-width:1100px;margin:0 auto;padding:24px 48px}.g-label{font-size:18px}.g-desc{font-size:12px}.sec-label{font-size:13px;letter-spacing:5px}.f-label{font-size:12px}.f-input{font-size:16px;padding:13px 18px}.vision-ta{font-size:16px;padding:18px 22px}.launch-btn{font-size:16px;padding:22px}.mc-tab{font-size:12px;padding:14px 18px}.chat-bubble{font-size:12px}}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#060A0F}::-webkit-scrollbar-thumb{background:#1a2d42;border-radius:2px}
 .dream-root{font-family:'Space Mono',monospace;background:radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 25%,#0d0500 55%,#060200 100%);min-height:100vh;color:#FFF;position:relative}
-.dream-glow{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:280px;background:radial-gradient(ellipse,rgba(169,70,29,0.4) 0%,rgba(255,217,61,0.07) 45%,transparent 70%);pointer-events:none;z-index:0;animation:glowPulse 7s ease-in-out infinite}
+.dream-glow{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:280px;background:radial-gradient(ellipse,rgba(169,70,29,0.4) 0%,rgba(255,217,61,0.07) 45%,transparent 70%);pointer-events:none;z-index:0;animation:glowPulse 7s ease-in-out infinite}.dream-glow::after{content:"";position:absolute;top:60px;left:-80px;width:200px;height:120px;background:radial-gradient(ellipse,rgba(0,229,255,0.07) 0%,transparent 70%);pointer-events:none}.dream-glow::before{content:"";position:absolute;top:80px;right:-60px;width:160px;height:100px;background:radial-gradient(ellipse,rgba(162,155,254,0.08) 0%,transparent 70%);pointer-events:none}
 .dream-content{position:relative;z-index:1;padding:26px 20px 44px;max-width:720px;margin:0 auto}.mc-content{padding:20px 32px}.build-root,.mc-root{font-size:15px}.g-label{font-size:15px}.g-desc{font-size:10px}.launch-btn{font-size:15px}.sec-label{font-size:11px}.f-input{font-size:14px}.f-label{font-size:10px}}
 .hero-cursor{color:#FFD93D;animation:blink 0.9s infinite}
 .sec-label{font-size:12px;color:rgba(255,159,67,0.85);letter-spacing:4px;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid rgba(169,70,29,0.22)}
@@ -646,7 +646,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2,flexWrap:"wrap"}}>
                       <span style={{fontSize:15,fontWeight:700,color:"#FFF"}}>{p.flag||"🌍"} {p.destination}</span>
                       <span style={{fontSize:15,color:c}}>{TI[p.type]||"✈️"} {p.type}</span>
-                      <span style={{fontSize:15,color:"rgba(255,255,255,0.38)",marginLeft:"auto"}}>🌙 {p.nights}n</span>
+                      <span style={{fontSize:15,color:"rgba(255,255,255,0.82)",marginLeft:"auto"}}>🌙 {p.nights}n</span>
                     </div>
                     <div style={{fontSize:15,fontWeight:700,color:"rgba(255,255,255,0.75)",marginBottom:3,letterSpacing:0.5}}>{p.country}</div>
                     <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.5}}>{p.why}</div>
@@ -845,7 +845,7 @@ function HandoffScreen({tripData,onComplete}) {
             </div>
           </div>
           <div style={{textAlign:"center",marginBottom:isMobile?16:20}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:22,fontWeight:900,color:"#FFD93D",letterSpacing:3,textShadow:"0 0 30px rgba(255,217,61,0.5)",lineHeight:1}}>DREAM BIG</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:22,fontWeight:900,letterSpacing:3,textShadow:"0 0 30px rgba(255,217,61,0.5)",lineHeight:1,WebkitTextFillColor:"transparent",background:"linear-gradient(90deg,#FFD93D 25%,#fff 45%,#FF9F43 55%,#FFD93D 75%)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",animation:"shimmerOnce 2s ease forwards"}}>DREAM BIG</div>
             <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:22,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.7)",letterSpacing:2,lineHeight:1.2}}>travel light</div>
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:6,justifyContent:"center",maxWidth:isMobile?320:480,marginBottom:isMobile?20:28}}>
@@ -1317,7 +1317,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,flex:1,minWidth:0}}>
                       <span style={{fontSize:15}}>{phase.flag}</span>
-                      <div><div style={{fontSize:isMobile?13:15,fontWeight:700,color:"#FFF"}}>{phase.name}</div><div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.55)"}}>{phase.nights}n · {phase.country}</div></div>
+                      <div><div style={{fontSize:isMobile?13:15,fontWeight:700,color:"#FF9F43"}}>{phase.name}</div><div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.55)"}}>{phase.nights}n · <span style={{color:"#FF9F43",fontWeight:600}}>{phase.country}</span></div></div>
                     </div>
                     <span style={{fontSize:15,fontWeight:900,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0,marginLeft:8}}>{fmt(budget)}</span>
                   </div>
@@ -1359,7 +1359,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:8}}>
                   {flatPhases.map(phase=>(
                     <button key={phase.id} onClick={()=>openIntel(phase.name,phase.name,phase.type)} style={{background:phase.color+"08",border:"1px solid "+phase.color+"33",borderRadius:8,padding:"11px 12px",cursor:"pointer",textAlign:"left",minHeight:60}}>
-                      <div style={{fontSize:15,color:phase.color,marginBottom:3}}>{phase.flag} Phase {phase.id}</div>
+                      <div style={{fontSize:15,color:"#FF9F43",marginBottom:3}}>{phase.flag} Phase {phase.id}</div>
                       <div style={{fontSize:15,fontWeight:700,color:"#FFF"}}>{phase.name}</div>
                       <div style={{fontSize:15,color:"rgba(255,255,255,0.5)",marginTop:2}}>{TI[phase.type]} {phase.type}</div>
                     </button>
