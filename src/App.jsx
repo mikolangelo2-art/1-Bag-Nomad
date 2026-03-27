@@ -120,7 +120,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
   .sec-label{font-size:12px;letter-spacing:5px;color:rgba(255,159,67,0.6)}
   .f-label{font-size:11px;letter-spacing:3px;color:rgba(0,229,255,0.5)}
   .f-input{font-size:15px;padding:12px 16px}
-  .vision-ta{font-size:15px;padding:16px 20px;border-left:2px solid rgba(255,159,67,0.6);box-shadow:0 0 24px rgba(255,159,67,0.09),inset 0 0 10px rgba(255,159,67,0.03);background:rgba(255,159,67,0.025);transition:box-shadow 0.3s ease,border-color 0.3s ease}.vision-ta:focus{border-left:2px solid rgba(255,159,67,0.9);box-shadow:0 0 32px rgba(255,159,67,0.16),inset 0 0 14px rgba(255,159,67,0.05);outline:none}
+  .vision-ta{font-size:15px;padding:16px 20px;border-left:4px solid rgba(255,159,67,0.85)!important;box-shadow:0 0 24px rgba(255,159,67,0.09),inset 0 0 10px rgba(255,159,67,0.03);background:rgba(255,159,67,0.025);transition:box-shadow 0.3s ease,border-color 0.3s ease}.vision-ta:focus{border-left:2px solid rgba(255,159,67,0.9);box-shadow:0 0 40px rgba(255,159,67,0.25),inset 0 0 16px rgba(255,159,67,0.08)!important;outline:none}
   .launch-btn{font-size:15px;padding:20px;transition:box-shadow 0.2s ease,transform 0.15s ease}.launch-btn:hover{box-shadow:0 0 28px rgba(255,159,67,0.35);transform:translateY(-1px)}
   .vibe-tag{font-size:11px;padding:6px 16px;transition:transform 0.15s ease,border-color 0.15s ease,background 0.15s ease,box-shadow 0.15s ease}.vibe-tag:hover{transform:scale(1.04);box-shadow:0 0 10px rgba(255,159,67,0.2)}
   .mc-tab{font-size:11px;padding:12px 16px}
@@ -155,11 +155,11 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .chat-bubble{font-size:12px!important}}
 @media(min-width:900px){html,body{font-size:18px}.dream-content{max-width:860px;margin:0 auto;padding:40px 40px 70px}.mc-content{max-width:1100px;margin:0 auto;padding:24px 48px}.g-label{font-size:18px}.g-desc{font-size:12px}.sec-label{font-size:13px;letter-spacing:5px}.f-label{font-size:12px}.f-input{font-size:16px;padding:13px 18px}.vision-ta{font-size:16px;padding:18px 22px}.launch-btn{font-size:16px;padding:22px}.mc-tab{font-size:12px;padding:14px 18px}.chat-bubble{font-size:12px}}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#060A0F}::-webkit-scrollbar-thumb{background:#1a2d42;border-radius:2px}
-.dream-root{font-family:'Space Mono',monospace;background:radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 25%,#0d0500 55%,#060200 100%);min-height:100vh;color:#FFF;position:relative}
-.dream-glow{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:280px;background:radial-gradient(ellipse,rgba(169,70,29,0.4) 0%,rgba(255,217,61,0.07) 45%,transparent 70%);pointer-events:none;z-index:0;animation:glowPulse 7s ease-in-out infinite}.dream-glow::after{content:"";position:absolute;top:60px;left:-80px;width:200px;height:120px;background:radial-gradient(ellipse,rgba(0,229,255,0.07) 0%,transparent 70%);pointer-events:none}.dream-glow::before{content:"";position:absolute;top:80px;right:-60px;width:160px;height:100px;background:radial-gradient(ellipse,rgba(162,155,254,0.08) 0%,transparent 70%);pointer-events:none}
+.dream-root{font-family:'Space Mono',monospace;background:radial-gradient(ellipse at 20% 0%,#1a1200 0%,#0f0a04 25%,#080503 55%,#050302 100%);min-height:100vh;color:#FFF;position:relative}
+.dream-glow{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:280px;background:radial-gradient(ellipse,rgba(169,70,29,0.3) 0%,rgba(0,120,255,0.06) 40%,rgba(255,217,61,0.05) 55%,transparent 70%);pointer-events:none;z-index:0;animation:glowPulse 7s ease-in-out infinite}.dream-glow::after{content:"";position:absolute;top:60px;left:-120px;width:280px;height:180px;background:radial-gradient(ellipse,rgba(0,120,255,0.14) 0%,transparent 70%);pointer-events:none}.dream-glow::before{content:"";position:absolute;top:80px;right:-100px;width:240px;height:160px;background:radial-gradient(ellipse,rgba(162,155,254,0.14) 0%,rgba(0,120,255,0.06) 50%,transparent 70%);pointer-events:none}
 .dream-content{position:relative;z-index:1;padding:26px 20px 44px;max-width:720px;margin:0 auto}.mc-content{padding:20px 32px}.build-root,.mc-root{font-size:15px}.g-label{font-size:15px}.g-desc{font-size:10px}.launch-btn{font-size:15px}.sec-label{font-size:11px}.f-input{font-size:14px}.f-label{font-size:10px}}
 .hero-cursor{color:#FFD93D;animation:blink 0.9s infinite}
-.sec-label{font-size:12px;color:rgba(255,159,67,0.85);letter-spacing:4px;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid rgba(169,70,29,0.22)}
+.sec-label{font-size:12px;color:rgba(0,229,255,0.85);letter-spacing:4px;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid linear-gradient(90deg,rgba(0,229,255,0.25),rgba(162,155,254,0.2),rgba(255,159,67,0.15))}.dream-root .sec-label{border-image:linear-gradient(90deg,rgba(0,229,255,0.3),rgba(162,155,254,0.22),rgba(255,217,61,0.18),transparent) 1}
 .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:28px}
 .g-card{position:relative;border-radius:12px;padding:13px 12px;cursor:pointer;transition:all 0.24s cubic-bezier(0.34,1.56,0.64,1);text-align:left;border:none;outline:none;overflow:hidden}
 .g-card.off{background:linear-gradient(148deg,#B04E22,#8d3c18,#6d2c11);box-shadow:0 4px 18px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.07)}
@@ -170,15 +170,16 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .g-card.off .g-label{color:#FFF}.g-card.on .g-label{color:#FFD93D}
 .g-desc{font-size:12px;line-height:1.5}
 .g-card.off .g-desc{color:rgba(255,255,255,0.78)}.g-card.on .g-desc{color:rgba(255,217,61,0.7)}
-.vision-ta{width:100%;background:rgba(255,159,67,0.025);border:1px solid rgba(169,70,29,0.25);border-left:3px solid rgba(255,159,67,0.75);border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;box-shadow:0 0 28px rgba(255,159,67,0.10),inset 0 0 12px rgba(255,159,67,0.04);transition:border-color 0.2s,box-shadow 0.3s;margin-bottom:6px}
-.vision-ta::placeholder{color:rgba(255,255,255,0.27)}.vision-ta:focus{border-left:3px solid rgba(255,159,67,1);box-shadow:0 0 32px rgba(255,159,67,0.18),inset 0 0 14px rgba(255,159,67,0.06)}
-.f-label{font-size:12px;color:rgba(255,159,67,0.75);letter-spacing:2.5px}
-.f-input{background:rgba(18,11,0,0.85);border:1px solid rgba(169,70,29,0.38);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Space Mono',monospace;outline:none;width:100%;transition:border-color 0.2s}
-.f-input:focus{border-color:rgba(255,217,61,0.42)}.f-input::placeholder{color:rgba(255,255,255,0.22)}
+.vision-ta{width:100%;background:rgba(8,6,4,0.85)!important;border:1px solid rgba(0,229,255,0.15)!important;border-left:4px solid rgba(0,229,255,0.6)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;box-shadow:0 0 24px rgba(0,229,255,0.06),0 0 40px rgba(162,155,254,0.04),inset 0 0 14px rgba(0,229,255,0.02)!important;transition:border-color 0.3s,box-shadow 0.3s;margin-bottom:6px}
+.vision-ta::placeholder{color:rgba(255,255,255,0.27)}.vision-ta:focus{border-left:4px solid rgba(0,229,255,0.9)!important;box-shadow:0 0 32px rgba(0,229,255,0.12),0 0 48px rgba(162,155,254,0.06),inset 0 0 14px rgba(0,229,255,0.04)!important}
+.f-label{font-size:12px;color:rgba(162,155,254,0.8);letter-spacing:2.5px}
+.f-input{background:rgba(8,6,4,0.9);border:1px solid rgba(0,229,255,0.2);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Space Mono',monospace;outline:none;width:100%;transition:border-color 0.3s,box-shadow 0.3s}
+.f-input:focus{border-color:rgba(0,229,255,0.5);box-shadow:0 0 12px rgba(0,229,255,0.08)}.f-input::placeholder{color:rgba(255,255,255,0.22)}
 .launch-btn{width:100%;padding:17px;border-radius:14px;border:none;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:2.5px;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s}
-.launch-btn.on{background:linear-gradient(135deg,#A9461D 0%,#C4571E 38%,#E06830 68%,#FF9F43 100%);color:#FFF;animation:launchPulse 2.8s ease-in-out infinite}
-.launch-btn.on:hover{transform:translateY(-2px);box-shadow:0 10px 34px rgba(169,70,29,0.65);animation:none}
-.launch-btn.loading{background:linear-gradient(135deg,#8a3515,#A9461D,#8a3515);color:rgba(255,255,255,0.92);cursor:wait;animation:launchPulse 1.4s ease-in-out infinite!important}
+.launch-btn.off{background:linear-gradient(135deg,#8a3515 0%,#A9461D 40%,#C4571E 70%,#E06830 100%);color:rgba(255,255,255,0.5);cursor:default}
+.launch-btn.on{background:linear-gradient(135deg,#C4571E 0%,#E06830 30%,#FF9F43 60%,#FFD93D 100%);color:#FFF;animation:launchPulse 2.8s ease-in-out infinite;box-shadow:0 0 24px rgba(255,159,67,0.3),0 0 48px rgba(255,217,61,0.15)}
+.launch-btn.on:hover{transform:translateY(-2px);box-shadow:0 10px 34px rgba(255,159,67,0.5),0 4px 28px rgba(0,120,255,0.2);animation:none}
+.launch-btn.loading{background:linear-gradient(135deg,#C4571E,#E06830,#C4571E);color:rgba(255,255,255,0.92);cursor:wait;animation:launchPulse 1.4s ease-in-out infinite!important}
 .narrative-card{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(169,70,29,0.14),rgba(255,217,61,0.04));border:2px solid #FFD93D;box-shadow:0 0 20px rgba(255,217,61,0.15);border-radius:16px;padding:22px;margin-bottom:18px;animation:fadeUp 0.5s ease}
 .vibe-tag{background:rgba(169,70,29,0.22);border:1px solid rgba(169,70,29,0.55);border-radius:20px;padding:4px 12px;font-size:12px;color:#FFD93D;letter-spacing:2.5px}
 .stat-card{background:#0C1520;border:1px solid #1a2535;border-radius:9px;padding:9px 7px;text-align:center}
@@ -373,10 +374,10 @@ function AntiqueGlobe({size=120, glowColor="rgba(0,180,255,0.45)", animate=true}
 // ─── ConsoleHeader ────────────────────────────────────────────────
 function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackConsole,children}) {
   const isDream=which==="dream", isTrip=which==="trip", isPack=which==="pack";
-  const bg=isDream?"rgba(8,6,0,0.85)":isTrip?"rgba(0,8,20,0.92)":"rgba(20,8,0,0.95)";
-  const bc=isDream?"rgba(169,70,29,0.45)":isTrip?"rgba(0,229,255,0.15)":"rgba(196,87,30,0.5)";
-  const dot=isDream?"#C4571E":isTrip?"#00E5FF":"#C4571E";
-  const sub=isDream?"#C4571E":isTrip?"#00E5FF":"#FF9F43";
+  const bg=isDream?"rgba(6,4,2,0.92)":isTrip?"rgba(0,8,20,0.92)":"rgba(20,8,0,0.95)";
+  const bc=isDream?"rgba(0,229,255,0.15)":isTrip?"rgba(0,229,255,0.15)":"rgba(196,87,30,0.5)";
+  const dot=isDream?"#00E5FF":isTrip?"#00E5FF":"#C4571E";
+  const sub=isDream?"rgba(162,155,254,0.7)":isTrip?"#00E5FF":"#FF9F43";
   const sublabel=isDream?"DREAM CONSOLE":isTrip?"TRIP CONSOLE":"PACK CONSOLE";
   const dbSize=isMobile?(isDream?18:14):(isDream?36:26);
   const tlSize=isMobile?(isPack?18:14):(isPack?36:26);
@@ -384,9 +385,9 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
   const dbWeight=isDream?900:isTrip?700:300;
   const tlColor=isPack?"#FFD93D":isTrip?"rgba(255,217,61,0.65)":"#FFD93D";
   const tlShadow=isPack?"0 0 28px rgba(255,217,61,0.6)":isDream?"0 0 28px rgba(255,217,61,0.5)":"none";
-  const logoGlow=isDream?"rgba(169,70,29,0.55)":isTrip?"rgba(0,229,255,0.35)":"rgba(196,87,30,0.5)";
-  const radial=isDream?"rgba(169,70,29,0.4)":isTrip?"rgba(0,229,255,0.1)":"rgba(169,70,29,0.52)";
-  const divLine=isDream?"rgba(255,217,61,0.5)":isTrip?"rgba(0,229,255,0.35)":"rgba(255,159,67,0.4)";
+  const logoGlow=isDream?"rgba(0,229,255,0.25)":isTrip?"rgba(0,229,255,0.35)":"rgba(196,87,30,0.5)";
+  const radial=isDream?"rgba(0,229,255,0.08)":isTrip?"rgba(0,229,255,0.1)":"rgba(169,70,29,0.52)";
+  const divLine=isDream?"rgba(162,155,254,0.45)":isTrip?"rgba(0,229,255,0.35)":"rgba(255,159,67,0.4)";
 
   // Console nav buttons — only shown on trip/pack consoles
   const TripBtn = ({active}) => (
@@ -436,10 +437,10 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
           <SharegoodLogo size={isMobile?30:42} opacity={0.88} glowColor={logoGlow} animate={isDream}/>
           <div style={{textAlign:"center"}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?11:14,fontWeight:700,color:"#FFF",letterSpacing:1.5,lineHeight:1}}>1 Bag Nomad</div>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:4,marginTop:2}}>
-              <div style={{width:3,height:3,borderRadius:"50%",background:dot,boxShadow:`0 0 4px ${dot}`}}/>
-              <div style={{fontFamily:"'Fraunces',serif",fontWeight:100,fontStyle:"italic",fontSize:isMobile?7:8,color:sub,letterSpacing:1,opacity:0.75}}>Sharegood Co.</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:18,fontWeight:700,color:"#FFF",letterSpacing:2,lineHeight:1,textShadow:"0 0 12px rgba(0,120,255,0.3)"}}>1 Bag Nomad</div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:4,marginTop:3}}>
+              <div style={{width:3,height:3,borderRadius:"50%",background:dot,boxShadow:`0 0 6px ${dot}`}}/>
+              <div style={{fontFamily:"'Fraunces',serif",fontWeight:300,fontStyle:"italic",fontSize:isMobile?8:10,color:sub,letterSpacing:1.5}}>Sharegood Co.</div>
             </div>
           </div>
         </div>
@@ -491,7 +492,7 @@ function GenerationScreen({onComplete}) {
 // ─── DreamScreen ──────────────────────────────────────────────────
 function DreamHeader({step}) {
   const isMobile=useMobile();
-  const pills=<div style={{display:"flex",gap:5,alignItems:"center"}}>{[1,2,3,4].map(n=><div key={n} style={{width:n===step?28:18,height:6,borderRadius:3,background:n<step?"rgba(169,70,29,0.55)":n===step?"#FFD93D":"rgba(255,255,255,0.1)",boxShadow:n===step?"0 0 8px rgba(255,217,61,0.6)":"none",transition:"all 0.3s ease"}}/>)}</div>;
+  const pillColors=["#00E5FF","#69F0AE","#A29BFE","#FFD93D"];const pills=<div style={{display:"flex",gap:5,alignItems:"center"}}>{[1,2,3,4].map(n=><div key={n} style={{width:n===step?28:18,height:6,borderRadius:3,background:n<step?pillColors[n-1]+"88":n===step?pillColors[n-1]:"rgba(255,255,255,0.08)",boxShadow:n===step?`0 0 10px ${pillColors[n-1]}66`:"none",transition:"all 0.3s ease"}}/>)}</div>;
   return <ConsoleHeader console="dream" isMobile={isMobile} rightSlot={pills}/>;
 }
 
@@ -531,18 +532,18 @@ function DreamScreen({onGoGen,onLoadDemo}) {
       <DreamHeader step={1}/>
       <div className="dream-content">
         <div style={{textAlign:"center",marginBottom:isMobile?20:28,animation:"fadeUp 0.6s ease"}}>
-          <div style={{display:"flex",justifyContent:"center",marginBottom:8,animation:loading?"logoPulse 1.6s ease-in-out infinite":"float 5s ease-in-out infinite"}}><SharegoodLogo size={isMobile?72:96} animate={false} glowColor={loading?"rgba(255,159,67,0.8)":"rgba(169,70,29,0.55)"} opacity={loading?1:0.88}/></div>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:8,animation:loading?"logoPulse 1.6s ease-in-out infinite":"float 5s ease-in-out infinite"}}><SharegoodLogo size={isMobile?72:96} animate={false} glowColor={loading?"rgba(0,229,255,0.7)":"rgba(0,229,255,0.3)"} opacity={loading?1:0.92}/></div>
           <div style={{minHeight:isMobile?80:110}}>
             {heroPhase>=1&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:34,fontWeight:100,color:"rgba(255,255,255,0.88)",lineHeight:1.2,letterSpacing:2,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>Your expedition</div>}
             {heroPhase>=2&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:34,fontWeight:300,color:"#FFF",lineHeight:1.2,letterSpacing:1,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>starts now.</div>}
-            {heroPhase>=3&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:36,fontWeight:300,fontStyle:"italic",color:"#FFD93D",lineHeight:1.25,marginTop:8,letterSpacing:3,animation:"slideUp 0.8s cubic-bezier(0.22,1,0.36,1) both"}}>Let's go.</div>}
+            {heroPhase>=3&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:36,fontWeight:300,fontStyle:"italic",color:"#FFD93D",lineHeight:1.25,marginTop:8,letterSpacing:3,animation:"slideUp 0.8s cubic-bezier(0.22,1,0.36,1) both",textShadow:"0 0 24px rgba(0,120,255,0.25)"}}>Let's go.</div>}
           </div>
           {heroPhase>=4&&<p style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:100,fontStyle:"italic",color:"#FFD93D",lineHeight:1.6,marginTop:10,animation:"fadeUp 0.8s ease both"}}>Every expedition starts with a feeling — tell me what's driving yours.</p>}
         </div>
         <div style={{marginBottom:28}}>
           <div className="sec-label">WHAT'S <span style={{color:"#FFD93D",fontWeight:900}}>YOUR</span> VISION?</div>
-          <textarea className="vision-ta" value={vision} onChange={e=>setVision(e.target.value)} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder="Pour it all out — the places that call to you, what you need to feel, who you want to become." rows={isMobile?5:6} style={{border:focused?"1px solid rgba(255,217,61,0.55)":"1px solid rgba(169,70,29,0.48)",boxShadow:focused?"0 0 0 3px rgba(255,217,61,0.08)":"none"}}/>
-          {canLaunch&&<div style={{marginTop:8,fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(105,240,174,0.6)",animation:"fadeUp 0.4s ease"}}>✦ Your co-architect is ready to build this.</div>}
+          <textarea className="vision-ta" value={vision} onChange={e=>setVision(e.target.value)} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder="Pour it all out — the places that call to you, what you need to feel, who you want to become." rows={isMobile?5:6}/>
+          {canLaunch&&<div style={{marginTop:8,fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(105,240,174,0.75)",animation:"fadeUp 0.4s ease",textShadow:"0 0 20px rgba(105,240,174,0.2)"}}>✦ Your co-architect is ready to build this.</div>}
         </div>
         <div className="sec-label">EXPEDITION DETAILS</div>
         <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:10,marginBottom:10}}>
@@ -553,12 +554,12 @@ function DreamScreen({onGoGen,onLoadDemo}) {
         <div style={{marginBottom:22}}>
           <div className="f-label" style={{marginBottom:10}}>BUDGET APPROACH</div>
           <div style={{display:"flex",flexDirection:"column",gap:7}}>
-            {[{id:"dream",icon:"💭",label:"Build the dream",sub:"We'll figure budget later"},{id:"rough",icon:"💰",label:"I have a rough number",sub:"Give me a ballpark"},{id:"strict",icon:"🎯",label:"Keep it under...",sub:"I have a firm limit"}].map(b=>(
-              <button key={b.id} onClick={()=>setBudgetMode(b.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 13px",borderRadius:9,border:"1px solid "+(budgetMode===b.id?"rgba(255,217,61,0.5)":"rgba(169,70,29,0.52)"),background:budgetMode===b.id?"rgba(255,217,61,0.06)":"rgba(169,70,29,0.05)",cursor:"pointer",textAlign:"left",transition:"all 0.2s",minHeight:44}}>
+            {[{id:"dream",icon:"💭",label:"Build the dream",sub:"We'll figure budget later",accent:"#69F0AE"},{id:"rough",icon:"💰",label:"I have a rough number",sub:"Give me a ballpark",accent:"#FFD93D"},{id:"strict",icon:"🎯",label:"Keep it under...",sub:"I have a firm limit",accent:"#A29BFE"}].map(b=>(
+              <button key={b.id} onClick={()=>setBudgetMode(b.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 13px",borderRadius:9,border:"1px solid "+(budgetMode===b.id?b.accent+"80":"rgba(255,255,255,0.1)"),background:budgetMode===b.id?b.accent+"0D":"rgba(255,255,255,0.02)",cursor:"pointer",textAlign:"left",transition:"all 0.25s",minHeight:44,boxShadow:budgetMode===b.id?`0 0 16px ${b.accent}15`:"none"}}>
                 <span style={{fontSize:16}}>{b.icon}</span>
-                <div><div style={{fontSize:15,fontWeight:700,color:budgetMode===b.id?"#FFD93D":"#FFF"}}>{b.label}</div><div style={{fontSize:15,color:"rgba(255,255,255,0.55)",marginTop:2}}>{b.sub}</div></div>
-                <div style={{marginLeft:"auto",width:14,height:14,borderRadius:"50%",border:"1.5px solid "+(budgetMode===b.id?"#FFD93D":"rgba(255,255,255,0.2)"),background:budgetMode===b.id?"rgba(255,217,61,0.2)":"transparent",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {budgetMode===b.id&&<div style={{width:6,height:6,borderRadius:"50%",background:"#FFD93D"}}/>}
+                <div><div style={{fontSize:15,fontWeight:700,color:budgetMode===b.id?b.accent:"#FFF"}}>{b.label}</div><div style={{fontSize:15,color:"rgba(255,255,255,0.55)",marginTop:2}}>{b.sub}</div></div>
+                <div style={{marginLeft:"auto",width:14,height:14,borderRadius:"50%",border:"1.5px solid "+(budgetMode===b.id?b.accent:"rgba(255,255,255,0.15)"),background:budgetMode===b.id?b.accent+"22":"transparent",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {budgetMode===b.id&&<div style={{width:6,height:6,borderRadius:"50%",background:b.accent}}/>}
                 </div>
               </button>
             ))}
@@ -569,10 +570,10 @@ function DreamScreen({onGoGen,onLoadDemo}) {
           {loading?"✨  BUILDING YOUR EXPEDITION...":"🚀  BUILD MY EXPEDITION"}
         </button>
         {loadError&&<div style={{marginTop:12,padding:"10px 14px",borderRadius:8,background:"rgba(255,107,107,0.1)",border:"1px solid rgba(255,107,107,0.3)",textAlign:"center",fontSize:15,color:"#FF6B6B",letterSpacing:1}}>Connection issue — tap to try again</div>}
-        <div style={{textAlign:"center",marginTop:30,paddingTop:20,borderTop:"1px solid rgba(169,70,29,0.14)"}}>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,217,61,0.28)",letterSpacing:2}}>Dream Big. Travel Light.</div>
-          <div style={{fontSize:15,color:"rgba(255,255,255,0.12)",letterSpacing:3,marginTop:5}}>A SHAREGOOD COMPANY</div>
-          <button onClick={onLoadDemo} style={{marginTop:16,background:"none",border:"1px solid rgba(255,217,61,0.25)",borderRadius:8,color:"rgba(255,217,61,0.5)",fontSize:15,padding:"10px 16px",cursor:"pointer",letterSpacing:2,fontFamily:"'Space Mono',monospace",width:"100%",minHeight:44}}>
+        <div style={{textAlign:"center",marginTop:30,paddingTop:20,borderTop:"1px solid rgba(0,229,255,0.1)"}}>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"rgba(162,155,254,0.4)",letterSpacing:2}}>Dream Big. Travel Light.</div>
+          <div style={{fontSize:15,color:"rgba(255,255,255,0.15)",letterSpacing:3,marginTop:5}}>A SHAREGOOD COMPANY</div>
+          <button onClick={onLoadDemo} style={{marginTop:16,background:"none",border:"1px solid rgba(0,229,255,0.2)",borderRadius:8,color:"rgba(0,229,255,0.5)",fontSize:15,padding:"10px 16px",cursor:"pointer",letterSpacing:2,fontFamily:"'Space Mono',monospace",width:"100%",minHeight:44,transition:"all 0.2s"}}>
             🌍 LOAD MY EXPEDITION · Michael's 2026/27 Global Dive
           </button>
         </div>
@@ -1143,9 +1144,9 @@ function PhaseCard({phase,intelData,idx}) {
           </div>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:8,paddingLeft:28,flexWrap:"nowrap"}}>
-          <span style={{fontSize:10,color:"rgba(255,255,255,0.62)",fontFamily:"'Space Mono',monospace",fontWeight:500,whiteSpace:"nowrap"}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
-          <span style={{fontSize:10,color:phase.color,fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>🌙{phase.totalNights}n</span>
-          {phase.totalDives>0&&<span style={{fontSize:isMobile?12:13,color:"#00E5FF",whiteSpace:"nowrap",flexShrink:0}}>🤿{phase.totalDives}</span>}
+          <span style={{fontSize:isMobile?13:15,color:"rgba(255,255,255,0.62)",fontFamily:"'Space Mono',monospace",fontWeight:500,whiteSpace:"nowrap"}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
+          <span style={{fontSize:isMobile?13:15,color:phase.color,fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>🌙{phase.totalNights}n</span>
+          {phase.totalDives>0&&<span style={{fontSize:isMobile?13:15,color:"#00E5FF",whiteSpace:"nowrap",flexShrink:0}}>🤿{phase.totalDives}</span>}
           {pct>0&&<div style={{width:isMobile?40:80,height:2,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden",flexShrink:0}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}55,${phase.color}99)`,borderRadius:2}}/></div>}
           <span style={{fontSize:isMobile?10:11,color:"rgba(255,255,255,0.35)",fontFamily:"monospace",whiteSpace:"nowrap",marginLeft:"auto",flexShrink:0}}>{isPast?"done":isNow?"active":`${dUntil}d`}</span>
         </div>
@@ -1549,24 +1550,31 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
     return(
       <div style={{borderRadius:13,border:open?`1.5px solid ${cat.color}`:"1px solid rgba(255,255,255,0.07)",boxShadow:open?`0 0 0 1px ${cat.color}22,0 4px 28px ${cat.color}18,inset 0 1px 0 ${cat.color}12`:"none",background:open?`linear-gradient(145deg,${cat.color}06,rgba(8,3,0,0.98))`:"rgba(18,8,0,0.85)",overflow:"hidden",transition:"all 0.25s",animation:`fadeUp 0.3s ease ${idx*.05}s both`,marginBottom:8}}>
         {/* Header row — tap to open */}
-        <div onClick={()=>toggleCat(cat.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 16px",cursor:"pointer",minHeight:52,borderLeft:`3px solid ${open?cat.color:cat.color+"44"}`}}>
-          <div style={{fontSize:18,flexShrink:0}}>{cat.icon}</div>
-          <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:15,fontWeight:600,color:open?cat.color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",marginBottom:3,transition:"color 0.2s"}}>{cat.label}</div>
-            <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
-              <span style={{fontSize:11,color:"rgba(255,255,255,0.5)",fontFamily:"monospace"}}>{catItems.length} items</span>
-              {catW>0&&<span style={{fontSize:11,color:cat.color,fontWeight:600,fontFamily:"monospace"}}>{catW.toFixed(1)}{unit}</span>}
-              <span style={{fontSize:11,color:"rgba(255,255,255,0.38)",fontFamily:"monospace"}}>{ownedInCat}/{catItems.length} owned</span>
+        <div onClick={()=>toggleCat(cat.id)} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",alignItems:"center",padding:"12px 16px",cursor:"pointer",minHeight:52,borderLeft:`3px solid ${open?cat.color:cat.color+"44"}`}}>
+          {/* Left column — icon + details */}
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <div style={{fontSize:18,flexShrink:0}}>{cat.icon}</div>
+            <div style={{display:"flex",flexDirection:"column",gap:2}}>
+              <span style={{fontSize:15,color:"rgba(255,255,255,0.5)",fontFamily:"monospace",whiteSpace:"nowrap"}}>{catItems.length} items</span>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                {catW>0&&<span style={{fontSize:15,color:cat.color,fontWeight:600,fontFamily:"monospace",whiteSpace:"nowrap"}}>{catW.toFixed(1)}{unit}</span>}
+                <span style={{fontSize:15,color:"rgba(255,255,255,0.38)",fontFamily:"monospace",whiteSpace:"nowrap"}}>{ownedInCat}/{catItems.length} owned</span>
+              </div>
             </div>
           </div>
-          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
-            {catCost>0&&<div style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.8)",fontFamily:"'Space Mono',monospace"}}>${catCost.toLocaleString()}</div>}
-            <div style={{display:"flex",alignItems:"center",gap:6}}>
+          {/* Center column — name */}
+          <div style={{textAlign:"center"}}>
+            <div style={{fontSize:15,fontWeight:600,color:open?cat.color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",transition:"color 0.2s"}}>{cat.label}</div>
+          </div>
+          {/* Right column — cost + progress + arrow */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end",gap:8}}>
+            <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5}}>
+              {catCost>0&&<div style={{fontSize:15,fontWeight:600,color:"rgba(255,217,61,0.8)",fontFamily:"'Space Mono',monospace"}}>${catCost.toLocaleString()}</div>}
               <div style={{width:60,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:(catItems.length>0?(ownedInCat/catItems.length)*100:0)+"%",background:`linear-gradient(90deg,${cat.color}66,${cat.color})`,borderRadius:2,transition:"width 0.4s ease"}}/></div>
             </div>
-          </div>
-          <div style={{width:22,height:22,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.2":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginLeft:4}}>
-            <span style={{fontSize:15,color:open?cat.color:"rgba(255,255,255,0.45)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
+            <div style={{width:22,height:22,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.2":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <span style={{fontSize:15,color:open?cat.color:"rgba(255,255,255,0.45)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
+            </div>
           </div>
         </div>
         {/* Items */}
