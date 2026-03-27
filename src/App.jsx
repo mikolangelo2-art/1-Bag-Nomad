@@ -462,10 +462,10 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
 
 // ─── GenerationScreen ─────────────────────────────────────────────
 function GenerationScreen({onComplete}) {
-  const [ph,setPh]=useState(0),[prog,setProg]=useState(0),[mi,setMi]=useState(0);
+  const [ph,setPh]=useState(1),[prog,setProg]=useState(0),[mi,setMi]=useState(0);
   const msgs=["Reading your vision...","Mapping the route...","Calculating phases...","Bringing it to life..."];
   useEffect(()=>{
-    const ts=[setTimeout(()=>setPh(1),400),setTimeout(()=>setMi(1),1800),setTimeout(()=>setMi(2),3600),setTimeout(()=>setMi(3),5400),setTimeout(()=>{setProg(100);onComplete?.();},7000)];
+    const ts=[setTimeout(()=>setPh(1),0),setTimeout(()=>setMi(1),1800),setTimeout(()=>setMi(2),3600),setTimeout(()=>setMi(3),5400),setTimeout(()=>{setProg(100);onComplete?.();},7000)];
     return()=>ts.forEach(clearTimeout);
   },[]);
   useEffect(()=>{
@@ -476,7 +476,7 @@ function GenerationScreen({onComplete}) {
     <div style={{position:"fixed",inset:0,zIndex:9999,background:"radial-gradient(ellipse at 40% 30%,#2d1200 0%,#1a0900 30%,#0a0400 65%,#040100 100%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Space Mono',monospace",overflow:"hidden"}}>
       <div style={{position:"absolute",top:"5%",left:"50%",width:700,height:500,background:"radial-gradient(ellipse,rgba(169,70,29,0.5) 0%,transparent 65%)",animation:"ambientGlow 3s ease-in-out infinite",transform:"translateX(-50%)",pointerEvents:"none"}}/>
       <div style={{animation:"logoPulse 2.4s ease-in-out infinite",marginBottom:36,zIndex:1}}><SharegoodLogo size={180} animate={false} glowColor="rgba(169,70,29,0.52)" opacity={0.9}/></div>
-      <div key={mi} style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:100,fontStyle:"italic",color:"rgba(255,255,255,0.92)",letterSpacing:1,marginBottom:10,animation:"fadeUp 0.5s ease",textAlign:"center",zIndex:1,opacity:ph>=1?1:0,transition:"opacity 0.6s ease"}}>{msgs[mi]}</div>
+      <div key={mi} style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:100,fontStyle:"italic",color:"rgba(255,255,255,0.92)",letterSpacing:1,marginBottom:10,animation:"fadeUp 0.5s ease",textAlign:"center",zIndex:1,opacity:1}}>{msgs[mi]}</div>
       <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.5)",letterSpacing:3,marginBottom:40,textAlign:"center",zIndex:1}}>The co-architect is working its magic ✦</div>
       <div style={{width:260,zIndex:1}}>
         <div style={{height:3,background:"rgba(255,255,255,0.07)",borderRadius:2,overflow:"hidden"}}>
@@ -503,7 +503,6 @@ function DreamScreen({onGoGen,onLoadDemo}) {
   const [date,setDate]=useState("");
   const [heroPhase,setHeroPhase]=useState(0);
   const [loading,setLoading]=useState(false);
-  const [fadeOut,setFadeOut]=useState(false);
   const [budgetMode,setBudgetMode]=useState("dream");
   const [budgetAmount,setBudgetAmount]=useState("");
   const [loadError,setLoadError]=useState(false);
@@ -516,7 +515,7 @@ function DreamScreen({onGoGen,onLoadDemo}) {
   const canLaunch=vision.trim().length>20;
   async function handleReveal() {
     if(!canLaunch||loading)return;
-    setLoading(true);setLoadError(false);setFadeOut(true);
+    setLoading(true);setLoadError(false);
     const bl=budgetMode==="dream"?"NO BUDGET SET — set totalBudget to 0.":"Traveler budget: $"+(budgetAmount||"flexible");
     try {
       const raw=await askAI(`Elite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Date:"${date||"flexible"}". ${bl} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍"}],"totalNights":0,"totalBudget":0,"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"}`,1800);
@@ -527,7 +526,7 @@ function DreamScreen({onGoGen,onLoadDemo}) {
   }
   if(visionData) return <VisionReveal data={visionData} onBuild={vd=>onGoGen(visionData,vd)} onBack={()=>{setVisionData(null);setLoading(false);}} freshMount={true}/>;
   return (
-    <div className="dream-root" style={{opacity:fadeOut?0:1,transition:"opacity 0.35s ease"}}>
+    <div className="dream-root">
       <div className="dream-glow"/>
       <DreamHeader step={1}/>
       <div className="dream-content">
@@ -598,7 +597,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
   useEffect(()=>{
     let i=0;const txt=vd.narrative||"";
     const t=setTimeout(()=>{
-      const iv=setInterval(()=>{i++;setNarrative(txt.slice(0,i));if(i>=txt.length){clearInterval(iv);setNarrativeDone(true);setTimeout(()=>setShowStats(true),3200);setTimeout(()=>setShowPhases(true),3800);}},13);
+      const iv=setInterval(()=>{i++;setNarrative(txt.slice(0,i));if(i>=txt.length){clearInterval(iv);setNarrativeDone(true);setTimeout(()=>setShowStats(true),5000);setTimeout(()=>setShowPhases(true),5600);}},13);
     },400);
     return()=>clearTimeout(t);
   },[]);
@@ -611,7 +610,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
       if(parsed){
         setVd(parsed);setNarrativeDone(false);setShowStats(false);setShowPhases(false);setNarrative("");
         let i=0;const txt=parsed.narrative||"";
-        const iv=setInterval(()=>{i++;setNarrative(txt.slice(0,i));if(i>=txt.length){clearInterval(iv);setNarrativeDone(true);setTimeout(()=>setShowStats(true),3200);setTimeout(()=>setShowPhases(true),3800);}},13);
+        const iv=setInterval(()=>{i++;setNarrative(txt.slice(0,i));if(i>=txt.length){clearInterval(iv);setNarrativeDone(true);setTimeout(()=>setShowStats(true),5000);setTimeout(()=>setShowPhases(true),5600);}},13);
       } else setRefineInput("⚠ Couldn't apply — try rephrasing");
     }catch(e){setRefineInput("⚠ Connection issue");}
     setLoading(false);
@@ -706,6 +705,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   const [editingId,setEditingId]=useState(null);
   const chatEnd=useRef(null);
   const goalLabel=GOAL_PRESETS.find(g=>g.id===data.selectedGoal)?.label||"expedition";
+  useEffect(()=>{window.scrollTo(0,0);},[]);
   useEffect(()=>{chatEnd.current?.scrollIntoView({behavior:"smooth"});},[chat]);
   useEffect(()=>{const t=setTimeout(()=>genInsight(),2000);return()=>clearTimeout(t);},[]);
   const totalNights=items.reduce((s,i)=>s+i.nights,0);
@@ -867,7 +867,7 @@ function HandoffScreen({tripData,onComplete}) {
                 </div>
               ))}
             </div>
-            <button onClick={()=>{onComplete();}} style={{padding:isMobile?"16px 32px":"18px 44px",borderRadius:14,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#030810",fontSize:isMobile?13:15,fontWeight:900,fontFamily:"'Space Mono',monospace",letterSpacing:2.5,cursor:"pointer",animation:"consolePulse 2.8s ease-in-out infinite",minHeight:54}}>ENTER TRIP CONSOLE →</button>
+            <button onClick={()=>{onComplete();}} style={{padding:isMobile?"16px 32px":"18px 44px",borderRadius:14,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#030810",fontSize:isMobile?13:15,fontWeight:900,fontFamily:"'Space Mono',monospace",letterSpacing:2.5,cursor:"pointer",animation:"consolePulse 2.8s ease-in-out infinite",minHeight:54}}>🌍  ENTER TRIP CONSOLE →</button>
           </div>
         </div>
       </div>
