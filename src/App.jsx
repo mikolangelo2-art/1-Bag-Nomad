@@ -30,6 +30,9 @@ const saveSeg = d => { try { localStorage.setItem(SEG_KEY,JSON.stringify(d)); } 
 const COACH_KEY = "1bn_coach_v1";
 const loadCoach = () => { try { const s=localStorage.getItem(COACH_KEY); return s?JSON.parse(s):{}; } catch(e) { return {}; } };
 const saveCoach = d => { try { localStorage.setItem(COACH_KEY,JSON.stringify(d)); } catch(e) {} };
+const ONBOARD_KEY = "1bn_onboard_v1";
+const loadOnboard = () => { try { const s=localStorage.getItem(ONBOARD_KEY); return s?JSON.parse(s):{}; } catch(e) { return {}; } };
+const saveOnboard = d => { try { localStorage.setItem(ONBOARD_KEY,JSON.stringify(d)); } catch(e) {} };
 
 // ─── Utils ───────────────────────────────────────────────────────
 const fmt = n => "$"+Math.round(n).toLocaleString();
@@ -547,7 +550,8 @@ function DreamScreen({onGoGen,onLoadDemo}) {
         </div>
         <div style={{marginBottom:28}}>
           <div className="sec-label">WHAT'S <span style={{color:"#FFD93D",fontWeight:900}}>YOUR</span> VISION?</div>
-          <textarea className="vision-ta" value={vision} onChange={e=>setVision(e.target.value)} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder="Pour it all out — the places that call to you, what you need to feel, who you want to become." rows={isMobile?5:6}/>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?12:13,fontStyle:"italic",fontWeight:300,color:"rgba(255,159,67,0.6)",marginBottom:9,lineHeight:1.5}}>Describe the expedition you've always imagined — the countries, the feeling, who you want to become out there.</div>
+          <textarea className="vision-ta" value={vision} onChange={e=>setVision(e.target.value)} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder="Start anywhere. The reefs you want to dive. The markets you want to get lost in. The version of yourself you're chasing. Your co-architect will shape it into a real route." rows={isMobile?5:6}/>
           {canLaunch&&<div style={{marginTop:8,fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(105,240,174,0.75)",animation:"fadeUp 0.4s ease",textShadow:"0 0 20px rgba(105,240,174,0.2)"}}>✦ Your co-architect is ready to build this.</div>}
         </div>
         <div className="sec-label">EXPEDITION DETAILS</div>
@@ -958,6 +962,26 @@ function CoachOverlay({steps,storageKey,accentColor="#00E5FF",onDismiss}) {
   );
 }
 
+// ─── OnboardCard ──────────────────────────────────────────────────
+function OnboardCard({storageKey,ctaLabel,onDismiss,children}) {
+  const isMobile=useMobile();
+  const [visible,setVisible]=useState(false);
+  useEffect(()=>{const t=setTimeout(()=>setVisible(true),200);return()=>clearTimeout(t);},[]);
+  const dismiss=()=>{const o=loadOnboard();o[storageKey]=true;saveOnboard(o);onDismiss?.();};
+  if(!visible)return null;
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:9998,background:"rgba(0,4,14,0.88)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:isMobile?"16px":"24px",animation:"fadeIn 0.4s ease both"}}>
+      <div style={{width:"100%",maxWidth:480,background:"linear-gradient(160deg,rgba(0,12,28,0.98),rgba(0,6,18,0.98))",border:"1px solid rgba(0,229,255,0.18)",borderRadius:18,padding:isMobile?"24px 20px":"32px 28px",animation:"fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both",boxShadow:"0 0 60px rgba(0,229,255,0.07),0 24px 48px rgba(0,0,0,0.6)"}}>
+        {children}
+        <div style={{marginTop:24,display:"flex",flexDirection:"column",gap:10}}>
+          <button onClick={dismiss} style={{width:"100%",padding:"14px",borderRadius:12,border:"1px solid rgba(255,159,67,0.5)",background:"linear-gradient(135deg,rgba(196,87,30,0.2),rgba(255,159,67,0.1))",color:"#FF9F43",fontSize:isMobile?12:13,fontWeight:700,letterSpacing:2.5,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:48,transition:"all 0.2s"}} onMouseOver={e=>{e.currentTarget.style.background="linear-gradient(135deg,rgba(196,87,30,0.35),rgba(255,159,67,0.2))";e.currentTarget.style.boxShadow="0 0 20px rgba(255,159,67,0.2)";}} onMouseOut={e=>{e.currentTarget.style.background="linear-gradient(135deg,rgba(196,87,30,0.2),rgba(255,159,67,0.1))";e.currentTarget.style.boxShadow="none";}}>{ctaLabel}</button>
+          <button onClick={dismiss} style={{background:"none",border:"none",color:"rgba(255,255,255,0.28)",fontSize:11,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,padding:"8px",minHeight:36,textAlign:"center",transition:"color 0.2s"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.55)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.28)"}>I know my way around →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── SegmentDetails — reads/writes 1bn_seg_v2 only (arch #3) ─────
 // arch #2: inline intel tab preview preserved
 function SegmentDetails({phaseId,segment,intelSnippet}) {
@@ -1252,6 +1276,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
   const [explorerData,setExplorerData]=useState(()=>{try{const s=localStorage.getItem("1bn_intel");return s?JSON.parse(s):{}}catch(e){return{};}});
   const [loadingIntel,setLoadingIntel]=useState(false);
   const [showCoach,setShowCoach]=useState(()=>!loadCoach().trip);
+  const [showOnboard,setShowOnboard]=useState(()=>!loadOnboard().trip);
   useEffect(()=>{try{localStorage.setItem("1bn_intel",JSON.stringify(explorerData));}catch(e){};},[explorerData]);
 
   function handleNewTripClick(){if(confirmNewTrip){onNewTrip();}else{setConfirmNewTrip(true);setTimeout(()=>setConfirmNewTrip(false),4000);}}
@@ -1282,7 +1307,31 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
 
   return(
     <div className="mc-root" style={{animation:"fadeIn 0.9s ease both"}}>
-      {showCoach&&<CoachOverlay storageKey="trip" accentColor="#00E5FF" onDismiss={()=>setShowCoach(false)} steps={[
+      {showOnboard&&<OnboardCard storageKey="trip" ctaLabel="✦ ENTER MY EXPEDITION" onDismiss={()=>setShowOnboard(false)}>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,letterSpacing:4,color:"rgba(0,229,255,0.5)",marginBottom:10}}>MISSION CONSOLE</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:700,fontStyle:"italic",color:"#FF9F43",lineHeight:1.2,marginBottom:10}}>Your expedition is live.</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.7}}>Every leg of your journey — planned, budgeted, and briefed. Here's how to navigate your console.</div>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:4}}>
+          {[
+            {icon:"🗺️",label:"EXPEDITION",color:"#00E5FF",desc:"Country-by-country breakdown. Tap any card to expand segments, add stays, transport, and activities."},
+            {icon:"💰",label:"BUDGET",color:"#FFD93D",desc:"Real-time cost tracking across every leg. See where your money goes before you leave."},
+            {icon:"🔗",label:"BOOK",color:"#69F0AE",desc:"Direct links for flights, stays, and experiences — everything to action in one place."},
+            {icon:"🔭",label:"INTEL",color:"#A29BFE",desc:"AI-powered briefings for every stop. Local tips, must-dos, food, street intel, and culture."},
+          ].map(t=>(
+            <div key={t.label} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)"}}>
+              <span style={{fontSize:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
+              <div>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:"rgba(255,255,255,0.4)",marginLeft:6}}>{t.desc}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{marginTop:16,fontFamily:"'Fraunces',serif",fontSize:12,fontStyle:"italic",color:"rgba(255,217,61,0.55)",textAlign:"center",lineHeight:1.6}}>Built by your co-architect. Now it's yours to command.</div>
+      </OnboardCard>}
+      {!showOnboard&&showCoach&&<CoachOverlay storageKey="trip" accentColor="#00E5FF" onDismiss={()=>setShowCoach(false)} steps={[
         {target:"trip-stats",title:"Your Mission Dashboard",body:"Countdown, nights, dives, and budget — your expedition at a glance."},
         {target:"trip-phases",title:"Country Phases",body:"Each card is a country. Tap to expand and see the segments within."},
         {target:"trip-tabs",title:"Explore Your Data",body:"Switch between Expedition, Budget, Booking links, and Intel views."},
@@ -1518,6 +1567,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
   const [chatInput,setChatInput]=useState("");
   const [chatLoading,setChatLoading]=useState(false);
   const [showCoach,setShowCoach]=useState(()=>!loadCoach().pack);
+  const [showOnboard,setShowOnboard]=useState(()=>!loadOnboard().pack);
   const chatEnd=useRef(null);
 
   useEffect(()=>{chatEnd.current?.scrollIntoView({behavior:"smooth"});},[chat]);
@@ -1683,7 +1733,35 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
 
   return(
     <div style={{fontFamily:"'Space Mono',monospace",background:"radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 28%,#0d0500 58%,#060200 100%)",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column"}}>
-      {showCoach&&<CoachOverlay storageKey="pack" accentColor="#FF9F43" onDismiss={()=>setShowCoach(false)} steps={[
+      {showOnboard&&<OnboardCard storageKey="pack" ctaLabel="✦ BUILD MY PACK" onDismiss={()=>setShowOnboard(false)}>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,letterSpacing:4,color:"rgba(255,159,67,0.5)",marginBottom:10}}>PACK CONSOLE</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:700,fontStyle:"italic",color:"#FF9F43",lineHeight:1.2,marginBottom:10}}>One bag. Everything you need.</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.7}}>Your gear list is built for this specific expedition. Here's how to make it yours.</div>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:4}}>
+          {[
+            {icon:"📦",label:"PACK LIST",color:"#FF9F43",desc:"Full gear list by category. Expand sections, check off what you own, edit weights and volumes."},
+            {icon:"✨",label:"REFINE",color:"#69F0AE",desc:"AI suggestions based on your destinations and travel style. Add what fits, skip what doesn't."},
+            {icon:"📊",label:"BREAKDOWN",color:"#A29BFE",desc:"Visual weight and volume breakdown across every bag category."},
+            {icon:"🛒",label:"NEED TO BUY",color:"#00E5FF",desc:"Focused list of items you haven't checked off yet. Your pre-trip shopping list."},
+          ].map(t=>(
+            <div key={t.label} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)"}}>
+              <span style={{fontSize:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
+              <div>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:"rgba(255,255,255,0.4)",marginLeft:6}}>{t.desc}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{marginTop:14,padding:"9px 12px",borderRadius:9,background:"rgba(255,159,67,0.06)",border:"1px solid rgba(255,159,67,0.2)",display:"flex",alignItems:"center",gap:8}}>
+          <span style={{fontSize:14}}>🎒</span>
+          <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:"rgba(255,159,67,0.8)",lineHeight:1.5}}>Carry-on limit: <strong>15 lbs · 45L volume</strong> — every item counts.</span>
+        </div>
+        <div style={{marginTop:14,fontFamily:"'Fraunces',serif",fontSize:12,fontStyle:"italic",color:"rgba(255,217,61,0.55)",textAlign:"center",lineHeight:1.6}}>Pack light. Pack right. Built for your exact route.</div>
+      </OnboardCard>}
+      {!showOnboard&&showCoach&&<CoachOverlay storageKey="pack" accentColor="#FF9F43" onDismiss={()=>setShowCoach(false)} steps={[
         {target:"pack-stats",title:"Weight & Volume",body:"Track your bag weight and volume against carry-on limits."},
         {target:"pack-filters",title:"Filter by Category",body:"Tap a category to focus. Use 'Need to Buy' to see what's missing."},
         {target:"pack-first-cat",title:"Your Gear",body:"Expand a category, tap an item to edit. Check the box when you own it."}
