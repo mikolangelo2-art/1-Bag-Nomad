@@ -21,6 +21,15 @@ const GOAL_PRESETS = [
 const TC = {Dive:"#00E5FF",Surf:"#69F0AE",Culture:"#FFD93D",Exploration:"#FF9F43",Nature:"#A29BFE",Moto:"#FF6B6B",Trek:"#55EFC4",Relax:"#55EFC4",Transit:"#FFFFFF"};
 const TI = {Dive:"🤿",Surf:"🏄",Culture:"🏛️",Exploration:"🔭",Nature:"🦎",Moto:"🏍️",Trek:"🥾",Relax:"🌴",Transit:"✈️"};
 const QUICK_ACTIONS = ["Optimize routing","Check seasons","Reduce budget","Add a stop","Reorder stops","Am I on budget?"];
+const STATUS_CFG={
+  planning:  {label:"PLANNING",  icon:"✏️", color:"#FF9F43"},
+  confirmed: {label:"CONFIRMED", icon:"✓",  color:"#00E5FF"},
+  booked:    {label:"BOOKED",    icon:"🔒", color:"#69F0AE"},
+  changed:   {label:"CHANGED",   icon:"⚠️",color:"#FF6B6B"},
+  cancelled: {label:"CANCELLED", icon:"✕",  color:"#888888"},
+};
+// Tap cycles forward; booked tapped = show modal instead
+const STATUS_NEXT={planning:"confirmed",confirmed:"booked",changed:"booked",cancelled:"planning"};
 const CAT_DOT_COLORS = ["#00E5FF","#69F0AE","#FFD93D","#FF9F43","#A29BFE","#FF6B6B"];
 
 // ─── Storage: 1bn_seg_v2 only ────────────────────────────────────
@@ -984,7 +993,7 @@ function OnboardCard({storageKey,ctaLabel,onDismiss,children}) {
 
 // ─── SegmentDetails — reads/writes 1bn_seg_v2 only (arch #3) ─────
 // arch #2: inline intel tab preview preserved
-function SegmentDetails({phaseId,segment,intelSnippet}) {
+function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatusChange}) {
   const isMobile=useMobile();
   const key=`${phaseId}-${segment.id}`;
   const blank={transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
@@ -993,7 +1002,9 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
   const [aiLoad,setAiLoad]=useState(false);
   const [nAct,setNAct]=useState({name:"",date:"",cost:"",transit:"",link:""});
   const [nMisc,setNMisc]=useState({name:"",cost:""});
-  useEffect(()=>{const a=loadSeg();a[key]=det;saveSeg(a);},[det]);
+  const locked=status==='booked';
+  // Save form data without overwriting status/history fields managed by SegmentRow
+  useEffect(()=>{const a=loadSeg();const ex=a[key]||{};a[key]={...ex,...det,status:ex.status||'planning',statusUpdatedAt:ex.statusUpdatedAt||null,changes:ex.changes||[]};saveSeg(a);},[det]);
   const uT=(f,v)=>setDet(d=>({...d,transport:{...d.transport,[f]:v}}));
   const uS=(f,v)=>setDet(d=>({...d,stay:{...d.stay,[f]:v}}));
   const uF=(f,v)=>setDet(d=>({...d,food:{...d.food,[f]:v}}));
@@ -1003,6 +1014,15 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
   const ac=CATS.find(c=>c.id===cat);
   return(
     <div style={{borderTop:"1px solid rgba(0,229,255,0.06)"}}>
+      {/* Status banner — lock notice or LOCK BOOKING button */}
+      {locked&&<div style={{padding:"7px 14px",background:"rgba(105,240,174,0.06)",borderBottom:"1px solid rgba(105,240,174,0.15)",display:"flex",alignItems:"center",gap:8}}>
+        <span style={{fontSize:10,color:"#69F0AE",fontFamily:"'Space Mono',monospace",letterSpacing:1.5,flex:1}}>🔒 BOOKED — tap badge to unlock for editing</span>
+      </div>}
+      {status==='changed'&&<div style={{padding:"7px 14px",background:"rgba(255,107,107,0.06)",borderBottom:"1px solid rgba(255,107,107,0.2)",display:"flex",alignItems:"center",gap:8}}>
+        <span style={{fontSize:10,color:"#FF6B6B",fontFamily:"'Space Mono',monospace",letterSpacing:1,flex:1}}>⚠️ CHANGED — update your details, then lock when done</span>
+        <button onClick={()=>onStatusChange?.('booked')} style={{fontSize:9,padding:"3px 10px",borderRadius:5,border:"1px solid rgba(105,240,174,0.4)",background:"rgba(105,240,174,0.08)",color:"#69F0AE",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,whiteSpace:"nowrap",minHeight:26}}>✓ LOCK BOOKING</button>
+      </div>}
+      <div style={{pointerEvents:locked?"none":"auto",opacity:locked?0.55:1,transition:"opacity 0.2s"}}>
       <div style={{display:"flex",background:"rgba(0,4,12,0.8)",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
         {CATS.map(c=>{const on=cat===c.id;return(
           <button key={c.id} onClick={()=>setCat(on?null:c.id)} style={{flexShrink:0,minWidth:52,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"7px 4px",border:"none",cursor:"pointer",background:on?c.w:"transparent",borderBottom:on?`2px solid ${c.a}`:"2px solid transparent",transition:"all 0.15s",position:"relative"}}>
@@ -1121,6 +1141,7 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
           </div>}
         </div>
       )}
+      </div>{/* end pointerEvents wrapper */}
     </div>
   );
 }
@@ -1135,30 +1156,63 @@ function ProgDots({phaseId,segment,intelSnippet}) {
 // ─── SegmentRow ───────────────────────────────────────────────────
 function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
   const isMobile=useMobile();
+  const segKey=`${phaseId}-${segment.id}`;
   const [open,setOpen]=useState(false);
   const [askOpen,setAskOpen]=useState(false);
   const [askInput,setAskInput]=useState("");
   const [askChat,setAskChat]=useState([]);
   const [askLoading,setAskLoading]=useState(false);
+  const [showChangeModal,setShowChangeModal]=useState(false);
+  const [status,setStatus]=useState(()=>{const d=loadSeg()[segKey];return d?.status||'planning';});
   const askEnd=useRef(null);
   const tc=TC[segment.type]||"#FFD93D";
+  const sc=STATUS_CFG[status]||STATUS_CFG.planning;
+  const isCancelled=status==='cancelled';
+  const borderColor=status==='planning'?tc:sc.color;
+
+  function saveStatus(newStatus){
+    const all=loadSeg();const ex=all[segKey]||{};const prev=ex.status||'planning';
+    all[segKey]={...ex,status:newStatus,statusUpdatedAt:new Date().toISOString(),changes:[...(ex.changes||[]),{changedAt:new Date().toISOString(),previousStatus:prev}]};
+    saveSeg(all);setStatus(newStatus);
+  }
+  function handleBadgeTap(e){
+    e.stopPropagation();
+    if(status==='booked'){setShowChangeModal(true);return;}
+    if(STATUS_NEXT[status])saveStatus(STATUS_NEXT[status]);
+  }
+
   useEffect(()=>{askEnd.current?.scrollIntoView({behavior:"smooth"});},[askChat]);
   async function sendAsk(){
     if(!askInput.trim()||askLoading)return;
     const msg=askInput;setAskInput("");setAskChat(p=>[...p,{role:"user",text:msg}]);setAskLoading(true);
-    const det=loadSeg()[`${phaseId}-${segment.id}`]||{};
+    const det=loadSeg()[segKey]||{};
     const ctx=`Segment:${segment.name}(${segment.type}).${segment.nights}n.$${segment.budget}.${det.stay?.name?"Stay:"+det.stay.name+".":""}${det.transport?.mode?"Transport:"+det.transport.mode+".":""}`;
-    const res=await askAI(`Travel co-architect.${ctx} Q:"${msg}".2-3 sentences max.`,300);
+    const statusCtx=status==='changed'||status==='cancelled'?` Note: this segment is ${status}.`:'';
+    const res=await askAI(`Travel co-architect.${ctx}${statusCtx} Q:"${msg}".2-3 sentences max.`,300);
     setAskChat(p=>[...p,{role:"ai",text:res}]);setAskLoading(false);
   }
   return(
-    <div style={{borderBottom:isLast?"none":"1px solid rgba(0,229,255,0.16)"}}>
-      <div style={{display:"flex",alignItems:"center",minHeight:50,borderLeft:`2px solid ${tc}${open?"77":"2a"}`}}>
+    <div style={{borderBottom:isLast?"none":"1px solid rgba(0,229,255,0.16)",opacity:isCancelled?0.65:1,transition:"opacity 0.2s"}}>
+      {/* Change Flow Modal */}
+      {showChangeModal&&(
+        <div onClick={()=>setShowChangeModal(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,4,14,0.88)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+          <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:400,background:"rgba(0,8,20,0.98)",border:"1px solid rgba(255,107,107,0.3)",borderRadius:14,padding:"24px 20px",animation:"fadeUp 0.3s ease both"}}>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:18,fontStyle:"italic",color:"#FF9F43",marginBottom:6}}>What happened?</div>
+            <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",fontFamily:"'Space Mono',monospace",marginBottom:20,lineHeight:1.7}}>{segment.name} is currently booked. What changed?</div>
+            <div style={{display:"flex",gap:10,flexDirection:isMobile?"column":"row"}}>
+              <button onClick={()=>{saveStatus('changed');setShowChangeModal(false);setOpen(true);}} style={{flex:1,padding:"12px",borderRadius:10,border:"1px solid rgba(0,229,255,0.4)",background:"rgba(0,229,255,0.08)",color:"#00E5FF",fontSize:11,fontWeight:700,letterSpacing:1.5,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:44}}>UPDATE BOOKING</button>
+              <button onClick={()=>{saveStatus('cancelled');setShowChangeModal(false);}} style={{flex:1,padding:"12px",borderRadius:10,border:"1px solid rgba(255,107,107,0.4)",background:"rgba(255,107,107,0.08)",color:"#FF6B6B",fontSize:11,fontWeight:700,letterSpacing:1.5,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:44}}>MARK CANCELLED</button>
+            </div>
+            <button onClick={()=>setShowChangeModal(false)} style={{marginTop:12,width:"100%",background:"none",border:"none",color:"rgba(255,255,255,0.3)",fontSize:11,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:36}}>← Keep as BOOKED</button>
+          </div>
+        </div>
+      )}
+      <div style={{display:"flex",alignItems:"center",minHeight:50,borderLeft:`2px solid ${borderColor}${open?"88":"2a"}`,transition:"border-color 0.2s"}}>
         <div onClick={()=>setOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:isMobile?6:10,padding:isMobile?"10px 6px 10px 12px":"12px 10px 12px 20px",cursor:"pointer",background:open?`${tc}04`:"transparent",transition:"background 0.15s",flex:1,minWidth:0}}>
           <div style={{width:7,height:7,borderRadius:"50%",background:tc,flexShrink:0,boxShadow:open?`0 0 7px ${tc}`:"none"}}/>
           <div style={{flex:1,minWidth:0}}>
             <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"wrap"}}>
-              <span style={{fontSize:13,fontWeight:600,color:"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{segment.name}</span>
+              <span style={{fontSize:13,fontWeight:600,color:isCancelled?"rgba(255,255,255,0.4)":"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textDecoration:isCancelled?"line-through":"none"}}>{segment.name}</span>
               <span style={{fontSize:10,color:`${tc}bb`,background:`${tc}0e`,border:`1px solid ${tc}1e`,borderRadius:6,padding:"1px 6px",letterSpacing:0.5,fontWeight:500,whiteSpace:"nowrap",flexShrink:0}}>{segment.type?.toUpperCase()}</span>
               {segment.note&&<span style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.72)",fontStyle:"italic"}}>{segment.note}</span>}
             </div>
@@ -1168,10 +1222,13 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
               {segment.diveCount>0&&<span style={{color:"#00E5FF",fontSize:isMobile?10:12,whiteSpace:"nowrap",flexShrink:0}}>🤿{segment.diveCount}</span>}
             </div>
           </div>
-          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:isMobile?2:5,flexShrink:0}}>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:isMobile?2:4,flexShrink:0}}>
             <ProgDots phaseId={phaseId} segment={segment} intelSnippet={intelSnippet}/>
-            <div style={{fontSize:isMobile?12:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace"}}>{fmt(segment.budget)}</div>
-            {!isMobile&&<div style={{fontSize:11,color:"rgba(255,255,255,0.32)",fontFamily:"monospace"}}>{fmt(Math.round(segment.budget/Math.max(segment.nights,1)))}/n</div>}
+            <div style={{fontSize:isMobile?12:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace",textDecoration:isCancelled?"line-through":"none"}}>{fmt(segment.budget)}</div>
+            {/* Status badge */}
+            <button onClick={handleBadgeTap} style={{background:`${sc.color}18`,border:`1px solid ${sc.color}55`,borderRadius:4,padding:"2px 5px",fontSize:8,fontWeight:700,letterSpacing:2,color:sc.color,cursor:"pointer",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:2,lineHeight:1.4,minHeight:18,transition:"all 0.2s"}}>
+              <span style={{fontSize:9}}>{sc.icon}</span>{sc.label}
+            </button>
           </div>
           <div style={{width:16,height:16,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.15":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginLeft:4}}>
             <span style={{fontSize:10,color:open?"#00E5FF":"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
@@ -1188,6 +1245,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
             <span style={{fontSize:isMobile?11:15,color:"rgba(255,217,61,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1.5}}>✦ CO-ARCHITECT · {segment.name.toUpperCase()}</span>
             <button onClick={()=>setAskOpen(false)} style={{marginLeft:"auto",background:"none",border:"none",color:"rgba(255,255,255,0.2)",fontSize:isMobile?13:15,cursor:"pointer",lineHeight:1}}>×</button>
           </div>
+          {(status==='changed'||status==='cancelled')&&<div style={{marginBottom:8,padding:"6px 9px",borderRadius:7,background:status==='changed'?"rgba(255,107,107,0.08)":"rgba(136,136,136,0.08)",border:`1px solid ${sc.color}33`}}><span style={{fontSize:10,color:sc.color,fontFamily:"'Space Mono',monospace",letterSpacing:1}}>Looks like something changed with this {status==='cancelled'?'booking':'segment'}. Want help finding alternatives or adjusting your timeline?</span></div>}
           {askChat.length===0&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?12:15,fontStyle:"italic",color:"rgba(255,217,61,0.45)",marginBottom:8,lineHeight:1.6}}>"Ask me anything — best dive ops, where to stay, local tips..."</div>}
           {askChat.length>0&&<div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:8,maxHeight:160,overflowY:"auto"}}>
             {askChat.map((m,i)=>(
@@ -1208,7 +1266,13 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
           </div>
         </div>
       )}
-      {open&&<SegmentDetails phaseId={phaseId} segment={segment} intelSnippet={intelSnippet}/>}
+      {open&&<SegmentDetails phaseId={phaseId} segment={segment} intelSnippet={intelSnippet} status={status} onStatusChange={saveStatus}/>}
+      {isCancelled&&!open&&(
+        <div style={{padding:"6px 16px 8px 20px",display:"flex",gap:10,alignItems:"center"}}>
+          <span style={{fontSize:10,color:"rgba(136,136,136,0.7)",fontFamily:"'Space Mono',monospace",flex:1,letterSpacing:1}}>✕ CANCELLED</span>
+          <button onClick={e=>{e.stopPropagation();saveStatus('planning');}} style={{fontSize:10,padding:"3px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.3)",background:"rgba(0,229,255,0.06)",color:"#00E5FF",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:28}}>+ REBOOK</button>
+        </div>
+      )}
     </div>
   );
 }
@@ -1304,6 +1368,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
 
   const heroStats=[{label:"DEPARTS IN",value:daysToDepart,unit:"DAYS",color:uc,glow:uc},{label:"NIGHTS",value:totalNights,unit:"NIGHTS",color:"#A29BFE",glow:"rgba(162,155,254,0.4)"},...(totalDives>0?[{label:"DIVES",value:totalDives,unit:"DIVES",color:"#00E5FF",glow:"rgba(0,229,255,0.4)"}]:[]),{label:"BUDGET",value:fmt(totalBudget),unit:"TOTAL",color:"#FFD93D",glow:"rgba(255,217,61,0.35)"}];
   const TABS=[{id:"next",label:"🗺️ EXPEDITION"},{id:"budget",label:"💰 BUDGET"},{id:"book",label:"🔗 BOOK"},{id:"intel",label:"🔭 INTEL"}];
+  const {changedSegs,cancelledSegs}=(()=>{const allSeg=loadSeg();const cs=[],xs=[];segPhases.forEach(p=>p.segments.forEach(s=>{const d=allSeg[`${p.id}-${s.id}`]||{};const st=d.status||'planning';if(st==='changed')cs.push({phase:p,seg:s});if(st==='cancelled')xs.push({phase:p,seg:s});}));return{changedSegs:cs,cancelledSegs:xs};})();
 
   return(
     <div className="mc-root" style={{animation:"fadeIn 0.9s ease both"}}>
@@ -1464,6 +1529,19 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
         )}
         {tab==="book"&&(
           <div>
+            {/* NEEDS ATTENTION */}
+            {changedSegs.length>0&&<div style={{marginBottom:14,padding:"10px 13px",background:"rgba(255,107,107,0.06)",border:"1px solid rgba(255,107,107,0.28)",borderRadius:10}}>
+              <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:8}}>
+                <span style={{fontSize:14}}>⚠️</span>
+                <span style={{fontSize:11,fontWeight:700,color:"#FF6B6B",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>NEEDS ATTENTION · {changedSegs.length} SEGMENT{changedSegs.length>1?"S":""} WITH CHANGES</span>
+              </div>
+              {changedSegs.map(({phase,seg})=>(
+                <div key={`${phase.id}-${seg.id}`} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderTop:"1px solid rgba(255,107,107,0.1)"}}>
+                  <span style={{fontSize:12,flex:1,color:"rgba(255,255,255,0.75)",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>→ {phase.name} / {seg.name}</span>
+                  <button onClick={()=>{const all=loadSeg();const k=`${phase.id}-${seg.id}`;if(all[k]){all[k]={...all[k],status:'booked'};saveSeg(all);setTab("next");}}} style={{fontSize:10,padding:"3px 10px",borderRadius:6,border:"1px solid rgba(255,107,107,0.4)",background:"rgba(255,107,107,0.1)",color:"#FF6B6B",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:30,flexShrink:0}}>RESOLVE</button>
+                </div>
+              ))}
+            </div>}
             <div style={{fontSize:15,color:"#FFD93D",letterSpacing:3,marginBottom:4}}>BOOK YOUR EXPEDITION</div>
             <div style={{fontSize:15,color:"rgba(255,255,255,0.65)",marginBottom:14}}>Links open in new tab</div>
             {flatPhases.map(phase=>{
@@ -1482,6 +1560,19 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
                 </div>
               );
             })}
+            {/* CANCELLED sub-list */}
+            {cancelledSegs.length>0&&<div style={{marginTop:14,padding:"10px 13px",background:"rgba(136,136,136,0.05)",border:"1px solid rgba(136,136,136,0.2)",borderRadius:10}}>
+              <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:8}}>
+                <span style={{fontSize:13}}>✕</span>
+                <span style={{fontSize:11,fontWeight:700,color:"#888",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>CANCELLED · {cancelledSegs.length} ITEM{cancelledSegs.length>1?"S":""}</span>
+              </div>
+              {cancelledSegs.map(({phase,seg})=>(
+                <div key={`${phase.id}-${seg.id}`} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderTop:"1px solid rgba(136,136,136,0.1)"}}>
+                  <span style={{fontSize:12,flex:1,color:"rgba(136,136,136,0.7)",fontFamily:"'Space Mono',monospace",textDecoration:"line-through",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{phase.name} / {seg.name}</span>
+                  <button onClick={()=>{const all=loadSeg();const k=`${phase.id}-${seg.id}`;if(all[k]){all[k]={...all[k],status:'planning'};saveSeg(all);setTab("next");}}} style={{fontSize:10,padding:"3px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.3)",background:"rgba(0,229,255,0.06)",color:"#00E5FF",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:30,flexShrink:0}}>+ REBOOK</button>
+                </div>
+              ))}
+            </div>}
           </div>
         )}
         {/* arch #2: full INTEL tab preserved */}
