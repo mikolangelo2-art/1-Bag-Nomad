@@ -1360,9 +1360,9 @@
 </g>
 <g id="share_good_everything">
   <defs>
-    <path id="leftTop" d="M 159.0,883.7 A 730,730 0 0,1 548.3,230.8" fill="none"/>
-    <path id="rightTop" d="M 1229.4,230.8 A 730,730 0 0,1 1618.7,883.7" fill="none"/>
-    <path id="botPath" d="M 195.0,1050.0 A 730,730 0 0,0 1582.7,1050.0" fill="none"/>
+    <path id="leftTop" d="M 277.4,530.6 A 706,706 0 0,1 277.4,1236.6" fill="none"/>
+    <path id="rightTop" d="M 1500.2,530.6 A 706,706 0 0,1 1500.2,1236.6" fill="none"/>
+    <path id="botPath" d="M 310.5,1288.6 A 706,706 0 0,0 1467.2,1288.6" fill="none"/>
   </defs>
   <text fill="#D09D21" font-family="'Trajan Pro', 'Times New Roman', serif" font-weight="bold" font-size="200" letter-spacing="4" text-anchor="middle">
     <textPath href="#leftTop" startOffset="50%">1 BAG</textPath>
