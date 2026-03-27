@@ -437,7 +437,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
           <SharegoodLogo size={isMobile?30:42} opacity={0.88} glowColor={logoGlow} animate={isDream}/>
           <div style={{textAlign:"center"}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:18,fontWeight:700,color:"#FFF",letterSpacing:2,lineHeight:1,textShadow:"0 0 12px rgba(0,120,255,0.3)"}}>1 Bag Nomad</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:18,fontWeight:500,color:"#FFF",letterSpacing:3,lineHeight:1}}>1 Bag Nomad</div>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:4,marginTop:3}}>
               <div style={{width:3,height:3,borderRadius:"50%",background:dot,boxShadow:`0 0 6px ${dot}`}}/>
               <div style={{fontFamily:"'Fraunces',serif",fontWeight:300,fontStyle:"italic",fontSize:isMobile?8:10,color:sub,letterSpacing:1.5}}>Sharegood Co.</div>
