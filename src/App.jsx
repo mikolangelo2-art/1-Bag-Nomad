@@ -979,10 +979,10 @@ function OnboardCard({storageKey,ctaLabel,onDismiss,children}) {
   const dismiss=()=>{const o=loadOnboard();o[storageKey]=true;saveOnboard(o);onDismiss?.();};
   if(!visible)return null;
   return(
-    <div style={{position:"fixed",inset:0,zIndex:9998,background:"rgba(0,4,14,0.88)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:isMobile?"16px":"24px",animation:"fadeIn 0.4s ease both"}}>
-      <div style={{width:"100%",maxWidth:480,background:"linear-gradient(160deg,rgba(0,12,28,0.98),rgba(0,6,18,0.98))",border:"1px solid rgba(0,229,255,0.18)",borderRadius:18,padding:isMobile?"24px 20px":"32px 28px",animation:"fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both",boxShadow:"0 0 60px rgba(0,229,255,0.07),0 24px 48px rgba(0,0,0,0.6)"}}>
+    <div style={{position:"fixed",inset:0,zIndex:9998,background:"rgba(0,4,14,0.88)",backdropFilter:"blur(8px)",display:"flex",alignItems:"flex-start",justifyContent:"center",padding:isMobile?"12px":"24px",overflowY:"auto",animation:"fadeIn 0.4s ease both"}}>
+      <div style={{width:"100%",maxWidth:480,background:"linear-gradient(160deg,rgba(0,12,28,0.98),rgba(0,6,18,0.98))",border:"1px solid rgba(0,229,255,0.18)",borderRadius:18,padding:isMobile?"20px 16px":"32px 28px",animation:"fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both",boxShadow:"0 0 60px rgba(0,229,255,0.07),0 24px 48px rgba(0,0,0,0.6)",marginTop:isMobile?"auto":0,marginBottom:isMobile?"auto":0,alignSelf:"center"}}>
         {children}
-        <div style={{marginTop:24,display:"flex",flexDirection:"column",gap:10}}>
+        <div style={{marginTop:isMobile?16:24,display:"flex",flexDirection:"column",gap:8}}>
           <button onClick={dismiss} style={{width:"100%",padding:"14px",borderRadius:12,border:"1px solid rgba(255,159,67,0.5)",background:"linear-gradient(135deg,rgba(196,87,30,0.2),rgba(255,159,67,0.1))",color:"#FF9F43",fontSize:isMobile?12:13,fontWeight:700,letterSpacing:2.5,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:48,transition:"all 0.2s"}} onMouseOver={e=>{e.currentTarget.style.background="linear-gradient(135deg,rgba(196,87,30,0.35),rgba(255,159,67,0.2))";e.currentTarget.style.boxShadow="0 0 20px rgba(255,159,67,0.2)";}} onMouseOut={e=>{e.currentTarget.style.background="linear-gradient(135deg,rgba(196,87,30,0.2),rgba(255,159,67,0.1))";e.currentTarget.style.boxShadow="none";}}>{ctaLabel}</button>
           <button onClick={dismiss} style={{background:"none",border:"none",color:"rgba(255,255,255,0.5)",fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,padding:"8px",minHeight:36,textAlign:"center",transition:"color 0.2s"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.8)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.5)"}>I know my way around →</button>
         </div>
@@ -1385,11 +1385,11 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
             {icon:"🔗",label:"BOOK",color:"#69F0AE",desc:"Direct links for flights, stays, and experiences — everything to action in one place."},
             {icon:"🔭",label:"INTEL",color:"#A29BFE",desc:"AI-powered briefings for every stop. Local tips, must-dos, food, street intel, and culture."},
           ].map(t=>(
-            <div key={t.label} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:`1px solid ${t.color}44`}}>
-              <span style={{fontSize:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
-              <div>
-                <span style={{fontFamily:"'Space Mono',monospace",fontSize:11,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
-                <span style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:"rgba(255,255,255,0.65)",marginLeft:6}}>{t.desc}</span>
+            <div key={t.label} style={{display:"flex",gap:8,alignItems:"flex-start",padding:isMobile?"6px 8px":"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:`1px solid ${t.color}44`}}>
+              <span style={{fontSize:isMobile?13:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
+              <div style={{minWidth:0}}>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?10:11,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?10:11,color:"rgba(255,255,255,0.65)",marginLeft:5}}>{t.desc}</span>
               </div>
             </div>
           ))}
@@ -1837,11 +1837,11 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             {icon:"📊",label:"BREAKDOWN",color:"#A29BFE",desc:"Visual weight and volume breakdown across every bag category."},
             {icon:"🛒",label:"NEED TO BUY",color:"#00E5FF",desc:"Focused list of items you haven't checked off yet. Your pre-trip shopping list."},
           ].map(t=>(
-            <div key={t.label} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:`1px solid ${t.color}44`}}>
-              <span style={{fontSize:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
-              <div>
-                <span style={{fontFamily:"'Space Mono',monospace",fontSize:11,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
-                <span style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:"rgba(255,255,255,0.65)",marginLeft:6}}>{t.desc}</span>
+            <div key={t.label} style={{display:"flex",gap:8,alignItems:"flex-start",padding:isMobile?"6px 8px":"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:`1px solid ${t.color}44`}}>
+              <span style={{fontSize:isMobile?13:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
+              <div style={{minWidth:0}}>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?10:11,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?10:11,color:"rgba(255,255,255,0.65)",marginLeft:5}}>{t.desc}</span>
               </div>
             </div>
           ))}
