@@ -1286,6 +1286,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
         {target:"trip-stats",title:"Your Mission Dashboard",body:"Countdown, nights, dives, and budget — your expedition at a glance."},
         {target:"trip-phases",title:"Country Phases",body:"Each card is a country. Tap to expand and see the segments within."},
         {target:"trip-tabs",title:"Explore Your Data",body:"Switch between Expedition, Budget, Booking links, and Intel views."},
+        {target:"trip-intel",title:"Destination Intel",body:"AI-powered briefings — local tips, must-dos, food, culture, and street intel for every stop."},
         {target:"trip-pack-switch",title:"Pack Console",body:"When you're ready, switch here to manage your one-bag gear list."}
       ]}/>}
       {!isFullscreen&&<ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/>}
@@ -1320,7 +1321,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
         <div style={{flexShrink:0}}>
           <div data-coach="trip-tabs" style={{display:"flex",borderBottom:"1px solid #111D2A",background:"#060A0F",alignItems:"stretch"}}>
             {TABS.map(t=>(
-              <button key={t.id} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 4px",minWidth:0}}>
+              <button key={t.id} {...(t.id==="intel"?{"data-coach":"trip-intel"}:{})} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 4px",minWidth:0}}>
                 <span style={{fontSize:16,lineHeight:1}}>{t.label.split(" ")[0]}</span>
                 <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap",color:tab===t.id?"#00E5FF":"rgba(255,255,255,0.5)"}}>{isMobile?"":t.label.split(" ").slice(1).join(" ")}</span>
               </button>
