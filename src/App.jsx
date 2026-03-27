@@ -159,7 +159,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .dream-glow{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:280px;background:radial-gradient(ellipse,rgba(169,70,29,0.3) 0%,rgba(0,120,255,0.06) 40%,rgba(255,217,61,0.05) 55%,transparent 70%);pointer-events:none;z-index:0;animation:glowPulse 7s ease-in-out infinite}.dream-glow::after{content:"";position:absolute;top:60px;left:-120px;width:280px;height:180px;background:radial-gradient(ellipse,rgba(0,120,255,0.14) 0%,transparent 70%);pointer-events:none}.dream-glow::before{content:"";position:absolute;top:80px;right:-100px;width:240px;height:160px;background:radial-gradient(ellipse,rgba(162,155,254,0.14) 0%,rgba(0,120,255,0.06) 50%,transparent 70%);pointer-events:none}
 .dream-content{position:relative;z-index:1;padding:26px 20px 44px;max-width:720px;margin:0 auto}.mc-content{padding:20px 32px}.build-root,.mc-root{font-size:15px}.g-label{font-size:15px}.g-desc{font-size:10px}.launch-btn{font-size:15px}.sec-label{font-size:11px}.f-input{font-size:14px}.f-label{font-size:10px}}
 .hero-cursor{color:#FFD93D;animation:blink 0.9s infinite}
-.sec-label{font-size:12px;color:rgba(0,229,255,0.85);letter-spacing:4px;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid linear-gradient(90deg,rgba(0,229,255,0.25),rgba(162,155,254,0.2),rgba(255,159,67,0.15))}.dream-root .sec-label{border-image:linear-gradient(90deg,rgba(0,229,255,0.3),rgba(162,155,254,0.22),rgba(255,217,61,0.18),transparent) 1}
+.sec-label{font-size:12px;color:rgba(0,229,255,0.85);letter-spacing:4px;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid rgba(0,229,255,0.15)}.dream-root .sec-label{color:rgba(255,159,67,0.85);border-image:linear-gradient(90deg,rgba(255,159,67,0.3),rgba(255,217,61,0.2),transparent) 1}
 .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:28px}
 .g-card{position:relative;border-radius:12px;padding:13px 12px;cursor:pointer;transition:all 0.24s cubic-bezier(0.34,1.56,0.64,1);text-align:left;border:none;outline:none;overflow:hidden}
 .g-card.off{background:linear-gradient(148deg,#B04E22,#8d3c18,#6d2c11);box-shadow:0 4px 18px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.07)}
@@ -172,7 +172,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .g-card.off .g-desc{color:rgba(255,255,255,0.78)}.g-card.on .g-desc{color:rgba(255,217,61,0.7)}
 .vision-ta{width:100%;background:rgba(8,6,4,0.85)!important;border:1px solid rgba(0,229,255,0.15)!important;border-left:4px solid rgba(0,229,255,0.6)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;box-shadow:0 0 24px rgba(0,229,255,0.06),0 0 40px rgba(162,155,254,0.04),inset 0 0 14px rgba(0,229,255,0.02)!important;transition:border-color 0.3s,box-shadow 0.3s;margin-bottom:6px}
 .vision-ta::placeholder{color:rgba(255,255,255,0.27)}.vision-ta:focus{border-left:4px solid rgba(0,229,255,0.9)!important;box-shadow:0 0 32px rgba(0,229,255,0.12),0 0 48px rgba(162,155,254,0.06),inset 0 0 14px rgba(0,229,255,0.04)!important}
-.f-label{font-size:12px;color:rgba(162,155,254,0.8);letter-spacing:2.5px}
+.f-label{font-size:12px;color:rgba(255,159,67,0.8);letter-spacing:2.5px}
 .f-input{background:rgba(8,6,4,0.9);border:1px solid rgba(0,229,255,0.2);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Space Mono',monospace;outline:none;width:100%;transition:border-color 0.3s,box-shadow 0.3s}
 .f-input:focus{border-color:rgba(0,229,255,0.5);box-shadow:0 0 12px rgba(0,229,255,0.08)}.f-input::placeholder{color:rgba(255,255,255,0.22)}
 .launch-btn{width:100%;padding:17px;border-radius:14px;border:none;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:2.5px;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s}
@@ -277,9 +277,27 @@ function getDefaultPack() {
 
 // ─── SharegoodLogo ────────────────────────────────────────────────
 function SharegoodLogo({size=40,opacity=1,glowColor="rgba(169,70,29,0.5)",animate=true}) {
+  const showText=size>=60;
+  const r=size/2;
+  const bandR=r*0.88;
+  const bandW=size*0.115;
+  const textR=r*0.845;
   return (
     <div style={{position:"relative",width:size,height:size,flexShrink:0,animation:animate?"float 5s ease-in-out infinite":"none",filter:`drop-shadow(0 0 ${size*.25}px ${glowColor})`,opacity}}>
       <img src="/sharegood-logo.svg" width={size} height={size} alt="Sharegood" style={{display:"block",borderRadius:"50%"}}/>
+      {showText&&<svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} style={{position:"absolute",top:0,left:0,pointerEvents:"none"}}>
+        <defs>
+          <path id={`top-${size}`} d={`M ${r-textR},${r} A ${textR},${textR} 0 1,1 ${r+textR},${r}`} fill="none"/>
+          <path id={`bot-${size}`} d={`M ${r+textR},${r} A ${textR},${textR} 0 1,1 ${r-textR},${r}`} fill="none"/>
+        </defs>
+        <circle cx={r} cy={r} r={bandR} fill="none" stroke="#0e2b33" strokeWidth={bandW}/>
+        <text fill="#D4983A" fontFamily="'Fraunces',serif" fontWeight="800" fontSize={size*0.075} letterSpacing={size*0.018} textAnchor="middle">
+          <textPath href={`#top-${size}`} startOffset="50%">1 BAG NOMAD</textPath>
+        </text>
+        <text fill="#D4983A" fontFamily="'Fraunces',serif" fontWeight="500" fontSize={size*0.062} letterSpacing={size*0.014} textAnchor="middle">
+          <textPath href={`#bot-${size}`} startOffset="50%">SHAREGOOD CO.</textPath>
+        </text>
+      </svg>}
     </div>
   );
 }
@@ -386,8 +404,8 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
   const tlColor=isPack?"#FFD93D":isTrip?"rgba(255,217,61,0.65)":"#FFD93D";
   const tlShadow=isPack?"0 0 28px rgba(255,217,61,0.6)":isDream?"0 0 28px rgba(255,217,61,0.5)":"none";
   const logoGlow=isDream?"rgba(0,229,255,0.25)":isTrip?"rgba(0,229,255,0.35)":"rgba(196,87,30,0.5)";
-  const radial=isDream?"rgba(0,229,255,0.08)":isTrip?"rgba(0,229,255,0.1)":"rgba(169,70,29,0.52)";
-  const divLine=isDream?"rgba(162,155,254,0.45)":isTrip?"rgba(0,229,255,0.35)":"rgba(255,159,67,0.4)";
+  const radial=isDream?"rgba(255,159,67,0.25)":isTrip?"rgba(0,229,255,0.1)":"rgba(169,70,29,0.52)";
+  const divLine=isDream?"rgba(255,159,67,0.4)":isTrip?"rgba(0,229,255,0.35)":"rgba(255,159,67,0.4)";
 
   // Console nav buttons — only shown on trip/pack consoles
   const TripBtn = ({active}) => (
