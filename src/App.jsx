@@ -155,7 +155,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .chat-bubble{font-size:12px!important}}
 @media(min-width:900px){html,body{font-size:18px}.dream-content{max-width:860px;margin:0 auto;padding:40px 40px 70px}.mc-content{max-width:1100px;margin:0 auto;padding:24px 48px}.g-label{font-size:18px}.g-desc{font-size:12px}.sec-label{font-size:13px;letter-spacing:5px}.f-label{font-size:12px}.f-input{font-size:16px;padding:13px 18px}.vision-ta{font-size:16px;padding:18px 22px}.launch-btn{font-size:16px;padding:22px}.mc-tab{font-size:12px;padding:14px 18px}.chat-bubble{font-size:12px}}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#060A0F}::-webkit-scrollbar-thumb{background:#1a2d42;border-radius:2px}
-.dream-root{font-family:'Space Mono',monospace;background:radial-gradient(ellipse at 20% 0%,#1a1200 0%,#0f0a04 25%,#080503 55%,#050302 100%);min-height:100vh;color:#FFF;position:relative}
+.dream-root{font-family:'Space Mono',monospace;background:#000;min-height:100vh;color:#FFF;position:relative}
 .dream-glow{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:280px;background:radial-gradient(ellipse,rgba(169,70,29,0.3) 0%,rgba(0,120,255,0.06) 40%,rgba(255,217,61,0.05) 55%,transparent 70%);pointer-events:none;z-index:0;animation:glowPulse 7s ease-in-out infinite}.dream-glow::after{content:"";position:absolute;top:60px;left:-120px;width:280px;height:180px;background:radial-gradient(ellipse,rgba(0,120,255,0.14) 0%,transparent 70%);pointer-events:none}.dream-glow::before{content:"";position:absolute;top:80px;right:-100px;width:240px;height:160px;background:radial-gradient(ellipse,rgba(162,155,254,0.14) 0%,rgba(0,120,255,0.06) 50%,transparent 70%);pointer-events:none}
 .dream-content{position:relative;z-index:1;padding:26px 20px 44px;max-width:720px;margin:0 auto}.mc-content{padding:20px 32px}.build-root,.mc-root{font-size:15px}.g-label{font-size:15px}.g-desc{font-size:10px}.launch-btn{font-size:15px}.sec-label{font-size:11px}.f-input{font-size:14px}.f-label{font-size:10px}}
 .hero-cursor{color:#FFD93D;animation:blink 0.9s infinite}
@@ -374,7 +374,7 @@ function AntiqueGlobe({size=120, glowColor="rgba(0,180,255,0.45)", animate=true}
 // ─── ConsoleHeader ────────────────────────────────────────────────
 function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackConsole,children}) {
   const isDream=which==="dream", isTrip=which==="trip", isPack=which==="pack";
-  const bg=isDream?"rgba(6,4,2,0.92)":isTrip?"rgba(0,8,20,0.92)":"rgba(20,8,0,0.95)";
+  const bg=isDream?"rgba(0,0,0,0.95)":isTrip?"rgba(0,8,20,0.92)":"rgba(20,8,0,0.95)";
   const bc=isDream?"rgba(0,229,255,0.15)":isTrip?"rgba(0,229,255,0.15)":"rgba(196,87,30,0.5)";
   const dot=isDream?"#00E5FF":isTrip?"#00E5FF":"#C4571E";
   const sub=isDream?"rgba(162,155,254,0.7)":isTrip?"#00E5FF":"#FF9F43";
