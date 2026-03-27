@@ -1320,7 +1320,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
             {icon:"🔗",label:"BOOK",color:"#69F0AE",desc:"Direct links for flights, stays, and experiences — everything to action in one place."},
             {icon:"🔭",label:"INTEL",color:"#A29BFE",desc:"AI-powered briefings for every stop. Local tips, must-dos, food, street intel, and culture."},
           ].map(t=>(
-            <div key={t.label} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)"}}>
+            <div key={t.label} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:`1px solid ${t.color}44`}}>
               <span style={{fontSize:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
               <div>
                 <span style={{fontFamily:"'Space Mono',monospace",fontSize:11,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
@@ -1746,7 +1746,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             {icon:"📊",label:"BREAKDOWN",color:"#A29BFE",desc:"Visual weight and volume breakdown across every bag category."},
             {icon:"🛒",label:"NEED TO BUY",color:"#00E5FF",desc:"Focused list of items you haven't checked off yet. Your pre-trip shopping list."},
           ].map(t=>(
-            <div key={t.label} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)"}}>
+            <div key={t.label} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:`1px solid ${t.color}44`}}>
               <span style={{fontSize:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
               <div>
                 <span style={{fontFamily:"'Space Mono',monospace",fontSize:11,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
