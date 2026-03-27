@@ -1057,7 +1057,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
   return(
     <div style={{borderBottom:isLast?"none":"1px solid rgba(0,229,255,0.16)"}}>
       <div style={{display:"flex",alignItems:"center",minHeight:50,borderLeft:`2px solid ${tc}${open?"77":"2a"}`}}>
-        <div onClick={()=>setOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 10px 12px 20px",cursor:"pointer",background:open?`${tc}04`:"transparent",transition:"background 0.15s",flex:1,minWidth:0}}>
+        <div onClick={()=>setOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:isMobile?6:10,padding:isMobile?"10px 6px 10px 12px":"12px 10px 12px 20px",cursor:"pointer",background:open?`${tc}04`:"transparent",transition:"background 0.15s",flex:1,minWidth:0}}>
           <div style={{width:7,height:7,borderRadius:"50%",background:tc,flexShrink:0,boxShadow:open?`0 0 7px ${tc}`:"none"}}/>
           <div style={{flex:1,minWidth:0}}>
             <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"wrap"}}>
@@ -1066,15 +1066,15 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
               {segment.note&&<span style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.72)",fontStyle:"italic"}}>{segment.note}</span>}
             </div>
             <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"nowrap"}}>
-              <span style={{color:"rgba(255,255,255,0.75)",fontWeight:500,fontFamily:"'Space Mono',monospace",fontSize:12,whiteSpace:"nowrap"}}>{fD(segment.arrival)}→{fD(segment.departure)}</span>
-              <span style={{color:tc,fontWeight:700,fontSize:12,whiteSpace:"nowrap",flexShrink:0}}>🌙{segment.nights}n</span>
-              {segment.diveCount>0&&<span style={{color:"#00E5FF",fontSize:12,whiteSpace:"nowrap",flexShrink:0}}>🤿{segment.diveCount}</span>}
+              <span style={{color:"rgba(255,255,255,0.75)",fontWeight:500,fontFamily:"'Space Mono',monospace",fontSize:isMobile?10:12,whiteSpace:"nowrap"}}>{fD(segment.arrival)}→{fD(segment.departure)}</span>
+              <span style={{color:tc,fontWeight:700,fontSize:isMobile?10:12,whiteSpace:"nowrap",flexShrink:0}}>🌙{segment.nights}n</span>
+              {segment.diveCount>0&&<span style={{color:"#00E5FF",fontSize:isMobile?10:12,whiteSpace:"nowrap",flexShrink:0}}>🤿{segment.diveCount}</span>}
             </div>
           </div>
-          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:isMobile?2:5,flexShrink:0}}>
             <ProgDots phaseId={phaseId} segment={segment} intelSnippet={intelSnippet}/>
-            <div style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace"}}>{fmt(segment.budget)}</div>
-            <div style={{fontSize:11,color:"rgba(255,255,255,0.32)",fontFamily:"monospace"}}>{fmt(Math.round(segment.budget/Math.max(segment.nights,1)))}/n</div>
+            <div style={{fontSize:isMobile?12:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace"}}>{fmt(segment.budget)}</div>
+            {!isMobile&&<div style={{fontSize:11,color:"rgba(255,255,255,0.32)",fontFamily:"monospace"}}>{fmt(Math.round(segment.budget/Math.max(segment.nights,1)))}/n</div>}
           </div>
           <div style={{width:16,height:16,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.15":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginLeft:4}}>
             <span style={{fontSize:10,color:open?"#00E5FF":"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
@@ -1518,7 +1518,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           <div style={{padding:"12px 16px 16px 44px",background:"rgba(0,0,0,0.25)",borderTop:`1px solid ${catColor}15`,animation:"slideOpen 0.18s ease",display:"flex",flexDirection:"column",gap:10}}>
             <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:7,color:"#FFF",fontSize:mob?12:15,padding:mob?"8px 10px":"10px 13px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%"}} placeholder="Item name"/>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-              {[{label:"WEIGHT (lbs)",f:"weight"},{label:"COST ($)",f:"cost"},{label:"VOLUME (L)",f:"volume"}].map(({label,f})=>(
+              {[{label:mob?"WT (lbs)":"WEIGHT (lbs)",f:"weight"},{label:"COST ($)",f:"cost"},{label:mob?"VOL (L)":"VOLUME (L)",f:"volume"}].map(({label,f})=>(
                 <div key={f}>
                   <div style={{fontSize:mob?9:15,color:"rgba(255,159,67,0.65)",letterSpacing:mob?1:2,marginBottom:mob?3:5,fontFamily:"monospace"}}>{label}</div>
                   <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.3)",borderRadius:5,color:"#FFD93D",fontSize:mob?12:15,padding:mob?"6px 8px":"8px 10px",outline:"none",fontFamily:"monospace",width:"100%"}}/>
