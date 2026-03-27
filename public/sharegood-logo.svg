@@ -1371,7 +1371,7 @@
     <textPath href="#rightTop" startOffset="50%">NOMAD</textPath>
   </text>
   <text fill="#D09D21" font-family="'Trajan Pro', 'Times New Roman', serif" font-weight="normal" font-size="72" letter-spacing="15" text-anchor="middle" dominant-baseline="hanging">
-    <textPath href="#botPath" startOffset="50%">SHAREGOOD CO.</textPath>
+    <textPath href="#botPath" startOffset="50%">Sharegood Co.</textPath>
   </text>
 </g>
 
