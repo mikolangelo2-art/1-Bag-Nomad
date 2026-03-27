@@ -878,10 +878,11 @@ function HandoffScreen({tripData,onComplete}) {
 
 // ─── SegmentDetailField ───────────────────────────────────────────
 function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00E5FF"}) {
-  const s={background:"rgba(0,8,20,0.6)",border:`1px solid ${accent}18`,borderRadius:6,color:"#FFF",fontSize:15,padding:multiline?"6px 8px":"5px 8px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",lineHeight:1.6,resize:multiline?"none":undefined};
+  const mob=useMobile();
+  const s={background:"rgba(0,8,20,0.6)",border:`1px solid ${accent}18`,borderRadius:6,color:"#FFF",fontSize:mob?12:15,padding:multiline?(mob?"5px 7px":"6px 8px"):(mob?"4px 7px":"5px 8px"),fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",lineHeight:1.6,resize:multiline?"none":undefined};
   return(
-    <div style={{display:"flex",flexDirection:"column",gap:3}}>
-      <div style={{fontSize:11,color:`${accent}88`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500}}>{label}</div>
+    <div style={{display:"flex",flexDirection:"column",gap:mob?2:3}}>
+      <div style={{fontSize:mob?9:11,color:`${accent}88`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500}}>{label}</div>
       {multiline?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={1} style={s} onFocus={e=>e.target.style.borderColor=`${accent}55`} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>
       :<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={e=>e.target.style.borderColor=`${accent}55`} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>}
     </div>
@@ -891,6 +892,7 @@ function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00
 // ─── SegmentDetails — reads/writes 1bn_seg_v2 only (arch #3) ─────
 // arch #2: inline intel tab preview preserved
 function SegmentDetails({phaseId,segment,intelSnippet}) {
+  const isMobile=useMobile();
   const key=`${phaseId}-${segment.id}`;
   const blank={transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
   const [det,setDet]=useState(()=>{const a=loadSeg();return a[key]||blank;});
@@ -911,8 +913,8 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
       <div style={{display:"flex",background:"rgba(0,4,12,0.8)",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
         {CATS.map(c=>{const on=cat===c.id;return(
           <button key={c.id} onClick={()=>setCat(on?null:c.id)} style={{flexShrink:0,minWidth:52,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"7px 4px",border:"none",cursor:"pointer",background:on?c.w:"transparent",borderBottom:on?`2px solid ${c.a}`:"2px solid transparent",transition:"all 0.15s",position:"relative"}}>
-            <span style={{fontSize:15,lineHeight:1}}>{c.icon}</span>
-            <span style={{fontSize:11,letterSpacing:0,fontFamily:"'Space Mono',monospace",fontWeight:700,color:on?c.a:"rgba(255,255,255,0.65)",whiteSpace:"nowrap"}}>{c.label}</span>
+            <span style={{fontSize:isMobile?13:15,lineHeight:1}}>{c.icon}</span>
+            <span style={{fontSize:isMobile?8:11,letterSpacing:0,fontFamily:"'Space Mono',monospace",fontWeight:700,color:on?c.a:"rgba(255,255,255,0.65)",whiteSpace:"nowrap"}}>{c.label}</span>
             {done[c.id]&&<div style={{position:"absolute",top:4,right:"14%",width:5,height:5,borderRadius:"50%",background:c.a,boxShadow:`0 0 5px ${c.a}`}}/>}
           </button>
         );})}
@@ -968,7 +970,7 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
                 <SDF label="TRANSIT" value={nAct.transit} onChange={v=>setNAct(a=>({...a,transit:v}))} placeholder="Taxi from hotel..." accent="#FFD93D"/>
               </div>
               <SDF label="BOOKING LINK" value={nAct.link} onChange={v=>setNAct(a=>({...a,link:v}))} placeholder="https://klook.com / dive shop..." accent="#FFD93D"/>
-              <button onClick={()=>{if(!nAct.name)return;setDet(d=>({...d,activities:[...d.activities,{...nAct,id:Date.now()}]}));setNAct({name:"",date:"",cost:"",transit:"",link:""});}} style={{marginTop:8,padding:"6px 14px",borderRadius:5,border:`1px solid rgba(255,217,61,${nAct.name?"0.4":"0.14"})`,background:nAct.name?"rgba(255,217,61,0.1)":"transparent",color:nAct.name?"#FFD93D":"rgba(255,255,255,0.18)",fontSize:15,cursor:nAct.name?"pointer":"default",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700}}>+ ADD</button>
+              <button onClick={()=>{if(!nAct.name)return;setDet(d=>({...d,activities:[...d.activities,{...nAct,id:Date.now()}]}));setNAct({name:"",date:"",cost:"",transit:"",link:""});}} style={{marginTop:8,padding:isMobile?"5px 12px":"6px 14px",borderRadius:5,border:`1px solid rgba(255,217,61,${nAct.name?"0.4":"0.14"})`,background:nAct.name?"rgba(255,217,61,0.1)":"transparent",color:nAct.name?"#FFD93D":"rgba(255,255,255,0.18)",fontSize:isMobile?11:15,cursor:nAct.name?"pointer":"default",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700}}>+ ADD</button>
             </div>
             <div style={{marginTop:12}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code, best time..." accent="#FFD93D" multiline/></div>
           </div>}
@@ -987,8 +989,8 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
             {det.misc.length>0&&<div style={{marginBottom:12}}>
               {det.misc.map(m=>(
                 <div key={m.id} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 0",borderBottom:"1px solid rgba(162,155,254,0.07)"}}>
-                  <div style={{flex:1,fontSize:15,color:"#FFF",fontFamily:"'Space Mono',monospace"}}>{m.name}</div>
-                  <span style={{fontSize:15,fontWeight:700,color:"#A29BFE",fontFamily:"monospace",flexShrink:0}}>${parseFloat(m.cost||0).toLocaleString()}</span>
+                  <div style={{flex:1,fontSize:isMobile?12:15,color:"#FFF",fontFamily:"'Space Mono',monospace"}}>{m.name}</div>
+                  <span style={{fontSize:isMobile?12:15,fontWeight:700,color:"#A29BFE",fontFamily:"monospace",flexShrink:0}}>${parseFloat(m.cost||0).toLocaleString()}</span>
                   <button onClick={()=>setDet(d=>({...d,misc:d.misc.filter(x=>x.id!==m.id)}))} style={{background:"none",border:"none",color:"rgba(255,255,255,0.18)",fontSize:16,cursor:"pointer",lineHeight:1,padding:"0 2px",flexShrink:0}}>×</button>
                 </div>
               ))}
@@ -1000,22 +1002,22 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
                 <SDF label="ITEM" value={nMisc.name} onChange={v=>setNMisc(m=>({...m,name:v}))} placeholder="Visa / permit / rental..." accent="#A29BFE"/>
                 <SDF label="COST ($)" type="number" value={nMisc.cost} onChange={v=>setNMisc(m=>({...m,cost:v}))} placeholder="0" accent="#A29BFE"/>
               </div>
-              <button onClick={()=>{if(!nMisc.name)return;setDet(d=>({...d,misc:[...d.misc,{...nMisc,id:Date.now()}]}));setNMisc({name:"",cost:""});}} style={{padding:"6px 14px",borderRadius:5,border:`1px solid rgba(162,155,254,${nMisc.name?"0.4":"0.14"})`,background:nMisc.name?"rgba(162,155,254,0.1)":"transparent",color:nMisc.name?"#A29BFE":"rgba(255,255,255,0.18)",fontSize:15,cursor:nMisc.name?"pointer":"default",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700}}>+ ADD</button>
+              <button onClick={()=>{if(!nMisc.name)return;setDet(d=>({...d,misc:[...d.misc,{...nMisc,id:Date.now()}]}));setNMisc({name:"",cost:""});}} style={{padding:isMobile?"5px 12px":"6px 14px",borderRadius:5,border:`1px solid rgba(162,155,254,${nMisc.name?"0.4":"0.14"})`,background:nMisc.name?"rgba(162,155,254,0.1)":"transparent",color:nMisc.name?"#A29BFE":"rgba(255,255,255,0.18)",fontSize:isMobile?11:15,cursor:nMisc.name?"pointer":"default",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700}}>+ ADD</button>
             </div>
           </div>}
           {/* arch #2: inline intel preview */}
           {cat==="intel"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:5}}>
             {intelSnippet&&!intelSnippet.error?(
               <div style={{padding:"10px 12px",background:"rgba(255,107,107,0.04)",border:"1px solid rgba(255,107,107,0.14)",borderRadius:8}}>
-                {intelSnippet.tagline&&<div style={{fontSize:15,color:"#A29BFE",fontStyle:"italic",marginBottom:8,lineHeight:1.55}}>{intelSnippet.tagline}</div>}
-                {intelSnippet.mustDo?.slice(0,3).map((item,i)=><div key={i} style={{fontSize:15,color:"rgba(255,255,255,0.68)",marginBottom:4,paddingLeft:8}}>• {item}</div>)}
-                {intelSnippet.streetIntel?.[0]&&<div style={{marginTop:8,padding:"6px 9px",background:"rgba(255,107,107,0.07)",border:"1px solid rgba(255,107,107,0.18)",borderRadius:6}}><div style={{fontSize:15,color:"#FF6B6B",fontWeight:700,letterSpacing:1.5,marginBottom:2}}>{intelSnippet.streetIntel[0].type}</div><div style={{fontSize:15,color:"#FFF"}}>{intelSnippet.streetIntel[0].alert}</div></div>}
-                <div style={{marginTop:10,fontSize:15,color:"rgba(0,229,255,0.5)",fontFamily:"'Space Mono',monospace"}}>→ Full briefing in INTEL tab</div>
+                {intelSnippet.tagline&&<div style={{fontSize:isMobile?12:15,color:"#A29BFE",fontStyle:"italic",marginBottom:8,lineHeight:1.55}}>{intelSnippet.tagline}</div>}
+                {intelSnippet.mustDo?.slice(0,3).map((item,i)=><div key={i} style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.68)",marginBottom:4,paddingLeft:8}}>• {item}</div>)}
+                {intelSnippet.streetIntel?.[0]&&<div style={{marginTop:8,padding:"6px 9px",background:"rgba(255,107,107,0.07)",border:"1px solid rgba(255,107,107,0.18)",borderRadius:6}}><div style={{fontSize:isMobile?10:15,color:"#FF6B6B",fontWeight:700,letterSpacing:1.5,marginBottom:2}}>{intelSnippet.streetIntel[0].type}</div><div style={{fontSize:isMobile?11:15,color:"#FFF"}}>{intelSnippet.streetIntel[0].alert}</div></div>}
+                <div style={{marginTop:10,fontSize:isMobile?11:15,color:"rgba(0,229,255,0.5)",fontFamily:"'Space Mono',monospace"}}>→ Full briefing in INTEL tab</div>
               </div>
             ):(
               <div style={{padding:"12px 14px",background:"rgba(255,107,107,0.03)",border:"1px solid rgba(255,107,107,0.09)",borderRadius:8,display:"flex",alignItems:"center",gap:10}}>
                 <span style={{fontSize:18,opacity:0.35}}>🔭</span>
-                <div><div style={{fontSize:15,color:"rgba(255,255,255,0.38)",fontStyle:"italic",marginBottom:2}}>No briefing for {segment.name} yet.</div><div style={{fontSize:15,color:"rgba(0,229,255,0.45)",fontFamily:"'Space Mono',monospace"}}>→ Generate in the INTEL tab</div></div>
+                <div><div style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.38)",fontStyle:"italic",marginBottom:2}}>No briefing for {segment.name} yet.</div><div style={{fontSize:isMobile?11:15,color:"rgba(0,229,255,0.45)",fontFamily:"'Space Mono',monospace"}}>→ Generate in the INTEL tab</div></div>
               </div>
             )}
             <SDF label="YOUR NOTES" value={det.intel.notes} onChange={v=>setDet(d=>({...d,intel:{...d.intel,notes:v}}))} placeholder="Visa requirements, local contacts, personal tips..." accent="#FF6B6B" multiline/>
@@ -1035,6 +1037,7 @@ function ProgDots({phaseId,segment,intelSnippet}) {
 
 // ─── SegmentRow ───────────────────────────────────────────────────
 function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
+  const isMobile=useMobile();
   const [open,setOpen]=useState(false);
   const [askOpen,setAskOpen]=useState(false);
   const [askInput,setAskInput]=useState("");
@@ -1060,7 +1063,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
             <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"wrap"}}>
               <span style={{fontSize:13,fontWeight:600,color:"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{segment.name}</span>
               <span style={{fontSize:10,color:`${tc}bb`,background:`${tc}0e`,border:`1px solid ${tc}1e`,borderRadius:6,padding:"1px 6px",letterSpacing:0.5,fontWeight:500,whiteSpace:"nowrap",flexShrink:0}}>{segment.type?.toUpperCase()}</span>
-              {segment.note&&<span style={{fontSize:15,color:"rgba(255,255,255,0.72)",fontStyle:"italic"}}>{segment.note}</span>}
+              {segment.note&&<span style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.72)",fontStyle:"italic"}}>{segment.note}</span>}
             </div>
             <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"nowrap"}}>
               <span style={{color:"rgba(255,255,255,0.75)",fontWeight:500,fontFamily:"'Space Mono',monospace",fontSize:12,whiteSpace:"nowrap"}}>{fD(segment.arrival)}→{fD(segment.departure)}</span>
@@ -1085,26 +1088,26 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
       {askOpen&&(
         <div style={{background:"rgba(0,4,14,0.95)",borderTop:"1px solid rgba(255,217,61,0.12)",padding:"10px 14px",animation:"slideOpen 0.18s ease"}}>
           <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
-            <span style={{fontSize:15,color:"rgba(255,217,61,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1.5}}>✦ CO-ARCHITECT · {segment.name.toUpperCase()}</span>
-            <button onClick={()=>setAskOpen(false)} style={{marginLeft:"auto",background:"none",border:"none",color:"rgba(255,255,255,0.2)",fontSize:15,cursor:"pointer",lineHeight:1}}>×</button>
+            <span style={{fontSize:isMobile?11:15,color:"rgba(255,217,61,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1.5}}>✦ CO-ARCHITECT · {segment.name.toUpperCase()}</span>
+            <button onClick={()=>setAskOpen(false)} style={{marginLeft:"auto",background:"none",border:"none",color:"rgba(255,255,255,0.2)",fontSize:isMobile?13:15,cursor:"pointer",lineHeight:1}}>×</button>
           </div>
-          {askChat.length===0&&<div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,217,61,0.45)",marginBottom:8,lineHeight:1.6}}>"Ask me anything — best dive ops, where to stay, local tips..."</div>}
+          {askChat.length===0&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?12:15,fontStyle:"italic",color:"rgba(255,217,61,0.45)",marginBottom:8,lineHeight:1.6}}>"Ask me anything — best dive ops, where to stay, local tips..."</div>}
           {askChat.length>0&&<div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:8,maxHeight:160,overflowY:"auto"}}>
             {askChat.map((m,i)=>(
               <div key={i} style={{display:"flex",gap:6,flexDirection:m.role==="user"?"row-reverse":"row",alignItems:"flex-start"}}>
-                <div style={{width:16,height:16,borderRadius:"50%",background:m.role==="ai"?"#A9461D":"rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flexShrink:0}}>{m.role==="ai"?"✦":"·"}</div>
-                <div style={{borderRadius:8,padding:"6px 9px",fontSize:15,color:"#FFF",lineHeight:1.6,maxWidth:"88%",background:m.role==="ai"?"rgba(169,70,29,0.18)":"rgba(255,255,255,0.06)",border:`1px solid ${m.role==="ai"?"rgba(169,70,29,0.35)":"rgba(255,255,255,0.08)"}`}}>{m.text}</div>
+                <div style={{width:16,height:16,borderRadius:"50%",background:m.role==="ai"?"#A9461D":"rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:isMobile?11:15,flexShrink:0}}>{m.role==="ai"?"✦":"·"}</div>
+                <div style={{borderRadius:8,padding:"6px 9px",fontSize:isMobile?11:15,color:"#FFF",lineHeight:1.6,maxWidth:"88%",background:m.role==="ai"?"rgba(169,70,29,0.18)":"rgba(255,255,255,0.06)",border:`1px solid ${m.role==="ai"?"rgba(169,70,29,0.35)":"rgba(255,255,255,0.08)"}`}}>{m.text}</div>
               </div>
             ))}
-            {askLoading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.6)",fontStyle:"italic",paddingLeft:22}}>✦ thinking...</div>}
+            {askLoading&&<div style={{fontSize:isMobile?11:15,color:"rgba(169,70,29,0.6)",fontStyle:"italic",paddingLeft:22}}>✦ thinking...</div>}
             <div ref={askEnd}/>
           </div>}
           <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:7}}>
-            {["Best dive ops?","Where to stay?","What to skip?","Budget tips?","Local food?"].map(p=><button key={p} onClick={()=>setAskInput(p)} style={{padding:"3px 9px",borderRadius:12,border:"1px solid rgba(255,217,61,0.2)",background:"rgba(255,217,61,0.05)",color:"rgba(255,217,61,0.65)",fontSize:15,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{p}</button>)}
+            {["Best dive ops?","Where to stay?","What to skip?","Budget tips?","Local food?"].map(p=><button key={p} onClick={()=>setAskInput(p)} style={{padding:isMobile?"2px 7px":"3px 9px",borderRadius:12,border:"1px solid rgba(255,217,61,0.2)",background:"rgba(255,217,61,0.05)",color:"rgba(255,217,61,0.65)",fontSize:isMobile?10:15,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{p}</button>)}
           </div>
           <div style={{display:"flex",gap:6}}>
-            <input value={askInput} onChange={e=>setAskInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendAsk();}} placeholder={`Ask about ${segment.name}...`} style={{flex:1,background:"rgba(0,8,20,0.8)",border:"1px solid rgba(255,217,61,0.2)",borderRadius:7,color:"#FFF",fontSize:15,padding:"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",minHeight:34}}/>
-            <button onClick={sendAsk} style={{background:"rgba(255,217,61,0.12)",border:"1px solid rgba(255,217,61,0.3)",borderRadius:7,color:"#FFD93D",fontSize:15,padding:"6px 11px",cursor:"pointer",minWidth:34,minHeight:34,fontWeight:700}}>↑</button>
+            <input value={askInput} onChange={e=>setAskInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendAsk();}} placeholder={`Ask about ${segment.name}...`} style={{flex:1,background:"rgba(0,8,20,0.8)",border:"1px solid rgba(255,217,61,0.2)",borderRadius:7,color:"#FFF",fontSize:isMobile?12:15,padding:isMobile?"6px 8px":"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",minHeight:isMobile?30:34}}/>
+            <button onClick={sendAsk} style={{background:"rgba(255,217,61,0.12)",border:"1px solid rgba(255,217,61,0.3)",borderRadius:7,color:"#FFD93D",fontSize:isMobile?13:15,padding:isMobile?"5px 9px":"6px 11px",cursor:"pointer",minWidth:isMobile?30:34,minHeight:isMobile?30:34,fontWeight:700}}>↑</button>
           </div>
         </div>
       )}
@@ -1480,6 +1483,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
 
   // ─── Item Row (inline expand like SegmentRow) ──────────────────
   function PackItemRow({item,catColor,isLast}) {
+    const mob=isMobile;
     const [open,setOpen]=useState(false);
     const CAT_COLORS_P={docs:"#E0E0E0",tech:"#00D4FF",clothes:"#FFD93D",health:"#69F0AE",travel:"#55EFC4",creator:"#FF9F43",dive:"#00E5FF"};
     return(
@@ -1512,26 +1516,26 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         {/* Expanded edit drawer */}
         {open&&(
           <div style={{padding:"12px 16px 16px 44px",background:"rgba(0,0,0,0.25)",borderTop:`1px solid ${catColor}15`,animation:"slideOpen 0.18s ease",display:"flex",flexDirection:"column",gap:10}}>
-            <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:7,color:"#FFF",fontSize:15,padding:"10px 13px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%"}} placeholder="Item name"/>
+            <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:7,color:"#FFF",fontSize:mob?12:15,padding:mob?"8px 10px":"10px 13px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%"}} placeholder="Item name"/>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
               {[{label:"WEIGHT (lbs)",f:"weight"},{label:"COST ($)",f:"cost"},{label:"VOLUME (L)",f:"volume"}].map(({label,f})=>(
                 <div key={f}>
-                  <div style={{fontSize:15,color:"rgba(255,159,67,0.65)",letterSpacing:2,marginBottom:5,fontFamily:"monospace"}}>{label}</div>
-                  <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.3)",borderRadius:5,color:"#FFD93D",fontSize:15,padding:"8px 10px",outline:"none",fontFamily:"monospace",width:"100%"}}/>
+                  <div style={{fontSize:mob?9:15,color:"rgba(255,159,67,0.65)",letterSpacing:mob?1:2,marginBottom:mob?3:5,fontFamily:"monospace"}}>{label}</div>
+                  <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.3)",borderRadius:5,color:"#FFD93D",fontSize:mob?12:15,padding:mob?"6px 8px":"8px 10px",outline:"none",fontFamily:"monospace",width:"100%"}}/>
                 </div>
               ))}
             </div>
             <div>
-              <div style={{fontSize:15,color:"rgba(255,159,67,0.65)",letterSpacing:2,marginBottom:5,fontFamily:"monospace"}}>BAG</div>
+              <div style={{fontSize:mob?9:15,color:"rgba(255,159,67,0.65)",letterSpacing:mob?1:2,marginBottom:mob?3:5,fontFamily:"monospace"}}>BAG</div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                 {BAGS.map(b=>(
-                  <button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:"6px 12px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.12)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.45)",fontSize:15,cursor:"pointer",fontFamily:"monospace",fontWeight:item.bag===b?700:400,transition:"all 0.15s"}}>{b}</button>
+                  <button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:mob?"4px 8px":"6px 12px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.12)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.45)",fontSize:mob?10:15,cursor:"pointer",fontFamily:"monospace",fontWeight:item.bag===b?700:400,transition:"all 0.15s"}}>{b}</button>
                 ))}
               </div>
             </div>
             <div style={{display:"flex",gap:8,paddingTop:4}}>
               <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"9px 8px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#FF9F43",fontSize:13,cursor:"pointer",fontFamily:"monospace",fontWeight:700,letterSpacing:0,whiteSpace:"nowrap"}}>{item.owned?"✓ OWNED":"MARK OWNED"}</button>
-              <button onClick={()=>removeItem(item.id)} style={{padding:"10px 16px",borderRadius:7,border:"1px solid rgba(255,107,107,0.3)",background:"rgba(255,107,107,0.06)",color:"rgba(255,107,107,0.7)",fontSize:15,cursor:"pointer",fontFamily:"monospace",fontWeight:700}}>✕</button>
+              <button onClick={()=>removeItem(item.id)} style={{padding:mob?"8px 12px":"10px 16px",borderRadius:7,border:"1px solid rgba(255,107,107,0.3)",background:"rgba(255,107,107,0.06)",color:"rgba(255,107,107,0.7)",fontSize:mob?13:15,cursor:"pointer",fontFamily:"monospace",fontWeight:700}}>✕</button>
             </div>
           </div>
         )}
@@ -1555,25 +1559,25 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <div style={{fontSize:18,flexShrink:0}}>{cat.icon}</div>
             <div style={{display:"flex",flexDirection:"column",gap:2}}>
-              <span style={{fontSize:15,color:"rgba(255,255,255,0.5)",fontFamily:"monospace",whiteSpace:"nowrap"}}>{catItems.length} items</span>
-              <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                {catW>0&&<span style={{fontSize:15,color:cat.color,fontWeight:600,fontFamily:"monospace",whiteSpace:"nowrap"}}>{catW.toFixed(1)}{unit}</span>}
-                <span style={{fontSize:15,color:"rgba(255,255,255,0.38)",fontFamily:"monospace",whiteSpace:"nowrap"}}>{ownedInCat}/{catItems.length} owned</span>
+              <span style={{fontSize:isMobile?10:15,color:"rgba(255,255,255,0.5)",fontFamily:"monospace",whiteSpace:"nowrap"}}>{catItems.length} items</span>
+              <div style={{display:"flex",gap:isMobile?5:8,alignItems:"center"}}>
+                {catW>0&&<span style={{fontSize:isMobile?10:15,color:cat.color,fontWeight:600,fontFamily:"monospace",whiteSpace:"nowrap"}}>{catW.toFixed(1)}{unit}</span>}
+                <span style={{fontSize:isMobile?10:15,color:"rgba(255,255,255,0.38)",fontFamily:"monospace",whiteSpace:"nowrap"}}>{ownedInCat}/{catItems.length} owned</span>
               </div>
             </div>
           </div>
           {/* Center column — name */}
           <div style={{textAlign:"center"}}>
-            <div style={{fontSize:15,fontWeight:600,color:open?cat.color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",transition:"color 0.2s"}}>{cat.label}</div>
+            <div style={{fontSize:isMobile?12:15,fontWeight:600,color:open?cat.color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",transition:"color 0.2s"}}>{cat.label}</div>
           </div>
           {/* Right column — cost + progress + arrow */}
           <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end",gap:8}}>
             <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5}}>
-              {catCost>0&&<div style={{fontSize:15,fontWeight:600,color:"rgba(255,217,61,0.8)",fontFamily:"'Space Mono',monospace"}}>${catCost.toLocaleString()}</div>}
+              {catCost>0&&<div style={{fontSize:isMobile?11:15,fontWeight:600,color:"rgba(255,217,61,0.8)",fontFamily:"'Space Mono',monospace"}}>${catCost.toLocaleString()}</div>}
               <div style={{width:60,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:(catItems.length>0?(ownedInCat/catItems.length)*100:0)+"%",background:`linear-gradient(90deg,${cat.color}66,${cat.color})`,borderRadius:2,transition:"width 0.4s ease"}}/></div>
             </div>
-            <div style={{width:22,height:22,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.2":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-              <span style={{fontSize:15,color:open?cat.color:"rgba(255,255,255,0.45)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
+            <div style={{width:isMobile?18:22,height:isMobile?18:22,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.2":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <span style={{fontSize:isMobile?10:15,color:open?cat.color:"rgba(255,255,255,0.45)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
             </div>
           </div>
         </div>
@@ -1587,7 +1591,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1}/>)}
             {/* Add item row */}
             <div style={{padding:"10px 18px",borderTop:"1px solid rgba(255,255,255,0.04)",display:"flex",justifyContent:"center"}}>
-              <button onClick={()=>addItemToCat(cat.id)} style={{padding:"8px 20px",borderRadius:8,border:`1px dashed ${cat.color}44`,background:"transparent",color:`${cat.color}88`,fontSize:15,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,transition:"all 0.15s"}} onMouseOver={e=>{e.currentTarget.style.background=`${cat.color}10`;e.currentTarget.style.color=cat.color;}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=`${cat.color}88`;}}>+ ADD ITEM</button>
+              <button onClick={()=>addItemToCat(cat.id)} style={{padding:isMobile?"6px 16px":"8px 20px",borderRadius:8,border:`1px dashed ${cat.color}44`,background:"transparent",color:`${cat.color}88`,fontSize:isMobile?11:15,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,transition:"all 0.15s"}} onMouseOver={e=>{e.currentTarget.style.background=`${cat.color}10`;e.currentTarget.style.color=cat.color;}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=`${cat.color}88`;}}>+ ADD ITEM</button>
             </div>
           </div>
         )}
@@ -1618,13 +1622,13 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
               <div style={{fontSize:isMobile?11:13,fontWeight:700,color:"#4D9FFF",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace"}}>⚖️ WEIGHT</div>
               <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{display:"flex",borderRadius:8,border:"1px solid rgba(77,159,255,0.4)",overflow:"hidden",cursor:"pointer"}}>
-                {["lbs","kg"].map(u=><div key={u} style={{padding:"4px 10px",fontSize:15,fontWeight:700,background:unit===u?"rgba(77,159,255,0.3)":"rgba(77,159,255,0.05)",color:unit===u?"#4D9FFF":"rgba(77,159,255,0.3)",borderLeft:u==="kg"?"1px solid rgba(77,159,255,0.3)":"none"}}>{u.toUpperCase()}</div>)}
+                {["lbs","kg"].map(u=><div key={u} style={{padding:isMobile?"3px 8px":"4px 10px",fontSize:isMobile?10:15,fontWeight:700,background:unit===u?"rgba(77,159,255,0.3)":"rgba(77,159,255,0.05)",color:unit===u?"#4D9FFF":"rgba(77,159,255,0.3)",borderLeft:u==="kg"?"1px solid rgba(77,159,255,0.3)":"none"}}>{u.toUpperCase()}</div>)}
               </div>
             </div>
             <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
               <div style={{fontSize:isMobile?13:34,fontWeight:900,color:"#69F0AE",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{(bpW*wM).toFixed(1)}</div>
-              <div style={{fontSize:15,color:"rgba(77,159,255,0.75)",fontWeight:700}}>{unit}</div>
-              <div style={{fontSize:15,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {wLim}</div>
+              <div style={{fontSize:isMobile?11:15,color:"rgba(77,159,255,0.75)",fontWeight:700}}>{unit}</div>
+              <div style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {wLim}</div>
             </div>
             <div style={{height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,overflow:"hidden",marginBottom:5}}>
               <div style={{height:"100%",width:Math.min((bpW/wLim)*100,100)+"%",background:`linear-gradient(90deg,#1565FF,${(bpW*wM)>wLim?"#FF6B6B":"#4D9FFF"})`,borderRadius:4,transition:"width 0.4s ease"}}/>
@@ -1640,12 +1644,12 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             return(<div style={{background:"rgba(169,70,29,0.08)",border:"1px solid rgba(196,87,30,0.5)",borderRadius:10,padding:"12px 14px"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
                 <div style={{fontSize:isMobile?11:13,fontWeight:700,color:"#FFD93D",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace"}}>📦 VOLUME</div>
-                {incomplete&&<div style={{padding:"3px 8px",borderRadius:8,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:15,fontFamily:"monospace",fontWeight:700}}>⚠ PARTIAL</div>}
+                {incomplete&&<div style={{padding:"3px 8px",borderRadius:8,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:isMobile?10:15,fontFamily:"monospace",fontWeight:700}}>⚠ PARTIAL</div>}
               </div>
               <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
                 <div style={{fontSize:isMobile?13:34,fontWeight:900,color:"#FFD93D",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{dV.toFixed(1)}</div>
-                <div style={{fontSize:15,color:"rgba(255,217,61,0.75)",fontWeight:700}}>L</div>
-                <div style={{fontSize:15,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {VL}L</div>
+                <div style={{fontSize:isMobile?11:15,color:"rgba(255,217,61,0.75)",fontWeight:700}}>L</div>
+                <div style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {VL}L</div>
               </div>
               <div style={{height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,overflow:"hidden",marginBottom:5}}>
                 <div style={{height:"100%",width:vPct+"%",background:"linear-gradient(90deg,#A9461D,#FFD93D)",borderRadius:4,transition:"width 0.4s ease"}}/>
@@ -1667,12 +1671,12 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
       {/* Tab bar */}
       <div style={{display:"flex",alignItems:"stretch",background:"rgba(12,5,0,0.98)",borderBottom:"1px solid rgba(196,87,30,0.2)"}}>
         <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(255,159,67,0.15)":"rgba(255,159,67,0.06)",border:"none",borderRight:"1px solid rgba(196,87,30,0.3)",cursor:"pointer",flexShrink:0,color:"#FFD93D"}}>
-          <span style={{fontSize:15,lineHeight:1}}>{isFullscreen?"⊡":"⛶"}</span>
-          <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
+          <span style={{fontSize:isMobile?13:15,lineHeight:1}}>{isFullscreen?"⊡":"⛶"}</span>
+          <span style={{fontSize:isMobile?9:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
         </button>
         {[{id:"pack",label:isMobile?"PACK":"PACK LIST",emoji:"🎒"},{id:"refine",label:"REFINE",emoji:"✦"},{id:"weight",label:isMobile?"WEIGHT":"BREAKDOWN",emoji:"⚖️"}].map(t=>(
           <button key={t.id} onClick={()=>setPackTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Space Mono',monospace",position:"relative"}}>
-            {t.emoji&&<span style={{fontSize:15,lineHeight:1}}>{t.emoji}</span>}
+            {t.emoji&&<span style={{fontSize:isMobile?13:15,lineHeight:1}}>{t.emoji}</span>}
             <span style={{fontSize:isMobile?11:13,letterSpacing:isMobile?0:1,fontWeight:700,whiteSpace:"nowrap"}}>{t.label}</span>
             {t.id==="refine"&&suggestions.length>0&&<div style={{position:"absolute",top:6,right:"20%",width:7,height:7,borderRadius:"50%",background:"#4D9FFF",boxShadow:"0 0 8px #4D9FFF"}}/>}
           </button>
@@ -1681,17 +1685,17 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
       {/* Category filter pills */}
       {packTab==="pack"&&<div style={{display:"flex",gap:6,padding:"10px 16px",overflowX:"auto",borderBottom:"1px solid rgba(169,70,29,0.25)",background:"rgba(10,4,0,0.8)",flexShrink:0,WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
         <button onClick={()=>{setFilterCat("all");setOpenCats({});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat==="all"?"rgba(255,255,255,0.5)":"rgba(255,255,255,0.12)"),background:filterCat==="all"?"rgba(255,255,255,0.08)":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
-          <span style={{fontSize:15}}>📋</span><span style={{fontSize:15,color:filterCat==="all"?"#FFF":"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="all"?700:400}}>All</span>
+          <span style={{fontSize:isMobile?13:15}}>📋</span><span style={{fontSize:isMobile?11:15,color:filterCat==="all"?"#FFF":"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="all"?700:400}}>All</span>
         </button>
         {CATS.map(c=>(
           <button key={c.id} onClick={()=>{setFilterCat(c.id);setOpenCats({[c.id]:true});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat===c.id?c.color+"80":"rgba(169,70,29,0.4)"),background:filterCat===c.id?c.color+"14":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
-            <span style={{fontSize:15}}>{c.icon}</span>
-            <span style={{fontSize:15,color:filterCat===c.id?c.color:"rgba(255,255,255,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat===c.id?700:400}}>{c.label}</span>
+            <span style={{fontSize:isMobile?13:15}}>{c.icon}</span>
+            <span style={{fontSize:isMobile?11:15,color:filterCat===c.id?c.color:"rgba(255,255,255,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat===c.id?700:400}}>{c.label}</span>
           </button>
         ))}
         <button onClick={()=>{setFilterCat("needtobuy");setOpenCats({});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat==="needtobuy"?"rgba(255,107,107,0.7)":"rgba(255,107,107,0.3)"),background:filterCat==="needtobuy"?"rgba(255,107,107,0.12)":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
-          <span style={{fontSize:15}}>🛒</span>
-          <span style={{fontSize:15,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.65)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="needtobuy"?700:400}}>Need to Buy</span>
+          <span style={{fontSize:isMobile?13:15}}>🛒</span>
+          <span style={{fontSize:isMobile?11:15,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.65)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="needtobuy"?700:400}}>Need to Buy</span>
         </button>
       </div>}
       {/* Main content */}
