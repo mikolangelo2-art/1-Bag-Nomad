@@ -277,27 +277,9 @@ function getDefaultPack() {
 
 // ─── SharegoodLogo ────────────────────────────────────────────────
 function SharegoodLogo({size=40,opacity=1,glowColor="rgba(169,70,29,0.5)",animate=true}) {
-  const showText=size>=60;
-  const r=size/2;
-  const bandR=r*0.88;
-  const bandW=size*0.115;
-  const textR=r*0.845;
   return (
     <div style={{position:"relative",width:size,height:size,flexShrink:0,animation:animate?"float 5s ease-in-out infinite":"none",filter:`drop-shadow(0 0 ${size*.25}px ${glowColor})`,opacity}}>
       <img src="/sharegood-logo.svg" width={size} height={size} alt="Sharegood" style={{display:"block",borderRadius:"50%"}}/>
-      {showText&&<svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} style={{position:"absolute",top:0,left:0,pointerEvents:"none"}}>
-        <defs>
-          <path id={`top-${size}`} d={`M ${r-textR},${r} A ${textR},${textR} 0 1,1 ${r+textR},${r}`} fill="none"/>
-          <path id={`bot-${size}`} d={`M ${r+textR},${r} A ${textR},${textR} 0 1,1 ${r-textR},${r}`} fill="none"/>
-        </defs>
-        <circle cx={r} cy={r} r={bandR} fill="none" stroke="#0e2b33" strokeWidth={bandW}/>
-        <text fill="#D4983A" fontFamily="'Fraunces',serif" fontWeight="800" fontSize={size*0.075} letterSpacing={size*0.018} textAnchor="middle">
-          <textPath href={`#top-${size}`} startOffset="50%">1 BAG NOMAD</textPath>
-        </text>
-        <text fill="#D4983A" fontFamily="'Fraunces',serif" fontWeight="500" fontSize={size*0.062} letterSpacing={size*0.014} textAnchor="middle">
-          <textPath href={`#bot-${size}`} startOffset="50%">SHAREGOOD CO.</textPath>
-        </text>
-      </svg>}
     </div>
   );
 }
