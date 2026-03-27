@@ -975,7 +975,7 @@ function OnboardCard({storageKey,ctaLabel,onDismiss,children}) {
         {children}
         <div style={{marginTop:24,display:"flex",flexDirection:"column",gap:10}}>
           <button onClick={dismiss} style={{width:"100%",padding:"14px",borderRadius:12,border:"1px solid rgba(255,159,67,0.5)",background:"linear-gradient(135deg,rgba(196,87,30,0.2),rgba(255,159,67,0.1))",color:"#FF9F43",fontSize:isMobile?12:13,fontWeight:700,letterSpacing:2.5,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:48,transition:"all 0.2s"}} onMouseOver={e=>{e.currentTarget.style.background="linear-gradient(135deg,rgba(196,87,30,0.35),rgba(255,159,67,0.2))";e.currentTarget.style.boxShadow="0 0 20px rgba(255,159,67,0.2)";}} onMouseOut={e=>{e.currentTarget.style.background="linear-gradient(135deg,rgba(196,87,30,0.2),rgba(255,159,67,0.1))";e.currentTarget.style.boxShadow="none";}}>{ctaLabel}</button>
-          <button onClick={dismiss} style={{background:"none",border:"none",color:"rgba(255,255,255,0.28)",fontSize:11,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,padding:"8px",minHeight:36,textAlign:"center",transition:"color 0.2s"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.55)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.28)"}>I know my way around →</button>
+          <button onClick={dismiss} style={{background:"none",border:"none",color:"rgba(255,255,255,0.5)",fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,padding:"8px",minHeight:36,textAlign:"center",transition:"color 0.2s"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.8)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.5)"}>I know my way around →</button>
         </div>
       </div>
     </div>
@@ -1309,7 +1309,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
     <div className="mc-root" style={{animation:"fadeIn 0.9s ease both"}}>
       {showOnboard&&<OnboardCard storageKey="trip" ctaLabel="✦ ENTER MY EXPEDITION" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>
-          <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,letterSpacing:4,color:"rgba(0,229,255,0.5)",marginBottom:10}}>MISSION CONSOLE</div>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,color:"rgba(0,229,255,0.75)",marginBottom:10}}>TRIP CONSOLE</div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:700,fontStyle:"italic",color:"#FF9F43",lineHeight:1.2,marginBottom:10}}>Your expedition is live.</div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.7}}>Every leg of your journey — planned, budgeted, and briefed. Here's how to navigate your console.</div>
         </div>
@@ -1323,8 +1323,8 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
             <div key={t.label} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)"}}>
               <span style={{fontSize:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
               <div>
-                <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
-                <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:"rgba(255,255,255,0.4)",marginLeft:6}}>{t.desc}</span>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:11,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:"rgba(255,255,255,0.65)",marginLeft:6}}>{t.desc}</span>
               </div>
             </div>
           ))}
@@ -1735,7 +1735,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
     <div style={{fontFamily:"'Space Mono',monospace",background:"radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 28%,#0d0500 58%,#060200 100%)",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column"}}>
       {showOnboard&&<OnboardCard storageKey="pack" ctaLabel="✦ BUILD MY PACK" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>
-          <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,letterSpacing:4,color:"rgba(255,159,67,0.5)",marginBottom:10}}>PACK CONSOLE</div>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,color:"rgba(255,159,67,0.75)",marginBottom:10}}>PACK CONSOLE</div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:700,fontStyle:"italic",color:"#FF9F43",lineHeight:1.2,marginBottom:10}}>One bag. Everything you need.</div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.7}}>Your gear list is built for this specific expedition. Here's how to make it yours.</div>
         </div>
@@ -1749,8 +1749,8 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
             <div key={t.label} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)"}}>
               <span style={{fontSize:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
               <div>
-                <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
-                <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:"rgba(255,255,255,0.4)",marginLeft:6}}>{t.desc}</span>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:11,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:"rgba(255,255,255,0.65)",marginLeft:6}}>{t.desc}</span>
               </div>
             </div>
           ))}
