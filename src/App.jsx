@@ -597,7 +597,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
   useEffect(()=>{
     let i=0;const txt=vd.narrative||"";
     const t=setTimeout(()=>{
-      const iv=setInterval(()=>{i++;setNarrative(txt.slice(0,i));if(i>=txt.length){clearInterval(iv);setNarrativeDone(true);setTimeout(()=>setShowStats(true),5000);setTimeout(()=>setShowPhases(true),5600);}},13);
+      const iv=setInterval(()=>{i++;setNarrative(txt.slice(0,i));if(i>=txt.length){clearInterval(iv);setNarrativeDone(true);setTimeout(()=>setShowStats(true),800);setTimeout(()=>setShowPhases(true),1200);}},13);
     },400);
     return()=>clearTimeout(t);
   },[]);
@@ -610,7 +610,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
       if(parsed){
         setVd(parsed);setNarrativeDone(false);setShowStats(false);setShowPhases(false);setNarrative("");
         let i=0;const txt=parsed.narrative||"";
-        const iv=setInterval(()=>{i++;setNarrative(txt.slice(0,i));if(i>=txt.length){clearInterval(iv);setNarrativeDone(true);setTimeout(()=>setShowStats(true),5000);setTimeout(()=>setShowPhases(true),5600);}},13);
+        const iv=setInterval(()=>{i++;setNarrative(txt.slice(0,i));if(i>=txt.length){clearInterval(iv);setNarrativeDone(true);setTimeout(()=>setShowStats(true),800);setTimeout(()=>setShowPhases(true),1200);}},13);
       } else setRefineInput("⚠ Couldn't apply — try rephrasing");
     }catch(e){setRefineInput("⚠ Connection issue");}
     setLoading(false);
