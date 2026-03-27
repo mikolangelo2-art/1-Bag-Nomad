@@ -475,7 +475,7 @@ function GenerationScreen({onComplete}) {
   return (
     <div style={{position:"fixed",inset:0,zIndex:9999,background:"radial-gradient(ellipse at 40% 30%,#2d1200 0%,#1a0900 30%,#0a0400 65%,#040100 100%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Space Mono',monospace",overflow:"hidden"}}>
       <div style={{position:"absolute",top:"5%",left:"50%",width:700,height:500,background:"radial-gradient(ellipse,rgba(169,70,29,0.5) 0%,transparent 65%)",animation:"ambientGlow 3s ease-in-out infinite",transform:"translateX(-50%)",pointerEvents:"none"}}/>
-      <div style={{animation:"logoPulse 2.4s ease-in-out infinite",marginBottom:36,zIndex:1}}><AntiqueGlobe size={180} glowColor="rgba(0,180,255,0.5)" animate={true}/></div>
+      <div style={{animation:"logoPulse 2.4s ease-in-out infinite",marginBottom:36,zIndex:1}}><SharegoodLogo size={180} animate={false} glowColor="rgba(169,70,29,0.52)" opacity={0.9}/></div>
       <div key={mi} style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:100,fontStyle:"italic",color:"rgba(255,255,255,0.92)",letterSpacing:1,marginBottom:10,animation:"fadeUp 0.5s ease",textAlign:"center",zIndex:1,opacity:ph>=1?1:0,transition:"opacity 0.6s ease"}}>{msgs[mi]}</div>
       <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.5)",letterSpacing:3,marginBottom:40,textAlign:"center",zIndex:1}}>The co-architect is working its magic ✦</div>
       <div style={{width:260,zIndex:1}}>
@@ -516,9 +516,7 @@ function DreamScreen({onGoGen,onLoadDemo}) {
   const canLaunch=vision.trim().length>20;
   async function handleReveal() {
     if(!canLaunch||loading)return;
-    setFadeOut(true);
-    await new Promise(r=>setTimeout(r,350));
-    setLoading(true);setLoadError(false);
+    setLoading(true);setLoadError(false);setFadeOut(true);
     const bl=budgetMode==="dream"?"NO BUDGET SET — set totalBudget to 0.":"Traveler budget: $"+(budgetAmount||"flexible");
     try {
       const raw=await askAI(`Elite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Date:"${date||"flexible"}". ${bl} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍"}],"totalNights":0,"totalBudget":0,"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"}`,1800);
@@ -819,20 +817,19 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
 function HandoffScreen({tripData,onComplete}) {
   const isMobile=useMobile();
   const [ph,setPh]=useState(0),[lit,setLit]=useState(0);
-  const [mounted,setMounted]=useState(false);
-  useEffect(()=>{window.scrollTo(0,0);const t=setTimeout(()=>setMounted(true),50);return()=>clearTimeout(t);},[]);
+  useEffect(()=>{window.scrollTo(0,0);},[]);
   useEffect(()=>{const ts=[setTimeout(()=>setPh(1),2200),setTimeout(()=>setPh(2),7200),setTimeout(()=>setPh(3),10500)];return()=>ts.forEach(clearTimeout);},[]);
   useEffect(()=>{if(ph<2)return;const total=tripData.phases?.length||0;let i=0;const iv=setInterval(()=>{i++;setLit(i);if(i>=total)clearInterval(iv);},180);return()=>clearInterval(iv);},[ph]);
   const totalNights=tripData.phases?.reduce((s,p)=>s+p.nights,0)||0;
   const totalBudget=tripData.phases?.reduce((s,p)=>s+(p.cost||p.budget||0),0)||0;
   const countries=[...new Set((tripData.phases||[]).map(p=>p.country))].length;
   return(
-    <div style={{position:"fixed",inset:0,zIndex:9999,fontFamily:"'Space Mono',monospace",overflow:"hidden",opacity:mounted?1:0,transition:"opacity 0.4s ease"}}>
+    <div style={{position:"fixed",inset:0,zIndex:9999,fontFamily:"'Space Mono',monospace",overflow:"hidden",animation:"fadeIn 0.5s ease"}}>
       <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 25%,#0d0500 55%,#060200 100%)",zIndex:1}}/>
       <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 0%,#001830 0%,#000d1a 30%,#000810 60%,#030810 100%)",opacity:ph>=1?1:0,transition:"opacity 1.4s ease",zIndex:2}}/>
       <div style={{position:"absolute",inset:0,zIndex:3,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:40}}>
         <div style={{opacity:ph<1?1:0,transition:"opacity 0.9s ease",position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",pointerEvents:"none"}}>
-          <div style={{display:"flex",justifyContent:"center",marginBottom:24,animation:"logoPulse 2.4s ease-in-out infinite"}}><AntiqueGlobe size={isMobile?80:110} glowColor="rgba(201,168,76,0.65)" animate={true}/></div>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:24,animation:"logoPulse 2.4s ease-in-out infinite"}}><AntiqueGlobe size={isMobile?80:110} glowColor="rgba(0,160,220,0.55)" animate={true}/></div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:22,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.6,maxWidth:560,textAlign:"center"}}>"{(tripData.visionNarrative||"").slice(0,120)}..."</div>
           <div style={{marginTop:28,fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,217,61,0.45)",letterSpacing:3}}>Now becoming real.</div>
         </div>
@@ -1150,7 +1147,7 @@ function PhaseCard({phase,intelData,idx}) {
           <span style={{fontSize:10,color:phase.color,fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>🌙{phase.totalNights}n</span>
           {phase.totalDives>0&&<span style={{fontSize:10,color:"#00E5FF",whiteSpace:"nowrap",flexShrink:0}}>🤿{phase.totalDives}</span>}
           {pct>0&&<div style={{width:isMobile?40:80,height:2,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden",flexShrink:0}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}55,${phase.color}99)`,borderRadius:2}}/></div>}
-          <span style={{fontSize:9,color:"rgba(255,255,255,0.25)",fontFamily:"monospace",whiteSpace:"nowrap",marginLeft:"auto",flexShrink:0}}>{isPast?"done":isNow?"active":`${dUntil}d`}</span>
+          <span style={{fontSize:isMobile?10:11,color:"rgba(255,255,255,0.35)",fontFamily:"monospace",whiteSpace:"nowrap",marginLeft:"auto",flexShrink:0}}>{isPast?"done":isNow?"active":`${dUntil}d`}</span>
         </div>
       </div>
       {open&&(
