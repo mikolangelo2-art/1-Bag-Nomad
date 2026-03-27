@@ -683,7 +683,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   const [mobileTab,setMobileTab]=useState(data.isRevision?"chat":"itinerary");
   const [mounted,setMounted]=useState(false);
   useEffect(()=>{const t=setTimeout(()=>setMounted(true),60);return()=>clearTimeout(t);},[]);
-  useEffect(()=>{window.scrollTo(0,0);},[]);
+  useEffect(()=>{requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:"instant"});});},[]);
   useEffect(()=>{window.scrollTo(0,0);},[]);
   function estCost(dest,country,type,nights){
     const d=(dest||"").toLowerCase(),c=(country||"").toLowerCase();
@@ -1168,7 +1168,7 @@ function PhaseCard({phase,intelData,idx}) {
 function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,setFullscreen}) {
   const isMobile=useMobile();
   const [tab,setTab]=useState("next");
-  useEffect(()=>{window.scrollTo(0,0);},[]);
+  useEffect(()=>{requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:"instant"});});},[]);
   const [confirmNewTrip,setConfirmNewTrip]=useState(false);
   const [showMobileMenu,setShowMobileMenu]=useState(false);
   const [explorerDest,setExplorerDest]=useState(null);
