@@ -1360,17 +1360,17 @@
 </g>
 <g id="share_good_everything">
   <defs>
-    <path id="leftTop" d="M 178.8,883.7 A 710,710 0 0,1 504.6,267.5" fill="none"/>
-    <path id="rightTop" d="M 1273.1,267.5 A 710,710 0 0,1 1598.9,883.7" fill="none"/>
-    <path id="botPath" d="M 222.3,1090.0 A 710,710 0 0,0 1555.4,1090.0" fill="none"/>
+    <path id="leftTop" d="M 159.0,883.7 A 730,730 0 0,1 548.3,230.8" fill="none"/>
+    <path id="rightTop" d="M 1229.4,230.8 A 730,730 0 0,1 1618.7,883.7" fill="none"/>
+    <path id="botPath" d="M 195.0,1050.0 A 730,730 0 0,0 1582.7,1050.0" fill="none"/>
   </defs>
-  <text fill="#D09D21" font-family="'Trajan Pro', 'Times New Roman', serif" font-weight="bold" font-size="160" letter-spacing="6" text-anchor="middle">
+  <text fill="#D09D21" font-family="'Trajan Pro', 'Times New Roman', serif" font-weight="bold" font-size="200" letter-spacing="4" text-anchor="middle">
     <textPath href="#leftTop" startOffset="50%">1 BAG</textPath>
   </text>
-  <text fill="#D09D21" font-family="'Trajan Pro', 'Times New Roman', serif" font-weight="bold" font-size="160" letter-spacing="6" text-anchor="middle">
+  <text fill="#D09D21" font-family="'Trajan Pro', 'Times New Roman', serif" font-weight="bold" font-size="200" letter-spacing="4" text-anchor="middle">
     <textPath href="#rightTop" startOffset="50%">NOMAD</textPath>
   </text>
-  <text fill="#D09D21" font-family="'Trajan Pro', 'Times New Roman', serif" font-weight="normal" font-size="120" letter-spacing="6" text-anchor="middle" dominant-baseline="hanging">
+  <text fill="#D09D21" font-family="'Trajan Pro', 'Times New Roman', serif" font-weight="normal" font-size="150" letter-spacing="4" text-anchor="middle" dominant-baseline="hanging">
     <textPath href="#botPath" startOffset="50%">Sharegood Co.</textPath>
   </text>
 </g>
