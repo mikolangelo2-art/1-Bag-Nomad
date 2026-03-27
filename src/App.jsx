@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 // ╔══════════════════════════════════════════════════════════════╗
 // ║  1 BAG NOMAD — v5_r4                                        ║
 // ║  Merged: v5 + TripConsoleSandbox · March 23 2026            ║
@@ -27,6 +27,9 @@ const CAT_DOT_COLORS = ["#00E5FF","#69F0AE","#FFD93D","#FF9F43","#A29BFE","#FF6B
 const SEG_KEY = "1bn_seg_v2";
 const loadSeg = () => { try { const s=localStorage.getItem(SEG_KEY); return s?JSON.parse(s):{}; } catch(e) { return {}; } };
 const saveSeg = d => { try { localStorage.setItem(SEG_KEY,JSON.stringify(d)); } catch(e) {} };
+const COACH_KEY = "1bn_coach_v1";
+const loadCoach = () => { try { const s=localStorage.getItem(COACH_KEY); return s?JSON.parse(s):{}; } catch(e) { return {}; } };
+const saveCoach = d => { try { localStorage.setItem(COACH_KEY,JSON.stringify(d)); } catch(e) {} };
 
 // ─── Utils ───────────────────────────────────────────────────────
 const fmt = n => "$"+Math.round(n).toLocaleString();
@@ -96,6 +99,8 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 @keyframes slideUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes coachFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes coachPulse{0%,100%{box-shadow:0 0 0 2px rgba(0,229,255,0.2),0 0 16px rgba(0,229,255,0.08)}50%{box-shadow:0 0 0 3px rgba(0,229,255,0.35),0 0 24px rgba(0,229,255,0.14)}}
 @keyframes spinGlobe{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes glowPulse{0%,100%{opacity:0.5;transform:scale(1)}50%{opacity:0.85;transform:scale(1.04)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
@@ -889,6 +894,70 @@ function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00
   );
 }
 
+// ─── CoachOverlay ─────────────────────────────────────────────────
+function CoachOverlay({steps,storageKey,accentColor="#00E5FF",onDismiss}) {
+  const isMobile=useMobile();
+  const [step,setStep]=useState(0);
+  const [rect,setRect]=useState(null);
+  const [fading,setFading]=useState(false);
+  const [ready,setReady]=useState(false);
+  useEffect(()=>{const t=setTimeout(()=>setReady(true),600);return()=>clearTimeout(t);},[]);
+  const measure=useCallback(()=>{
+    const el=document.querySelector(`[data-coach="${steps[step]?.target}"]`);
+    if(!el)return;
+    el.scrollIntoView({behavior:"smooth",block:"center"});
+    setTimeout(()=>setRect(el.getBoundingClientRect()),350);
+  },[step,steps]);
+  useEffect(()=>{if(ready)measure();},[ready,measure]);
+  useEffect(()=>{const h=()=>measure();window.addEventListener("resize",h);return()=>window.removeEventListener("resize",h);},[measure]);
+  const finish=()=>{const c=loadCoach();c[storageKey]=true;saveCoach(c);onDismiss?.();};
+  const goNext=()=>{
+    if(step>=steps.length-1){finish();return;}
+    setFading(true);
+    setTimeout(()=>{setStep(s=>s+1);setFading(false);},200);
+  };
+  if(!ready||!rect)return null;
+  const pad=10,r=rect;
+  const cut={top:Math.max(0,r.top-pad),left:Math.max(0,r.left-pad),width:r.width+pad*2,height:r.height+pad*2};
+  const below=window.innerHeight-cut.top-cut.height>160;
+  const tipStyle={
+    position:"fixed",zIndex:10001,
+    left:isMobile?12:Math.max(12,Math.min(cut.left,window.innerWidth-320)),
+    top:below?cut.top+cut.height+12:undefined,
+    bottom:below?undefined:window.innerHeight-cut.top+12,
+    width:isMobile?"calc(100vw - 24px)":"min(320px,80vw)",
+    background:"rgba(0,8,20,0.96)",backdropFilter:"blur(12px)",
+    border:`1px solid ${accentColor}33`,borderRadius:12,
+    padding:"16px 18px",
+    animation:fading?"none":"coachFadeIn 0.3s ease both",
+    opacity:fading?0:1,transition:"opacity 0.2s ease"
+  };
+  const s=steps[step];
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:9999}} onClick={goNext}>
+      {/* Four overlay panels */}
+      <div style={{position:"fixed",top:0,left:0,right:0,height:cut.top,background:"rgba(0,4,14,0.82)"}}/>
+      <div style={{position:"fixed",top:cut.top+cut.height,left:0,right:0,bottom:0,background:"rgba(0,4,14,0.82)"}}/>
+      <div style={{position:"fixed",top:cut.top,left:0,width:cut.left,height:cut.height,background:"rgba(0,4,14,0.82)"}}/>
+      <div style={{position:"fixed",top:cut.top,left:cut.left+cut.width,right:0,height:cut.height,background:"rgba(0,4,14,0.82)"}}/>
+      {/* Spotlight glow ring */}
+      <div style={{position:"fixed",top:cut.top,left:cut.left,width:cut.width,height:cut.height,borderRadius:12,animation:"coachPulse 2.5s ease-in-out infinite",pointerEvents:"none",zIndex:10000}}/>
+      {/* Tooltip */}
+      <div style={tipStyle} onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:16,fontWeight:700,fontStyle:"italic",color:"#FFD93D"}}>{s.title}</div>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"'Space Mono',monospace"}}>{step+1}/{steps.length}</div>
+        </div>
+        <div style={{fontSize:isMobile?11:12,color:"rgba(255,255,255,0.65)",fontFamily:"'Space Mono',monospace",lineHeight:1.7,marginBottom:14}}>{s.body}</div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <button onClick={e=>{e.stopPropagation();finish();}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.35)",fontSize:11,cursor:"pointer",fontFamily:"'Space Mono',monospace",padding:"8px 4px",minHeight:44}}>Skip tour</button>
+          <button onClick={e=>{e.stopPropagation();goNext();}} style={{background:`${accentColor}14`,border:`1px solid ${accentColor}55`,borderRadius:8,color:accentColor,fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,padding:"8px 18px",letterSpacing:1,minHeight:44}}>{step>=steps.length-1?"Got it":"Next"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── SegmentDetails — reads/writes 1bn_seg_v2 only (arch #3) ─────
 // arch #2: inline intel tab preview preserved
 function SegmentDetails({phaseId,segment,intelSnippet}) {
@@ -919,6 +988,9 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
           </button>
         );})}
       </div>
+      {!cat&&<div style={{padding:"12px 16px",textAlign:"center",animation:"fadeIn 0.5s ease"}}>
+        <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?11:13,fontStyle:"italic",color:"rgba(0,229,255,0.35)",lineHeight:1.5}}>Tap a category above to start planning this segment</div>
+      </div>}
       {cat&&ac&&(
         <div style={{background:ac.w,borderTop:`1px solid ${ac.a}15`,animation:"slideOpen 0.18s ease"}}>
           {cat==="transport"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:7}}>
@@ -943,6 +1015,7 @@ function SegmentDetails({phaseId,segment,intelSnippet}) {
             <SDF label="NOTES" value={det.stay.notes} onChange={v=>uS("notes",v)} placeholder="Room type, included meals, host contact..." accent="#69F0AE" multiline/>
           </div>}
           {cat==="activities"&&<div style={{padding:"10px 12px"}}>
+            {det.activities.length===0&&<div style={{textAlign:"center",padding:"6px 0 10px",animation:"fadeIn 0.5s ease"}}><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?11:13,fontStyle:"italic",color:"rgba(255,217,61,0.35)",lineHeight:1.5}}>Add your first activity — dives, tours, day trips</div></div>}
             {det.activities.length>0&&<div style={{marginBottom:12}}>
               {det.activities.map(a=>(
                 <div key={a.id} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"8px 0",borderBottom:"1px solid rgba(255,217,61,0.07)"}}>
@@ -1178,6 +1251,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
   const [explorerDest,setExplorerDest]=useState(null);
   const [explorerData,setExplorerData]=useState(()=>{try{const s=localStorage.getItem("1bn_intel");return s?JSON.parse(s):{}}catch(e){return{};}});
   const [loadingIntel,setLoadingIntel]=useState(false);
+  const [showCoach,setShowCoach]=useState(()=>!loadCoach().trip);
   useEffect(()=>{try{localStorage.setItem("1bn_intel",JSON.stringify(explorerData));}catch(e){};},[explorerData]);
 
   function handleNewTripClick(){if(confirmNewTrip){onNewTrip();}else{setConfirmNewTrip(true);setTimeout(()=>setConfirmNewTrip(false),4000);}}
@@ -1208,6 +1282,12 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
 
   return(
     <div className="mc-root" style={{animation:"fadeIn 0.9s ease both"}}>
+      {showCoach&&<CoachOverlay storageKey="trip" accentColor="#00E5FF" onDismiss={()=>setShowCoach(false)} steps={[
+        {target:"trip-stats",title:"Your Mission Dashboard",body:"Countdown, nights, dives, and budget — your expedition at a glance."},
+        {target:"trip-phases",title:"Country Phases",body:"Each card is a country. Tap to expand and see the segments within."},
+        {target:"trip-tabs",title:"Explore Your Data",body:"Switch between Expedition, Budget, Booking links, and Intel views."},
+        {target:"trip-pack-switch",title:"Pack Console",body:"When you're ready, switch here to manage your one-bag gear list."}
+      ]}/>}
       {!isFullscreen&&<ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/>}
       {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:"linear-gradient(180deg,rgba(0,20,45,0.95),rgba(0,8,20,0.98))",borderBottom:"1px solid rgba(0,229,255,0.15)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.04) 0%,transparent 60%)",pointerEvents:"none"}}/>
@@ -1215,7 +1295,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:17,fontWeight:300,fontStyle:"italic",color:"#FFD93D",lineHeight:1,textShadow:"0 0 28px rgba(255,217,61,0.35)"}}>{tripData.tripName}</div>
           {!isMobile&&<div style={{fontSize:15,color:"rgba(0,229,255,0.55)",letterSpacing:2,marginTop:3,fontFamily:"'Space Mono',monospace"}}>{[...new Set(flatPhases.map(p=>p.country))].join(" · ")}</div>}
         </div>}
-        <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
+        <div data-coach="trip-stats" style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
           {heroStats.map((s,i)=>(
             <div key={s.label} style={{textAlign:"center",padding:isMobile?"2px 3px":"4px 6px",borderLeft:i>0?"1px solid rgba(0,229,255,0.1)":"none"}}>
               <div style={{fontSize:isMobile?13:15,fontWeight:700,color:"rgba(255,255,255,0.65)",letterSpacing:isMobile?0.5:2,marginBottom:isMobile?2:4,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
@@ -1230,7 +1310,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
           <div style={{width:5,height:5,borderRadius:"50%",background:"#00E5FF",boxShadow:"0 0 6px #00E5FF",animation:"consolePulse 2.5s ease-in-out infinite"}}/>
           <span style={{fontSize:isMobile?9:13,fontWeight:700,color:"#00E5FF",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
         </div>
-        <div onClick={onPackConsole} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",background:"transparent"}} onMouseOver={e=>e.currentTarget.style.background="rgba(196,87,30,0.08)"} onMouseOut={e=>e.currentTarget.style.background="transparent"}>
+        <div data-coach="trip-pack-switch" onClick={onPackConsole} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",background:"transparent"}} onMouseOver={e=>e.currentTarget.style.background="rgba(196,87,30,0.08)"} onMouseOut={e=>e.currentTarget.style.background="transparent"}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(196,87,30,0.4)"}}/>
           <span style={{fontSize:isMobile?9:13,fontWeight:700,color:"rgba(255,159,67,0.65)",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>PACK CONSOLE</span>
         </div>
@@ -1238,7 +1318,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
       {/* Tab bar */}
       {isMobile?(
         <div style={{flexShrink:0}}>
-          <div style={{display:"flex",borderBottom:"1px solid #111D2A",background:"#060A0F",alignItems:"stretch"}}>
+          <div data-coach="trip-tabs" style={{display:"flex",borderBottom:"1px solid #111D2A",background:"#060A0F",alignItems:"stretch"}}>
             {TABS.map(t=>(
               <button key={t.id} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 4px",minWidth:0}}>
                 <span style={{fontSize:16,lineHeight:1}}>{t.label.split(" ")[0]}</span>
@@ -1299,7 +1379,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,isFullscreen,
             {tripData.visionNarrative&&<div style={{marginBottom:8}}><div style={{fontSize:10,color:"rgba(255,217,61,0.55)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.68)",lineHeight:1.75,borderLeft:"2px solid rgba(255,217,61,0.18)",paddingLeft:12}}>"{tripData.visionNarrative.slice(0,160)}{tripData.visionNarrative.length>160?"...":""}"</div></div>}
             <div style={{fontSize:isMobile?12:14,color:"#FF9F43",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Space Mono',monospace",whiteSpace:isMobile?"normal":"nowrap"}}>{isMobile?`YOUR EXPEDITION · ${segPhases.length} PHASES`:`YOUR EXPEDITION · ${segPhases.length} PHASES · TAP PHASE TO EXPAND`}</div>
             {isMobile&&<div style={{fontSize:15,color:"rgba(255,159,67,0.55)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>TAP PHASE TO EXPAND</div>}
-            {segPhases.map((phase,i)=><PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i}/>)}
+            {segPhases.map((phase,i)=>i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i}/>)}
           </div>
         )}
         {tab==="budget"&&(
@@ -1436,6 +1516,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
   const [chat,setChat]=useState([]);
   const [chatInput,setChatInput]=useState("");
   const [chatLoading,setChatLoading]=useState(false);
+  const [showCoach,setShowCoach]=useState(()=>!loadCoach().pack);
   const chatEnd=useRef(null);
 
   useEffect(()=>{chatEnd.current?.scrollIntoView({behavior:"smooth"});},[chat]);
@@ -1601,6 +1682,11 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
 
   return(
     <div style={{fontFamily:"'Space Mono',monospace",background:"radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 28%,#0d0500 58%,#060200 100%)",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column"}}>
+      {showCoach&&<CoachOverlay storageKey="pack" accentColor="#FF9F43" onDismiss={()=>setShowCoach(false)} steps={[
+        {target:"pack-stats",title:"Weight & Volume",body:"Track your bag weight and volume against carry-on limits."},
+        {target:"pack-filters",title:"Filter by Category",body:"Tap a category to focus. Use 'Need to Buy' to see what's missing."},
+        {target:"pack-first-cat",title:"Your Gear",body:"Expand a category, tap an item to edit. Check the box when you own it."}
+      ]}/>}
       {/* Header */}
       {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} onTripConsole={onExpedition} onPackConsole={()=>{}}/>}
       {/* Console switcher */}
@@ -1616,7 +1702,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
       </div>}
       {/* Hero stats */}
       {!isFullscreen&&<div style={{padding:isMobile?"6px 12px 5px":"10px 18px 7px",background:"linear-gradient(180deg,rgba(35,14,0,0.6),rgba(20,8,0,0.8))"}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+        <div data-coach="pack-stats" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
           {/* Weight hero */}
           <div style={{background:"rgba(21,101,255,0.07)",border:"1px solid rgba(77,159,255,0.3)",borderRadius:10,padding:"12px 14px"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
@@ -1683,7 +1769,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
         ))}
       </div>
       {/* Category filter pills */}
-      {packTab==="pack"&&<div style={{display:"flex",gap:6,padding:"10px 16px",overflowX:"auto",borderBottom:"1px solid rgba(169,70,29,0.25)",background:"rgba(10,4,0,0.8)",flexShrink:0,WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
+      {packTab==="pack"&&<div data-coach="pack-filters" style={{display:"flex",gap:6,padding:"10px 16px",overflowX:"auto",borderBottom:"1px solid rgba(169,70,29,0.25)",background:"rgba(10,4,0,0.8)",flexShrink:0,WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
         <button onClick={()=>{setFilterCat("all");setOpenCats({});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat==="all"?"rgba(255,255,255,0.5)":"rgba(255,255,255,0.12)"),background:filterCat==="all"?"rgba(255,255,255,0.08)":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
           <span style={{fontSize:isMobile?13:15}}>📋</span><span style={{fontSize:isMobile?11:15,color:filterCat==="all"?"#FFF":"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="all"?700:400}}>All</span>
         </button>
@@ -1701,6 +1787,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
       {/* Main content */}
       {packTab==="pack"&&(
         <div style={{overflowY:"auto",flex:1,padding:"12px 16px 32px"}}>
+          {Object.keys(openCats).length===0&&filterCat!=="needtobuy"&&<div style={{textAlign:"center",padding:"8px 0 4px",animation:"fadeIn 0.5s ease"}}><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?11:13,fontStyle:"italic",color:"rgba(255,159,67,0.4)",lineHeight:1.5}}>Tap a category to expand, then check items you already own</div></div>}
           {filterCat==="needtobuy"?(()=>{
             const unowned=[...items].filter(i=>!i.owned).sort((a,b)=>(parseFloat(b.cost)||0)-(parseFloat(a.cost)||0));
             const total=unowned.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
@@ -1740,7 +1827,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
                 </div>
               )}
             </div>);
-          })():visibleCats.map((cat,i)=><CatCard key={cat.id} cat={cat} idx={i}/>)}
+          })():visibleCats.map((cat,i)=>i===0?<div key={cat.id} data-coach="pack-first-cat"><CatCard cat={cat} idx={i}/></div>:<CatCard key={cat.id} cat={cat} idx={i}/>)}
           <div style={{textAlign:"center",marginTop:8,padding:"8px 0",borderTop:"1px solid rgba(169,70,29,0.12)"}}>
             <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.35)",letterSpacing:2}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
           </div>
