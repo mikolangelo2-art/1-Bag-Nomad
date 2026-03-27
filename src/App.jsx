@@ -170,8 +170,8 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .g-card.off .g-label{color:#FFF}.g-card.on .g-label{color:#FFD93D}
 .g-desc{font-size:12px;line-height:1.5}
 .g-card.off .g-desc{color:rgba(255,255,255,0.78)}.g-card.on .g-desc{color:rgba(255,217,61,0.7)}
-.vision-ta{width:100%;background:rgba(169,70,29,0.07);border:1px solid rgba(169,70,29,0.48);border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.2s,box-shadow 0.2s;margin-bottom:6px}
-.vision-ta::placeholder{color:rgba(255,255,255,0.27)}.vision-ta:focus{border-color:rgba(255,217,61,0.48);box-shadow:0 0 0 3px rgba(255,217,61,0.07)}
+.vision-ta{width:100%;background:rgba(255,159,67,0.025);border:1px solid rgba(169,70,29,0.25);border-left:3px solid rgba(255,159,67,0.75);border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;box-shadow:0 0 28px rgba(255,159,67,0.10),inset 0 0 12px rgba(255,159,67,0.04);transition:border-color 0.2s,box-shadow 0.3s;margin-bottom:6px}
+.vision-ta::placeholder{color:rgba(255,255,255,0.27)}.vision-ta:focus{border-left:3px solid rgba(255,159,67,1);box-shadow:0 0 32px rgba(255,159,67,0.18),inset 0 0 14px rgba(255,159,67,0.06)}
 .f-label{font-size:12px;color:rgba(255,159,67,0.75);letter-spacing:2.5px}
 .f-input{background:rgba(18,11,0,0.85);border:1px solid rgba(169,70,29,0.38);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Space Mono',monospace;outline:none;width:100%;transition:border-color 0.2s}
 .f-input:focus{border-color:rgba(255,217,61,0.42)}.f-input::placeholder{color:rgba(255,255,255,0.22)}
