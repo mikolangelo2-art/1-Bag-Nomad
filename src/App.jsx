@@ -110,7 +110,7 @@ function parseJSON(raw) {
 
 // ─── CSS ─────────────────────────────────────────────────────────
 const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,100;0,300;0,700;0,900;1,100;1,300;1,700;1,900&family=Space+Mono:wght@400;700&display=swap');
-:root{--cream:#E8DCC8}*{box-sizing:border-box;margin:0;padding:0}body{background:#0A0705}
+:root{--cream:#E8DCC8}*{box-sizing:border-box;margin:0;padding:0}body{background:#150F0A}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -176,8 +176,8 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .mc-tab{font-size:11px!important;padding:12px 16px!important}
 .chat-bubble{font-size:12px!important}}
 @media(min-width:900px){html,body{font-size:18px}.dream-content{max-width:860px;margin:0 auto;padding:40px 40px 70px}.mc-content{max-width:1100px;margin:0 auto;padding:24px 48px}.g-label{font-size:18px}.g-desc{font-size:12px}.sec-label{font-size:13px;letter-spacing:5px}.f-label{font-size:12px}.f-input{font-size:16px;padding:13px 18px}.vision-ta{font-size:16px;padding:18px 22px}.launch-btn{font-size:16px;padding:22px}.mc-tab{font-size:12px;padding:14px 18px}.chat-bubble{font-size:12px}}
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#0A0705}::-webkit-scrollbar-thumb{background:rgba(232,220,200,0.12);border-radius:2px}
-.dream-root{font-family:'Space Mono',monospace;background:radial-gradient(ellipse at 50% 0%,rgba(169,70,29,0.15) 0%,transparent 60%) no-repeat fixed,#0A0705;min-height:100vh;color:#FFF;position:relative}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#150F0A}::-webkit-scrollbar-thumb{background:rgba(232,220,200,0.12);border-radius:2px}
+.dream-root{font-family:'Space Mono',monospace;background:radial-gradient(ellipse at 50% 0%,rgba(169,70,29,0.15) 0%,transparent 60%) no-repeat fixed,#150F0A;min-height:100vh;color:#FFF;position:relative}
 .dream-glow{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:280px;background:radial-gradient(ellipse,rgba(169,70,29,0.3) 0%,rgba(0,120,255,0.06) 40%,rgba(255,217,61,0.05) 55%,transparent 70%);pointer-events:none;z-index:0;animation:glowPulse 7s ease-in-out infinite}.dream-glow::after{content:"";position:absolute;top:60px;left:-120px;width:280px;height:180px;background:radial-gradient(ellipse,rgba(0,120,255,0.14) 0%,transparent 70%);pointer-events:none}.dream-glow::before{content:"";position:absolute;top:80px;right:-100px;width:240px;height:160px;background:radial-gradient(ellipse,rgba(162,155,254,0.14) 0%,rgba(0,120,255,0.06) 50%,transparent 70%);pointer-events:none}
 .dream-content{position:relative;z-index:1;padding:26px 20px 44px;max-width:720px;margin:0 auto}.mc-content{padding:20px 32px}.build-root,.mc-root{font-size:15px}.g-label{font-size:15px}.g-desc{font-size:10px}.launch-btn{font-size:15px}.sec-label{font-size:11px}.f-input{font-size:14px}.f-label{font-size:10px}}
 .hero-cursor{color:#FFD93D;animation:blink 0.9s infinite}
@@ -204,22 +204,22 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .launch-btn.loading{background:linear-gradient(135deg,#C4571E,#E06830,#C4571E);color:rgba(255,255,255,0.92);cursor:wait;animation:launchPulse 1.4s ease-in-out infinite!important}
 .narrative-card{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(169,70,29,0.14),rgba(255,217,61,0.04));border:2px solid #FFD93D;box-shadow:0 0 20px rgba(255,217,61,0.15);border-radius:16px;padding:22px;margin-bottom:18px;animation:fadeUp 0.5s ease}
 .vibe-tag{background:rgba(169,70,29,0.22);border:1px solid rgba(169,70,29,0.55);border-radius:20px;padding:4px 12px;font-size:12px;color:#FFD93D;letter-spacing:2.5px}
-.stat-card{background:rgba(255,255,255,0.03);border:1px solid rgba(232,220,200,0.08);border-radius:9px;padding:9px 7px;text-align:center}
-.phase-row{display:flex;gap:10px;padding:12px 14px;background:rgba(255,255,255,0.03);border-radius:11px;align-items:flex-start;border-left:3px solid transparent}
+.stat-card{background:rgba(255,255,255,0.04);border:1px solid rgba(232,220,200,0.08);border-radius:9px;padding:9px 7px;text-align:center}
+.phase-row{display:flex;gap:10px;padding:12px 14px;background:rgba(255,255,255,0.04);border-radius:11px;align-items:flex-start;border-left:3px solid transparent}
 .cta-build-btn{width:100%;padding:16px;border-radius:13px;border:none;background:linear-gradient(135deg,#A9461D 0%,#C4571E 38%,#69F0AE 100%);color:#060A0F;font-size:12px;font-weight:900;cursor:pointer;letter-spacing:2.5px;font-family:'Space Mono',monospace;animation:consolePulse 2.8s ease-in-out infinite;transition:transform 0.2s}
 .cta-build-btn:hover{transform:translateY(-2px);animation:none}
-.build-root{font-family:'Space Mono',monospace;background:#0A0705;min-height:100vh;color:#FFF;display:flex;flex-direction:column}
-.mc-root{font-family:'Space Mono',monospace;background:radial-gradient(ellipse at 50% 0%,rgba(0,229,255,0.04) 0%,transparent 50%) no-repeat fixed,#0A0705;min-height:100vh;color:#FFF;display:flex;flex-direction:column}
+.build-root{font-family:'Space Mono',monospace;background:#150F0A;min-height:100vh;color:#FFF;display:flex;flex-direction:column}
+.mc-root{font-family:'Space Mono',monospace;background:radial-gradient(ellipse at 50% 0%,rgba(0,229,255,0.04) 0%,transparent 50%) no-repeat fixed,#150F0A;min-height:100vh;color:#FFF;display:flex;flex-direction:column}
 .mc-tab{background:none;border:none;cursor:pointer;padding:9px 12px;font-size:11px;letter-spacing:2px;white-space:nowrap;color:#FFF;border-bottom:2px solid transparent;transition:all 0.15s;font-family:'Space Mono',monospace;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
 .mc-tab.active{color:#00E5FF;border-bottom-color:#00E5FF}
 .mc-content{padding:14px 16px;overflow-y:auto;flex:1;min-height:0}
-.intel-section{background:rgba(255,255,255,0.03);border:1px solid rgba(232,220,200,0.08);border-radius:8px;padding:11px;margin-bottom:10px}
+.intel-section{background:rgba(255,255,255,0.04);border:1px solid rgba(232,220,200,0.08);border-radius:8px;padding:11px;margin-bottom:10px}
 .intel-section-label{font-size:12px;letter-spacing:2px;margin-bottom:7px}
 .street-card{display:flex;gap:9px;padding:9px 11px;background:rgba(0,0,0,0.25);border-radius:8px;margin-bottom:7px}
 .loading-skeleton{height:13px;background:#111D2A;border-radius:4px;animation:shimmer 1.5s infinite;margin-bottom:8px}
 .chat-bubble{border-radius:10px;padding:8px 10px;font-size:12px;color:#FFF;line-height:1.7;max-width:86%}
 @media(max-width:599px){.dream-content{padding:18px 14px 40px}.goal-grid{gap:7px}.mc-content{padding:10px 12px}}
-.bnav{position:fixed;bottom:0;left:0;right:0;z-index:300;display:flex;background:rgba(10,7,5,0.97);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-top:1px solid rgba(232,220,200,0.08);padding-bottom:env(safe-area-inset-bottom)}
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:300;display:flex;background:rgba(21,15,10,0.97);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-top:1px solid rgba(232,220,200,0.08);padding-bottom:env(safe-area-inset-bottom)}
 .bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:6px 0 10px;cursor:pointer;border:none;background:none;gap:3px;position:relative;min-height:56px;-webkit-tap-highlight-color:transparent;outline:none}
 .bnav-pip{position:absolute;top:0;left:50%;transform:translateX(-50%);width:22px;height:2px;border-radius:2px;opacity:0}
 .bnav-btn.active .bnav-pip{opacity:1;animation:pipSpring 0.45s cubic-bezier(0.34,1.56,0.64,1) both}
@@ -414,7 +414,7 @@ function AntiqueGlobe({size=120, glowColor="rgba(0,180,255,0.45)", animate=true}
 function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackConsole,children}) {
   const isDream=which==="dream", isTrip=which==="trip", isPack=which==="pack";
   const [profileOpen,setProfileOpen]=useState(false);
-  const bg=isDream?"rgba(10,7,5,0.95)":isTrip?"rgba(10,7,5,0.92)":"rgba(10,7,5,0.95)";
+  const bg=isDream?"rgba(21,15,10,0.95)":isTrip?"rgba(21,15,10,0.92)":"rgba(21,15,10,0.95)";
   const bc=isDream?"rgba(232,220,200,0.08)":isTrip?"rgba(232,220,200,0.06)":"rgba(196,87,30,0.35)";
   const dot=isDream?"#FFD93D":isTrip?"#00E5FF":"#FF9F43";
   const sub=isDream?"rgba(232,220,200,0.55)":isTrip?"rgba(232,220,200,0.55)":"rgba(232,220,200,0.55)";
@@ -568,32 +568,42 @@ function BottomNav({activeTab,onTab}) {
 // ─── BottomSheet ──────────────────────────────────────────────────
 function BottomSheet({open,onClose,children,zIndex=400}) {
   const [visible,setVisible]=useState(false);
+  const [dragRaw,setDragRaw]=useState(0);
   const startY=useRef(null);
   const sheetRef=useRef(null);
   useEffect(()=>{
     if(open){requestAnimationFrame(()=>requestAnimationFrame(()=>setVisible(true)));}
-    else{setVisible(false);}
+    else{setVisible(false);setDragRaw(0);}
+  },[open]);
+  useEffect(()=>{
+    if(open){document.body.style.overflow='hidden';document.body.style.touchAction='none';}
+    else{document.body.style.overflow='';document.body.style.touchAction='';}
+    return()=>{document.body.style.overflow='';document.body.style.touchAction='';};
   },[open]);
   function onTouchStart(e){startY.current=e.touches[0].clientY;if(sheetRef.current)sheetRef.current.style.transition='none';}
   function onTouchMove(e){
     if(startY.current===null)return;
-    const delta=e.touches[0].clientY-startY.current;
-    if(delta>0&&sheetRef.current)sheetRef.current.style.transform=`translateY(${delta}px)`;
+    const raw=e.touches[0].clientY-startY.current;
+    if(raw<=0)return;
+    const moved=raw<40?raw*0.3:raw<80?40*0.3+(raw-40)*0.7:40*0.3+40*0.7+(raw-80);
+    if(sheetRef.current)sheetRef.current.style.transform=`translateY(${moved}px)`;
+    setDragRaw(raw);
   }
   function onTouchEnd(e){
     if(startY.current===null)return;
-    const delta=e.changedTouches[0].clientY-startY.current;
+    const raw=e.changedTouches[0].clientY-startY.current;
     startY.current=null;
+    setDragRaw(0);
     if(sheetRef.current){sheetRef.current.style.transition='transform 0.3s cubic-bezier(0.34,1.56,0.64,1)';sheetRef.current.style.transform='';}
-    if(delta>80)setTimeout(onClose,120);
+    if(raw>80)setTimeout(onClose,120);
   }
   if(!open)return null;
   return(
     <div style={{position:'fixed',inset:0,zIndex,display:'flex',flexDirection:'column',justifyContent:'flex-end'}} onClick={onClose}>
       <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.72)'}}/>
       <div ref={sheetRef} onClick={e=>e.stopPropagation()} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
-        style={{position:'relative',background:'#120D0A',borderRadius:'20px 20px 0 0',borderTop:'1px solid rgba(255,255,255,0.08)',maxHeight:'90vh',display:'flex',flexDirection:'column',paddingBottom:'env(safe-area-inset-bottom)',transform:visible?'translateY(0)':'translateY(100%)',transition:visible?'transform 0.42s cubic-bezier(0.34,1.56,0.64,1)':'none'}}>
-        <div style={{width:40,height:4,borderRadius:2,background:'rgba(255,255,255,0.2)',margin:'12px auto 4px',flexShrink:0}}/>
+        style={{position:'relative',background:'#1C1208',borderRadius:'20px 20px 0 0',borderTop:'1px solid rgba(255,255,255,0.08)',maxHeight:'90vh',display:'flex',flexDirection:'column',paddingBottom:'env(safe-area-inset-bottom)',transform:visible?'translateY(0)':'translateY(100%)',transition:visible?'transform 0.42s cubic-bezier(0.34,1.56,0.64,1)':'none'}}>
+        <div style={{width:dragRaw>40?60:40,height:4,borderRadius:2,background:'rgba(255,255,255,0.2)',margin:'12px auto 4px',flexShrink:0,transition:'width 0.15s ease'}}/>
         <div style={{overflowY:'auto',flex:1,WebkitOverflowScrolling:'touch'}}>
           {children}
         </div>
@@ -1507,7 +1517,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
   if(isMobile) return(
     <>
       <div className="tap-scale" onClick={()=>setSheetOpen(true)}
-        style={{display:'flex',alignItems:'center',height:72,padding:'0 16px',borderBottom:'1px solid rgba(232,220,200,0.04)',background:'rgba(10,7,5,0.88)',gap:12,animation:`fadeUp 0.35s ease ${idx*0.07}s both`,position:'relative'}}>
+        style={{display:'flex',alignItems:'center',height:72,padding:'0 16px',borderBottom:'1px solid rgba(232,220,200,0.04)',background:'rgba(21,15,10,0.88)',gap:12,animation:`fadeUp 0.35s ease ${idx*0.07}s both`,position:'relative'}}>
         {/* Number + flag */}
         <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0}}>
           <div style={{width:26,height:26,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
@@ -1659,7 +1669,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
             {icon:"🔗",label:"BOOK",color:"#69F0AE",desc:"Direct links for flights, stays, and experiences — everything to action in one place."},
             {icon:"🔭",label:"INTEL",color:"#A29BFE",desc:"AI-powered briefings for every stop. Local tips, must-dos, food, street intel, and culture."},
           ].map(t=>(
-            <div key={t.label} style={{display:"flex",gap:8,alignItems:"flex-start",padding:isMobile?"6px 8px":"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:`1px solid ${t.color}44`}}>
+            <div key={t.label} style={{display:"flex",gap:8,alignItems:"flex-start",padding:isMobile?"6px 8px":"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.04)",border:`1px solid ${t.color}44`}}>
               <span style={{fontSize:isMobile?13:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
               <div style={{minWidth:0}}>
                 <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?10:11,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
@@ -1682,7 +1692,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
         <button onClick={onRevise} style={{padding:"6px 14px",borderRadius:7,border:"1px solid rgba(0,229,255,0.3)",background:"rgba(0,229,255,0.06)",color:"#00E5FF",fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:32}}>✏️ REVISE</button>
         <button onClick={handleNewTripClick} style={{padding:"6px 14px",borderRadius:7,border:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(169,70,29,0.3)",background:confirmNewTrip?"rgba(255,107,107,0.12)":"rgba(169,70,29,0.06)",color:confirmNewTrip?"#FF6B6B":"#FFD93D",fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:32}}>{confirmNewTrip?"⚠️ CONFIRM?":"+ NEW TRIP"}</button>
       </div>}
-      {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:"linear-gradient(180deg,rgba(10,7,5,0.98),rgba(10,7,5,0.99))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden"}}>
+      {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:"linear-gradient(180deg,rgba(21,15,10,0.98),rgba(21,15,10,0.99))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(232,220,200,0.02) 0%,transparent 60%)",pointerEvents:"none"}}/>
         {tripData.tripName&&<div style={{marginBottom:isMobile?5:7,position:"relative"}}>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:17,fontWeight:300,fontStyle:"italic",color:"#E8DCC8",lineHeight:1}}>{tripData.tripName}</div>
@@ -1710,7 +1720,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
       </div>}
       {/* Tab bar */}
       {!isMobile&&(
-        <div style={{display:"flex",borderBottom:"1px solid rgba(232,220,200,0.06)",background:"#0A0705",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch"}}>
+        <div style={{display:"flex",borderBottom:"1px solid rgba(232,220,200,0.06)",background:"#150F0A",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch"}}>
           <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)",border:"none",borderRight:"1px solid rgba(0,229,255,0.2)",cursor:"pointer",flexShrink:0,color:"#00E5FF"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.22)"} onMouseOut={e=>e.currentTarget.style.background=isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)"}>
             <span style={{fontSize:15,lineHeight:1,textShadow:"0 0 10px rgba(0,229,255,0.9)"}}>{isFullscreen?"⊡":"⛶"}</span>
             <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
@@ -2091,7 +2101,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     if(isMobile) return(
       <>
         <div className="tap-scale" onClick={()=>setCatSheetOpen(true)}
-          style={{display:'flex',alignItems:'center',height:64,padding:'0 16px',borderBottom:'1px solid rgba(232,220,200,0.04)',background:'rgba(10,7,5,0.88)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
+          style={{display:'flex',alignItems:'center',height:64,padding:'0 16px',borderBottom:'1px solid rgba(232,220,200,0.04)',background:'rgba(21,15,10,0.88)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
           <span style={{fontSize:24,flexShrink:0}}>{cat.icon}</span>
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontSize:14,fontWeight:700,color:'#E8DCC8',fontFamily:"'Space Mono',monospace"}}>{cat.label}</div>
@@ -2172,7 +2182,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   }
 
   return(
-    <div style={{fontFamily:"'Space Mono',monospace",background:"radial-gradient(ellipse at 50% 0%,rgba(255,159,67,0.10) 0%,transparent 55%) no-repeat fixed,#0A0705",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.38s cubic-bezier(0.34,1.56,0.64,1) both"}}>
+    <div style={{fontFamily:"'Space Mono',monospace",background:"radial-gradient(ellipse at 50% 0%,rgba(255,159,67,0.10) 0%,transparent 55%) no-repeat fixed,#150F0A",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.38s cubic-bezier(0.34,1.56,0.64,1) both"}}>
       {showOnboard&&<OnboardCard storageKey="pack" ctaLabel="✦ BUILD MY PACK" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,color:"rgba(255,159,67,0.75)",marginBottom:10}}>PACK CONSOLE</div>
@@ -2186,7 +2196,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
             {icon:"📊",label:"BREAKDOWN",color:"#A29BFE",desc:"Visual weight and volume breakdown across every bag category."},
             {icon:"🛒",label:"NEED TO BUY",color:"#00E5FF",desc:"Focused list of items you haven't checked off yet. Your pre-trip shopping list."},
           ].map(t=>(
-            <div key={t.label} style={{display:"flex",gap:8,alignItems:"flex-start",padding:isMobile?"6px 8px":"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.03)",border:`1px solid ${t.color}44`}}>
+            <div key={t.label} style={{display:"flex",gap:8,alignItems:"flex-start",padding:isMobile?"6px 8px":"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.04)",border:`1px solid ${t.color}44`}}>
               <span style={{fontSize:isMobile?13:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
               <div style={{minWidth:0}}>
                 <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?10:11,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
