@@ -192,7 +192,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .vision-ta::placeholder{color:rgba(255,255,255,0.27)}.vision-ta:focus{border:1.5px solid rgba(255,217,61,1)!important;animation:none!important;box-shadow:0 0 24px rgba(255,217,61,0.3),0 0 60px rgba(255,217,61,0.1)}
 .f-label{font-size:12px;color:rgba(255,159,67,0.8);letter-spacing:2.5px}
 .f-input{background:rgba(8,6,4,0.9);border:1px solid rgba(0,150,255,0.7);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Space Mono',monospace;outline:none;width:100%;transition:border-color 0.3s,box-shadow 0.3s;box-shadow:0 0 12px rgba(0,150,255,0.1),0 0 30px rgba(0,150,255,0.04)}
-.f-input:focus{border-color:rgba(0,170,255,1);box-shadow:0 0 20px rgba(0,170,255,0.2),0 0 44px rgba(0,170,255,0.07)}.f-input::placeholder{color:rgba(255,255,255,0.22)}
+.f-input:focus{border-color:rgba(0,170,255,1);box-shadow:0 0 20px rgba(0,170,255,0.2),0 0 44px rgba(0,170,255,0.07)}.f-input::placeholder{color:rgba(255,255,255,0.22)}input[type="date"]::-webkit-calendar-picker-indicator{opacity:0;width:28px;cursor:pointer;position:relative;z-index:2}
 .launch-btn{width:100%;padding:17px;border-radius:14px;border:none;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:2.5px;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s}
 .launch-btn.off{background:linear-gradient(135deg,#8a3515 0%,#A9461D 40%,#C4571E 70%,#E06830 100%);color:rgba(255,255,255,0.5);cursor:default}
 .launch-btn.on{background:linear-gradient(135deg,#C4571E 0%,#E06830 30%,#FF9F43 60%,#FFD93D 100%);color:#FFF;animation:launchPulse 2.8s ease-in-out infinite;box-shadow:0 0 24px rgba(255,159,67,0.3),0 0 48px rgba(255,217,61,0.15)}
