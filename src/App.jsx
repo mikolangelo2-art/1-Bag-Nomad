@@ -568,42 +568,25 @@ function BottomNav({activeTab,onTab}) {
 // ─── BottomSheet ──────────────────────────────────────────────────
 function BottomSheet({open,onClose,children,zIndex=400}) {
   const [visible,setVisible]=useState(false);
-  const [dragRaw,setDragRaw]=useState(0);
-  const startY=useRef(null);
-  const sheetRef=useRef(null);
   useEffect(()=>{
     if(open){requestAnimationFrame(()=>requestAnimationFrame(()=>setVisible(true)));}
-    else{setVisible(false);setDragRaw(0);}
+    else{setVisible(false);}
   },[open]);
   useEffect(()=>{
     if(open){document.body.style.overflow='hidden';document.body.style.touchAction='none';}
     else{document.body.style.overflow='';document.body.style.touchAction='';}
     return()=>{document.body.style.overflow='';document.body.style.touchAction='';};
   },[open]);
-  function onTouchStart(e){startY.current=e.touches[0].clientY;if(sheetRef.current)sheetRef.current.style.transition='none';}
-  function onTouchMove(e){
-    if(startY.current===null)return;
-    const raw=e.touches[0].clientY-startY.current;
-    if(raw<=0)return;
-    const moved=raw<40?raw*0.3:raw<80?40*0.3+(raw-40)*0.7:40*0.3+40*0.7+(raw-80);
-    if(sheetRef.current)sheetRef.current.style.transform=`translateY(${moved}px)`;
-    setDragRaw(raw);
-  }
-  function onTouchEnd(e){
-    if(startY.current===null)return;
-    const raw=e.changedTouches[0].clientY-startY.current;
-    startY.current=null;
-    setDragRaw(0);
-    if(sheetRef.current){sheetRef.current.style.transition='transform 0.3s cubic-bezier(0.34,1.56,0.64,1)';sheetRef.current.style.transform='';}
-    if(raw>80)setTimeout(onClose,120);
-  }
   if(!open)return null;
   return(
     <div style={{position:'fixed',inset:0,zIndex,display:'flex',flexDirection:'column',justifyContent:'flex-end'}} onClick={onClose}>
       <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.72)'}}/>
-      <div ref={sheetRef} onClick={e=>e.stopPropagation()} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
+      <div onClick={e=>e.stopPropagation()}
         style={{position:'relative',background:'#1C1208',borderRadius:'20px 20px 0 0',borderTop:'1px solid rgba(255,255,255,0.08)',maxHeight:'90vh',display:'flex',flexDirection:'column',paddingBottom:'env(safe-area-inset-bottom)',transform:visible?'translateY(0)':'translateY(100%)',transition:visible?'transform 0.42s cubic-bezier(0.34,1.56,0.64,1)':'none'}}>
-        <div style={{width:dragRaw>40?60:40,height:4,borderRadius:2,background:'rgba(255,255,255,0.2)',margin:'12px auto 4px',flexShrink:0,transition:'width 0.15s ease'}}/>
+        <button onClick={onClose} style={{position:'absolute',top:20,right:20,width:36,height:36,borderRadius:'50%',background:'rgba(255,255,255,0.15)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:1,flexShrink:0}}>
+          <span style={{fontSize:16,color:'rgba(255,255,255,0.7)',lineHeight:1}}>✕</span>
+        </button>
+        <div style={{height:16,flexShrink:0}}/>
         <div style={{overflowY:'auto',flex:1,WebkitOverflowScrolling:'touch'}}>
           {children}
         </div>
@@ -1525,18 +1508,12 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
         </div>
         {/* Country + date */}
         <div style={{flex:1,minWidth:0}}>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:20,fontWeight:300,color:'#E8DCC8',lineHeight:1.1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{phase.name}</div>
-          <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(255,255,255,0.42)',marginTop:2,whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)} · 🌙{phase.totalNights}n{phase.totalDives>0?` · 🤿${phase.totalDives}`:''}</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:300,color:'#E8DCC8',lineHeight:1.1,whiteSpace:'nowrap'}}>{phase.name}</div>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(255,255,255,0.42)',marginTop:3,whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
         </div>
-        {/* Budget + status dot */}
+        {/* Budget */}
         <div style={{textAlign:'right',flexShrink:0}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:14,fontWeight:700,color:'#FFD93D'}}>{fmt(phase.totalBudget)}</div>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',gap:5,marginTop:4}}>
-            {isNow&&<span style={{fontSize:9,color:'#69F0AE',letterSpacing:1,fontFamily:"'Space Mono',monospace",fontWeight:700}}>ACTIVE</span>}
-            {isPast&&<span style={{fontSize:9,color:'rgba(255,255,255,0.28)',letterSpacing:1,fontFamily:"'Space Mono',monospace"}}>DONE</span>}
-            {!isNow&&!isPast&&<span style={{fontSize:9,color:'rgba(255,255,255,0.28)',letterSpacing:0.5,fontFamily:"'Space Mono',monospace"}}>{dUntil}d</span>}
-            <div style={{width:7,height:7,borderRadius:'50%',background:statusDot,boxShadow:`0 0 5px ${statusDot}`,flexShrink:0}}/>
-          </div>
         </div>
       </div>
       <BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500}>
