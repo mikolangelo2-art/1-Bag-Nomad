@@ -541,8 +541,10 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
     if(!canLaunch||loading)return;
     setLoading(true);setLoadError(false);
     const bl=budgetMode==="dream"?"NO BUDGET SET — set totalBudget to 0.":"Traveler budget: $"+(budgetAmount||"flexible");
+    const nightCount=(date&&returnDate)?Math.round((new Date(returnDate)-new Date(date))/(1000*60*60*24)):null;
+    const nightsDirective=nightCount?`CRITICAL: trip is exactly ${nightCount} nights — phases must sum to exactly ${nightCount} totalNights.`:"Infer duration from vision.";
     try {
-      const raw=await askAI(`Elite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Date:"${date||"flexible"}". Return:"${returnDate||"open-ended"}". ${bl} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍"}],"totalNights":0,"totalBudget":0,"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"}`,1800);
+      const raw=await askAI(`Elite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} ${bl} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍"}],"totalNights":0,"totalBudget":0,"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"}`,1800);
       const parsed=parseJSON(raw);
       if(parsed) setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount});
       else{setLoadError(true);setLoading(false);}
@@ -576,7 +578,7 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:22}}>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",color:(!date&&isMobile)?"transparent":undefined,paddingRight:36,borderColor:"rgba(105,240,174,0.7)",boxShadow:"0 0 12px rgba(105,240,174,0.1),0 0 30px rgba(105,240,174,0.04)"}}/>{!date&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div></div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={returnDate} onChange={e=>setReturnDate(e.target.value)} style={{colorScheme:"dark",color:(!returnDate&&isMobile)?"transparent":undefined,paddingRight:36,borderColor:"rgba(162,155,254,0.7)",boxShadow:"0 0 12px rgba(162,155,254,0.1),0 0 30px rgba(162,155,254,0.04)"}}/>{!returnDate&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div><div style={{fontFamily:"'Fraunces',serif",fontSize:11,fontStyle:"italic",color:"rgba(255,255,255,0.3)",marginTop:3}}>optional · open-ended</div></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={returnDate} min={date||undefined} onChange={e=>setReturnDate(e.target.value)} onFocus={()=>{if(!returnDate&&date)setReturnDate(date);}} style={{colorScheme:"dark",color:(!returnDate&&isMobile)?"transparent":undefined,paddingRight:36,borderColor:"rgba(162,155,254,0.7)",boxShadow:"0 0 12px rgba(162,155,254,0.1),0 0 30px rgba(162,155,254,0.04)"}}/>{!returnDate&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div><div style={{fontFamily:"'Fraunces',serif",fontSize:11,fontStyle:"italic",color:"rgba(162,155,254,0.65)",marginTop:3}}>optional · open-ended</div></div>
         </div>
         <div style={{marginBottom:22}}>
           <div className="f-label" style={{marginBottom:10}}>BUDGET APPROACH</div>
@@ -621,7 +623,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
   const [loading,setLoading]=useState(false);
   const [launching,setLaunching]=useState(false);
   const [mounted,setMounted]=useState(!freshMount);
-  useEffect(()=>{window.scrollTo(0,0);if(freshMount){const t=setTimeout(()=>setMounted(true),50);return()=>clearTimeout(t);}});
+  useEffect(()=>{window.scrollTo(0,0);if(freshMount){const t=setTimeout(()=>setMounted(true),50);return()=>clearTimeout(t);}},[]);
   useEffect(()=>{
     let i=0;const txt=vd.narrative||"";
     const t=setTimeout(()=>{
@@ -1403,7 +1405,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
           <div style={{padding:"6px 16px 6px 20px",borderTop:`1px solid ${phase.color}15`,borderBottom:"1px solid rgba(0,229,255,0.18)",display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
             <div style={{width:4,height:4,borderRadius:"50%",background:phase.color,flexShrink:0}}/>
             <span style={{fontSize:11,color:`${phase.color}cc`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:600,whiteSpace:"nowrap"}}>{phase.segments.length} SEGMENT{phase.segments.length>1?"S":""}</span>
-            <span style={{fontSize:11,color:`${phase.color}44`,letterSpacing:0,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>· TAP TO EXPAND</span>
+            <span style={{fontSize:11,color:`${phase.color}44`,letterSpacing:0,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>· TAP TO EXPAND PLANNING TABS</span>
           </div>
           {phase.segments.map((seg,i)=><SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1}/>)}
         </div>
@@ -1585,8 +1587,8 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
               <span style={{fontSize:12,color:"rgba(255,217,61,0.5)"}}>→</span>
             </div>}
             {tripData.visionNarrative&&<div style={{marginBottom:8}}><div style={{fontSize:10,color:"rgba(255,217,61,0.55)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.68)",lineHeight:1.75,borderLeft:"2px solid rgba(255,217,61,0.18)",paddingLeft:12}}>"{tripData.visionNarrative.slice(0,160)}{tripData.visionNarrative.length>160?"...":""}"</div></div>}
-            <div style={{fontSize:isMobile?12:14,color:"#FF9F43",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Space Mono',monospace",whiteSpace:isMobile?"normal":"nowrap"}}>{isMobile?`YOUR EXPEDITION · ${segPhases.length} PHASES`:`YOUR EXPEDITION · ${segPhases.length} PHASES · TAP PHASE TO EXPAND`}</div>
-            {isMobile&&<div style={{fontSize:15,color:"rgba(255,159,67,0.55)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>TAP PHASE TO EXPAND</div>}
+            <div style={{fontSize:isMobile?12:14,color:"#FFD93D",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Space Mono',monospace",whiteSpace:isMobile?"normal":"nowrap"}}>{isMobile?`YOUR EXPEDITION · ${segPhases.length} PHASES`:`YOUR EXPEDITION · ${segPhases.length} PHASES · TAP PHASE TO EXPAND`}</div>
+            {isMobile&&<div style={{fontSize:15,color:"rgba(255,217,61,0.55)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>TAP PHASE TO EXPAND</div>}
             {segPhases.map((phase,i)=>i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} autoOpen={segPhases.length===1}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i}/>)}
           </div>
         )}
