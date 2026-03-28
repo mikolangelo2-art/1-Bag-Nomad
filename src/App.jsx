@@ -1532,7 +1532,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
         </div>
         {/* Bottom row: date + budget */}
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:6,paddingLeft:52}}>
-          <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(232,220,200,0.45)'}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:'rgba(232,220,200,0.45)',flex:1,overflow:'hidden'}}><span style={{display:'inline-block',whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</span></div>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:'#FFD93D',whiteSpace:'nowrap',marginLeft:8}}>{fmt(phase.totalBudget)}</div>
         </div>
       </div>
