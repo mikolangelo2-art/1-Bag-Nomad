@@ -2278,7 +2278,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
           })()}
         </div>
         {/* 4 mini stats */}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%"}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.55)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
               <div style={{fontSize:isMobile?11:11,fontWeight:500,color:"rgba(255,255,255,0.4)",letterSpacing:0,marginBottom:2,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
