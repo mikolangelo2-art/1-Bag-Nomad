@@ -184,7 +184,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .sec-label{font-size:12px;color:rgba(0,229,255,0.85);letter-spacing:4px;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid rgba(0,229,255,0.15)}.dream-root .sec-label{color:rgba(255,159,67,0.85);border-image:linear-gradient(90deg,rgba(255,159,67,0.3),rgba(255,217,61,0.2),transparent) 1}
 .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:28px}
 .g-card{position:relative;border-radius:12px;padding:13px 12px;cursor:pointer;transition:all 0.24s cubic-bezier(0.34,1.56,0.64,1);text-align:left;border:none;outline:none;overflow:hidden}
-.g-card.off{background:linear-gradient(148deg,#B04E22,#8d3c18,#6d2c11);box-shadow:0 4px 18px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.07);border:1px solid rgba(169,70,29,0.45)}
+.g-card.off{background:linear-gradient(148deg,#B04E22,#8d3c18,#6d2c11);border:1px solid rgba(169,70,29,0.08);box-shadow:0 4px 18px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,180,80,0.30),inset 1px 0 0 rgba(255,140,40,0.10),inset -1px 0 0 rgba(255,140,40,0.10),inset 0 -1px 0 rgba(0,0,0,0.18)}
 .g-card.on{background:linear-gradient(148deg,#311400,#200e00,#150900);box-shadow:0 0 0 1.5px #FFD93D,0 0 28px rgba(255,217,61,0.22),0 6px 22px rgba(0,0,0,0.65);transform:translateY(-2px)}
 .g-card.off:hover{transform:translateY(-3px)}
 .g-icon{font-size:22px;margin-bottom:6px;display:block}
@@ -601,7 +601,7 @@ function BottomSheet({open,onClose,children,zIndex=400,hideClose=false}) {
     <div style={{position:'fixed',inset:0,zIndex,display:'flex',flexDirection:'column',justifyContent:'flex-end'}} onClick={onClose}>
       <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.72)'}}/>
       <div onClick={e=>e.stopPropagation()}
-        style={{position:'relative',background:'#1C1208',borderRadius:'20px 20px 0 0',border:'1px solid rgba(212,180,120,0.3)',maxHeight:'90vh',display:'flex',flexDirection:'column',paddingBottom:'env(safe-area-inset-bottom)',transform:visible?'translateY(0)':'translateY(100%)',transition:visible?'transform 0.42s cubic-bezier(0.34,1.56,0.64,1)':'none'}}>
+        style={{position:'relative',background:'#1C1208',borderRadius:'20px 20px 0 0',border:'1px solid rgba(212,180,120,0.08)',maxHeight:'90vh',display:'flex',flexDirection:'column',paddingBottom:'env(safe-area-inset-bottom)',transform:visible?'translateY(0)':'translateY(100%)',transition:visible?'transform 0.42s cubic-bezier(0.34,1.56,0.64,1)':'none',boxShadow:'inset 0 1px 0 rgba(255,180,80,0.35),inset 1px 0 0 rgba(255,140,40,0.12),inset -1px 0 0 rgba(255,140,40,0.12),inset 0 -1px 0 rgba(255,100,20,0.08)'}}>
         {!hideClose&&<button onClick={onClose} style={{position:'absolute',top:20,right:20,width:36,height:36,borderRadius:'50%',background:'rgba(255,255,255,0.15)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:1,flexShrink:0}}>
           <span style={{fontSize:16,color:'rgba(255,255,255,0.7)',lineHeight:1}}>✕</span>
         </button>}
@@ -715,7 +715,7 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
           <div className="f-label" style={{marginBottom:10}}>BUDGET APPROACH</div>
           <div style={{display:"flex",flexDirection:"column",gap:7}}>
             {[{id:"dream",icon:"💭",label:"Build the dream",sub:"We'll figure budget later",accent:"#69F0AE"},{id:"rough",icon:"💰",label:"I have a rough number",sub:"Give me a ballpark",accent:"#FFD93D"},{id:"strict",icon:"🎯",label:"Keep it under...",sub:"I have a firm limit",accent:"#A29BFE"}].map(b=>(
-              <button key={b.id} onClick={()=>setBudgetMode(b.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 13px",borderRadius:9,border:"1px solid "+(budgetMode===b.id?b.accent+"80":"rgba(255,255,255,0.40)"),background:budgetMode===b.id?b.accent+"0D":"rgba(255,255,255,0.02)",cursor:"pointer",textAlign:"left",transition:"all 0.25s",minHeight:44,boxShadow:budgetMode===b.id?`0 0 16px ${b.accent}15`:"none"}}>
+              <button key={b.id} onClick={()=>setBudgetMode(b.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 13px",borderRadius:9,border:"1px solid "+(budgetMode===b.id?b.accent+"80":"rgba(255,255,255,0.08)"),background:budgetMode===b.id?b.accent+"0D":"rgba(255,255,255,0.02)",cursor:"pointer",textAlign:"left",transition:"all 0.25s",minHeight:44,boxShadow:budgetMode===b.id?`0 0 16px ${b.accent}15`:'inset 0 1px 0 rgba(255,180,80,0.22),inset 1px 0 0 rgba(255,140,40,0.08),inset -1px 0 0 rgba(255,140,40,0.08),inset 0 -1px 0 rgba(255,100,20,0.06)'}}>
                 <span style={{fontSize:16}}>{b.icon}</span>
                 <div><div style={{fontSize:isMobile?13:14,fontWeight:700,color:budgetMode===b.id?b.accent:"#FFF"}}>{b.label}</div><div style={{fontSize:isMobile?12:13,color:"rgba(255,255,255,0.5)",marginTop:2}}>{b.sub}</div></div>
                 <div style={{marginLeft:"auto",width:14,height:14,borderRadius:"50%",border:"1.5px solid "+(budgetMode===b.id?b.accent:"rgba(255,255,255,0.15)"),background:budgetMode===b.id?b.accent+"22":"transparent",display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -1521,9 +1521,9 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
   if(isMobile) return(
     <>
       <div className="tap-scale" onClick={()=>setSheetOpen(true)}
-        onMouseOver={e=>{e.currentTarget.style.background='rgba(255,255,255,0.04)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.5)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.5),0 0 20px rgba(212,180,120,0.08)';}}
-        onMouseOut={e=>{e.currentTarget.style.background='rgba(255,255,255,0.025)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.30)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,180,120,0.1)';}}
-        style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.30)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,180,120,0.1)',animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
+        onMouseOver={e=>{e.currentTarget.style.background='rgba(255,255,255,0.04)';e.currentTarget.style.border='1px solid rgba(0,229,255,0.18)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.5),inset 0 1px 0 rgba(0,229,255,0.30),inset 1px 0 0 rgba(0,229,255,0.10),inset -1px 0 0 rgba(0,229,255,0.10),inset 0 -1px 0 rgba(0,229,255,0.05)';}}
+        onMouseOut={e=>{e.currentTarget.style.background='rgba(255,255,255,0.025)';e.currentTarget.style.border='1px solid rgba(0,229,255,0.08)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(0,229,255,0.22),inset 1px 0 0 rgba(0,229,255,0.08),inset -1px 0 0 rgba(0,229,255,0.08),inset 0 -1px 0 rgba(0,229,255,0.04)';}}
+        style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(0,229,255,0.08)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(0,229,255,0.22),inset 1px 0 0 rgba(0,229,255,0.08),inset -1px 0 0 rgba(0,229,255,0.08),inset 0 -1px 0 rgba(0,229,255,0.04)',animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
         {/* Row 1: badge + flag + name + budget */}
         <div style={{display:'flex',alignItems:'center',gap:8,width:'100%'}}>
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
@@ -2103,9 +2103,9 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     if(isMobile) return(
       <>
         <div className="tap-scale" onClick={()=>setCatSheetOpen(true)}
-          onMouseOver={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.5)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.35)';}}
-          onMouseOut={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.35)';e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.25)';}}
-          style={{display:'flex',alignItems:'center',padding:'20px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.35)',borderRadius:12,marginBottom:8,boxShadow:'0 2px 8px rgba(0,0,0,0.25)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
+          onMouseOver={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.15)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,180,80,0.40),inset 1px 0 0 rgba(255,140,40,0.15),inset -1px 0 0 rgba(255,140,40,0.15),inset 0 -1px 0 rgba(255,100,20,0.10)';}}
+          onMouseOut={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.08)';e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,180,80,0.35),inset 1px 0 0 rgba(255,140,40,0.12),inset -1px 0 0 rgba(255,140,40,0.12),inset 0 -1px 0 rgba(255,100,20,0.08)';}}
+          style={{display:'flex',alignItems:'center',padding:'20px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.08)',borderRadius:12,marginBottom:8,boxShadow:'0 2px 8px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,180,80,0.35),inset 1px 0 0 rgba(255,140,40,0.12),inset -1px 0 0 rgba(255,140,40,0.12),inset 0 -1px 0 rgba(255,100,20,0.08)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
           <span style={{fontSize:32,flexShrink:0}}>{cat.icon}</span>
           <div style={{flex:1,minWidth:0,textAlign:'left'}}>
             <div style={{fontSize:15,fontWeight:500,color:'#E8DCC8',fontFamily:"'Space Mono',monospace"}}>{cat.label}</div>
@@ -2237,7 +2237,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
       {!isFullscreen&&<div style={{padding:isMobile?"6px 12px 5px":"10px 18px 7px",background:"linear-gradient(180deg,rgba(35,14,0,0.6),rgba(20,8,0,0.8))"}}>
         <div data-coach="pack-stats" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
           {/* Weight hero */}
-          <div style={{background:"rgba(21,101,255,0.07)",border:"1px solid rgba(77,159,255,0.60)",borderRadius:10,padding:"12px 14px"}}>
+          <div style={{background:"rgba(21,101,255,0.07)",border:"1px solid rgba(77,159,255,0.08)",borderRadius:10,padding:"12px 14px",boxShadow:'inset 0 1px 0 rgba(77,159,255,0.45),inset 1px 0 0 rgba(77,159,255,0.15),inset -1px 0 0 rgba(77,159,255,0.15),inset 0 -1px 0 rgba(77,159,255,0.06)'}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
               <div style={{fontSize:isMobile?12:13,fontWeight:700,color:"#4D9FFF",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace"}}>⚖️ WEIGHT</div>
               <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{display:"flex",borderRadius:8,border:"1px solid rgba(77,159,255,0.4)",overflow:"hidden",cursor:"pointer"}}>
@@ -2260,7 +2260,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
             const bpItems=items.filter(i=>i.bag==="Backpack").length;
             const incomplete=bpItems>0&&(zeroV/bpItems)>0.4;
             const dV=Math.min(bpV,VL),vPct=Math.min((bpV/VL)*100,100);
-            return(<div style={{background:"rgba(169,70,29,0.08)",border:"1px solid rgba(196,87,30,0.60)",borderRadius:10,padding:"12px 14px"}}>
+            return(<div style={{background:"rgba(169,70,29,0.08)",border:"1px solid rgba(196,87,30,0.08)",borderRadius:10,padding:"12px 14px",boxShadow:'inset 0 1px 0 rgba(255,180,80,0.35),inset 1px 0 0 rgba(255,140,40,0.12),inset -1px 0 0 rgba(255,140,40,0.12),inset 0 -1px 0 rgba(255,100,20,0.08)'}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
                 <div style={{fontSize:isMobile?12:13,fontWeight:700,color:"#FFD93D",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace"}}>📦 VOLUME</div>
                 {incomplete&&<div style={{padding:"3px 8px",borderRadius:8,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:isMobile?11:15,fontFamily:"monospace",fontWeight:700}}>⚠ PARTIAL</div>}
@@ -2280,7 +2280,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
         {/* 4 mini stats */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%"}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
-            <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.55)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
+            <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.08)",borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:'inset 0 1px 0 rgba(255,180,80,0.35),inset 1px 0 0 rgba(255,140,40,0.12),inset -1px 0 0 rgba(255,140,40,0.12),inset 0 -1px 0 rgba(255,100,20,0.08)'}}>
               <div style={{fontSize:isMobile?11:11,fontWeight:500,color:"rgba(255,255,255,0.4)",letterSpacing:0,marginBottom:2,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
               <div style={{fontSize:isMobile?12:18,fontWeight:600,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
             </div>
