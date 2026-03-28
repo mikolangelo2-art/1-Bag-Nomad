@@ -566,7 +566,7 @@ function BottomNav({activeTab,onTab}) {
 }
 
 // ─── BottomSheet ──────────────────────────────────────────────────
-function BottomSheet({open,onClose,children,zIndex=400}) {
+function BottomSheet({open,onClose,children,zIndex=400,hideClose=false}) {
   const [visible,setVisible]=useState(false);
   useEffect(()=>{
     if(open){requestAnimationFrame(()=>requestAnimationFrame(()=>setVisible(true)));}
@@ -601,10 +601,10 @@ function BottomSheet({open,onClose,children,zIndex=400}) {
     <div style={{position:'fixed',inset:0,zIndex,display:'flex',flexDirection:'column',justifyContent:'flex-end'}} onClick={onClose}>
       <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.72)'}}/>
       <div onClick={e=>e.stopPropagation()}
-        style={{position:'relative',background:'#1C1208',borderRadius:'20px 20px 0 0',borderTop:'1px solid rgba(212,180,120,0.3)',maxHeight:'90vh',display:'flex',flexDirection:'column',paddingBottom:'env(safe-area-inset-bottom)',transform:visible?'translateY(0)':'translateY(100%)',transition:visible?'transform 0.42s cubic-bezier(0.34,1.56,0.64,1)':'none'}}>
-        <button onClick={onClose} style={{position:'absolute',top:20,right:20,width:36,height:36,borderRadius:'50%',background:'rgba(255,255,255,0.15)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:1,flexShrink:0}}>
+        style={{position:'relative',background:'#1C1208',borderRadius:'20px 20px 0 0',border:'1px solid rgba(212,180,120,0.3)',maxHeight:'90vh',display:'flex',flexDirection:'column',paddingBottom:'env(safe-area-inset-bottom)',transform:visible?'translateY(0)':'translateY(100%)',transition:visible?'transform 0.42s cubic-bezier(0.34,1.56,0.64,1)':'none'}}>
+        {!hideClose&&<button onClick={onClose} style={{position:'absolute',top:20,right:20,width:36,height:36,borderRadius:'50%',background:'rgba(255,255,255,0.15)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:1,flexShrink:0}}>
           <span style={{fontSize:16,color:'rgba(255,255,255,0.7)',lineHeight:1}}>✕</span>
-        </button>
+        </button>}
         <div style={{height:16,flexShrink:0}}/>
         <div style={{overflowY:'auto',flex:1,WebkitOverflowScrolling:'touch'}}>
           {children}
@@ -1370,11 +1370,12 @@ function ProgDots({phaseId,segment,intelSnippet}) {
 }
 
 // ─── SegmentRow ───────────────────────────────────────────────────
-function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
+function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenChange}) {
   const isMobile=useMobile();
   const segKey=`${phaseId}-${segment.id}`;
   const [open,setOpen]=useState(false);
   const [askOpen,setAskOpen]=useState(false);
+  useEffect(()=>{onAskOpenChange?.(askOpen);},[askOpen]);
   const [askInput,setAskInput]=useState("");
   const [askChat,setAskChat]=useState([]);
   const [askLoading,setAskLoading]=useState(false);
@@ -1498,6 +1499,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
   const isMobile=useMobile();
   const [open,setOpen]=useState(autoOpen);
   const [sheetOpen,setSheetOpen]=useState(false);
+  const [anyAskOpen,setAnyAskOpen]=useState(false);
   const today=new Date();
   const arr=new Date(phase.arrival+"T12:00:00"),dep=new Date(phase.departure+"T12:00:00");
   const dUntil=Math.round((arr-today)/86400000);
@@ -1522,21 +1524,22 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
         onMouseOver={e=>{e.currentTarget.style.background='rgba(255,255,255,0.04)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.5)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.5),0 0 20px rgba(212,180,120,0.08)';}}
         onMouseOut={e=>{e.currentTarget.style.background='rgba(255,255,255,0.025)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.25)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,180,120,0.1)';}}
         style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.25)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,180,120,0.1)',animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
-        {/* Top row: circle + flag + name */}
-        <div style={{display:'flex',alignItems:'center',gap:12,width:'100%'}}>
-          <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0}}>
-            <div style={{width:26,height:26,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
-            <span style={{fontSize:22,lineHeight:1}}>{phase.flag}</span>
+        {/* Row 1: badge + flag + name + budget */}
+        <div style={{display:'flex',alignItems:'center',gap:8,width:'100%'}}>
+          <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
+            <div style={{width:24,height:24,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
+            <span style={{fontSize:20,lineHeight:1}}>{phase.flag}</span>
           </div>
-          <div style={{flex:1,fontFamily:"'Fraunces',serif",fontSize:28,fontWeight:300,color:'#E8DCC8',lineHeight:1.1}}>{phase.name}</div>
+          <div style={{flex:1,fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:500,color:'#E8DCC8',lineHeight:1.1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{phase.name}</div>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:15,fontWeight:700,color:'#FFD93D',whiteSpace:'nowrap',flexShrink:0}}>{fmt(phase.totalBudget)}</div>
         </div>
-        {/* Bottom row: date + budget */}
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:6,paddingLeft:52}}>
-          <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:'rgba(232,220,200,0.45)',flex:1,overflow:'hidden'}}><span style={{display:'inline-block',whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</span></div>
-          <div style={{fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:'#FFD93D',whiteSpace:'nowrap',marginLeft:8}}>{fmt(phase.totalBudget)}</div>
+        {/* Row 2: date + nights/dives */}
+        <div style={{display:'flex',alignItems:'center',gap:10,marginTop:5,paddingLeft:46}}>
+          <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'rgba(232,220,200,0.4)',whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</span>
+          <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'rgba(232,220,200,0.3)',whiteSpace:'nowrap'}}>· {phase.totalNights}n{phase.totalDives>0?` · 🤿${phase.totalDives}`:''}</span>
         </div>
       </div>
-      <BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500}>
+      <BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500} hideClose={anyAskOpen}>
         {/* Sheet header */}
         <div style={{padding:'16px 16px 14px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
           <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
@@ -1562,7 +1565,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
         <div style={{paddingTop:4,paddingBottom:20}}>
           <div style={{padding:'10px 16px 6px',fontSize:11,color:'rgba(255,255,255,0.3)',letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
           {phase.segments.map((seg,i)=>(
-            <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1}/>
+            <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onAskOpenChange={setAnyAskOpen}/>
           ))}
         </div>
       </BottomSheet>
@@ -1697,7 +1700,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
         </div>}
         <div data-coach="trip-stats" style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
           {heroStats.map((s,i)=>(
-            <div key={s.label} style={{textAlign:"center",padding:isMobile?"2px 3px":"4px 6px",borderLeft:i>0?"1px solid rgba(232,220,200,0.08)":"none"}}>
+            <div key={s.label} style={{textAlign:"center",padding:isMobile?"2px 3px":"4px 6px",borderLeft:i>0?"1px solid rgba(255,255,255,0.10)":"none"}}>
               <div style={{fontSize:isMobile?10:13,fontWeight:700,color:"rgba(232,220,200,0.5)",letterSpacing:3,marginBottom:isMobile?2:4,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
               <div className="stat-val" style={{fontSize:isMobile?13:26,fontWeight:700,lineHeight:1,color:s.label==="BUDGET"?"#FFD93D":"#E8DCC8",fontFamily:"'Space Mono',monospace",animationDelay:`${i*0.1}s`}}>{s.value}</div>
               <div style={{fontSize:isMobile?11:13,fontWeight:700,color:"rgba(232,220,200,0.4)",letterSpacing:2,marginTop:isMobile?2:3,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
@@ -2100,7 +2103,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
         <div className="tap-scale" onClick={()=>setCatSheetOpen(true)}
           onMouseOver={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.4)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.35)';}}
           onMouseOut={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.2)';e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.25)';}}
-          style={{display:'flex',alignItems:'center',padding:'16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.2)',borderRadius:12,marginBottom:8,boxShadow:'0 2px 8px rgba(0,0,0,0.25)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
+          style={{display:'flex',alignItems:'center',padding:'20px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.2)',borderRadius:12,marginBottom:8,boxShadow:'0 2px 8px rgba(0,0,0,0.25)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
           <span style={{fontSize:24,flexShrink:0}}>{cat.icon}</span>
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontSize:14,fontWeight:700,color:'#E8DCC8',fontFamily:"'Space Mono',monospace"}}>{cat.label}</div>
@@ -2275,7 +2278,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
         {/* 4 mini stats */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
-            <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.4)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
+            <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.45)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
               <div style={{fontSize:isMobile?11:11,fontWeight:500,color:"rgba(255,255,255,0.4)",letterSpacing:0,marginBottom:2,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
               <div style={{fontSize:isMobile?12:18,fontWeight:600,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
             </div>
