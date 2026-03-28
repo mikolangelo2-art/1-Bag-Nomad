@@ -221,14 +221,16 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 @media(max-width:599px){.dream-content{padding:18px 14px 40px}.goal-grid{gap:7px}.mc-content{padding:10px 12px}}
 .bnav{position:fixed;bottom:0;left:0;right:0;z-index:300;display:flex;background:rgba(2,5,14,0.97);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-top:1px solid rgba(255,217,61,0.1);padding-bottom:env(safe-area-inset-bottom)}
 .bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:6px 0 10px;cursor:pointer;border:none;background:none;gap:3px;position:relative;min-height:56px;-webkit-tap-highlight-color:transparent;outline:none}
-.bnav-pip{position:absolute;top:0;left:50%;transform:translateX(-50%);width:22px;height:2px;border-radius:2px;opacity:0;transition:opacity 0.2s}
-.bnav-btn.active .bnav-pip{opacity:1}
+.bnav-pip{position:absolute;top:0;left:50%;transform:translateX(-50%);width:22px;height:2px;border-radius:2px;opacity:0}
+.bnav-btn.active .bnav-pip{opacity:1;animation:pipSpring 0.45s cubic-bezier(0.34,1.56,0.64,1) both}
 .bnav-icon{font-size:20px;line-height:1;transition:transform 0.15s;display:block}
 .bnav-btn.active .bnav-icon{transform:translateY(-2px)}
 .bnav-lbl{font-size:9px;letter-spacing:1.5px;font-family:'Space Mono',monospace;font-weight:700;transition:color 0.15s;color:rgba(255,255,255,0.28)}
 .bnav-btn.active .bnav-lbl{color:#FFD93D}
 .bnav-btn.bnav-pack.active .bnav-pip{background:#FF9F43!important;box-shadow:0 0 8px #FF9F43}
 .bnav-btn.bnav-pack.active .bnav-lbl{color:#FF9F43}
+@keyframes pipSpring{0%{opacity:0;transform:translateX(-50%) scaleX(0)}60%{transform:translateX(-50%) scaleX(1.3)}100%{opacity:1;transform:translateX(-50%) scaleX(1)}}
+@keyframes consoleIn{from{opacity:0;transform:scale(0.97) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes planningPulse{0%,100%{opacity:0.72}50%{opacity:1.0}}
 @keyframes statReveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .stat-val{animation:statReveal 0.5s cubic-bezier(0.34,1.56,0.64,1) both}
@@ -1605,7 +1607,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   const {changedSegs,cancelledSegs}=(()=>{const allSeg=loadSeg();const cs=[],xs=[];segPhases.forEach(p=>p.segments.forEach(s=>{const d=allSeg[`${p.id}-${s.id}`]||{};const st=d.status||'planning';if(st==='changed')cs.push({phase:p,seg:s});if(st==='cancelled')xs.push({phase:p,seg:s});}));return{changedSegs:cs,cancelledSegs:xs};})();
 
   return(
-    <div className="mc-root" style={{animation:"fadeIn 0.9s ease both"}}>
+    <div className="mc-root" style={{animation:"consoleIn 0.38s cubic-bezier(0.34,1.56,0.64,1) both"}}>
       {showOnboard&&<OnboardCard storageKey="trip" ctaLabel="✦ ENTER MY EXPEDITION" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,color:"rgba(0,229,255,0.75)",marginBottom:10}}>TRIP CONSOLE</div>
@@ -2132,7 +2134,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   }
 
   return(
-    <div style={{fontFamily:"'Space Mono',monospace",background:"radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 28%,#0d0500 58%,#060200 100%)",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column"}}>
+    <div style={{fontFamily:"'Space Mono',monospace",background:"radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 28%,#0d0500 58%,#060200 100%)",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.38s cubic-bezier(0.34,1.56,0.64,1) both"}}>
       {showOnboard&&<OnboardCard storageKey="pack" ctaLabel="✦ BUILD MY PACK" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,color:"rgba(255,159,67,0.75)",marginBottom:10}}>PACK CONSOLE</div>
