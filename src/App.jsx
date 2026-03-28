@@ -1685,7 +1685,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
         {target:"trip-pack-switch",title:"Pack Console",body:"When you're ready, switch here to manage your one-bag gear list."}
       ]}/>}
       {!isFullscreen&&<ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/>}
-      {isMobile&&!isFullscreen&&<div style={{padding:"5px 12px",borderBottom:"1px solid rgba(0,229,255,0.08)",display:"flex",justifyContent:"flex-end",gap:7,background:"rgba(0,8,20,0.98)",flexShrink:0}}>
+      {isMobile&&!isFullscreen&&<div style={{padding:"5px 16px",borderBottom:"1px solid rgba(0,229,255,0.08)",display:"flex",justifyContent:"space-between",background:"rgba(0,8,20,0.98)",flexShrink:0}}>
         <button onClick={onRevise} style={{padding:"6px 14px",borderRadius:7,border:"1px solid rgba(0,229,255,0.3)",background:"rgba(0,229,255,0.06)",color:"#00E5FF",fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:32}}>✏️ REVISE</button>
         <button onClick={handleNewTripClick} style={{padding:"6px 14px",borderRadius:7,border:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(169,70,29,0.3)",background:confirmNewTrip?"rgba(255,107,107,0.12)":"rgba(169,70,29,0.06)",color:confirmNewTrip?"#FF6B6B":"#FFD93D",fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:32}}>{confirmNewTrip?"⚠️ CONFIRM?":"+ NEW TRIP"}</button>
       </div>}
