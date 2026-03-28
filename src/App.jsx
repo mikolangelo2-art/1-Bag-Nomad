@@ -228,7 +228,12 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .bnav-lbl{font-size:9px;letter-spacing:1.5px;font-family:'Space Mono',monospace;font-weight:700;transition:color 0.15s;color:rgba(255,255,255,0.28)}
 .bnav-btn.active .bnav-lbl{color:#FFD93D}
 .bnav-btn.bnav-pack.active .bnav-pip{background:#FF9F43!important;box-shadow:0 0 8px #FF9F43}
-.bnav-btn.bnav-pack.active .bnav-lbl{color:#FF9F43}`;
+.bnav-btn.bnav-pack.active .bnav-lbl{color:#FF9F43}
+@keyframes planningPulse{0%,100%{opacity:0.72}50%{opacity:1.0}}
+@keyframes statReveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.stat-val{animation:statReveal 0.5s cubic-bezier(0.34,1.56,0.64,1) both}
+.tap-scale{-webkit-tap-highlight-color:transparent;cursor:pointer}
+.tap-scale:active{transform:scale(0.97)!important;transition:transform 0.12s cubic-bezier(0.34,1.56,0.64,1)!important}`;
 
 // ─── Michael's Expedition (compact) ──────────────────────────────
 const MICHAEL_EXPEDITION = {
@@ -516,6 +521,43 @@ function BottomNav({activeTab,onTab}) {
           </button>
         );
       })}
+    </div>
+  );
+}
+
+// ─── BottomSheet ──────────────────────────────────────────────────
+function BottomSheet({open,onClose,children,zIndex=400}) {
+  const [visible,setVisible]=useState(false);
+  const startY=useRef(null);
+  const sheetRef=useRef(null);
+  useEffect(()=>{
+    if(open){requestAnimationFrame(()=>requestAnimationFrame(()=>setVisible(true)));}
+    else{setVisible(false);}
+  },[open]);
+  function onTouchStart(e){startY.current=e.touches[0].clientY;if(sheetRef.current)sheetRef.current.style.transition='none';}
+  function onTouchMove(e){
+    if(startY.current===null)return;
+    const delta=e.touches[0].clientY-startY.current;
+    if(delta>0&&sheetRef.current)sheetRef.current.style.transform=`translateY(${delta}px)`;
+  }
+  function onTouchEnd(e){
+    if(startY.current===null)return;
+    const delta=e.changedTouches[0].clientY-startY.current;
+    startY.current=null;
+    if(sheetRef.current){sheetRef.current.style.transition='transform 0.3s cubic-bezier(0.34,1.56,0.64,1)';sheetRef.current.style.transform='';}
+    if(delta>80)setTimeout(onClose,120);
+  }
+  if(!open)return null;
+  return(
+    <div style={{position:'fixed',inset:0,zIndex,display:'flex',flexDirection:'column',justifyContent:'flex-end'}} onClick={onClose}>
+      <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.72)'}}/>
+      <div ref={sheetRef} onClick={e=>e.stopPropagation()} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
+        style={{position:'relative',background:'#0C1118',borderRadius:'20px 20px 0 0',borderTop:'1px solid rgba(255,255,255,0.08)',maxHeight:'90vh',display:'flex',flexDirection:'column',paddingBottom:'env(safe-area-inset-bottom)',transform:visible?'translateY(0)':'translateY(100%)',transition:visible?'transform 0.42s cubic-bezier(0.34,1.56,0.64,1)':'none'}}>
+        <div style={{width:40,height:4,borderRadius:2,background:'rgba(255,255,255,0.2)',margin:'12px auto 4px',flexShrink:0}}/>
+        <div style={{overflowY:'auto',flex:1,WebkitOverflowScrolling:'touch'}}>
+          {children}
+        </div>
+      </div>
     </div>
   );
 }
@@ -1348,7 +1390,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
             <ProgDots phaseId={phaseId} segment={segment} intelSnippet={intelSnippet}/>
             <div style={{fontSize:isMobile?12:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace",textDecoration:isCancelled?"line-through":"none"}}>{fmt(segment.budget)}</div>
             {/* Status badge */}
-            <button onClick={handleBadgeTap} style={{background:`${sc.color}18`,border:`1px solid ${sc.color}55`,borderRadius:4,padding:"2px 5px",fontSize:8,fontWeight:700,letterSpacing:2,color:sc.color,cursor:"pointer",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:2,lineHeight:1.4,minHeight:18,transition:"all 0.2s"}}>
+            <button onClick={handleBadgeTap} style={{background:`${sc.color}18`,border:`1px solid ${sc.color}55`,borderRadius:20,padding:"2px 7px",fontSize:8,fontWeight:700,letterSpacing:1.5,color:sc.color,cursor:"pointer",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:2,lineHeight:1.4,minHeight:20,transition:"all 0.2s",animation:status==='planning'?'planningPulse 2.2s ease-in-out infinite':'none'}}>
               <span style={{fontSize:9}}>{sc.icon}</span>{sc.label}
             </button>
           </div>
@@ -1403,6 +1445,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
 function PhaseCard({phase,intelData,idx,autoOpen=false}) {
   const isMobile=useMobile();
   const [open,setOpen]=useState(autoOpen);
+  const [sheetOpen,setSheetOpen]=useState(false);
   const today=new Date();
   const arr=new Date(phase.arrival+"T12:00:00"),dep=new Date(phase.departure+"T12:00:00");
   const dUntil=Math.round((arr-today)/86400000);
@@ -1416,34 +1459,97 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
     total+=6;filled+=b.filter(Boolean).length;
   });
   const pct=total>0?Math.round((filled/total)*100):0;
+  const firstSeg=allD[`${phase.id}-${phase.segments[0]?.id}`]||{};
+  const phaseStatus=firstSeg.status||'planning';
+  const statusDot=STATUS_CFG[phaseStatus]?.color||STATUS_CFG.planning.color;
+
+  // ── Mobile: slim itinerary row + BottomSheet ───────────────────
+  if(isMobile) return(
+    <>
+      <div className="tap-scale" onClick={()=>setSheetOpen(true)}
+        style={{display:'flex',alignItems:'center',height:72,padding:'0 16px',borderBottom:'1px solid rgba(255,255,255,0.05)',background:'rgba(3,7,16,0.9)',gap:12,animation:`fadeUp 0.35s ease ${idx*0.07}s both`,position:'relative'}}>
+        {/* Number + flag */}
+        <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0}}>
+          <div style={{width:26,height:26,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
+          <span style={{fontSize:22,lineHeight:1}}>{phase.flag}</span>
+        </div>
+        {/* Country + date */}
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:20,fontWeight:300,color:'rgba(255,242,210,0.92)',lineHeight:1.1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{phase.name}</div>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:'rgba(255,255,255,0.42)',marginTop:2,whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)} · 🌙{phase.totalNights}n{phase.totalDives>0?` · 🤿${phase.totalDives}`:''}</div>
+        </div>
+        {/* Budget + status dot */}
+        <div style={{textAlign:'right',flexShrink:0}}>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:14,fontWeight:700,color:'#FFD93D'}}>{fmt(phase.totalBudget)}</div>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',gap:5,marginTop:4}}>
+            {isNow&&<span style={{fontSize:9,color:'#69F0AE',letterSpacing:1,fontFamily:"'Space Mono',monospace",fontWeight:700}}>ACTIVE</span>}
+            {isPast&&<span style={{fontSize:9,color:'rgba(255,255,255,0.28)',letterSpacing:1,fontFamily:"'Space Mono',monospace"}}>DONE</span>}
+            {!isNow&&!isPast&&<span style={{fontSize:9,color:'rgba(255,255,255,0.28)',letterSpacing:0.5,fontFamily:"'Space Mono',monospace"}}>{dUntil}d</span>}
+            <div style={{width:7,height:7,borderRadius:'50%',background:statusDot,boxShadow:`0 0 5px ${statusDot}`,flexShrink:0}}/>
+          </div>
+        </div>
+      </div>
+      <BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500}>
+        {/* Sheet header */}
+        <div style={{padding:'16px 16px 14px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
+            <div style={{width:32,height:32,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}50`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
+            <span style={{fontSize:28,lineHeight:1}}>{phase.flag}</span>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontFamily:"'Fraunces',serif",fontSize:24,fontWeight:300,color:'rgba(255,242,210,0.95)',lineHeight:1.1}}>{phase.name}</div>
+              <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:'rgba(255,255,255,0.42)',marginTop:3}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
+            </div>
+          </div>
+          <div style={{display:'flex',gap:14,alignItems:'center',paddingLeft:42}}>
+            <span style={{fontFamily:"'Space Mono',monospace",fontSize:13,fontWeight:700,color:phase.color}}>🌙{phase.totalNights}n</span>
+            {phase.totalDives>0&&<span style={{fontFamily:"'Space Mono',monospace",fontSize:13,fontWeight:700,color:'#00E5FF'}}>🤿{phase.totalDives}</span>}
+            <span style={{fontFamily:"'Space Mono',monospace",fontSize:15,fontWeight:700,color:'#FFD93D',marginLeft:'auto'}}>{fmt(phase.totalBudget)}</span>
+          </div>
+          {phase.note&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:'italic',color:'rgba(255,255,255,0.55)',lineHeight:1.7,paddingLeft:42,marginTop:8,borderLeft:'2px solid rgba(255,255,255,0.08)',marginLeft:40}}>{phase.note}</div>}
+          {pct>0&&<div style={{marginTop:10,paddingLeft:42,display:'flex',alignItems:'center',gap:8}}>
+            <div style={{height:2,background:'rgba(255,255,255,0.06)',borderRadius:2,overflow:'hidden',width:80}}><div style={{height:'100%',width:pct+'%',background:`linear-gradient(90deg,${phase.color}55,${phase.color})`,borderRadius:2}}/></div>
+            <span style={{fontSize:10,color:'rgba(255,255,255,0.3)',fontFamily:"'Space Mono',monospace"}}>{pct}% PLANNED</span>
+          </div>}
+        </div>
+        {/* Segments */}
+        <div style={{paddingTop:4,paddingBottom:20}}>
+          <div style={{padding:'10px 16px 6px',fontSize:10,color:'rgba(255,255,255,0.3)',letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
+          {phase.segments.map((seg,i)=>(
+            <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1}/>
+          ))}
+        </div>
+      </BottomSheet>
+    </>
+  );
+
+  // ── Desktop: existing accordion ────────────────────────────────
   return(
     <div style={{borderRadius:13,border:open?`1.5px solid ${phase.color}`:"1px solid rgba(0,229,255,0.08)",boxShadow:open?`0 0 0 1px ${phase.color}22, 0 4px 28px ${phase.color}28, inset 0 1px 0 ${phase.color}18`:"none",background:open?`linear-gradient(145deg,${phase.color}07,rgba(0,4,14,0.98))`:"rgba(3,7,16,0.88)",overflow:"hidden",transition:"all 0.25s",animation:`fadeUp 0.3s ease ${idx*.04}s both`}}>
-      <div onClick={()=>setOpen(o=>!o)} style={{padding:isMobile?"10px 12px":"14px 16px",cursor:"pointer",minHeight:isMobile?54:62,borderLeft:`3px solid ${open?phase.color:phase.color+"50"}`}}>
+      <div onClick={()=>setOpen(o=>!o)} style={{padding:"14px 16px",cursor:"pointer",minHeight:62,borderLeft:`3px solid ${open?phase.color:phase.color+"50"}`}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
           <div style={{width:20,height:20,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
           <span style={{fontSize:14,flexShrink:0}}>{phase.flag}</span>
-          <span style={{flex:1,fontSize:isMobile?13:15,fontWeight:600,color:open?phase.color:"rgba(255,242,210,0.78)",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",transition:"color 0.2s"}}>{phase.name}</span>
-          {isNow&&<span style={{fontSize:9,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:8,padding:"1px 5px",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>ACTIVE</span>} 
-          <span style={{fontSize:isMobile?12:15,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",flexShrink:0}}>{fmt(phase.totalBudget)}</span>
+          <span style={{flex:1,fontSize:15,fontWeight:600,color:open?phase.color:"rgba(255,242,210,0.78)",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",transition:"color 0.2s"}}>{phase.name}</span>
+          {isNow&&<span style={{fontSize:9,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:20,padding:"2px 8px",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>ACTIVE</span>}
+          <span style={{fontSize:15,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",flexShrink:0}}>{fmt(phase.totalBudget)}</span>
           <div style={{width:16,height:16,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.2":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
             <span style={{fontSize:8,color:open?phase.color:"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
           </div>
         </div>
-        {!isMobile&&!open&&phase.note&&phase.segments.length>1&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.62)",lineHeight:1.65,paddingLeft:28,marginBottom:6,marginTop:1}}>{phase.note}</div>}
+        {!open&&phase.note&&phase.segments.length>1&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.62)",lineHeight:1.65,paddingLeft:28,marginBottom:6,marginTop:1}}>{phase.note}</div>}
         <div style={{display:"flex",alignItems:"center",gap:8,paddingLeft:28,flexWrap:"nowrap"}}>
-          <span style={{fontSize:isMobile?13:15,color:"rgba(255,255,255,0.62)",fontFamily:"'Space Mono',monospace",fontWeight:500,whiteSpace:"nowrap"}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
-          <span style={{fontSize:isMobile?13:15,color:phase.color,fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>🌙{phase.totalNights}n</span>
-          {phase.totalDives>0&&<span style={{fontSize:isMobile?13:15,color:"#00E5FF",whiteSpace:"nowrap",flexShrink:0}}>🤿{phase.totalDives}</span>}
-          {pct>0&&<div style={{width:isMobile?40:80,height:2,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden",flexShrink:0}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}55,${phase.color}99)`,borderRadius:2}}/></div>}
-          <span style={{fontSize:isMobile?10:11,color:"rgba(255,255,255,0.35)",fontFamily:"monospace",whiteSpace:"nowrap",marginLeft:"auto",flexShrink:0}}>{isPast?"done":isNow?"active":`${dUntil}d`}</span>
+          <span style={{fontSize:15,color:"rgba(255,255,255,0.62)",fontFamily:"'Space Mono',monospace",fontWeight:500,whiteSpace:"nowrap"}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
+          <span style={{fontSize:15,color:phase.color,fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>🌙{phase.totalNights}n</span>
+          {phase.totalDives>0&&<span style={{fontSize:15,color:"#00E5FF",whiteSpace:"nowrap",flexShrink:0}}>🤿{phase.totalDives}</span>}
+          {pct>0&&<div style={{width:80,height:2,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden",flexShrink:0}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}55,${phase.color}99)`,borderRadius:2}}/></div>}
+          <span style={{fontSize:11,color:"rgba(255,255,255,0.35)",fontFamily:"monospace",whiteSpace:"nowrap",marginLeft:"auto",flexShrink:0}}>{isPast?"done":isNow?"active":`${dUntil}d`}</span>
         </div>
       </div>
       {open&&(
         <div style={{animation:"slideOpen 0.2s ease",background:"rgba(0,3,11,0.55)"}}>
-          <div style={{padding:"6px 16px 6px 20px",borderTop:`1px solid ${phase.color}15`,borderBottom:"1px solid rgba(0,229,255,0.18)",display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+          <div style={{padding:"6px 16px 6px 20px",borderTop:`1px solid ${phase.color}15`,borderBottom:"1px solid rgba(0,229,255,0.18)",display:"flex",alignItems:"center",gap:6}}>
             <div style={{width:4,height:4,borderRadius:"50%",background:phase.color,flexShrink:0}}/>
-            <span style={{fontSize:11,color:`${phase.color}cc`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:600,whiteSpace:"nowrap"}}>{phase.segments.length} SEGMENT{phase.segments.length>1?"S":""}</span>
-            <span style={{fontSize:11,color:`${phase.color}44`,letterSpacing:0,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>· TAP TO EXPAND PLANNING TABS</span>
+            <span style={{fontSize:11,color:`${phase.color}cc`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:600,whiteSpace:"nowrap"}}>{phase.segments.length} SEGMENT{phase.segments.length>1?"S":""} · TAP TO EXPAND PLANNING TABS</span>
           </div>
           {phase.segments.map((seg,i)=><SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1}/>)}
         </div>
@@ -1546,7 +1652,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           {heroStats.map((s,i)=>(
             <div key={s.label} style={{textAlign:"center",padding:isMobile?"2px 3px":"4px 6px",borderLeft:i>0?"1px solid rgba(0,229,255,0.1)":"none"}}>
               <div style={{fontSize:isMobile?13:15,fontWeight:700,color:"rgba(255,255,255,0.65)",letterSpacing:isMobile?0.5:2,marginBottom:isMobile?2:4,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
-              <div style={{fontSize:isMobile?13:26,fontWeight:900,lineHeight:1,color:s.color,textShadow:`0 0 20px ${s.glow}`,fontFamily:"'Space Mono',monospace"}}>{s.value}</div>
+              <div className="stat-val" style={{fontSize:isMobile?13:26,fontWeight:900,lineHeight:1,color:s.color,textShadow:`0 0 20px ${s.glow}`,fontFamily:"'Space Mono',monospace",animationDelay:`${i*0.1}s`}}>{s.value}</div>
               <div style={{fontSize:isMobile?13:15,fontWeight:700,color:s.color,opacity:0.7,letterSpacing:isMobile?0.5:2,marginTop:isMobile?2:3,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
             </div>
           ))}
