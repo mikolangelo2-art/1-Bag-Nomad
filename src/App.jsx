@@ -1698,15 +1698,30 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:17,fontWeight:300,fontStyle:"italic",color:"#E8DCC8",lineHeight:1}}>{tripData.tripName}</div>
           {!isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:2,marginTop:3,fontFamily:"'Space Mono',monospace"}}>{[...new Set(flatPhases.map(p=>p.country))].join(" · ")}</div>}
         </div>}
-        <div data-coach="trip-stats" style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
-          {heroStats.map((s,i)=>(
-            <div key={s.label} style={{textAlign:"center",padding:isMobile?"2px 3px":"4px 6px",borderLeft:i>0?"1px solid rgba(255,255,255,0.10)":"none"}}>
-              <div style={{fontSize:isMobile?10:13,fontWeight:700,color:"rgba(232,220,200,0.5)",letterSpacing:3,marginBottom:isMobile?2:4,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
-              <div className="stat-val" style={{fontSize:isMobile?13:26,fontWeight:700,lineHeight:1,color:s.label==="BUDGET"?"#FFD93D":"#E8DCC8",fontFamily:"'Space Mono',monospace",animationDelay:`${i*0.1}s`}}>{s.value}</div>
-              <div style={{fontSize:isMobile?11:13,fontWeight:700,color:"rgba(232,220,200,0.4)",letterSpacing:2,marginTop:isMobile?2:3,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
+        {isMobile?(()=>{
+          const mobileStats=[heroStats.find(s=>s.label==="DEPARTS IN"),heroStats.find(s=>s.label==="BUDGET"),heroStats.find(s=>s.label==="NIGHTS"),heroStats.find(s=>s.label==="DIVES")||heroStats.find(s=>s.label==="NIGHTS")].filter((s,idx,arr)=>s&&arr.findIndex(x=>x?.label===s?.label)===idx);
+          return(
+            <div data-coach="trip-stats" style={{display:"grid",gridTemplateColumns:"1fr 1fr",position:"relative"}}>
+              {mobileStats.map((s,i)=>(
+                <div key={s.label} style={{textAlign:"center",padding:"12px 3px",borderRight:i%2===0?"1px solid rgba(255,255,255,0.10)":"none",borderBottom:i<2?"1px solid rgba(255,255,255,0.08)":"none"}}>
+                  <div style={{fontSize:10,fontWeight:700,color:"rgba(232,220,200,0.5)",letterSpacing:3,marginBottom:2,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
+                  <div className="stat-val" style={{fontSize:16,fontWeight:700,lineHeight:1,color:s.label==="BUDGET"?"#FFD93D":"#E8DCC8",fontFamily:"'Space Mono',monospace",animationDelay:`${i*0.1}s`}}>{s.value}</div>
+                  <div style={{fontSize:11,fontWeight:700,color:"rgba(232,220,200,0.4)",letterSpacing:2,marginTop:2,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          );
+        })():(
+          <div data-coach="trip-stats" style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
+            {heroStats.map((s,i)=>(
+              <div key={s.label} style={{textAlign:"center",padding:"4px 6px",borderLeft:i>0?"1px solid rgba(255,255,255,0.10)":"none"}}>
+                <div style={{fontSize:13,fontWeight:700,color:"rgba(232,220,200,0.5)",letterSpacing:3,marginBottom:4,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
+                <div className="stat-val" style={{fontSize:26,fontWeight:700,lineHeight:1,color:s.label==="BUDGET"?"#FFD93D":"#E8DCC8",fontFamily:"'Space Mono',monospace",animationDelay:`${i*0.1}s`}}>{s.value}</div>
+                <div style={{fontSize:13,fontWeight:700,color:"rgba(232,220,200,0.4)",letterSpacing:2,marginTop:3,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>}
       {!isFullscreen&&!isMobile&&<div style={{display:"flex",borderBottom:"1px solid rgba(0,229,255,0.1)",flexShrink:0}}>
         <div style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,borderRight:"1px solid rgba(0,229,255,0.1)",background:"rgba(0,229,255,0.04)"}}>
