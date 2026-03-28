@@ -78,7 +78,7 @@ function toSegPhases(phases=[]) {
     const color=first.color||CAT_DOT_COLORS[i%6];
     return {
       id:i+1, name:g.country, flag:COUNTRY_FLAGS[g.country]||first.flag||"🌍",
-      color, country:g.country,
+      color, country:g.country, note:first.note||"",
       totalNights, totalBudget, totalDives,
       arrival:first.arrival||"", departure:last.departure||"",
       segments:g.phases.map((p)=>({
@@ -717,7 +717,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
     return Math.round(nights*170);
   }
   const colors=["#00E5FF","#69F0AE","#FFD93D","#FF9F43","#A29BFE","#FF6B6B","#55EFC4","#74B9FF"];
-  const [items,setItems]=useState(()=>(visionData.phases||[]).map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8]})));
+  const [items,setItems]=useState(()=>(visionData.phases||[]).map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8],why:p.why||""})));
   const [startDate,setStartDate]=useState(data.date||"2026-09-16");
   const [chat,setChat]=useState([{role:"ai",text:data.isRevision?"Welcome back — let's revise your expedition. ✏️\n\nYour itinerary is loaded. Tell me what you'd like to change.":"Welcome — I'm your expedition co-architect. ✨\n\nYour vision is incredible and I'm genuinely excited to help you build it.",isWelcome:true}]);
   const [input,setInput]=useState("");
@@ -753,7 +753,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   // Architecture #1: each item auto-wraps as 1 segment
   function buildHandoff(){
     return{tripName:data.tripName||"My Expedition",startDate,vision:data.vision,visionNarrative:visionData.narrative,visionHighlight:visionData.highlight,goalLabel,
-      phases:items.map((item,i)=>({id:i+1,name:item.destination,flag:item.flag,color:item.color,budget:item.cost,nights:item.nights,type:item.type,arrival:dates[i]?.arrival.toISOString().split("T")[0]||"",departure:dates[i]?.departure.toISOString().split("T")[0]||"",country:item.country,diveCount:item.type==="Dive"?Math.floor(item.nights*1.5):0,cost:item.cost,note:""})),
+      phases:items.map((item,i)=>({id:i+1,name:item.destination,flag:item.flag,color:item.color,budget:item.cost,nights:item.nights,type:item.type,arrival:dates[i]?.arrival.toISOString().split("T")[0]||"",departure:dates[i]?.departure.toISOString().split("T")[0]||"",country:item.country,diveCount:item.type==="Dive"?Math.floor(item.nights*1.5):0,cost:item.cost,note:item.why||""})),
       totalNights,totalBudget:totalCost,totalDives:items.filter(i=>i.type==="Dive").reduce((s,i)=>s+Math.floor(i.nights*1.5),0)};
   }
   return(
@@ -1308,6 +1308,7 @@ function PhaseCard({phase,intelData,idx}) {
             <span style={{fontSize:8,color:open?phase.color:"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
           </div>
         </div>
+        {!isMobile&&phase.note&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.62)",lineHeight:1.65,paddingLeft:28,marginBottom:6,marginTop:1}}>{phase.note}</div>}
         <div style={{display:"flex",alignItems:"center",gap:8,paddingLeft:28,flexWrap:"nowrap"}}>
           <span style={{fontSize:isMobile?13:15,color:"rgba(255,255,255,0.62)",fontFamily:"'Space Mono',monospace",fontWeight:500,whiteSpace:"nowrap"}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
           <span style={{fontSize:isMobile?13:15,color:phase.color,fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>🌙{phase.totalNights}n</span>
