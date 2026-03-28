@@ -1519,19 +1519,19 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
   if(isMobile) return(
     <>
       <div className="tap-scale" onClick={()=>setSheetOpen(true)}
-        style={{display:'flex',alignItems:'flex-start',padding:'12px 16px',minHeight:80,borderBottom:'1px solid rgba(212,180,120,0.1)',background:'rgba(21,15,10,0.88)',gap:10,animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
+        style={{display:'flex',alignItems:'center',padding:'12px 16px',minHeight:80,borderBottom:'1px solid rgba(212,180,120,0.1)',background:'rgba(21,15,10,0.88)',animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
         {/* Left: number circle + flag */}
-        <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0,paddingTop:4}}>
+        <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0,marginRight:12}}>
           <div style={{width:26,height:26,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
           <span style={{fontSize:22,lineHeight:1}}>{phase.flag}</span>
         </div>
-        {/* Center: name + date */}
-        <div style={{flex:1,minWidth:0,paddingTop:2}}>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:26,fontWeight:300,color:'#E8DCC8',lineHeight:1.1}}>{phase.name}</div>
-          <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(255,255,255,0.42)',marginTop:4,whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
+        {/* Middle: name + date */}
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:26,fontWeight:300,color:'#E8DCC8',lineHeight:1.1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{phase.name}</div>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(255,255,255,0.42)',marginTop:3,whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
         </div>
         {/* Right: budget */}
-        <div style={{textAlign:'right',flexShrink:0,minWidth:80,paddingTop:4}}>
+        <div style={{flexShrink:0,marginLeft:12,textAlign:'right',whiteSpace:'nowrap'}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:'#FFD93D'}}>{fmt(phase.totalBudget)}</div>
         </div>
       </div>
