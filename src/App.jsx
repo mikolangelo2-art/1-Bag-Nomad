@@ -573,9 +573,28 @@ function BottomSheet({open,onClose,children,zIndex=400}) {
     else{setVisible(false);}
   },[open]);
   useEffect(()=>{
-    if(open){document.body.style.overflow='hidden';document.body.style.touchAction='none';}
-    else{document.body.style.overflow='';document.body.style.touchAction='';}
-    return()=>{document.body.style.overflow='';document.body.style.touchAction='';};
+    if(open){
+      const y=window.scrollY;
+      document.body.style.overflow='hidden';
+      document.body.style.position='fixed';
+      document.body.style.width='100%';
+      document.body.style.top=`-${y}px`;
+    } else {
+      const top=document.body.style.top;
+      document.body.style.overflow='';
+      document.body.style.position='';
+      document.body.style.width='';
+      document.body.style.top='';
+      if(top)window.scrollTo(0,-parseInt(top));
+    }
+    return()=>{
+      const top=document.body.style.top;
+      document.body.style.overflow='';
+      document.body.style.position='';
+      document.body.style.width='';
+      document.body.style.top='';
+      if(top)window.scrollTo(0,-parseInt(top));
+    };
   },[open]);
   if(!open)return null;
   return(
@@ -1500,20 +1519,19 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
   if(isMobile) return(
     <>
       <div className="tap-scale" onClick={()=>setSheetOpen(true)}
-        style={{display:'flex',alignItems:'center',height:72,padding:'0 16px',borderBottom:'1px solid rgba(232,220,200,0.04)',background:'rgba(21,15,10,0.88)',gap:12,animation:`fadeUp 0.35s ease ${idx*0.07}s both`,position:'relative'}}>
+        style={{display:'flex',alignItems:'center',padding:'12px 16px',minHeight:80,borderBottom:'1px solid rgba(232,220,200,0.04)',background:'rgba(21,15,10,0.88)',gap:12,animation:`fadeUp 0.35s ease ${idx*0.07}s both`,position:'relative'}}>
         {/* Number + flag */}
-        <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0}}>
+        <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0,alignSelf:'flex-start',paddingTop:3}}>
           <div style={{width:26,height:26,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
           <span style={{fontSize:22,lineHeight:1}}>{phase.flag}</span>
         </div>
-        {/* Country + date */}
+        {/* Name / date + budget */}
         <div style={{flex:1,minWidth:0}}>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:300,color:'#E8DCC8',lineHeight:1.1,whiteSpace:'nowrap'}}>{phase.name}</div>
-          <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(255,255,255,0.42)',marginTop:3,whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
-        </div>
-        {/* Budget */}
-        <div style={{textAlign:'right',flexShrink:0}}>
-          <div style={{fontFamily:"'Space Mono',monospace",fontSize:14,fontWeight:700,color:'#FFD93D'}}>{fmt(phase.totalBudget)}</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:26,fontWeight:300,color:'#E8DCC8',lineHeight:1.1}}>{phase.name}</div>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:5}}>
+            <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(255,255,255,0.42)',whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
+            <div style={{fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:'#FFD93D',flexShrink:0,marginLeft:12}}>{fmt(phase.totalBudget)}</div>
+          </div>
         </div>
       </div>
       <BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500}>
