@@ -1941,61 +1941,97 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     setChat(p=>[...p,{role:"ai",text:res}]);setChatLoading(false);
   }
 
-  // ─── Item Row (inline expand like SegmentRow) ──────────────────
+  // ─── Item Row ─────────────────────────────────────────────────
   function PackItemRow({item,catColor,isLast}) {
-    const mob=isMobile;
     const [open,setOpen]=useState(false);
-    const CAT_COLORS_P={docs:"#E0E0E0",tech:"#00D4FF",clothes:"#FFD93D",health:"#69F0AE",travel:"#55EFC4",creator:"#FF9F43",dive:"#00E5FF"};
+    const [editOpen,setEditOpen]=useState(false);
+    if(isMobile) return(
+      <>
+        <div className="tap-scale" onClick={()=>setEditOpen(true)}
+          style={{display:'flex',alignItems:'center',minHeight:56,padding:'0 16px',borderBottom:isLast?'none':'1px solid rgba(255,255,255,0.05)',gap:12,background:'transparent'}}>
+          <button onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:34,height:34,borderRadius:8,border:`1.5px solid ${item.owned?'#69F0AE':'rgba(255,255,255,0.15)'}`,background:item.owned?'rgba(105,240,174,0.1)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flexShrink:0,transition:'all 0.15s'}}>
+            {item.owned&&<span style={{color:'#69F0AE',fontSize:15,fontWeight:900,lineHeight:1}}>✓</span>}
+          </button>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:13,fontWeight:500,color:item.owned?'rgba(105,240,174,0.82)':'rgba(255,242,210,0.82)',fontFamily:"'Space Mono',monospace",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.name||'Unnamed'}</div>
+            <div style={{display:'flex',gap:8,marginTop:2}}>
+              {parseFloat(item.weight)>0&&<span style={{fontSize:11,color:'rgba(255,255,255,0.38)',fontFamily:'monospace'}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
+              {parseFloat(item.cost)>0&&<span style={{fontSize:11,color:'rgba(255,217,61,0.5)',fontFamily:'monospace'}}>${item.cost}</span>}
+            </div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
+            <span style={{fontSize:10,padding:'2px 9px',borderRadius:20,border:`1px solid ${item.owned?'rgba(105,240,174,0.3)':'rgba(196,87,30,0.35)'}`,color:item.owned?'rgba(105,240,174,0.7)':'rgba(196,87,30,0.75)',fontFamily:"'Space Mono',monospace",fontWeight:600,whiteSpace:'nowrap'}}>{item.owned?'OWNED':'NEED'}</span>
+            <span style={{fontSize:18,color:'rgba(255,255,255,0.18)'}}>›</span>
+          </div>
+        </div>
+        <BottomSheet open={editOpen} onClose={()=>setEditOpen(false)} zIndex={600}>
+          <div style={{padding:'16px 16px 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+            <div style={{fontSize:10,color:`${catColor}99`,letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:8}}>EDIT ITEM</div>
+            <input value={item.name} onChange={e=>updateItem(item.id,'name',e.target.value)} style={{width:'100%',background:'rgba(18,11,0,0.9)',border:`1px solid ${catColor}44`,borderRadius:9,color:'#FFF',fontSize:14,padding:'10px 13px',fontFamily:"'Space Mono',monospace",outline:'none'}} placeholder="Item name"/>
+          </div>
+          <div style={{padding:'14px 16px',display:'flex',flexDirection:'column',gap:12}}>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
+              {[{label:'WT (lbs)',f:'weight'},{label:'COST ($)',f:'cost'},{label:'VOL (L)',f:'volume'}].map(({label,f})=>(
+                <div key={f}>
+                  <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:5,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{label}</div>
+                  <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{width:'100%',background:'rgba(18,11,0,0.9)',border:`1px solid ${catColor}33`,borderRadius:7,color:'#FFD93D',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:'monospace'}}/>
+                </div>
+              ))}
+            </div>
+            <div>
+              <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:8,fontFamily:"'Space Mono',monospace",fontWeight:700}}>BAG</div>
+              <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+                {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,'bag',b)} style={{padding:'5px 10px',borderRadius:20,border:`1px solid ${item.bag===b?BAG_C[b]||'#FF9F43':'rgba(255,255,255,0.1)'}`,background:item.bag===b?'rgba(255,255,255,0.06)':'transparent',color:item.bag===b?BAG_C[b]||'#FF9F43':'rgba(255,255,255,0.4)',fontSize:11,cursor:'pointer',fontFamily:'monospace',fontWeight:item.bag===b?700:400}}>{b}</button>)}
+              </div>
+            </div>
+            <div style={{display:'flex',gap:8,paddingTop:4}}>
+              <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:'12px',borderRadius:12,border:`1px solid ${item.owned?'rgba(105,240,174,0.4)':'rgba(196,87,30,0.4)'}`,background:item.owned?'rgba(105,240,174,0.08)':'rgba(169,70,29,0.1)',color:item.owned?'#69F0AE':'#FF9F43',fontSize:13,cursor:'pointer',fontFamily:'monospace',fontWeight:700}}>{item.owned?'✓ OWNED':'MARK OWNED'}</button>
+              <button onClick={()=>{removeItem(item.id);setEditOpen(false);}} style={{padding:'12px 16px',borderRadius:12,border:'1px solid rgba(255,107,107,0.3)',background:'rgba(255,107,107,0.06)',color:'rgba(255,107,107,0.7)',fontSize:13,cursor:'pointer',fontFamily:'monospace',fontWeight:700}}>✕</button>
+            </div>
+          </div>
+        </BottomSheet>
+      </>
+    );
+    // Desktop inline expand
     return(
       <div style={{borderBottom:isLast?"none":"1px solid rgba(255,255,255,0.2)"}}>
         <div style={{display:"flex",alignItems:"center",minHeight:44,borderLeft:`2px solid ${catColor}${open?"88":"33"}`}}>
-          {/* Owned toggle */}
           <button onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:44,height:"100%",minHeight:52,display:"flex",alignItems:"center",justifyContent:"center",background:"none",border:"none",cursor:"pointer",flexShrink:0}}>
             <div style={{width:20,height:20,borderRadius:4,border:`1.5px solid ${item.owned?"#69F0AE":"rgba(255,255,255,0.2)"}`,background:item.owned?"rgba(105,240,174,0.12)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.15s"}}>
               {item.owned&&<span style={{color:"#69F0AE",fontSize:15,fontWeight:900,lineHeight:1}}>✓</span>}
             </div>
           </button>
-          {/* Main row — tap to expand */}
           <div onClick={()=>setOpen(o=>!o)} style={{flex:1,display:"flex",alignItems:"center",gap:10,padding:"10px 8px 10px 4px",cursor:"pointer",minWidth:0}}>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontSize:13,fontWeight:500,color:item.owned?"rgba(105,240,174,0.82)":"rgba(255,242,210,0.78)",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2}}>{item.name||"Unnamed"}</div>
-              <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}>
                 {parseFloat(item.weight)>0&&<span style={{fontSize:13,color:"rgba(255,255,255,0.45)",fontFamily:"monospace"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
                 {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(255,217,61,0.55)",fontFamily:"monospace"}}>${item.cost}</span>}
                 <span style={{fontSize:13,color:(BAG_C[item.bag]||"rgba(255,159,67,0.6)")+"aa",fontFamily:"monospace"}}>{item.bag}</span>
               </div>
             </div>
             <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
-              <div style={{padding:"2px 7px",borderRadius:4,background:"transparent",border:`1px solid ${item.owned?"rgba(105,240,174,0.25)":"rgba(196,87,30,0.28)"}`,fontSize:11,fontWeight:600,color:item.owned?"rgba(105,240,174,0.75)":"rgba(196,87,30,0.7)",letterSpacing:1,whiteSpace:"nowrap"}}>{item.owned?"OWNED":"NEED"}</div>
+              <div style={{padding:"2px 8px",borderRadius:20,border:`1px solid ${item.owned?"rgba(105,240,174,0.25)":"rgba(196,87,30,0.28)"}`,fontSize:11,fontWeight:600,color:item.owned?"rgba(105,240,174,0.75)":"rgba(196,87,30,0.7)",letterSpacing:1,whiteSpace:"nowrap"}}>{item.owned?"OWNED":"NEED"}</div>
               <div style={{width:16,height:16,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center"}}>
                 <span style={{fontSize:10,color:"rgba(255,255,255,0.35)",transform:open?"rotate(180deg)":"none",display:"inline-block",transition:"transform 0.2s"}}>▼</span>
               </div>
             </div>
           </div>
         </div>
-        {/* Expanded edit drawer */}
         {open&&(
           <div style={{padding:"12px 16px 16px 44px",background:"rgba(0,0,0,0.25)",borderTop:`1px solid ${catColor}15`,animation:"slideOpen 0.18s ease",display:"flex",flexDirection:"column",gap:10}}>
-            <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:7,color:"#FFF",fontSize:mob?12:15,padding:mob?"8px 10px":"10px 13px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%"}} placeholder="Item name"/>
+            <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:7,color:"#FFF",fontSize:12,padding:"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%"}} placeholder="Item name"/>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-              {[{label:mob?"WT (lbs)":"WEIGHT (lbs)",f:"weight"},{label:"COST ($)",f:"cost"},{label:mob?"VOL (L)":"VOLUME (L)",f:"volume"}].map(({label,f})=>(
-                <div key={f}>
-                  <div style={{fontSize:mob?9:15,color:"rgba(255,159,67,0.65)",letterSpacing:mob?1:2,marginBottom:mob?3:5,fontFamily:"monospace"}}>{label}</div>
-                  <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.3)",borderRadius:5,color:"#FFD93D",fontSize:mob?12:15,padding:mob?"6px 8px":"8px 10px",outline:"none",fontFamily:"monospace",width:"100%"}}/>
-                </div>
+              {[{label:"WT (lbs)",f:"weight"},{label:"COST ($)",f:"cost"},{label:"VOL (L)",f:"volume"}].map(({label,f})=>(
+                <div key={f}><div style={{fontSize:9,color:"rgba(255,159,67,0.65)",letterSpacing:1,marginBottom:3,fontFamily:"monospace"}}>{label}</div><input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.3)",borderRadius:5,color:"#FFD93D",fontSize:12,padding:"6px 8px",outline:"none",fontFamily:"monospace",width:"100%"}}/></div>
               ))}
             </div>
-            <div>
-              <div style={{fontSize:mob?9:15,color:"rgba(255,159,67,0.65)",letterSpacing:mob?1:2,marginBottom:mob?3:5,fontFamily:"monospace"}}>BAG</div>
-              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                {BAGS.map(b=>(
-                  <button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:mob?"4px 8px":"6px 12px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.12)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.45)",fontSize:mob?10:15,cursor:"pointer",fontFamily:"monospace",fontWeight:item.bag===b?700:400,transition:"all 0.15s"}}>{b}</button>
-                ))}
-              </div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:"4px 8px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.12)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.45)",fontSize:10,cursor:"pointer",fontFamily:"monospace",fontWeight:item.bag===b?700:400}}>{b}</button>)}
             </div>
-            <div style={{display:"flex",gap:8,paddingTop:4}}>
-              <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"9px 8px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#FF9F43",fontSize:13,cursor:"pointer",fontFamily:"monospace",fontWeight:700,letterSpacing:0,whiteSpace:"nowrap"}}>{item.owned?"✓ OWNED":"MARK OWNED"}</button>
-              <button onClick={()=>removeItem(item.id)} style={{padding:mob?"8px 12px":"10px 16px",borderRadius:7,border:"1px solid rgba(255,107,107,0.3)",background:"rgba(255,107,107,0.06)",color:"rgba(255,107,107,0.7)",fontSize:mob?13:15,cursor:"pointer",fontFamily:"monospace",fontWeight:700}}>✕</button>
+            <div style={{display:"flex",gap:8}}>
+              <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"9px 8px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#FF9F43",fontSize:13,cursor:"pointer",fontFamily:"monospace",fontWeight:700,whiteSpace:"nowrap"}}>{item.owned?"✓ OWNED":"MARK OWNED"}</button>
+              <button onClick={()=>removeItem(item.id)} style={{padding:"8px 12px",borderRadius:7,border:"1px solid rgba(255,107,107,0.3)",background:"rgba(255,107,107,0.06)",color:"rgba(255,107,107,0.7)",fontSize:13,cursor:"pointer",fontFamily:"monospace",fontWeight:700}}>✕</button>
             </div>
           </div>
         )}
@@ -2003,55 +2039,91 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     );
   }
 
-  // ─── Category Accordion Card (mirrors PhaseCard) ───────────────
+  // ─── Category Card ─────────────────────────────────────────────
   function CatCard({cat,idx}) {
     const catItems=itemsForCat(cat.id);
+    const [catSheetOpen,setCatSheetOpen]=useState(false);
     const open=!!openCats[cat.id];
     const ownedInCat=catItems.filter(i=>i.owned).length;
     const catW=catItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM;
     const catCost=catItems.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
     if(catItems.length===0&&filterCat!=="all"&&filterCat!==cat.id)return null;
+    if(isMobile) return(
+      <>
+        <div className="tap-scale" onClick={()=>setCatSheetOpen(true)}
+          style={{display:'flex',alignItems:'center',height:64,padding:'0 16px',borderBottom:'1px solid rgba(255,255,255,0.05)',background:'rgba(18,8,0,0.88)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
+          <span style={{fontSize:24,flexShrink:0}}>{cat.icon}</span>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:14,fontWeight:700,color:'rgba(255,255,255,0.88)',fontFamily:"'Space Mono',monospace"}}>{cat.label}</div>
+            <div style={{display:'flex',gap:8,alignItems:'center',marginTop:3}}>
+              <span style={{fontSize:11,color:'rgba(255,255,255,0.4)',fontFamily:'monospace'}}>{catItems.length} items</span>
+              {catW>0&&<span style={{fontSize:11,color:cat.color,fontFamily:'monospace',fontWeight:600}}>{catW.toFixed(1)}{unit}</span>}
+            </div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:10,flexShrink:0}}>
+            <div style={{textAlign:'right'}}>
+              <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',fontFamily:'monospace',marginBottom:4}}>{ownedInCat}/{catItems.length}</div>
+              <div style={{width:48,height:3,background:'rgba(255,255,255,0.06)',borderRadius:2,overflow:'hidden'}}>
+                <div style={{height:'100%',width:(catItems.length>0?(ownedInCat/catItems.length)*100:0)+'%',background:`linear-gradient(90deg,${cat.color}66,${cat.color})`,borderRadius:2,transition:'width 0.4s'}}/>
+              </div>
+            </div>
+            <span style={{fontSize:20,color:'rgba(255,255,255,0.2)'}}>›</span>
+          </div>
+        </div>
+        <BottomSheet open={catSheetOpen} onClose={()=>setCatSheetOpen(false)} zIndex={500}>
+          <div style={{padding:'16px 16px 14px',borderBottom:'1px solid rgba(255,255,255,0.06)',display:'flex',alignItems:'center',gap:12}}>
+            <span style={{fontSize:28}}>{cat.icon}</span>
+            <div style={{flex:1}}>
+              <div style={{fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:cat.color}}>{cat.label}</div>
+              <div style={{fontSize:12,color:'rgba(255,255,255,0.4)',fontFamily:'monospace',marginTop:2}}>{catItems.length} items · {catW.toFixed(1)}{unit} · {ownedInCat}/{catItems.length} owned</div>
+            </div>
+            {catCost>0&&<div style={{fontSize:15,fontWeight:700,color:'#FFD93D',fontFamily:"'Space Mono',monospace",flexShrink:0}}>${catCost.toLocaleString()}</div>}
+          </div>
+          <div style={{paddingBottom:20}}>
+            {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1}/>)}
+            <div style={{padding:'12px 16px',display:'flex',justifyContent:'center'}}>
+              <button onClick={()=>addItemToCat(cat.id)} style={{padding:'8px 24px',borderRadius:20,border:`1px dashed ${cat.color}44`,background:'transparent',color:`${cat.color}77`,fontSize:12,cursor:'pointer',fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700}}>+ ADD ITEM</button>
+            </div>
+          </div>
+        </BottomSheet>
+      </>
+    );
+    // Desktop accordion
     return(
       <div style={{borderRadius:13,border:open?`1.5px solid ${cat.color}`:"1px solid rgba(255,255,255,0.07)",boxShadow:open?`0 0 0 1px ${cat.color}22,0 4px 28px ${cat.color}18,inset 0 1px 0 ${cat.color}12`:"none",background:open?`linear-gradient(145deg,${cat.color}06,rgba(8,3,0,0.98))`:"rgba(18,8,0,0.85)",overflow:"hidden",transition:"all 0.25s",animation:`fadeUp 0.3s ease ${idx*.05}s both`,marginBottom:8}}>
-        {/* Header row — tap to open */}
         <div onClick={()=>toggleCat(cat.id)} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",alignItems:"center",padding:"12px 16px",cursor:"pointer",minHeight:52,borderLeft:`3px solid ${open?cat.color:cat.color+"44"}`}}>
-          {/* Left column — icon + details */}
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <div style={{fontSize:18,flexShrink:0}}>{cat.icon}</div>
             <div style={{display:"flex",flexDirection:"column",gap:2}}>
-              <span style={{fontSize:isMobile?10:15,color:"rgba(255,255,255,0.5)",fontFamily:"monospace",whiteSpace:"nowrap"}}>{catItems.length} items</span>
-              <div style={{display:"flex",gap:isMobile?5:8,alignItems:"center"}}>
-                {catW>0&&<span style={{fontSize:isMobile?10:15,color:cat.color,fontWeight:600,fontFamily:"monospace",whiteSpace:"nowrap"}}>{catW.toFixed(1)}{unit}</span>}
-                <span style={{fontSize:isMobile?10:15,color:"rgba(255,255,255,0.38)",fontFamily:"monospace",whiteSpace:"nowrap"}}>{ownedInCat}/{catItems.length} owned</span>
+              <span style={{fontSize:15,color:"rgba(255,255,255,0.5)",fontFamily:"monospace"}}>{catItems.length} items</span>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                {catW>0&&<span style={{fontSize:15,color:cat.color,fontWeight:600,fontFamily:"monospace"}}>{catW.toFixed(1)}{unit}</span>}
+                <span style={{fontSize:15,color:"rgba(255,255,255,0.38)",fontFamily:"monospace"}}>{ownedInCat}/{catItems.length} owned</span>
               </div>
             </div>
           </div>
-          {/* Center column — name */}
           <div style={{textAlign:"center"}}>
-            <div style={{fontSize:isMobile?12:15,fontWeight:600,color:open?cat.color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",transition:"color 0.2s"}}>{cat.label}</div>
+            <div style={{fontSize:15,fontWeight:600,color:open?cat.color:"rgba(255,255,255,0.9)",fontFamily:"'Space Mono',monospace",transition:"color 0.2s"}}>{cat.label}</div>
           </div>
-          {/* Right column — cost + progress + arrow */}
           <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end",gap:8}}>
             <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5}}>
-              {catCost>0&&<div style={{fontSize:isMobile?11:15,fontWeight:600,color:"rgba(255,217,61,0.8)",fontFamily:"'Space Mono',monospace"}}>${catCost.toLocaleString()}</div>}
+              {catCost>0&&<div style={{fontSize:15,fontWeight:600,color:"rgba(255,217,61,0.8)",fontFamily:"'Space Mono',monospace"}}>${catCost.toLocaleString()}</div>}
               <div style={{width:60,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:(catItems.length>0?(ownedInCat/catItems.length)*100:0)+"%",background:`linear-gradient(90deg,${cat.color}66,${cat.color})`,borderRadius:2,transition:"width 0.4s ease"}}/></div>
             </div>
-            <div style={{width:isMobile?18:22,height:isMobile?18:22,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.2":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-              <span style={{fontSize:isMobile?10:15,color:open?cat.color:"rgba(255,255,255,0.45)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
+            <div style={{width:22,height:22,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.2":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <span style={{fontSize:10,color:open?cat.color:"rgba(255,255,255,0.45)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
             </div>
           </div>
         </div>
-        {/* Items */}
         {open&&(
           <div style={{animation:"slideOpen 0.2s ease",background:"rgba(0,0,0,0.2)"}}>
-            <div style={{padding:"6px 18px 6px 18px",borderTop:`1px solid ${cat.color}15`,borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",gap:6}}>
+            <div style={{padding:"6px 18px",borderTop:`1px solid ${cat.color}15`,borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",gap:6}}>
               <div style={{width:4,height:4,borderRadius:"50%",background:cat.color,flexShrink:0}}/>
-              <span style={{fontSize:11,color:`${cat.color}aa`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500,whiteSpace:"nowrap"}}>{catItems.length} ITEM{catItems.length!==1?"S":""} · TAP TO EXPAND</span>
+              <span style={{fontSize:11,color:`${cat.color}aa`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500}}>{catItems.length} ITEM{catItems.length!==1?"S":""} · TAP TO EXPAND</span>
             </div>
             {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1}/>)}
-            {/* Add item row */}
             <div style={{padding:"10px 18px",borderTop:"1px solid rgba(255,255,255,0.04)",display:"flex",justifyContent:"center"}}>
-              <button onClick={()=>addItemToCat(cat.id)} style={{padding:isMobile?"6px 16px":"8px 20px",borderRadius:8,border:`1px dashed ${cat.color}44`,background:"transparent",color:`${cat.color}88`,fontSize:isMobile?11:15,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,transition:"all 0.15s"}} onMouseOver={e=>{e.currentTarget.style.background=`${cat.color}10`;e.currentTarget.style.color=cat.color;}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=`${cat.color}88`;}}>+ ADD ITEM</button>
+              <button onClick={()=>addItemToCat(cat.id)} style={{padding:"8px 20px",borderRadius:8,border:`1px dashed ${cat.color}44`,background:"transparent",color:`${cat.color}88`,fontSize:15,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,transition:"all 0.15s"}} onMouseOver={e=>{e.currentTarget.style.background=`${cat.color}10`;e.currentTarget.style.color=cat.color;}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=`${cat.color}88`;}}>+ ADD ITEM</button>
             </div>
           </div>
         )}
