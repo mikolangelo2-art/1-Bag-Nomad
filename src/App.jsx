@@ -1510,13 +1510,13 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
         style={{display:'flex',alignItems:'center',height:72,padding:'0 16px',borderBottom:'1px solid rgba(255,255,255,0.05)',background:'rgba(3,7,16,0.9)',gap:12,animation:`fadeUp 0.35s ease ${idx*0.07}s both`,position:'relative'}}>
         {/* Number + flag */}
         <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0}}>
-          <div style={{width:26,height:26,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
+          <div style={{width:26,height:26,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
           <span style={{fontSize:22,lineHeight:1}}>{phase.flag}</span>
         </div>
         {/* Country + date */}
         <div style={{flex:1,minWidth:0}}>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:20,fontWeight:300,color:'rgba(255,242,210,0.92)',lineHeight:1.1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{phase.name}</div>
-          <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:'rgba(255,255,255,0.42)',marginTop:2,whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)} · 🌙{phase.totalNights}n{phase.totalDives>0?` · 🤿${phase.totalDives}`:''}</div>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(255,255,255,0.42)',marginTop:2,whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)} · 🌙{phase.totalNights}n{phase.totalDives>0?` · 🤿${phase.totalDives}`:''}</div>
         </div>
         {/* Budget + status dot */}
         <div style={{textAlign:'right',flexShrink:0}}>
@@ -1537,7 +1537,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
             <span style={{fontSize:28,lineHeight:1}}>{phase.flag}</span>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontFamily:"'Fraunces',serif",fontSize:24,fontWeight:300,color:'rgba(255,242,210,0.95)',lineHeight:1.1}}>{phase.name}</div>
-              <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:'rgba(255,255,255,0.42)',marginTop:3}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
+              <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(255,255,255,0.42)',marginTop:3}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
             </div>
           </div>
           <div style={{display:'flex',gap:14,alignItems:'center',paddingLeft:42}}>
@@ -1548,12 +1548,12 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
           {phase.note&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:'italic',color:'rgba(255,255,255,0.55)',lineHeight:1.7,paddingLeft:42,marginTop:8,borderLeft:'2px solid rgba(255,255,255,0.08)',marginLeft:40}}>{phase.note}</div>}
           {pct>0&&<div style={{marginTop:10,paddingLeft:42,display:'flex',alignItems:'center',gap:8}}>
             <div style={{height:2,background:'rgba(255,255,255,0.06)',borderRadius:2,overflow:'hidden',width:80}}><div style={{height:'100%',width:pct+'%',background:`linear-gradient(90deg,${phase.color}55,${phase.color})`,borderRadius:2}}/></div>
-            <span style={{fontSize:10,color:'rgba(255,255,255,0.3)',fontFamily:"'Space Mono',monospace"}}>{pct}% PLANNED</span>
+            <span style={{fontSize:11,color:'rgba(255,255,255,0.3)',fontFamily:"'Space Mono',monospace"}}>{pct}% PLANNED</span>
           </div>}
         </div>
         {/* Segments */}
         <div style={{paddingTop:4,paddingBottom:20}}>
-          <div style={{padding:'10px 16px 6px',fontSize:10,color:'rgba(255,255,255,0.3)',letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
+          <div style={{padding:'10px 16px 6px',fontSize:11,color:'rgba(255,255,255,0.3)',letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
           {phase.segments.map((seg,i)=>(
             <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1}/>
           ))}
@@ -1679,8 +1679,8 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
       ]}/>}
       {!isFullscreen&&<ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/>}
       {isMobile&&!isFullscreen&&<div style={{padding:"5px 12px",borderBottom:"1px solid rgba(0,229,255,0.08)",display:"flex",justifyContent:"flex-end",gap:7,background:"rgba(0,8,20,0.98)",flexShrink:0}}>
-        <button onClick={onRevise} style={{padding:"6px 14px",borderRadius:7,border:"1px solid rgba(0,229,255,0.3)",background:"rgba(0,229,255,0.06)",color:"#00E5FF",fontSize:10,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:32}}>✏️ REVISE</button>
-        <button onClick={handleNewTripClick} style={{padding:"6px 14px",borderRadius:7,border:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(169,70,29,0.3)",background:confirmNewTrip?"rgba(255,107,107,0.12)":"rgba(169,70,29,0.06)",color:confirmNewTrip?"#FF6B6B":"#FFD93D",fontSize:10,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:32}}>{confirmNewTrip?"⚠️ CONFIRM?":"+ NEW TRIP"}</button>
+        <button onClick={onRevise} style={{padding:"6px 14px",borderRadius:7,border:"1px solid rgba(0,229,255,0.3)",background:"rgba(0,229,255,0.06)",color:"#00E5FF",fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:32}}>✏️ REVISE</button>
+        <button onClick={handleNewTripClick} style={{padding:"6px 14px",borderRadius:7,border:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(169,70,29,0.3)",background:confirmNewTrip?"rgba(255,107,107,0.12)":"rgba(169,70,29,0.06)",color:confirmNewTrip?"#FF6B6B":"#FFD93D",fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:32}}>{confirmNewTrip?"⚠️ CONFIRM?":"+ NEW TRIP"}</button>
       </div>}
       {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:"linear-gradient(180deg,rgba(0,20,45,0.95),rgba(0,8,20,0.98))",borderBottom:"1px solid rgba(0,229,255,0.15)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.04) 0%,transparent 60%)",pointerEvents:"none"}}/>
@@ -1755,9 +1755,9 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
             <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr 1fr":"1fr 1fr 1fr",gap:8,marginBottom:16}}>
               {[{label:"EXPEDITION TOTAL",value:fmt(totalBudget),color:"#FFD93D",sub:`across ${flatPhases.length} phases`},{label:"AVG / NIGHT",value:fmt(totalBudget/Math.max(totalNights,1)),color:"#A29BFE",sub:`${totalNights} nights`},{label:"AVG / PHASE",value:fmt(totalBudget/Math.max(flatPhases.length,1)),color:"#00E5FF",sub:"per destination"}].map((s,si)=>(
                 <div key={s.label} style={{background:"linear-gradient(135deg,rgba(0,8,20,0.8),rgba(0,20,40,0.6))",border:"1px solid rgba(0,229,255,0.12)",borderRadius:10,padding:isMobile?"8px 10px":"12px 14px",textAlign:"center",gridColumn:isMobile&&si===2?"1 / -1":"auto"}}>
-                  <div style={{fontSize:isMobile?10:13,color:"rgba(255,255,255,0.6)",letterSpacing:isMobile?0:1,marginBottom:3,fontFamily:"'Space Mono',monospace",fontWeight:600}}>{s.label}</div>
+                  <div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.6)",letterSpacing:isMobile?0:1,marginBottom:3,fontFamily:"'Space Mono',monospace",fontWeight:600}}>{s.label}</div>
                   <div style={{fontSize:isMobile?16:22,fontWeight:900,color:s.color}}>{s.value}</div>
-                  <div style={{fontSize:isMobile?10:13,color:"rgba(255,255,255,0.45)",marginTop:2}}>{s.sub}</div>
+                  <div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.45)",marginTop:2}}>{s.sub}</div>
                 </div>
               ))}
             </div>
@@ -2225,9 +2225,9 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
           {/* Weight hero */}
           <div style={{background:"rgba(21,101,255,0.07)",border:"1px solid rgba(77,159,255,0.3)",borderRadius:10,padding:"12px 14px"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-              <div style={{fontSize:isMobile?11:13,fontWeight:700,color:"#4D9FFF",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace"}}>⚖️ WEIGHT</div>
+              <div style={{fontSize:isMobile?12:13,fontWeight:700,color:"#4D9FFF",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace"}}>⚖️ WEIGHT</div>
               <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{display:"flex",borderRadius:8,border:"1px solid rgba(77,159,255,0.4)",overflow:"hidden",cursor:"pointer"}}>
-                {["lbs","kg"].map(u=><div key={u} style={{padding:isMobile?"3px 8px":"4px 10px",fontSize:isMobile?10:15,fontWeight:700,background:unit===u?"rgba(77,159,255,0.3)":"rgba(77,159,255,0.05)",color:unit===u?"#4D9FFF":"rgba(77,159,255,0.3)",borderLeft:u==="kg"?"1px solid rgba(77,159,255,0.3)":"none"}}>{u.toUpperCase()}</div>)}
+                {["lbs","kg"].map(u=><div key={u} style={{padding:isMobile?"3px 8px":"4px 10px",fontSize:isMobile?11:15,fontWeight:700,background:unit===u?"rgba(77,159,255,0.3)":"rgba(77,159,255,0.05)",color:unit===u?"#4D9FFF":"rgba(77,159,255,0.3)",borderLeft:u==="kg"?"1px solid rgba(77,159,255,0.3)":"none"}}>{u.toUpperCase()}</div>)}
               </div>
             </div>
             <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
@@ -2248,8 +2248,8 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
             const dV=Math.min(bpV,VL),vPct=Math.min((bpV/VL)*100,100);
             return(<div style={{background:"rgba(169,70,29,0.08)",border:"1px solid rgba(196,87,30,0.5)",borderRadius:10,padding:"12px 14px"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                <div style={{fontSize:isMobile?11:13,fontWeight:700,color:"#FFD93D",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace"}}>📦 VOLUME</div>
-                {incomplete&&<div style={{padding:"3px 8px",borderRadius:8,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:isMobile?10:15,fontFamily:"monospace",fontWeight:700}}>⚠ PARTIAL</div>}
+                <div style={{fontSize:isMobile?12:13,fontWeight:700,color:"#FFD93D",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace"}}>📦 VOLUME</div>
+                {incomplete&&<div style={{padding:"3px 8px",borderRadius:8,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:isMobile?11:15,fontFamily:"monospace",fontWeight:700}}>⚠ PARTIAL</div>}
               </div>
               <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
                 <div style={{fontSize:isMobile?13:34,fontWeight:900,color:"#FFD93D",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{dV.toFixed(1)}</div>
@@ -2267,7 +2267,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.4)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
-              <div style={{fontSize:isMobile?10:11,fontWeight:500,color:"rgba(255,255,255,0.4)",letterSpacing:0,marginBottom:2,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
+              <div style={{fontSize:isMobile?11:11,fontWeight:500,color:"rgba(255,255,255,0.4)",letterSpacing:0,marginBottom:2,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
               <div style={{fontSize:isMobile?12:18,fontWeight:600,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
             </div>
           ))}
@@ -2282,7 +2282,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
         {[{id:"pack",label:isMobile?"PACK":"PACK LIST",emoji:"🎒"},{id:"refine",label:"REFINE",emoji:"✦"},{id:"weight",label:isMobile?"WEIGHT":"BREAKDOWN",emoji:"⚖️"}].map(t=>(
           <button key={t.id} onClick={()=>setPackTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Space Mono',monospace",position:"relative"}}>
             {t.emoji&&<span style={{fontSize:isMobile?13:15,lineHeight:1}}>{t.emoji}</span>}
-            <span style={{fontSize:isMobile?11:13,letterSpacing:isMobile?0:1,fontWeight:700,whiteSpace:"nowrap"}}>{t.label}</span>
+            <span style={{fontSize:isMobile?12:13,letterSpacing:isMobile?0:1,fontWeight:700,whiteSpace:"nowrap"}}>{t.label}</span>
             {t.id==="refine"&&suggestions.length>0&&<div style={{position:"absolute",top:6,right:"20%",width:7,height:7,borderRadius:"50%",background:"#4D9FFF",boxShadow:"0 0 8px #4D9FFF"}}/>}
           </button>
         ))}
@@ -2290,12 +2290,12 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
       {/* Category filter pills */}
       {packTab==="pack"&&<div data-coach="pack-filters" style={{display:"flex",gap:6,padding:"10px 16px",overflowX:"auto",borderBottom:"1px solid rgba(169,70,29,0.25)",background:"rgba(10,4,0,0.8)",flexShrink:0,WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
         <button onClick={()=>{setFilterCat("all");setOpenCats({});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat==="all"?"rgba(255,255,255,0.5)":"rgba(255,255,255,0.12)"),background:filterCat==="all"?"rgba(255,255,255,0.08)":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
-          <span style={{fontSize:isMobile?13:15}}>📋</span><span style={{fontSize:isMobile?11:15,color:filterCat==="all"?"#FFF":"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="all"?700:400}}>All</span>
+          <span style={{fontSize:isMobile?13:15}}>📋</span><span style={{fontSize:isMobile?12:15,color:filterCat==="all"?"#FFF":"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="all"?700:400}}>All</span>
         </button>
         {CATS.map(c=>(
           <button key={c.id} onClick={()=>{setFilterCat(c.id);setOpenCats({[c.id]:true});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat===c.id?c.color+"80":"rgba(169,70,29,0.4)"),background:filterCat===c.id?c.color+"14":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
             <span style={{fontSize:isMobile?13:15}}>{c.icon}</span>
-            <span style={{fontSize:isMobile?11:15,color:filterCat===c.id?c.color:"rgba(255,255,255,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat===c.id?700:400}}>{c.label}</span>
+            <span style={{fontSize:isMobile?12:15,color:filterCat===c.id?c.color:"rgba(255,255,255,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat===c.id?700:400}}>{c.label}</span>
           </button>
         ))}
         <button onClick={()=>{setFilterCat("needtobuy");setOpenCats({});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat==="needtobuy"?"rgba(255,107,107,0.7)":"rgba(255,107,107,0.3)"),background:filterCat==="needtobuy"?"rgba(255,107,107,0.12)":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
