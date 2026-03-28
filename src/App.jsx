@@ -1992,9 +1992,10 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   }
 
   // ─── Item Row ─────────────────────────────────────────────────
-  function PackItemRow({item,catColor,isLast}) {
+  function PackItemRow({item,catColor,isLast,onEditOpenChange}) {
     const [open,setOpen]=useState(false);
     const [editOpen,setEditOpen]=useState(false);
+    useEffect(()=>{onEditOpenChange?.(editOpen);},[editOpen]);
     if(isMobile) return(
       <>
         <div className="tap-scale" onClick={()=>setEditOpen(true)}
@@ -2093,6 +2094,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   function CatCard({cat,idx}) {
     const catItems=itemsForCat(cat.id);
     const [catSheetOpen,setCatSheetOpen]=useState(false);
+    const [hasNestedDrawer,setHasNestedDrawer]=useState(false);
     const open=!!openCats[cat.id];
     const ownedInCat=catItems.filter(i=>i.owned).length;
     const catW=catItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM;
@@ -2122,7 +2124,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
             <span style={{fontSize:20,color:'rgba(212,180,120,0.3)'}}>›</span>
           </div>
         </div>
-        <BottomSheet open={catSheetOpen} onClose={()=>setCatSheetOpen(false)} zIndex={500}>
+        <BottomSheet open={catSheetOpen} onClose={()=>setCatSheetOpen(false)} zIndex={500} hideClose={hasNestedDrawer}>
           <div style={{padding:'16px 16px 14px',borderBottom:'1px solid rgba(232,220,200,0.06)',display:'flex',alignItems:'center',gap:12}}>
             <span style={{fontSize:28}}>{cat.icon}</span>
             <div style={{flex:1}}>
@@ -2132,7 +2134,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
             {catCost>0&&<div style={{fontSize:15,fontWeight:700,color:'#FFD93D',fontFamily:"'Space Mono',monospace",flexShrink:0}}>${catCost.toLocaleString()}</div>}
           </div>
           <div style={{paddingBottom:20}}>
-            {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1}/>)}
+            {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1} onEditOpenChange={setHasNestedDrawer}/>)}
             <div style={{padding:'12px 16px',display:'flex',justifyContent:'center'}}>
               <button onClick={()=>addItemToCat(cat.id)} style={{padding:'8px 24px',borderRadius:20,border:`1px dashed ${cat.color}44`,background:'transparent',color:`${cat.color}77`,fontSize:12,cursor:'pointer',fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700}}>+ ADD ITEM</button>
             </div>
