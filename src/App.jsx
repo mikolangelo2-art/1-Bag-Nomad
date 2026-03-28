@@ -1754,7 +1754,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
               <span style={{fontSize:11,fontWeight:700,color:"#FFD93D",letterSpacing:2,fontFamily:"'Space Mono',monospace",flex:1}}>✦ EXPEDITION COMPLETE · TAP TO CELEBRATE</span>
               <span style={{fontSize:12,color:"rgba(255,217,61,0.5)"}}>→</span>
             </div>}
-            {tripData.visionNarrative&&<div style={{marginBottom:8}}><div style={{fontSize:10,color:"rgba(232,220,200,0.35)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.75,borderLeft:"2px solid rgba(232,220,200,0.12)",paddingLeft:12}}>"{tripData.visionNarrative.slice(0,160)}{tripData.visionNarrative.length>160?"...":""}"</div></div>}
+            {tripData.visionNarrative&&<div style={{marginBottom:8}}><div style={{fontSize:10,color:"rgba(232,220,200,0.35)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.75,borderLeft:"2px solid rgba(232,220,200,0.12)",paddingLeft:12,textAlign:"left"}}>"{tripData.visionNarrative.slice(0,160)}{tripData.visionNarrative.length>160?"...":""}"</div></div>}
             <div style={{fontSize:isMobile?12:14,color:"#E8DCC8",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Space Mono',monospace",whiteSpace:isMobile?"normal":"nowrap"}}>{isMobile?`YOUR EXPEDITION · ${segPhases.length} PHASES`:`YOUR EXPEDITION · ${segPhases.length} PHASES · TAP PHASE TO EXPAND`}</div>
             {isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.3)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>TAP PHASE TO EXPAND</div>}
             {segPhases.map((phase,i)=>i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} autoOpen={segPhases.length===1}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i}/>)}
@@ -2002,7 +2002,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
           <button onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:34,height:34,borderRadius:8,border:`1.5px solid ${item.owned?'#69F0AE':'rgba(255,255,255,0.15)'}`,background:item.owned?'rgba(105,240,174,0.1)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flexShrink:0,transition:'all 0.15s'}}>
             {item.owned&&<span style={{color:'#69F0AE',fontSize:15,fontWeight:900,lineHeight:1}}>✓</span>}
           </button>
-          <div style={{flex:1,minWidth:0}}>
+          <div style={{flex:1,minWidth:0,textAlign:'left'}}>
             <div style={{fontSize:13,fontWeight:500,color:item.owned?'#69F0AE':'#E8DCC8',fontFamily:"'Space Mono',monospace",whiteSpace:'normal',overflow:'visible',textOverflow:'clip',lineHeight:1.3}}>{item.name||'Unnamed'}</div>
             <div style={{display:'flex',gap:8,marginTop:2}}>
               {parseFloat(item.weight)>0&&<span style={{fontSize:11,color:'rgba(255,255,255,0.38)',fontFamily:'monospace'}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
@@ -2019,7 +2019,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
             <div style={{fontSize:10,color:`${catColor}99`,letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:8}}>EDIT ITEM</div>
             <input value={item.name} onChange={e=>updateItem(item.id,'name',e.target.value)} style={{width:'100%',background:'rgba(18,11,0,0.9)',border:`1px solid ${catColor}44`,borderRadius:9,color:'#FFF',fontSize:14,padding:'10px 13px',fontFamily:"'Space Mono',monospace",outline:'none'}} placeholder="Item name"/>
           </div>
-          <div style={{padding:'14px 16px',display:'flex',flexDirection:'column',gap:12}}>
+          <div style={{padding:'14px 16px',display:'flex',flexDirection:'column',gap:12,textAlign:'left'}}>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
               {[{label:'WT (lbs)',f:'weight'},{label:'COST ($)',f:'cost'},{label:'VOL (L)',f:'volume'}].map(({label,f})=>(
                 <div key={f}>
