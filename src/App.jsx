@@ -2106,9 +2106,9 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
           onMouseOver={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.5)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.35)';}}
           onMouseOut={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.35)';e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.25)';}}
           style={{display:'flex',alignItems:'center',padding:'20px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.35)',borderRadius:12,marginBottom:8,boxShadow:'0 2px 8px rgba(0,0,0,0.25)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
-          <span style={{fontSize:24,flexShrink:0}}>{cat.icon}</span>
-          <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:14,fontWeight:700,color:'#E8DCC8',fontFamily:"'Space Mono',monospace"}}>{cat.label}</div>
+          <span style={{fontSize:32,flexShrink:0}}>{cat.icon}</span>
+          <div style={{flex:1,minWidth:0,textAlign:'left'}}>
+            <div style={{fontSize:15,fontWeight:500,color:'#E8DCC8',fontFamily:"'Space Mono',monospace"}}>{cat.label}</div>
             <div style={{display:'flex',gap:8,alignItems:'center',marginTop:3}}>
               <span style={{fontSize:11,color:'rgba(232,220,200,0.45)',fontFamily:'monospace'}}>{catItems.length} items</span>
               {catW>0&&<span style={{fontSize:11,color:'#FFD93D',fontFamily:'monospace',fontWeight:600}}>{catW.toFixed(1)}{unit}</span>}
