@@ -1424,30 +1424,29 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
           </div>
         </div>
       )}
-      <div style={{display:"flex",alignItems:"center",minHeight:50,borderLeft:`2px solid ${borderColor}${open?"88":"2a"}`,transition:"border-color 0.2s"}}>
-        <div onClick={()=>setOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:isMobile?6:10,padding:isMobile?"10px 6px 10px 12px":"12px 10px 12px 20px",cursor:"pointer",background:open?`${tc}04`:"transparent",transition:"background 0.15s",flex:1,minWidth:0}}>
-          <div style={{width:7,height:7,borderRadius:"50%",background:tc,flexShrink:0,boxShadow:open?`0 0 7px ${tc}`:"none"}}/>
-          <div style={{flex:1,minWidth:0}}>
-            <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"wrap"}}>
-              <span style={{fontSize:13,fontWeight:600,color:isCancelled?"rgba(255,255,255,0.4)":"#FFF",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textDecoration:isCancelled?"line-through":"none"}}>{segment.name}</span>
-              <span style={{fontSize:10,color:`${tc}bb`,background:`${tc}0e`,border:`1px solid ${tc}1e`,borderRadius:6,padding:"1px 6px",letterSpacing:0.5,fontWeight:500,whiteSpace:"nowrap",flexShrink:0}}>{segment.type?.toUpperCase()}</span>
-              {!isMobile&&segment.note&&<span style={{fontSize:15,color:"rgba(255,255,255,0.72)",fontStyle:"italic"}}>{segment.note}</span>}
-            </div>
-            <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"nowrap"}}>
-              <span style={{color:"rgba(255,255,255,0.75)",fontWeight:500,fontFamily:"'Space Mono',monospace",fontSize:isMobile?10:12,whiteSpace:"nowrap"}}>{fD(segment.arrival)}→{fD(segment.departure)}</span>
-              <span style={{color:tc,fontWeight:700,fontSize:isMobile?10:12,whiteSpace:"nowrap",flexShrink:0}}>🌙{segment.nights}n</span>
-              {segment.diveCount>0&&<span style={{color:"#00E5FF",fontSize:isMobile?10:12,whiteSpace:"nowrap",flexShrink:0}}>🤿{segment.diveCount}</span>}
-            </div>
+      <div style={{display:"flex",alignItems:"stretch",minHeight:50,borderLeft:`2px solid ${borderColor}${open?"88":"2a"}`,transition:"border-color 0.2s"}}>
+        <div onClick={()=>setOpen(o=>!o)} style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:isMobile?"10px 6px 10px 12px":"12px 10px 12px 20px",cursor:"pointer",background:open?`${tc}04`:"transparent",transition:"background 0.15s",flex:1,minWidth:0}}>
+          {/* Row 1: dot + name + type badge + budget */}
+          <div style={{display:"flex",alignItems:"center",gap:6,minWidth:0}}>
+            <div style={{width:7,height:7,borderRadius:"50%",background:tc,flexShrink:0,boxShadow:open?`0 0 7px ${tc}`:"none"}}/>
+            <span style={{fontSize:isMobile?14:15,fontWeight:600,color:isCancelled?"rgba(255,255,255,0.4)":"#E8DCC8",fontFamily:"'Space Mono',monospace",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textDecoration:isCancelled?"line-through":"none"}}>{segment.name}</span>
+            <span style={{fontSize:9,color:`${tc}bb`,background:`${tc}0e`,border:`1px solid ${tc}1e`,borderRadius:6,padding:"1px 5px",letterSpacing:0.5,fontWeight:500,whiteSpace:"nowrap",flexShrink:0}}>{segment.type?.toUpperCase()}</span>
+            <span style={{fontSize:isMobile?12:14,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",flexShrink:0,textDecoration:isCancelled?"line-through":"none"}}>{fmt(segment.budget)}</span>
           </div>
-          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:isMobile?2:4,flexShrink:0}}>
+          {/* Row 2: date + nights + dives + progdots + status badge */}
+          <div style={{display:"flex",alignItems:"center",gap:isMobile?5:6,marginTop:4,paddingLeft:13,minWidth:0,flexWrap:"nowrap"}}>
+            <span style={{color:"rgba(255,255,255,0.50)",fontFamily:"'Space Mono',monospace",fontSize:11,whiteSpace:"nowrap"}}>{fD(segment.arrival)}→{fD(segment.departure)}</span>
+            <span style={{color:"rgba(255,255,255,0.38)",fontSize:11,whiteSpace:"nowrap"}}>· {segment.nights}n</span>
+            {segment.diveCount>0&&<span style={{color:"rgba(0,229,255,0.6)",fontSize:11,whiteSpace:"nowrap"}}>· 🤿{segment.diveCount}</span>}
+            <div style={{flex:1,minWidth:0}}/>
             <ProgDots phaseId={phaseId} segment={segment} intelSnippet={intelSnippet}/>
-            <div style={{fontSize:isMobile?12:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace",textDecoration:isCancelled?"line-through":"none"}}>{fmt(segment.budget)}</div>
-            {/* Status badge */}
-            <button onClick={handleBadgeTap} style={{background:`${sc.color}18`,border:`1px solid ${sc.color}55`,borderRadius:20,padding:"2px 7px",fontSize:8,fontWeight:700,letterSpacing:1.5,color:sc.color,cursor:"pointer",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:2,lineHeight:1.4,minHeight:20,transition:"all 0.2s",animation:status==='planning'?'planningPulse 2.2s ease-in-out infinite':'none'}}>
+            <button onClick={handleBadgeTap} style={{background:`${sc.color}18`,border:`1px solid ${sc.color}55`,borderRadius:20,padding:"1px 6px",fontSize:8,fontWeight:700,letterSpacing:1.5,color:sc.color,cursor:"pointer",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:2,lineHeight:1.4,minHeight:18,transition:"all 0.2s",animation:status==='planning'?'planningPulse 2.2s ease-in-out infinite':'none'}}>
               <span style={{fontSize:9}}>{sc.icon}</span>{sc.label}
             </button>
           </div>
-          <div style={{width:16,height:16,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.15":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginLeft:4}}>
+        </div>
+        <div onClick={e=>{e.stopPropagation();setOpen(o=>!o);}} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"0 8px",cursor:"pointer",flexShrink:0}}>
+          <div style={{width:16,height:16,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.15":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center"}}>
             <span style={{fontSize:10,color:open?"#00E5FF":"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
           </div>
         </div>
