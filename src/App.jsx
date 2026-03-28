@@ -1115,7 +1115,7 @@ function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00
   const s={background:"rgba(0,8,20,0.6)",border:`1px solid ${accent}18`,borderRadius:6,color:"#FFF",fontSize:mob?12:15,padding:multiline?(mob?"5px 7px":"6px 8px"):(mob?"4px 7px":"5px 8px"),fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",lineHeight:1.6,resize:multiline?"none":undefined};
   return(
     <div style={{display:"flex",flexDirection:"column",gap:mob?2:3}}>
-      <div style={{fontSize:mob?9:11,color:`${accent}88`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500}}>{label}</div>
+      <div style={{fontSize:mob?9:11,color:"rgba(212,180,120,0.7)",letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500}}>{label}</div>
       {multiline?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={1} style={s} onFocus={e=>e.target.style.borderColor=`${accent}55`} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>
       :type==="date"?<div style={{position:"relative"}}><input type="date" value={value} onChange={e=>onChange(e.target.value)} style={{...s,colorScheme:"dark",paddingRight:26}} onFocus={e=>e.target.style.borderColor=`${accent}55`} onBlur={e=>e.target.style.borderColor=`${accent}18`}/><div style={{position:"absolute",right:7,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:13,lineHeight:1}}>📅</div></div>
       :<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={e=>e.target.style.borderColor=`${accent}55`} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>}
@@ -1408,7 +1408,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast}) {
     setAskChat(p=>[...p,{role:"ai",text:res}]);setAskLoading(false);
   }
   return(
-    <div style={{borderBottom:isLast?"none":"1px solid rgba(0,229,255,0.16)",opacity:isCancelled?0.65:1,transition:"opacity 0.2s"}}>
+    <div style={{borderBottom:isLast?"none":"1px solid rgba(212,180,120,0.12)",opacity:isCancelled?0.65:1,transition:"opacity 0.2s"}}>
       {/* Change Flow Modal */}
       {showChangeModal&&(
         <div onClick={()=>setShowChangeModal(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,4,14,0.88)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
@@ -1519,19 +1519,20 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
   if(isMobile) return(
     <>
       <div className="tap-scale" onClick={()=>setSheetOpen(true)}
-        style={{display:'flex',alignItems:'center',padding:'12px 16px',minHeight:80,borderBottom:'1px solid rgba(232,220,200,0.04)',background:'rgba(21,15,10,0.88)',gap:12,animation:`fadeUp 0.35s ease ${idx*0.07}s both`,position:'relative'}}>
-        {/* Number + flag */}
-        <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0,alignSelf:'flex-start',paddingTop:3}}>
+        style={{display:'flex',alignItems:'flex-start',padding:'12px 16px',minHeight:80,borderBottom:'1px solid rgba(212,180,120,0.1)',background:'rgba(21,15,10,0.88)',gap:10,animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
+        {/* Left: number circle + flag */}
+        <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0,paddingTop:4}}>
           <div style={{width:26,height:26,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
           <span style={{fontSize:22,lineHeight:1}}>{phase.flag}</span>
         </div>
-        {/* Name / date + budget */}
-        <div style={{flex:1,minWidth:0}}>
+        {/* Center: name + date */}
+        <div style={{flex:1,minWidth:0,paddingTop:2}}>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:26,fontWeight:300,color:'#E8DCC8',lineHeight:1.1}}>{phase.name}</div>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:5}}>
-            <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(255,255,255,0.42)',whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
-            <div style={{fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:'#FFD93D',flexShrink:0,marginLeft:12}}>{fmt(phase.totalBudget)}</div>
-          </div>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(255,255,255,0.42)',marginTop:4,whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
+        </div>
+        {/* Right: budget */}
+        <div style={{textAlign:'right',flexShrink:0,minWidth:80,paddingTop:4}}>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:'#FFD93D'}}>{fmt(phase.totalBudget)}</div>
         </div>
       </div>
       <BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500}>
@@ -1645,7 +1646,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
     setLoadingIntel(false);
   }
 
-  const heroStats=[{label:"DEPARTS IN",value:daysToDepart,unit:"DAYS",color:uc,glow:uc},{label:"NIGHTS",value:totalNights,unit:"NIGHTS",color:"#A29BFE",glow:"rgba(162,155,254,0.4)"},...(totalDives>0?[{label:"DIVES",value:totalDives,unit:"DIVES",color:"#00E5FF",glow:"rgba(0,229,255,0.4)"}]:[]),{label:"BUDGET",value:fmt(totalBudget),unit:"TOTAL",color:"#FFD93D",glow:"rgba(255,217,61,0.35)"}];
+  const heroStats=[{label:"DEPARTS IN",value:daysToDepart,unit:"DAYS",color:"#FFD93D",glow:"rgba(255,217,61,0.35)"},{label:"NIGHTS",value:totalNights,unit:"NIGHTS",color:"#E8DCC8",glow:"rgba(232,220,200,0.2)"},...(totalDives>0?[{label:"DIVES",value:totalDives,unit:"DIVES",color:"#00E5FF",glow:"rgba(0,229,255,0.4)"}]:[]),{label:"BUDGET",value:fmt(totalBudget),unit:"TOTAL",color:"#FFD93D",glow:"rgba(255,217,61,0.35)"}];
   const TABS=[{id:"next",label:"🗺️ EXPEDITION"},{id:"budget",label:"💰 BUDGET"},{id:"book",label:"🔗 BOOK"},{id:"intel",label:"🔭 INTEL"}];
   const {changedSegs,cancelledSegs}=(()=>{const allSeg=loadSeg();const cs=[],xs=[];segPhases.forEach(p=>p.segments.forEach(s=>{const d=allSeg[`${p.id}-${s.id}`]||{};const st=d.status||'planning';if(st==='changed')cs.push({phase:p,seg:s});if(st==='cancelled')xs.push({phase:p,seg:s});}));return{changedSegs:cs,cancelledSegs:xs};})();
 
@@ -1698,7 +1699,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
             <div key={s.label} style={{textAlign:"center",padding:isMobile?"2px 3px":"4px 6px",borderLeft:i>0?"1px solid rgba(232,220,200,0.08)":"none"}}>
               <div style={{fontSize:isMobile?13:15,fontWeight:700,color:"rgba(255,255,255,0.65)",letterSpacing:isMobile?0.5:2,marginBottom:isMobile?2:4,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
               <div className="stat-val" style={{fontSize:isMobile?13:26,fontWeight:900,lineHeight:1,color:s.color,textShadow:`0 0 20px ${s.glow}`,fontFamily:"'Space Mono',monospace",animationDelay:`${i*0.1}s`}}>{s.value}</div>
-              <div style={{fontSize:isMobile?13:15,fontWeight:700,color:s.color,opacity:0.7,letterSpacing:isMobile?0.5:2,marginTop:isMobile?2:3,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
+              <div style={{fontSize:isMobile?13:15,fontWeight:700,color:"rgba(232,220,200,0.5)",letterSpacing:isMobile?0.5:2,marginTop:isMobile?2:3,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
             </div>
           ))}
         </div>
@@ -2031,7 +2032,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
             </div>
             <div style={{display:'flex',gap:8,paddingTop:4}}>
               <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:'12px',borderRadius:12,border:`1px solid ${item.owned?'rgba(105,240,174,0.4)':'rgba(196,87,30,0.4)'}`,background:item.owned?'rgba(105,240,174,0.08)':'rgba(169,70,29,0.1)',color:item.owned?'#69F0AE':'#FF9F43',fontSize:13,cursor:'pointer',fontFamily:'monospace',fontWeight:700}}>{item.owned?'✓ OWNED':'MARK OWNED'}</button>
-              <button onClick={()=>{removeItem(item.id);setEditOpen(false);}} style={{padding:'12px 16px',borderRadius:12,border:'1px solid rgba(255,107,107,0.3)',background:'rgba(255,107,107,0.06)',color:'rgba(255,107,107,0.7)',fontSize:13,cursor:'pointer',fontFamily:'monospace',fontWeight:700}}>✕</button>
+              <button onClick={()=>{removeItem(item.id);setEditOpen(false);}} style={{padding:'12px 16px',borderRadius:12,border:'1px solid rgba(255,107,107,0.3)',background:'rgba(255,107,107,0.06)',color:'rgba(255,107,107,0.7)',fontSize:11,cursor:'pointer',fontFamily:'monospace',fontWeight:700,letterSpacing:1}}>REMOVE</button>
             </div>
           </div>
         </BottomSheet>
@@ -2096,7 +2097,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     if(isMobile) return(
       <>
         <div className="tap-scale" onClick={()=>setCatSheetOpen(true)}
-          style={{display:'flex',alignItems:'center',height:64,padding:'0 16px',borderBottom:'1px solid rgba(232,220,200,0.04)',background:'rgba(21,15,10,0.88)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
+          style={{display:'flex',alignItems:'center',height:64,padding:'0 16px',borderBottom:'1px solid rgba(212,180,120,0.1)',background:'rgba(21,15,10,0.88)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
           <span style={{fontSize:24,flexShrink:0}}>{cat.icon}</span>
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontSize:14,fontWeight:700,color:'#E8DCC8',fontFamily:"'Space Mono',monospace"}}>{cat.label}</div>
