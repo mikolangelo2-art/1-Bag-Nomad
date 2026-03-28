@@ -1519,21 +1519,20 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
   if(isMobile) return(
     <>
       <div className="tap-scale" onClick={()=>setSheetOpen(true)}
-        style={{display:'flex',alignItems:'center',padding:'12px 16px',minHeight:80,borderBottom:'1px solid rgba(212,180,120,0.1)',background:'rgba(21,15,10,0.88)',animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
-        {/* Left: number circle + flag */}
-        <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0,marginRight:12}}>
-          <div style={{width:26,height:26,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
-          <span style={{fontSize:22,lineHeight:1}}>{phase.flag}</span>
+        onMouseOver={e=>{e.currentTarget.style.background='rgba(255,255,255,0.04)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.28)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.35),0 0 0 1px rgba(212,180,120,0.1)';}}
+        onMouseOut={e=>{e.currentTarget.style.background='rgba(255,255,255,0.025)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.12)';e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.25)';}}
+        style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.12)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 8px rgba(0,0,0,0.25)',animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
+        {/* Top row: circle + flag + name + budget */}
+        <div style={{display:'flex',alignItems:'center',gap:12,width:'100%'}}>
+          <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0}}>
+            <div style={{width:26,height:26,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
+            <span style={{fontSize:22,lineHeight:1}}>{phase.flag}</span>
+          </div>
+          <div style={{flex:1,fontFamily:"'Fraunces',serif",fontSize:28,fontWeight:300,color:'#E8DCC8',lineHeight:1.1}}>{phase.name}</div>
+          <div style={{flexShrink:0,marginLeft:8,fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:'#FFD93D',whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</div>
         </div>
-        {/* Middle: name + date */}
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:26,fontWeight:300,color:'#E8DCC8',lineHeight:1.1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{phase.name}</div>
-          <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(255,255,255,0.42)',marginTop:3,whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
-        </div>
-        {/* Right: budget */}
-        <div style={{flexShrink:0,marginLeft:12,textAlign:'right',whiteSpace:'nowrap'}}>
-          <div style={{fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:'#FFD93D'}}>{fmt(phase.totalBudget)}</div>
-        </div>
+        {/* Bottom row: date */}
+        <div style={{marginTop:6,paddingLeft:52,fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(232,220,200,0.45)'}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
       </div>
       <BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500}>
         {/* Sheet header */}
