@@ -601,7 +601,7 @@ function BottomSheet({open,onClose,children,zIndex=400}) {
     <div style={{position:'fixed',inset:0,zIndex,display:'flex',flexDirection:'column',justifyContent:'flex-end'}} onClick={onClose}>
       <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.72)'}}/>
       <div onClick={e=>e.stopPropagation()}
-        style={{position:'relative',background:'#1C1208',borderRadius:'20px 20px 0 0',borderTop:'1px solid rgba(255,255,255,0.08)',maxHeight:'90vh',display:'flex',flexDirection:'column',paddingBottom:'env(safe-area-inset-bottom)',transform:visible?'translateY(0)':'translateY(100%)',transition:visible?'transform 0.42s cubic-bezier(0.34,1.56,0.64,1)':'none'}}>
+        style={{position:'relative',background:'#1C1208',borderRadius:'20px 20px 0 0',borderTop:'1px solid rgba(212,180,120,0.3)',maxHeight:'90vh',display:'flex',flexDirection:'column',paddingBottom:'env(safe-area-inset-bottom)',transform:visible?'translateY(0)':'translateY(100%)',transition:visible?'transform 0.42s cubic-bezier(0.34,1.56,0.64,1)':'none'}}>
         <button onClick={onClose} style={{position:'absolute',top:20,right:20,width:36,height:36,borderRadius:'50%',background:'rgba(255,255,255,0.15)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:1,flexShrink:0}}>
           <span style={{fontSize:16,color:'rgba(255,255,255,0.7)',lineHeight:1}}>✕</span>
         </button>
@@ -1519,20 +1519,22 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
   if(isMobile) return(
     <>
       <div className="tap-scale" onClick={()=>setSheetOpen(true)}
-        onMouseOver={e=>{e.currentTarget.style.background='rgba(255,255,255,0.04)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.28)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.35),0 0 0 1px rgba(212,180,120,0.1)';}}
-        onMouseOut={e=>{e.currentTarget.style.background='rgba(255,255,255,0.025)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.12)';e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.25)';}}
-        style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.12)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 8px rgba(0,0,0,0.25)',animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
-        {/* Top row: circle + flag + name + budget */}
+        onMouseOver={e=>{e.currentTarget.style.background='rgba(255,255,255,0.04)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.5)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.5),0 0 20px rgba(212,180,120,0.08)';}}
+        onMouseOut={e=>{e.currentTarget.style.background='rgba(255,255,255,0.025)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.25)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,180,120,0.1)';}}
+        style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.25)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,180,120,0.1)',animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
+        {/* Top row: circle + flag + name */}
         <div style={{display:'flex',alignItems:'center',gap:12,width:'100%'}}>
           <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0}}>
             <div style={{width:26,height:26,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
             <span style={{fontSize:22,lineHeight:1}}>{phase.flag}</span>
           </div>
           <div style={{flex:1,fontFamily:"'Fraunces',serif",fontSize:28,fontWeight:300,color:'#E8DCC8',lineHeight:1.1}}>{phase.name}</div>
-          <div style={{flexShrink:0,marginLeft:8,fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:'#FFD93D',whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</div>
         </div>
-        {/* Bottom row: date */}
-        <div style={{marginTop:6,paddingLeft:52,fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(232,220,200,0.45)'}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
+        {/* Bottom row: date + budget */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:6,paddingLeft:52}}>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(232,220,200,0.45)'}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:'#FFD93D',whiteSpace:'nowrap',marginLeft:8}}>{fmt(phase.totalBudget)}</div>
+        </div>
       </div>
       <BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500}>
         {/* Sheet header */}
@@ -1696,9 +1698,9 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
         <div data-coach="trip-stats" style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
           {heroStats.map((s,i)=>(
             <div key={s.label} style={{textAlign:"center",padding:isMobile?"2px 3px":"4px 6px",borderLeft:i>0?"1px solid rgba(232,220,200,0.08)":"none"}}>
-              <div style={{fontSize:isMobile?13:15,fontWeight:700,color:"rgba(255,255,255,0.65)",letterSpacing:isMobile?0.5:2,marginBottom:isMobile?2:4,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
-              <div className="stat-val" style={{fontSize:isMobile?13:26,fontWeight:900,lineHeight:1,color:s.color,textShadow:`0 0 20px ${s.glow}`,fontFamily:"'Space Mono',monospace",animationDelay:`${i*0.1}s`}}>{s.value}</div>
-              <div style={{fontSize:isMobile?13:15,fontWeight:700,color:"rgba(232,220,200,0.5)",letterSpacing:isMobile?0.5:2,marginTop:isMobile?2:3,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
+              <div style={{fontSize:isMobile?10:13,fontWeight:700,color:"rgba(232,220,200,0.5)",letterSpacing:3,marginBottom:isMobile?2:4,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
+              <div className="stat-val" style={{fontSize:isMobile?13:26,fontWeight:700,lineHeight:1,color:s.label==="BUDGET"?"#FFD93D":"#E8DCC8",fontFamily:"'Space Mono',monospace",animationDelay:`${i*0.1}s`}}>{s.value}</div>
+              <div style={{fontSize:isMobile?11:13,fontWeight:700,color:"rgba(232,220,200,0.4)",letterSpacing:2,marginTop:isMobile?2:3,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
             </div>
           ))}
         </div>
@@ -2096,23 +2098,25 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     if(isMobile) return(
       <>
         <div className="tap-scale" onClick={()=>setCatSheetOpen(true)}
-          style={{display:'flex',alignItems:'center',height:64,padding:'0 16px',borderBottom:'1px solid rgba(212,180,120,0.1)',background:'rgba(21,15,10,0.88)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
+          onMouseOver={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.4)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.35)';}}
+          onMouseOut={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.2)';e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.25)';}}
+          style={{display:'flex',alignItems:'center',padding:'16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.2)',borderRadius:12,marginBottom:8,boxShadow:'0 2px 8px rgba(0,0,0,0.25)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
           <span style={{fontSize:24,flexShrink:0}}>{cat.icon}</span>
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontSize:14,fontWeight:700,color:'#E8DCC8',fontFamily:"'Space Mono',monospace"}}>{cat.label}</div>
             <div style={{display:'flex',gap:8,alignItems:'center',marginTop:3}}>
-              <span style={{fontSize:11,color:'rgba(232,220,200,0.35)',fontFamily:'monospace'}}>{catItems.length} items</span>
-              {catW>0&&<span style={{fontSize:11,color:cat.color,fontFamily:'monospace',fontWeight:600}}>{catW.toFixed(1)}{unit}</span>}
+              <span style={{fontSize:11,color:'rgba(232,220,200,0.45)',fontFamily:'monospace'}}>{catItems.length} items</span>
+              {catW>0&&<span style={{fontSize:11,color:'#FFD93D',fontFamily:'monospace',fontWeight:600}}>{catW.toFixed(1)}{unit}</span>}
             </div>
           </div>
           <div style={{display:'flex',alignItems:'center',gap:10,flexShrink:0}}>
             <div style={{textAlign:'right'}}>
-              <div style={{fontSize:11,color:'rgba(232,220,200,0.35)',fontFamily:'monospace',marginBottom:4}}>{ownedInCat}/{catItems.length}</div>
+              <div style={{fontSize:11,color:'rgba(232,220,200,0.45)',fontFamily:'monospace',marginBottom:4}}>{ownedInCat}/{catItems.length}</div>
               <div style={{width:48,height:3,background:'rgba(255,255,255,0.06)',borderRadius:2,overflow:'hidden'}}>
-                <div style={{height:'100%',width:(catItems.length>0?(ownedInCat/catItems.length)*100:0)+'%',background:`linear-gradient(90deg,${cat.color}66,${cat.color})`,borderRadius:2,transition:'width 0.4s'}}/>
+                <div style={{height:'100%',width:(catItems.length>0?(ownedInCat/catItems.length)*100:0)+'%',background:'linear-gradient(90deg,rgba(255,159,67,0.6),#FF9F43)',borderRadius:2,transition:'width 0.4s'}}/>
               </div>
             </div>
-            <span style={{fontSize:20,color:'rgba(255,255,255,0.2)'}}>›</span>
+            <span style={{fontSize:20,color:'rgba(212,180,120,0.3)'}}>›</span>
           </div>
         </div>
         <BottomSheet open={catSheetOpen} onClose={()=>setCatSheetOpen(false)} zIndex={500}>
