@@ -230,7 +230,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .bnav-btn.bnav-pack.active .bnav-pip{background:#FF9F43!important;box-shadow:0 0 8px #FF9F43}
 .bnav-btn.bnav-pack.active .bnav-lbl{color:#FF9F43}
 @keyframes pipSpring{0%{opacity:0;transform:translateX(-50%) scaleX(0)}60%{transform:translateX(-50%) scaleX(1.3)}100%{opacity:1;transform:translateX(-50%) scaleX(1)}}
-@keyframes consoleIn{from{opacity:0;transform:scale(0.97) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes consoleIn{from{opacity:0}to{opacity:1}}
 @keyframes planningPulse{0%,100%{opacity:0.72}50%{opacity:1.0}}
 @keyframes statReveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .stat-val{animation:statReveal 0.5s cubic-bezier(0.34,1.56,0.64,1) both}
@@ -413,6 +413,7 @@ function AntiqueGlobe({size=120, glowColor="rgba(0,180,255,0.45)", animate=true}
 // ─── ConsoleHeader ────────────────────────────────────────────────
 function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackConsole,children}) {
   const isDream=which==="dream", isTrip=which==="trip", isPack=which==="pack";
+  const [profileOpen,setProfileOpen]=useState(false);
   const bg=isDream?"rgba(0,0,0,0.95)":isTrip?"rgba(0,8,20,0.92)":"rgba(20,8,0,0.95)";
   const bc=isDream?"rgba(0,229,255,0.15)":isTrip?"rgba(0,229,255,0.15)":"rgba(196,87,30,0.5)";
   const dot=isDream?"#00E5FF":isTrip?"#00E5FF":"#C4571E";
@@ -465,6 +466,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
   );
 
   return (
+    <>
     <div style={{background:bg,borderBottom:`1px solid ${bc}`,backdropFilter:"blur(10px)",flexShrink:0}}>
       {/* Top row: [left slot] [center: logo+wordmark] [right slot] */}
       <div style={{display:"flex",alignItems:"center",padding:isMobile?"5px 8px":"7px 14px",gap:6}}>
@@ -485,7 +487,11 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
         </div>
         {/* Right slot */}
         <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
-          {(!isMobile&&(isTrip||isPack)) ? <PackBtn active={isPack}/> : rightSlot||null}
+          {(!isMobile&&(isTrip||isPack)) ? <PackBtn active={isPack}/> : (isMobile&&(isTrip||isPack)) ? (
+            <button onClick={()=>setProfileOpen(true)} className="tap-scale" style={{width:36,height:36,borderRadius:"50%",border:`1.5px solid ${isPack?"rgba(255,159,67,0.45)":"rgba(0,229,255,0.45)"}`,background:isPack?"rgba(255,159,67,0.08)":"rgba(0,229,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,boxShadow:isPack?"0 0 12px rgba(255,159,67,0.12)":"0 0 12px rgba(0,229,255,0.12)"}}>
+              <span style={{fontSize:16,lineHeight:1}}>👤</span>
+            </button>
+          ) : rightSlot||null}
         </div>
       </div>
       {/* Tagline bar */}
@@ -497,6 +503,38 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
       </div>
       {children}
     </div>
+    {isMobile&&(isTrip||isPack)&&<BottomSheet open={profileOpen} onClose={()=>setProfileOpen(false)} zIndex={700}>
+      <div style={{padding:"24px 20px 32px"}}>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:12,marginBottom:28}}>
+          <div style={{width:72,height:72,borderRadius:"50%",border:"2px solid rgba(255,217,61,0.4)",background:"rgba(255,217,61,0.06)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 28px rgba(255,217,61,0.12)"}}>
+            <span style={{fontSize:32}}>👤</span>
+          </div>
+          <div style={{textAlign:"center"}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:4}}>
+              <div style={{fontFamily:"'Fraunces',serif",fontSize:20,fontWeight:700,fontStyle:"italic",color:"#FFF",letterSpacing:1}}>1 Bag Nomad</div>
+              <div style={{padding:"2px 8px",borderRadius:12,background:"rgba(255,217,61,0.15)",border:"1px solid rgba(255,217,61,0.4)",fontSize:9,fontWeight:700,letterSpacing:2,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>PRO</div>
+            </div>
+            <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",fontFamily:"'Space Mono',monospace",letterSpacing:1}}>explorer@1bagnomad.com</div>
+          </div>
+        </div>
+        {[
+          {icon:"⚙️",label:"Settings",sub:"Preferences, units, notifications"},
+          {icon:"🌐",label:"Your Trips",sub:"View all expeditions"},
+          {icon:"💳",label:"Subscription",sub:"1 Bag Nomad Pro · Active"},
+          {icon:"🚪",label:"Sign Out",sub:"See you on the road",danger:true},
+        ].map(row=>(
+          <div key={row.label} style={{display:"flex",alignItems:"center",gap:14,padding:"14px 4px",borderBottom:"1px solid rgba(255,255,255,0.05)",cursor:"pointer"}}>
+            <span style={{fontSize:20,width:28,textAlign:"center",flexShrink:0}}>{row.icon}</span>
+            <div style={{flex:1}}>
+              <div style={{fontSize:14,fontWeight:700,color:row.danger?"#FF6B6B":"rgba(255,255,255,0.88)",fontFamily:"'Space Mono',monospace",letterSpacing:0.5}}>{row.label}</div>
+              <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",marginTop:2,fontFamily:"'Space Mono',monospace"}}>{row.sub}</div>
+            </div>
+            {!row.danger&&<span style={{fontSize:16,color:"rgba(255,255,255,0.18)"}}>›</span>}
+          </div>
+        ))}
+      </div>
+    </BottomSheet>}
+    </>
   );
 }
 
