@@ -184,7 +184,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .sec-label{font-size:12px;color:rgba(0,229,255,0.85);letter-spacing:4px;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid rgba(0,229,255,0.15)}.dream-root .sec-label{color:rgba(255,159,67,0.85);border-image:linear-gradient(90deg,rgba(255,159,67,0.3),rgba(255,217,61,0.2),transparent) 1}
 .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:28px}
 .g-card{position:relative;border-radius:12px;padding:13px 12px;cursor:pointer;transition:all 0.24s cubic-bezier(0.34,1.56,0.64,1);text-align:left;border:none;outline:none;overflow:hidden}
-.g-card.off{background:linear-gradient(148deg,#B04E22,#8d3c18,#6d2c11);box-shadow:0 4px 18px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.07)}
+.g-card.off{background:linear-gradient(148deg,#B04E22,#8d3c18,#6d2c11);box-shadow:0 4px 18px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.07);border:1px solid rgba(169,70,29,0.45)}
 .g-card.on{background:linear-gradient(148deg,#311400,#200e00,#150900);box-shadow:0 0 0 1.5px #FFD93D,0 0 28px rgba(255,217,61,0.22),0 6px 22px rgba(0,0,0,0.65);transform:translateY(-2px)}
 .g-card.off:hover{transform:translateY(-3px)}
 .g-icon{font-size:22px;margin-bottom:6px;display:block}
@@ -704,18 +704,18 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
         </div>
         <div className="sec-label">EXPEDITION DETAILS</div>
         <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:10,marginBottom:20}}>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onChange={e=>setTripName(e.target.value)} placeholder="My Grand Expedition" style={{borderColor:"rgba(0,229,255,0.7)",boxShadow:"0 0 12px rgba(0,229,255,0.1),0 0 30px rgba(0,229,255,0.04)"}}/></div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><input className="f-input" value={city} onChange={e=>setCity(e.target.value)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.7)",boxShadow:"0 0 12px rgba(255,217,61,0.1),0 0 30px rgba(255,217,61,0.04)"}}/></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onChange={e=>setTripName(e.target.value)} placeholder="My Grand Expedition" style={{borderColor:"rgba(0,229,255,0.4)",boxShadow:"0 0 12px rgba(0,229,255,0.1),0 0 30px rgba(0,229,255,0.04)"}}/></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><input className="f-input" value={city} onChange={e=>setCity(e.target.value)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.4)",boxShadow:"0 0 12px rgba(255,217,61,0.1),0 0 30px rgba(255,217,61,0.04)"}}/></div>
         </div>
         <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:10,marginBottom:22}}>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",color:(!date&&isMobile)?"transparent":undefined,paddingRight:36,borderColor:"rgba(105,240,174,0.7)",boxShadow:"0 0 12px rgba(105,240,174,0.1),0 0 30px rgba(105,240,174,0.04)"}}/>{!date&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div></div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={returnDate} min={date||undefined} onChange={e=>setReturnDate(e.target.value)} onFocus={()=>{if(!returnDate&&date)setReturnDate(date);}} style={{colorScheme:"dark",color:(!returnDate&&isMobile)?"transparent":undefined,paddingRight:36,borderColor:"rgba(162,155,254,0.7)",boxShadow:"0 0 12px rgba(162,155,254,0.1),0 0 30px rgba(162,155,254,0.04)"}}/>{!returnDate&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div><div style={{fontFamily:"'Fraunces',serif",fontSize:11,fontStyle:"italic",color:"rgba(162,155,254,0.65)",marginTop:3}}>optional · open-ended</div></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",color:(!date&&isMobile)?"transparent":undefined,paddingRight:36,borderColor:"rgba(105,240,174,0.4)",boxShadow:"0 0 12px rgba(105,240,174,0.1),0 0 30px rgba(105,240,174,0.04)"}}/>{!date&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={returnDate} min={date||undefined} onChange={e=>setReturnDate(e.target.value)} onFocus={()=>{if(!returnDate&&date)setReturnDate(date);}} style={{colorScheme:"dark",color:(!returnDate&&isMobile)?"transparent":undefined,paddingRight:36,borderColor:"rgba(162,155,254,0.4)",boxShadow:"0 0 12px rgba(162,155,254,0.1),0 0 30px rgba(162,155,254,0.04)"}}/>{!returnDate&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div><div style={{fontFamily:"'Fraunces',serif",fontSize:11,fontStyle:"italic",color:"rgba(162,155,254,0.65)",marginTop:3}}>optional · open-ended</div></div>
         </div>
         <div style={{marginBottom:22}}>
           <div className="f-label" style={{marginBottom:10}}>BUDGET APPROACH</div>
           <div style={{display:"flex",flexDirection:"column",gap:7}}>
             {[{id:"dream",icon:"💭",label:"Build the dream",sub:"We'll figure budget later",accent:"#69F0AE"},{id:"rough",icon:"💰",label:"I have a rough number",sub:"Give me a ballpark",accent:"#FFD93D"},{id:"strict",icon:"🎯",label:"Keep it under...",sub:"I have a firm limit",accent:"#A29BFE"}].map(b=>(
-              <button key={b.id} onClick={()=>setBudgetMode(b.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 13px",borderRadius:9,border:"1px solid "+(budgetMode===b.id?b.accent+"80":"rgba(255,255,255,0.1)"),background:budgetMode===b.id?b.accent+"0D":"rgba(255,255,255,0.02)",cursor:"pointer",textAlign:"left",transition:"all 0.25s",minHeight:44,boxShadow:budgetMode===b.id?`0 0 16px ${b.accent}15`:"none"}}>
+              <button key={b.id} onClick={()=>setBudgetMode(b.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 13px",borderRadius:9,border:"1px solid "+(budgetMode===b.id?b.accent+"80":"rgba(255,255,255,0.40)"),background:budgetMode===b.id?b.accent+"0D":"rgba(255,255,255,0.02)",cursor:"pointer",textAlign:"left",transition:"all 0.25s",minHeight:44,boxShadow:budgetMode===b.id?`0 0 16px ${b.accent}15`:"none"}}>
                 <span style={{fontSize:16}}>{b.icon}</span>
                 <div><div style={{fontSize:isMobile?13:14,fontWeight:700,color:budgetMode===b.id?b.accent:"#FFF"}}>{b.label}</div><div style={{fontSize:isMobile?12:13,color:"rgba(255,255,255,0.5)",marginTop:2}}>{b.sub}</div></div>
                 <div style={{marginLeft:"auto",width:14,height:14,borderRadius:"50%",border:"1.5px solid "+(budgetMode===b.id?b.accent:"rgba(255,255,255,0.15)"),background:budgetMode===b.id?b.accent+"22":"transparent",display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -1409,7 +1409,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
     setAskChat(p=>[...p,{role:"ai",text:res}]);setAskLoading(false);
   }
   return(
-    <div style={{borderBottom:isLast?"none":"1px solid rgba(212,180,120,0.12)",opacity:isCancelled?0.65:1,transition:"opacity 0.2s"}}>
+    <div style={{borderBottom:isLast?"none":"1px solid rgba(255,255,255,0.07)",opacity:isCancelled?0.65:1,transition:"opacity 0.2s"}}>
       {/* Change Flow Modal */}
       {showChangeModal&&(
         <div onClick={()=>setShowChangeModal(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,4,14,0.88)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
@@ -1522,8 +1522,8 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
     <>
       <div className="tap-scale" onClick={()=>setSheetOpen(true)}
         onMouseOver={e=>{e.currentTarget.style.background='rgba(255,255,255,0.04)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.5)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.5),0 0 20px rgba(212,180,120,0.08)';}}
-        onMouseOut={e=>{e.currentTarget.style.background='rgba(255,255,255,0.025)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.25)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,180,120,0.1)';}}
-        style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.25)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,180,120,0.1)',animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
+        onMouseOut={e=>{e.currentTarget.style.background='rgba(255,255,255,0.025)';e.currentTarget.style.border='1px solid rgba(212,180,120,0.30)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,180,120,0.1)';}}
+        style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.30)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,180,120,0.1)',animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
         {/* Row 1: badge + flag + name + budget */}
         <div style={{display:'flex',alignItems:'center',gap:8,width:'100%'}}>
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
@@ -1541,7 +1541,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
       </div>
       <BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500} hideClose={anyAskOpen}>
         {/* Sheet header */}
-        <div style={{padding:'16px 16px 14px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+        <div style={{padding:'16px 16px 14px',borderBottom:'1px solid rgba(255,255,255,0.12)'}}>
           <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
             <div style={{width:32,height:32,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}50`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
             <span style={{fontSize:28,lineHeight:1}}>{phase.flag}</span>
@@ -2025,14 +2025,14 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
               {[{label:'WT (lbs)',f:'weight'},{label:'COST ($)',f:'cost'},{label:'VOL (L)',f:'volume'}].map(({label,f})=>(
                 <div key={f}>
                   <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:5,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{label}</div>
-                  <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{width:'100%',background:'rgba(18,11,0,0.9)',border:`1px solid ${catColor}33`,borderRadius:7,color:'#FFD93D',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:'monospace'}}/>
+                  <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{width:'100%',background:'rgba(18,11,0,0.9)',border:`1px solid ${catColor}72`,borderRadius:7,color:'#FFD93D',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:'monospace'}}/>
                 </div>
               ))}
             </div>
             <div>
               <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:8,fontFamily:"'Space Mono',monospace",fontWeight:700}}>BAG</div>
               <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-                {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,'bag',b)} style={{padding:'5px 10px',borderRadius:20,border:`1px solid ${item.bag===b?BAG_C[b]||'#FF9F43':'rgba(255,255,255,0.1)'}`,background:item.bag===b?'rgba(255,255,255,0.06)':'transparent',color:item.bag===b?BAG_C[b]||'#FF9F43':'rgba(255,255,255,0.4)',fontSize:11,cursor:'pointer',fontFamily:'monospace',fontWeight:item.bag===b?700:400}}>{b}</button>)}
+                {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,'bag',b)} style={{padding:'5px 10px',borderRadius:20,border:`1px solid ${item.bag===b?BAG_C[b]||'#FF9F43':'rgba(255,255,255,0.35)'}`,background:item.bag===b?'rgba(255,255,255,0.06)':'transparent',color:item.bag===b?BAG_C[b]||'#FF9F43':'rgba(255,255,255,0.4)',fontSize:11,cursor:'pointer',fontFamily:'monospace',fontWeight:item.bag===b?700:400}}>{b}</button>)}
               </div>
             </div>
             <div style={{display:'flex',gap:8,paddingTop:4}}>
@@ -2078,7 +2078,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
               ))}
             </div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-              {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:"4px 8px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.12)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.45)",fontSize:10,cursor:"pointer",fontFamily:"monospace",fontWeight:item.bag===b?700:400}}>{b}</button>)}
+              {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:"4px 8px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.35)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.45)",fontSize:10,cursor:"pointer",fontFamily:"monospace",fontWeight:item.bag===b?700:400}}>{b}</button>)}
             </div>
             <div style={{display:"flex",gap:8}}>
               <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"9px 8px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#FF9F43",fontSize:13,cursor:"pointer",fontFamily:"monospace",fontWeight:700,whiteSpace:"nowrap"}}>{item.owned?"✓ OWNED":"MARK OWNED"}</button>
@@ -2103,9 +2103,9 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     if(isMobile) return(
       <>
         <div className="tap-scale" onClick={()=>setCatSheetOpen(true)}
-          onMouseOver={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.4)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.35)';}}
-          onMouseOut={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.2)';e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.25)';}}
-          style={{display:'flex',alignItems:'center',padding:'20px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.2)',borderRadius:12,marginBottom:8,boxShadow:'0 2px 8px rgba(0,0,0,0.25)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
+          onMouseOver={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.5)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.35)';}}
+          onMouseOut={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.35)';e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.25)';}}
+          style={{display:'flex',alignItems:'center',padding:'20px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.35)',borderRadius:12,marginBottom:8,boxShadow:'0 2px 8px rgba(0,0,0,0.25)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
           <span style={{fontSize:24,flexShrink:0}}>{cat.icon}</span>
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontSize:14,fontWeight:700,color:'#E8DCC8',fontFamily:"'Space Mono',monospace"}}>{cat.label}</div>
@@ -2125,7 +2125,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
           </div>
         </div>
         <BottomSheet open={catSheetOpen} onClose={()=>setCatSheetOpen(false)} zIndex={500} hideClose={hasNestedDrawer}>
-          <div style={{padding:'16px 16px 14px',borderBottom:'1px solid rgba(232,220,200,0.06)',display:'flex',alignItems:'center',gap:12}}>
+          <div style={{padding:'16px 16px 14px',borderBottom:'1px solid rgba(255,255,255,0.14)',display:'flex',alignItems:'center',gap:12}}>
             <span style={{fontSize:28}}>{cat.icon}</span>
             <div style={{flex:1}}>
               <div style={{fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:cat.color}}>{cat.label}</div>
@@ -2237,7 +2237,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
       {!isFullscreen&&<div style={{padding:isMobile?"6px 12px 5px":"10px 18px 7px",background:"linear-gradient(180deg,rgba(35,14,0,0.6),rgba(20,8,0,0.8))"}}>
         <div data-coach="pack-stats" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
           {/* Weight hero */}
-          <div style={{background:"rgba(21,101,255,0.07)",border:"1px solid rgba(77,159,255,0.3)",borderRadius:10,padding:"12px 14px"}}>
+          <div style={{background:"rgba(21,101,255,0.07)",border:"1px solid rgba(77,159,255,0.60)",borderRadius:10,padding:"12px 14px"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
               <div style={{fontSize:isMobile?12:13,fontWeight:700,color:"#4D9FFF",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace"}}>⚖️ WEIGHT</div>
               <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{display:"flex",borderRadius:8,border:"1px solid rgba(77,159,255,0.4)",overflow:"hidden",cursor:"pointer"}}>
@@ -2260,7 +2260,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
             const bpItems=items.filter(i=>i.bag==="Backpack").length;
             const incomplete=bpItems>0&&(zeroV/bpItems)>0.4;
             const dV=Math.min(bpV,VL),vPct=Math.min((bpV/VL)*100,100);
-            return(<div style={{background:"rgba(169,70,29,0.08)",border:"1px solid rgba(196,87,30,0.5)",borderRadius:10,padding:"12px 14px"}}>
+            return(<div style={{background:"rgba(169,70,29,0.08)",border:"1px solid rgba(196,87,30,0.60)",borderRadius:10,padding:"12px 14px"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
                 <div style={{fontSize:isMobile?12:13,fontWeight:700,color:"#FFD93D",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace"}}>📦 VOLUME</div>
                 {incomplete&&<div style={{padding:"3px 8px",borderRadius:8,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:isMobile?11:15,fontFamily:"monospace",fontWeight:700}}>⚠ PARTIAL</div>}
@@ -2280,7 +2280,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
         {/* 4 mini stats */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
-            <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.45)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
+            <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.55)",borderRadius:7,padding:"7px 8px",textAlign:"center"}}>
               <div style={{fontSize:isMobile?11:11,fontWeight:500,color:"rgba(255,255,255,0.4)",letterSpacing:0,marginBottom:2,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
               <div style={{fontSize:isMobile?12:18,fontWeight:600,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
             </div>
