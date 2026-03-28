@@ -188,8 +188,8 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .g-card.off .g-label{color:#FFF}.g-card.on .g-label{color:#FFD93D}
 .g-desc{font-size:12px;line-height:1.5}
 .g-card.off .g-desc{color:rgba(255,255,255,0.78)}.g-card.on .g-desc{color:rgba(255,217,61,0.7)}
-.vision-ta{width:100%;background:rgba(8,6,4,0.85)!important;border:1.5px solid rgba(255,217,61,0.85)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;box-shadow:0 0 18px rgba(255,217,61,0.15),0 0 40px rgba(255,217,61,0.06),inset 0 0 14px rgba(255,217,61,0.03)!important;transition:border-color 0.3s,box-shadow 0.3s;margin-bottom:6px}
-.vision-ta::placeholder{color:rgba(255,255,255,0.27)}.vision-ta:focus{border:1.5px solid rgba(255,217,61,1)!important;box-shadow:0 0 24px rgba(255,217,61,0.22),0 0 48px rgba(255,217,61,0.08),inset 0 0 14px rgba(255,217,61,0.04)!important}
+.vision-ta{width:100%;background:rgba(8,6,4,0.85)!important;border:1.5px solid rgba(255,217,61,0.85)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.3s;margin-bottom:6px}
+.vision-ta::placeholder{color:rgba(255,255,255,0.27)}.vision-ta:focus{border:1.5px solid rgba(255,217,61,1)!important;animation:none!important;box-shadow:0 0 24px rgba(255,217,61,0.3),0 0 60px rgba(255,217,61,0.1)}
 .f-label{font-size:12px;color:rgba(255,159,67,0.8);letter-spacing:2.5px}
 .f-input{background:rgba(8,6,4,0.9);border:1px solid rgba(0,150,255,0.7);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Space Mono',monospace;outline:none;width:100%;transition:border-color 0.3s,box-shadow 0.3s;box-shadow:0 0 12px rgba(0,150,255,0.1),0 0 30px rgba(0,150,255,0.04)}
 .f-input:focus{border-color:rgba(0,170,255,1);box-shadow:0 0 20px rgba(0,170,255,0.2),0 0 44px rgba(0,170,255,0.07)}.f-input::placeholder{color:rgba(255,255,255,0.22)}
@@ -453,7 +453,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
         </div>
         {/* Center: logo + wordmark */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
-          <SharegoodLogo size={isMobile?30:42} opacity={0.88} glowColor={logoGlow} animate={isDream}/>
+          <SharegoodLogo size={isMobile?30:42} opacity={0.88} glowColor={logoGlow} animate={false}/>
           <div style={{textAlign:"center"}}>
             <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:18,fontWeight:500,color:"#FFF",letterSpacing:3,lineHeight:1}}>1 Bag Nomad</div>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:4,marginTop:3}}>
@@ -561,10 +561,7 @@ function DreamScreen({onGoGen,onLoadDemo}) {
         <div style={{marginBottom:28}}>
           <div className="sec-label">WHAT'S <span style={{color:"#FFD93D",fontWeight:900}}>YOUR</span> VISION?</div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:14,fontStyle:"italic",fontWeight:300,color:"rgba(255,159,67,0.6)",marginBottom:10,lineHeight:1.6}}>Describe the expedition you've always imagined — the countries, the feeling, who you want to become out there.</div>
-          <div style={{position:"relative"}}>
-            <div style={{position:"absolute",inset:0,borderRadius:12,animation:focused?"none":"visionGlow 3.5s ease-in-out infinite",pointerEvents:"none",zIndex:1}}/>
-            <textarea className="vision-ta" style={{position:"relative",zIndex:2}} value={vision} onChange={e=>setVision(e.target.value)} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder="Start anywhere. The reefs you want to dive. The markets you want to get lost in. The version of yourself you're chasing. Your co-architect will shape it into a real route." rows={isMobile?5:6}/>
-          </div>
+          <textarea className="vision-ta" style={{animation:focused?"none":"visionGlow 3.5s ease-in-out infinite"}} value={vision} onChange={e=>setVision(e.target.value)} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder="Start anywhere. The reefs you want to dive. The markets you want to get lost in. The version of yourself you're chasing. Your co-architect will shape it into a real route." rows={isMobile?5:6}/>
           {canLaunch&&<div style={{marginTop:8,fontFamily:"'Fraunces',serif",fontSize:isMobile?13:14,fontStyle:"italic",color:"rgba(105,240,174,0.75)",animation:"fadeUp 0.4s ease",textShadow:"0 0 20px rgba(105,240,174,0.2)"}}>✦ Your co-architect is ready to build this.</div>}
         </div>
         <div className="sec-label">EXPEDITION DETAILS</div>
@@ -572,7 +569,7 @@ function DreamScreen({onGoGen,onLoadDemo}) {
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onChange={e=>setTripName(e.target.value)} placeholder="My Grand Expedition"/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><input className="f-input" value={city} onChange={e=>setCity(e.target.value)} placeholder="Los Angeles, CA"/></div>
         </div>
-        <div style={{marginBottom:22,display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)}/></div>
+        <div style={{marginBottom:22,display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",color:(!date&&isMobile)?"transparent":undefined}}/>{!date&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}</div></div>
         <div style={{marginBottom:22}}>
           <div className="f-label" style={{marginBottom:10}}>BUDGET APPROACH</div>
           <div style={{display:"flex",flexDirection:"column",gap:7}}>
