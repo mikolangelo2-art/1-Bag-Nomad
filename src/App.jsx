@@ -218,7 +218,17 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .street-card{display:flex;gap:9px;padding:9px 11px;background:rgba(0,0,0,0.25);border-radius:8px;margin-bottom:7px}
 .loading-skeleton{height:13px;background:#111D2A;border-radius:4px;animation:shimmer 1.5s infinite;margin-bottom:8px}
 .chat-bubble{border-radius:10px;padding:8px 10px;font-size:12px;color:#FFF;line-height:1.7;max-width:86%}
-@media(max-width:599px){.dream-content{padding:18px 14px 40px}.goal-grid{gap:7px}.mc-content{padding:10px 12px}}`;
+@media(max-width:599px){.dream-content{padding:18px 14px 40px}.goal-grid{gap:7px}.mc-content{padding:10px 12px}}
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:300;display:flex;background:rgba(2,5,14,0.97);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-top:1px solid rgba(255,217,61,0.1);padding-bottom:env(safe-area-inset-bottom)}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:6px 0 10px;cursor:pointer;border:none;background:none;gap:3px;position:relative;min-height:56px;-webkit-tap-highlight-color:transparent;outline:none}
+.bnav-pip{position:absolute;top:0;left:50%;transform:translateX(-50%);width:22px;height:2px;border-radius:2px;opacity:0;transition:opacity 0.2s}
+.bnav-btn.active .bnav-pip{opacity:1}
+.bnav-icon{font-size:20px;line-height:1;transition:transform 0.15s;display:block}
+.bnav-btn.active .bnav-icon{transform:translateY(-2px)}
+.bnav-lbl{font-size:9px;letter-spacing:1.5px;font-family:'Space Mono',monospace;font-weight:700;transition:color 0.15s;color:rgba(255,255,255,0.28)}
+.bnav-btn.active .bnav-lbl{color:#FFD93D}
+.bnav-btn.bnav-pack.active .bnav-pip{background:#FF9F43!important;box-shadow:0 0 8px #FF9F43}
+.bnav-btn.bnav-pack.active .bnav-lbl{color:#FF9F43}`;
 
 // ─── Michael's Expedition (compact) ──────────────────────────────
 const MICHAEL_EXPEDITION = {
@@ -453,7 +463,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
       <div style={{display:"flex",alignItems:"center",padding:isMobile?"5px 8px":"7px 14px",gap:6}}>
         {/* Left slot */}
         <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"flex-start"}}>
-          {(isTrip||isPack) ? <TripBtn active={isTrip}/> : rightSlot}
+          {(!isMobile&&(isTrip||isPack)) ? <TripBtn active={isTrip}/> : null}
         </div>
         {/* Center: logo + wordmark */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
@@ -468,7 +478,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
         </div>
         {/* Right slot */}
         <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
-          {(isTrip||isPack) ? <PackBtn active={isPack}/> : rightSlot}
+          {(!isMobile&&(isTrip||isPack)) ? <PackBtn active={isPack}/> : rightSlot||null}
         </div>
       </div>
       {/* Tagline bar */}
@@ -479,6 +489,33 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
         <div style={{fontFamily:"'Fraunces',serif",fontSize:tlSize,fontWeight:isPack?300:100,fontStyle:"italic",color:tlColor,letterSpacing:isMobile?0:8,lineHeight:1,whiteSpace:"nowrap",position:"relative",textShadow:tlShadow}}>travel light</div>
       </div>
       {children}
+    </div>
+  );
+}
+
+// ─── BottomNav ─────────────────────────────────────────────────────
+function BottomNav({activeTab,onTab}) {
+  const NAV=[
+    {id:"next",  icon:"🧭",lbl:"TRIP"},
+    {id:"budget",icon:"💰",lbl:"BUDGET"},
+    {id:"book",  icon:"✈️",lbl:"BOOK"},
+    {id:"intel", icon:"🔭",lbl:"INTEL"},
+    {id:"pack",  icon:"🎒",lbl:"PACK"},
+  ];
+  return(
+    <div className="bnav">
+      {NAV.map(n=>{
+        const active=activeTab===n.id;
+        const isPack=n.id==="pack";
+        const pipColor=isPack?"#FF9F43":"#FFD93D";
+        return(
+          <button key={n.id} className={`bnav-btn${isPack?" bnav-pack":""}${active?" active":""}`} onClick={()=>onTab(n.id)}>
+            <div className="bnav-pip" style={{background:pipColor,boxShadow:active?`0 0 8px ${pipColor}`:undefined}}/>
+            <span className="bnav-icon">{n.icon}</span>
+            <span className="bnav-lbl">{n.lbl}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -1416,9 +1453,9 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
 }
 
 // ─── MissionConsole ───────────────────────────────────────────────
-function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen}) {
+function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next"}) {
   const isMobile=useMobile();
-  const [tab,setTab]=useState("next");
+  const [tab,setTab]=useState(initialTab);
   useEffect(()=>{requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:"instant"});});},[]);
   const [confirmNewTrip,setConfirmNewTrip]=useState(false);
   const [showMobileMenu,setShowMobileMenu]=useState(false);
@@ -1495,6 +1532,10 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
         {target:"trip-pack-switch",title:"Pack Console",body:"When you're ready, switch here to manage your one-bag gear list."}
       ]}/>}
       {!isFullscreen&&<ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/>}
+      {isMobile&&!isFullscreen&&<div style={{padding:"5px 12px",borderBottom:"1px solid rgba(0,229,255,0.08)",display:"flex",justifyContent:"flex-end",gap:7,background:"rgba(0,8,20,0.98)",flexShrink:0}}>
+        <button onClick={onRevise} style={{padding:"6px 14px",borderRadius:7,border:"1px solid rgba(0,229,255,0.3)",background:"rgba(0,229,255,0.06)",color:"#00E5FF",fontSize:10,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:32}}>✏️ REVISE</button>
+        <button onClick={handleNewTripClick} style={{padding:"6px 14px",borderRadius:7,border:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(169,70,29,0.3)",background:confirmNewTrip?"rgba(255,107,107,0.12)":"rgba(169,70,29,0.06)",color:confirmNewTrip?"#FF6B6B":"#FFD93D",fontSize:10,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:32}}>{confirmNewTrip?"⚠️ CONFIRM?":"+ NEW TRIP"}</button>
+      </div>}
       {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:"linear-gradient(180deg,rgba(0,20,45,0.95),rgba(0,8,20,0.98))",borderBottom:"1px solid rgba(0,229,255,0.15)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.04) 0%,transparent 60%)",pointerEvents:"none"}}/>
         {tripData.tripName&&<div style={{marginBottom:isMobile?5:7,position:"relative"}}>
@@ -1511,58 +1552,28 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           ))}
         </div>
       </div>}
-      {!isFullscreen&&<div style={{display:"flex",borderBottom:"1px solid rgba(0,229,255,0.1)",flexShrink:0}}>
+      {!isFullscreen&&!isMobile&&<div style={{display:"flex",borderBottom:"1px solid rgba(0,229,255,0.1)",flexShrink:0}}>
         <div style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,borderRight:"1px solid rgba(0,229,255,0.1)",background:"rgba(0,229,255,0.04)"}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"#00E5FF",boxShadow:"0 0 6px #00E5FF",animation:"consolePulse 2.5s ease-in-out infinite"}}/>
-          <span style={{fontSize:isMobile?9:13,fontWeight:700,color:"#00E5FF",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
+          <span style={{fontSize:13,fontWeight:700,color:"#00E5FF",letterSpacing:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
         </div>
         <div data-coach="trip-pack-switch" onClick={onPackConsole} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",background:"transparent"}} onMouseOver={e=>e.currentTarget.style.background="rgba(196,87,30,0.08)"} onMouseOut={e=>e.currentTarget.style.background="transparent"}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(196,87,30,0.4)"}}/>
-          <span style={{fontSize:isMobile?9:13,fontWeight:700,color:"rgba(255,159,67,0.65)",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>PACK CONSOLE</span>
+          <span style={{fontSize:13,fontWeight:700,color:"rgba(255,159,67,0.65)",letterSpacing:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>PACK CONSOLE</span>
         </div>
       </div>}
       {/* Tab bar */}
-      {isMobile?(
-        <div style={{flexShrink:0}}>
-          <div data-coach="trip-tabs" style={{display:"flex",borderBottom:"1px solid #111D2A",background:"#060A0F",alignItems:"stretch"}}>
-            {TABS.map(t=>(
-              <button key={t.id} {...(t.id==="intel"?{"data-coach":"trip-intel"}:{})} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 4px",minWidth:0}}>
-                <span style={{fontSize:16,lineHeight:1}}>{t.label.split(" ")[0]}</span>
-                <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap",color:tab===t.id?"#00E5FF":"rgba(255,255,255,0.5)"}}>{isMobile?"":t.label.split(" ").slice(1).join(" ")}</span>
-              </button>
-            ))}
-            <button onClick={()=>setShowMobileMenu(m=>!m)} style={{width:48,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 6px",background:showMobileMenu?"rgba(0,229,255,0.1)":"transparent",border:"none",borderLeft:"1px solid rgba(0,229,255,0.15)",cursor:"pointer",flexShrink:0}}>
-              <span style={{fontSize:16,lineHeight:1,color:showMobileMenu?"#00E5FF":"rgba(255,255,255,0.5)"}}>⋯</span>
-            </button>
-          </div>
-          {showMobileMenu&&(
-            <div style={{background:"#060A0F",borderBottom:"1px solid rgba(0,229,255,0.15)",display:"flex",gap:0,animation:"slideOpen 0.15s ease"}}>
-              <button onClick={()=>setFullscreen(f=>!f)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"12px 8px",background:isFullscreen?"rgba(0,229,255,0.1)":"transparent",border:"none",borderRight:"1px solid rgba(0,229,255,0.1)",cursor:"pointer",color:"#00E5FF"}}>
-                <span style={{fontSize:16}}>{isFullscreen?"⊡":"⛶"}</span>
-                <span style={{fontSize:15,letterSpacing:1,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
-              </button>
-              <button onClick={()=>{onRevise();setShowMobileMenu(false);}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"12px 8px",background:"transparent",border:"none",borderRight:"1px solid rgba(0,229,255,0.1)",cursor:"pointer"}}>
-                <span style={{fontSize:16}}>✏️</span>
-                <span style={{fontSize:15,letterSpacing:1,fontWeight:700,fontFamily:"'Space Mono',monospace",color:"#00E5FF"}}>REVISE</span>
-              </button>
-              <button onClick={()=>{handleNewTripClick();}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"12px 8px",background:confirmNewTrip?"rgba(255,107,107,0.15)":"transparent",border:"none",cursor:"pointer"}}>
-                <span style={{fontSize:16,color:confirmNewTrip?"#FF6B6B":"#FFD93D"}}>{confirmNewTrip?"⚠️":"+"}</span>
-                <span style={{fontSize:15,letterSpacing:1,fontWeight:700,fontFamily:"'Space Mono',monospace",color:confirmNewTrip?"#FF6B6B":"#FFD93D"}}>{confirmNewTrip?"CONFIRM?":"NEW TRIP"}</span>
-              </button>
-            </div>
-          )}
-        </div>
-      ):(
+      {!isMobile&&(
         <div style={{display:"flex",borderBottom:"1px solid #111D2A",background:"#060A0F",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch"}}>
           <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)",border:"none",borderRight:"1px solid rgba(0,229,255,0.2)",cursor:"pointer",flexShrink:0,color:"#00E5FF"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.22)"} onMouseOut={e=>e.currentTarget.style.background=isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)"}>
             <span style={{fontSize:15,lineHeight:1,textShadow:"0 0 10px rgba(0,229,255,0.9)"}}>{isFullscreen?"⊡":"⛶"}</span>
             <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
           </button>
-          <div style={{display:"flex",flex:1,overflowX:"auto"}}>
+          <div data-coach="trip-tabs" style={{display:"flex",flex:1,overflowX:"auto"}}>
             {TABS.map(t=>(
-              <button key={t.id} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1,padding:"9px 12px",minWidth:44}}>
+              <button key={t.id} {...(t.id==="intel"?{"data-coach":"trip-intel"}:{})} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1,padding:"9px 12px",minWidth:44}}>
                 <span style={{fontSize:15}}>{t.label.split(" ")[0]}</span>
-                <span style={{fontSize:15,letterSpacing:1.5}}>{isMobile?"":t.label.split(" ").slice(1).join(" ")}</span>
+                <span style={{fontSize:15,letterSpacing:1.5}}>{t.label.split(" ").slice(1).join(" ")}</span>
               </button>
             ))}
           </div>
@@ -1741,12 +1752,14 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           </div>
         )}
       </div>
+      {isMobile&&!isFullscreen&&<div style={{height:"calc(64px + env(safe-area-inset-bottom))"}}/>}
+      {isMobile&&!isFullscreen&&<BottomNav activeTab={tab} onTab={t=>{if(t==="pack")onPackConsole();else{setTab(t);if(t!=="intel")setExplorerDest(null);}}}/>}
     </div>
   );
 }
 
 // ─── PackConsole ──────────────────────────────────────────────────
-function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
+function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen}) {
   const isMobile=useMobile();
   const CATS=[
     {id:"clothes",label:"Clothes",icon:"👕",color:"#FFD93D"},
@@ -1978,7 +1991,7 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
       {/* Header */}
       {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} onTripConsole={onExpedition} onPackConsole={()=>{}}/>}
       {/* Console switcher */}
-      {!isFullscreen&&<div style={{display:"flex",borderBottom:"1px solid rgba(196,87,30,0.3)",flexShrink:0}}>
+      {!isFullscreen&&!isMobile&&<div style={{display:"flex",borderBottom:"1px solid rgba(196,87,30,0.3)",flexShrink:0}}>
         <div onClick={onExpedition} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",borderRight:"1px solid rgba(196,87,30,0.2)"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.06)"} onMouseOut={e=>e.currentTarget.style.background="transparent"}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(0,229,255,0.4)"}}/>
           <span style={{fontSize:isMobile?11:13,fontWeight:700,color:"rgba(0,229,255,0.6)",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
@@ -2226,6 +2239,8 @@ function PackConsole({tripData,onExpedition,isFullscreen,setFullscreen}) {
           })}
         </div>
       )}
+      {isMobile&&!isFullscreen&&<div style={{height:"calc(64px + env(safe-area-inset-bottom))"}}/>}
+      {isMobile&&!isFullscreen&&<BottomNav activeTab="pack" onTab={t=>{if(t==="pack")return;if(onGoToTab)onGoToTab(t);else onExpedition();}}/>}
     </div>
   );
 }
@@ -2237,6 +2252,7 @@ export default function App() {
   const [appData,setAppData]=useState(null);
   const [fullscreen,setFullscreen]=useState(false);
   const [prefilledVision,setPrefilledVision]=useState("");
+  const [pendingTab,setPendingTab]=useState("next");
 
   useEffect(()=>{
     // Version bump — clears stale pack data; purges legacy booking keys (arch #3)
@@ -2288,8 +2304,8 @@ export default function App() {
       {screen==="coarchitect" && appData && <CoArchitect data={appData} visionData={appData.visionData} onLaunch={appData.isRevision?handleReviseLaunch:handleLaunch} onBack={()=>setScreen(appData.isRevision?"console":"dream")}/>}
       {screen==="handoff"     && tripData && <HandoffScreen tripData={tripData} onComplete={handleHandoffComplete}/>}
       {screen==="homecoming"  && tripData && <HomecomingScreen tripData={tripData} onPlanNext={handlePlanNext}/>}
-      {screen==="console"     && tripData && <MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onRevise={handleRevise} onPackConsole={()=>setScreen("pack")} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen}/>}
-      {screen==="pack"        && <PackConsole tripData={tripData} onExpedition={()=>setScreen("console")} isFullscreen={fullscreen} setFullscreen={setFullscreen}/>}
+      {screen==="console"     && tripData && <MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");setScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab}/>}
+      {screen==="pack"        && <PackConsole tripData={tripData} onExpedition={()=>setScreen("console")} onGoToTab={t=>{setPendingTab(t||"next");setScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen}/>}
     </>
   );
 }
