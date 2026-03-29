@@ -1820,7 +1820,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
         <button onClick={onRevise} style={{padding:"6px 16px",borderRadius:7,border:"1.5px solid rgba(0,229,255,0.55)",background:"rgba(0,229,255,0.12)",color:"#00E5FF",fontSize:14,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:600,letterSpacing:1,minHeight:32}}>✏️ REVISE</button>
         <button onClick={handleNewTripClick} style={{padding:"6px 14px",borderRadius:7,border:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(255,255,255,0.18)",background:confirmNewTrip?"rgba(255,107,107,0.12)":"transparent",color:confirmNewTrip?"#FF6B6B":"rgba(255,255,255,0.45)",fontSize:13,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:confirmNewTrip?700:400,letterSpacing:1,minHeight:32}}>{confirmNewTrip?"⚠️ CONFIRM?":"+ NEW TRIP"}</button>
       </div>}
-      {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:"linear-gradient(180deg,rgba(21,15,10,0.98),rgba(21,15,10,0.99))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden",zIndex:1}}>
+      {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:isMobile?"rgba(0,8,16,0.10)":"linear-gradient(180deg,rgba(21,15,10,0.98),rgba(21,15,10,0.99))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden",zIndex:1}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(232,220,200,0.02) 0%,transparent 60%)",pointerEvents:"none"}}/>
         {tripData.tripName&&<div style={{marginBottom:isMobile?5:7,position:"relative"}}>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:17,fontWeight:300,fontStyle:"italic",color:"#E8DCC8",lineHeight:1}}>{tripData.tripName}</div>
@@ -1832,23 +1832,24 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           segPhases.forEach(p=>p.segments.forEach(s=>{totalSegs++;const d=allSegD[`${p.id}-${s.id}`]||{};if(d.transport?.mode||d.transport?.cost||d.stay?.name||d.stay?.cost||(d.activities?.length||0)>0)filledSegs++;}));
           const readPct=totalSegs>0?Math.round((filledSegs/totalSegs)*100):0;
           return(
-            <div data-coach="trip-stats" style={{display:'flex',flexDirection:'column',gap:8}}>
-              <div style={{background:'rgba(0,229,255,0.05)',borderRadius:12,padding:'14px 16px',boxShadow:'inset 0 1px 0 rgba(0,229,255,0.35),inset 1px 0 0 rgba(0,229,255,0.10),inset -1px 0 0 rgba(0,229,255,0.10),inset 0 -1px 0 rgba(0,229,255,0.06)'}}>
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+            <div data-coach="trip-stats" style={{background:'rgba(0,8,16,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',borderRadius:14,border:'1px solid rgba(0,229,255,0.18)',borderTop:'1px solid rgba(0,229,255,0.45)',boxShadow:'inset 0 1px 0 rgba(0,229,255,0.22), 0 4px 24px rgba(0,0,0,0.35)',overflow:'hidden'}}>
+              <div style={{padding:'10px 16px 9px'}}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:7}}>
                   <span style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(0,229,255,0.55)',fontFamily:"'Space Mono',monospace",fontWeight:700}}>EXPEDITION READINESS</span>
-                  <span style={{fontSize:22,fontWeight:700,color:'#00E5FF',fontFamily:"'Space Mono',monospace"}}>{readPct}%</span>
+                  <span style={{fontSize:20,fontWeight:700,color:'#00E5FF',fontFamily:"'Space Mono',monospace"}}>{readPct}%</span>
                 </div>
-                <div style={{width:'100%',height:4,background:'rgba(255,255,255,0.08)',borderRadius:2,overflow:'hidden'}}>
-                  <div style={{height:'100%',width:`${readPct}%`,background:'linear-gradient(90deg,#00E5FF88,#00E5FF)',borderRadius:2,transition:'width 0.6s ease'}}/>
+                <div style={{width:'100%',height:6,background:'rgba(255,255,255,0.08)',borderRadius:3,overflow:'hidden'}}>
+                  <div style={{height:'100%',width:`${readPct}%`,background:'linear-gradient(90deg,#00E5FF88,#00E5FF)',borderRadius:3,transition:'width 0.6s ease'}}/>
                 </div>
-                <div style={{fontSize:10,color:'rgba(255,255,255,0.35)',marginTop:6,fontFamily:"'Space Mono',monospace"}}>{filledSegs} of {totalSegs} planning tasks complete</div>
+                <div style={{fontSize:10,color:'rgba(255,255,255,0.55)',marginTop:5,fontFamily:"'Space Mono',monospace"}}>{filledSegs} of {totalSegs} planning tasks complete</div>
               </div>
+              <div style={{height:1,background:'rgba(0,229,255,0.12)'}}/>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',overflow:'hidden'}}>
                 {[{label:'DEPARTS IN',value:daysToDepart,sub:'DAYS',color:'#E8DCC8'},{label:'NIGHTS',value:totalNights,sub:'NIGHTS',color:'#E8DCC8'},{label:'BUDGET',value:fmt(totalBudget),sub:'TOTAL',color:'#FFD93D'}].map((s,i)=>(
-                  <div key={s.label} style={{textAlign:'center',padding:'10px 4px',borderLeft:i>0?'1px solid rgba(255,255,255,0.08)':undefined,background:'transparent'}}>
-                    <div style={{fontSize:8,letterSpacing:'0.10em',color:'rgba(255,255,255,0.35)',fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:3}}>{s.label}</div>
-                    <div style={{fontSize:20,fontWeight:700,color:s.color,fontFamily:"'Space Mono',monospace",lineHeight:1}}>{s.value}</div>
-                    <div style={{fontSize:8,color:'rgba(255,255,255,0.30)',fontFamily:"'Space Mono',monospace",marginTop:2}}>{s.sub}</div>
+                  <div key={s.label} style={{textAlign:'center',padding:'8px 4px'}}>
+                    <div style={{fontSize:9,letterSpacing:'0.10em',color:'rgba(255,255,255,0.60)',fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:3}}>{s.label}</div>
+                    <div style={{fontSize:19,fontWeight:700,color:s.color,fontFamily:"'Space Mono',monospace",lineHeight:1}}>{s.value}</div>
+                    <div style={{fontSize:9,color:'rgba(255,255,255,0.50)',fontFamily:"'Space Mono',monospace",marginTop:2}}>{s.sub}</div>
                   </div>
                 ))}
               </div>
