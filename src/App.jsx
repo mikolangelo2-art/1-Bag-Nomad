@@ -1631,7 +1631,10 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null}) {
         {/* Row 1: badge + flag + name + budget */}
         <div style={{display:'flex',alignItems:'center',gap:8,width:'100%'}}>
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
-            <div style={{width:24,height:24,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
+            <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:2,flexShrink:0}}>
+              <div style={{width:24,height:24,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace"}}>{phase.id}</div>
+              <span style={{fontSize:12,lineHeight:1,filter:'grayscale(20%)'}}>{getPhaseActivityIcon(phase)}</span>
+            </div>
             <span style={{fontSize:20,lineHeight:1}}>{phase.flag}</span>
           </div>
           <div style={{flex:1,fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:500,color:'#E8DCC8',lineHeight:1.1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{phase.name}</div>
