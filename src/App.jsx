@@ -931,44 +931,6 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
             ))}
           </div>
         )}
-        {showStats&&vd.budgetBreakdown&&data.budgetMode!=="dream"&&(()=>{
-          const bd=vd.budgetBreakdown;
-          const cats=[{key:"flights",icon:"✈️",label:"Flights",note:bd.flightsNote},{key:"accommodation",icon:"🏨",label:"Accommodation",note:bd.accommodationNote},{key:"food",icon:"🍜",label:"Food",note:bd.foodNote},{key:"transport",icon:"🚌",label:"Transport",note:null},{key:"activities",icon:"🎯",label:"Activities",note:null},{key:"buffer",icon:"🎒",label:"Buffer",note:null}].filter(c=>bd[c.key]>0);
-          const total=cats.reduce((s,c)=>s+(bd[c.key]||0),0);
-          return(
-            <div style={{marginBottom:16,animation:"fadeUp 0.5s ease"}}>
-              <button onClick={()=>setBdOpen(o=>!o)} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"11px 14px",background:"linear-gradient(135deg,rgba(169,70,29,0.08),rgba(0,8,20,0.6))",border:"1px solid rgba(169,70,29,0.3)",borderRadius:bdOpen?"11px 11px 0 0":11,cursor:"pointer",transition:"border-radius 0.2s"}}>
-                <span style={{fontSize:isMobile?11:12,color:"rgba(255,159,67,0.85)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700}}>✦ How I built your budget</span>
-                <span style={{fontSize:14,color:"rgba(255,159,67,0.6)",transition:"transform 0.3s",transform:bdOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
-              </button>
-              <div style={{maxHeight:bdOpen?600:0,overflow:"hidden",transition:"max-height 0.3s ease"}}>
-                <div style={{background:"rgba(0,8,20,0.6)",border:"1px solid rgba(169,70,29,0.3)",borderTop:"none",borderRadius:"0 0 11px 11px",padding:"12px 14px"}}>
-                  {cats.map(c=>{const val=bd[c.key]||0;return(
-                    <div key={c.key} style={{display:"flex",alignItems:"center",padding:"7px 0",gap:8}}>
-                      <span style={{fontSize:14,width:22,textAlign:"center",flexShrink:0}}>{c.icon}</span>
-                      <span style={{fontSize:isMobile?12:14,color:"rgba(255,255,255,0.75)",fontWeight:600,width:isMobile?90:110,flexShrink:0}}>{c.label}</span>
-                      <span style={{flex:1,fontSize:isMobile?11:13,fontFamily:"'Fraunces',serif",fontStyle:"italic",color:"rgba(255,255,255,0.45)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.note||""}</span>
-                      <span style={{fontSize:isMobile?13:15,fontWeight:700,color:"#FFD93D",fontFamily:"'Space Mono',monospace",flexShrink:0,marginLeft:8}}>~{fmt(val)}</span>
-                    </div>
-                  );})}
-                  <div style={{height:1,background:"rgba(255,255,255,0.12)",margin:"8px 0"}}/>
-                  <div style={{display:"flex",alignItems:"center",padding:"4px 0",gap:8}}>
-                    <span style={{fontSize:14,width:22,textAlign:"center",flexShrink:0}}> </span>
-                    <span style={{fontSize:isMobile?12:14,color:"rgba(255,255,255,0.9)",fontWeight:700,width:isMobile?90:110,flexShrink:0}}>TOTAL</span>
-                    <span style={{flex:1}}/>
-                    <span style={{fontSize:isMobile?14:16,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace",flexShrink:0,marginLeft:8}}>~{fmt(total)}</span>
-                  </div>
-                  {bd.routingNote&&(
-                    <div style={{marginTop:10,borderLeft:"2px solid rgba(255,159,67,0.4)",paddingLeft:10}}>
-                      <div style={{fontSize:11,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Space Mono',monospace",marginBottom:3}}>✦ WHY THIS ROUTE</div>
-                      <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?12:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.6}}>{bd.routingNote}</div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })()}
         {narrativeDone&&vd.highlight&&<div style={{background:"rgba(0,229,255,0.04)",border:"1px solid rgba(0,229,255,0.18)",borderRadius:11,padding:"10px 12px",marginBottom:18}}><div style={{fontSize:15,color:"#00E5FF",letterSpacing:2.5,marginBottom:7}}>⚡ EXPEDITION HIGHLIGHT</div><div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.7}}>{vd.highlight}</div></div>}
         {showPhases&&(
           <div style={{animation:"fadeUp 0.5s ease"}}>
@@ -990,6 +952,44 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
                 </div>);
               })}
             </div>
+            {vd.budgetBreakdown&&data.budgetMode!=="dream"&&(()=>{
+              const bd=vd.budgetBreakdown;
+              const cats=[{key:"flights",icon:"✈️",label:"Flights",note:bd.flightsNote},{key:"accommodation",icon:"🏨",label:"Accommodation",note:bd.accommodationNote},{key:"food",icon:"🍜",label:"Food",note:bd.foodNote},{key:"transport",icon:"🚌",label:"Transport",note:null},{key:"activities",icon:"🎯",label:"Activities",note:null},{key:"buffer",icon:"🎒",label:"Buffer",note:null}].filter(c=>bd[c.key]>0);
+              const total=cats.reduce((s,c)=>s+(bd[c.key]||0),0);
+              return(
+                <div style={{marginBottom:16,animation:"fadeUp 0.5s ease"}}>
+                  <button onClick={()=>setBdOpen(o=>!o)} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"11px 14px",background:"linear-gradient(135deg,rgba(169,70,29,0.08),rgba(0,8,20,0.6))",border:"1px solid rgba(169,70,29,0.3)",borderRadius:bdOpen?"11px 11px 0 0":11,cursor:"pointer",transition:"border-radius 0.2s"}}>
+                    <span style={{fontSize:isMobile?11:12,color:"rgba(255,159,67,0.85)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700}}>✦ How I built your budget</span>
+                    <span style={{fontSize:14,color:"rgba(255,159,67,0.6)",transition:"transform 0.3s",transform:bdOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
+                  </button>
+                  <div style={{maxHeight:bdOpen?600:0,overflow:"hidden",transition:"max-height 0.3s ease"}}>
+                    <div style={{background:"rgba(0,8,20,0.6)",border:"1px solid rgba(169,70,29,0.3)",borderTop:"none",borderRadius:"0 0 11px 11px",padding:"12px 14px"}}>
+                      {cats.map(c=>{const val=bd[c.key]||0;return(
+                        <div key={c.key} style={{display:"flex",alignItems:"center",padding:"7px 0",gap:8}}>
+                          <span style={{fontSize:14,width:22,textAlign:"center",flexShrink:0}}>{c.icon}</span>
+                          <span style={{fontSize:isMobile?12:14,color:"rgba(255,255,255,0.75)",fontWeight:600,width:isMobile?90:110,flexShrink:0}}>{c.label}</span>
+                          <span style={{flex:1,fontSize:isMobile?11:13,fontFamily:"'Fraunces',serif",fontStyle:"italic",color:"rgba(255,255,255,0.45)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.note||""}</span>
+                          <span style={{fontSize:isMobile?13:15,fontWeight:700,color:"#FFD93D",fontFamily:"'Space Mono',monospace",flexShrink:0,marginLeft:8}}>~{fmt(val)}</span>
+                        </div>
+                      );})}
+                      <div style={{height:1,background:"rgba(255,255,255,0.12)",margin:"8px 0"}}/>
+                      <div style={{display:"flex",alignItems:"center",padding:"4px 0",gap:8}}>
+                        <span style={{fontSize:14,width:22,textAlign:"center",flexShrink:0}}> </span>
+                        <span style={{fontSize:isMobile?12:14,color:"rgba(255,255,255,0.9)",fontWeight:700,width:isMobile?90:110,flexShrink:0}}>TOTAL</span>
+                        <span style={{flex:1}}/>
+                        <span style={{fontSize:isMobile?14:16,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace",flexShrink:0,marginLeft:8}}>~{fmt(total)}</span>
+                      </div>
+                      {bd.routingNote&&(
+                        <div style={{marginTop:10,borderLeft:"2px solid rgba(255,159,67,0.4)",paddingLeft:10}}>
+                          <div style={{fontSize:11,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Space Mono',monospace",marginBottom:3}}>✦ WHY THIS ROUTE</div>
+                          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?12:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.6}}>{bd.routingNote}</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
             <div style={{background:"#0C1520",border:"1px solid #1a2535",borderRadius:13,padding:14,marginBottom:18}}>
               <div style={{fontSize:15,color:"rgba(255,255,255,0.9)",letterSpacing:2,marginBottom:10}}>💬 REFINE YOUR VISION</div>
               {loading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",marginBottom:8}}>✨ refining...</div>}
