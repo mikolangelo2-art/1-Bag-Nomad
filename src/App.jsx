@@ -2083,9 +2083,16 @@ function CircularRing({value,max,label,sublabel,color,unit}) {
   return(
     <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',padding:'16px 8px'}}>
       <svg width="130" height="130" viewBox="0 0 130 130">
+        <defs>
+          <filter id={`glow-${color.replace('#','')}`} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
         <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10"/>
         <circle cx="65" cy="65" r={r} fill="none" stroke={color} strokeWidth="10" strokeLinecap="round"
           strokeDasharray={`${dash} ${gap}`} strokeDashoffset={circ*0.25}
+          filter={`url(#glow-${color.replace('#','')})`}
           style={{transition:'stroke-dasharray 0.6s ease'}}/>
         <text x="65" y="58" textAnchor="middle" fill={color} fontSize="22" fontWeight="700" fontFamily="Space Mono">{value}</text>
         <text x="65" y="74" textAnchor="middle" fill="rgba(255,255,255,0.65)" fontSize="11" fontFamily="Space Mono">{unit}</text>
@@ -2302,7 +2309,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
           <span style={{marginLeft:'auto',color:'#FFD93D'}}>{needCount>0?`$${Math.round(needCost)} still needed`:'✓ all owned'}</span>
         </div>
         <div style={{height:3,background:'rgba(255,255,255,0.08)',borderRadius:2,overflow:'hidden'}}>
-          <div style={{height:'100%',width:`${pct}%`,background:`linear-gradient(90deg,${cat.color}88,${cat.color})`,borderRadius:2,transition:'width 0.5s ease'}}/>
+          <div style={{height:'100%',width:`${pct}%`,background:`linear-gradient(90deg,${cat.color}66,${cat.color})`,borderRadius:2,transition:'width 0.5s ease',boxShadow:`0 0 8px ${cat.color}90`}}/>
         </div>
       </div>
     );
@@ -2406,7 +2413,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
         {/* 4 mini stats */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%",padding:'10px 12px'}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
-            <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.08)",borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:'inset 0 1px 0 rgba(255,180,80,0.35),inset 1px 0 0 rgba(255,140,40,0.12),inset -1px 0 0 rgba(255,140,40,0.12),inset 0 -1px 0 rgba(255,100,20,0.08)'}}>
+            <div key={s.label} style={{background:"rgba(0,0,0,0.25)",border:`1px solid ${s.color}35`,borderTop:`1px solid ${s.color}70`,borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:`0 0 12px ${s.color}22, inset 0 1px 0 ${s.color}45`}}>
               <div style={{fontSize:10,fontWeight:500,color:"rgba(255,255,255,0.4)",letterSpacing:0,marginBottom:2,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
               <div style={{fontSize:isMobile?12:18,fontWeight:600,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
             </div>
