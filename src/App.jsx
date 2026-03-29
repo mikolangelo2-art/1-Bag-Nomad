@@ -1983,6 +1983,28 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   );
 }
 
+// ─── CircularRing ─────────────────────────────────────────────────
+function CircularRing({value,max,label,sublabel,color,unit}) {
+  const r=54,circ=2*Math.PI*r;
+  const pct=Math.min(value/max,1);
+  const dash=pct*circ,gap=circ-dash;
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',padding:'16px 8px'}}>
+      <svg width="130" height="130" viewBox="0 0 130 130">
+        <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10"/>
+        <circle cx="65" cy="65" r={r} fill="none" stroke={color} strokeWidth="10" strokeLinecap="round"
+          strokeDasharray={`${dash} ${gap}`} strokeDashoffset={circ*0.25}
+          style={{transition:'stroke-dasharray 0.6s ease'}}/>
+        <text x="65" y="58" textAnchor="middle" fill={color} fontSize="22" fontWeight="700" fontFamily="Space Mono">{value}</text>
+        <text x="65" y="74" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="11" fontFamily="Space Mono">{unit}</text>
+        <text x="65" y="90" textAnchor="middle" fill="rgba(255,255,255,0.25)" fontSize="9" fontFamily="Space Mono">/ {max} {unit}</text>
+      </svg>
+      <div style={{fontSize:11,fontWeight:700,letterSpacing:'0.10em',color:'rgba(255,255,255,0.70)',marginTop:4}}>{label}</div>
+      <div style={{fontSize:9,color:'rgba(255,255,255,0.35)',letterSpacing:'0.08em',marginTop:2}}>{sublabel}</div>
+    </div>
+  );
+}
+
 // ─── PackConsole ──────────────────────────────────────────────────
 function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen}) {
   const isMobile=useMobile();
@@ -2302,55 +2324,24 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
           <span style={{fontSize:isMobile?11:13,fontWeight:700,color:"#FF9F43",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>PACK CONSOLE</span>
         </div>
       </div>}
-      {/* Hero stats */}
-      {!isFullscreen&&<div style={{padding:isMobile?"6px 12px 5px":"10px 18px 7px",background:"linear-gradient(180deg,rgba(35,14,0,0.6),rgba(20,8,0,0.8))"}}>
-        <div data-coach="pack-stats" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
-          {/* Weight hero */}
-          <div style={{background:"rgba(21,101,255,0.07)",border:"1px solid rgba(77,159,255,0.08)",borderRadius:10,padding:"12px 14px",boxShadow:'inset 0 1px 0 rgba(77,159,255,0.45),inset 1px 0 0 rgba(77,159,255,0.15),inset -1px 0 0 rgba(77,159,255,0.15),inset 0 -1px 0 rgba(77,159,255,0.06)'}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-              <div style={{fontSize:isMobile?12:13,fontWeight:700,color:"#4D9FFF",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace"}}>⚖️ WEIGHT</div>
-              <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{display:"flex",borderRadius:8,border:"1px solid rgba(77,159,255,0.4)",overflow:"hidden",cursor:"pointer"}}>
-                {["lbs","kg"].map(u=><div key={u} style={{padding:isMobile?"3px 8px":"4px 10px",fontSize:isMobile?11:15,fontWeight:700,background:unit===u?"rgba(77,159,255,0.3)":"rgba(77,159,255,0.05)",color:unit===u?"#4D9FFF":"rgba(77,159,255,0.3)",borderLeft:u==="kg"?"1px solid rgba(77,159,255,0.3)":"none"}}>{u.toUpperCase()}</div>)}
-              </div>
+      {/* Hero rings */}
+      {!isFullscreen&&<div data-coach="pack-stats">
+        <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',position:'relative'}}>
+          {/* LBS/KG toggle pill above weight ring */}
+          <div style={{position:'absolute',top:10,left:'25%',transform:'translateX(-50%)',zIndex:1}}>
+            <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{display:'flex',borderRadius:20,border:'1px solid rgba(77,159,255,0.35)',overflow:'hidden',cursor:'pointer',background:'rgba(0,8,20,0.8)'}}>
+              {["lbs","kg"].map(u=><div key={u} style={{padding:'3px 10px',fontSize:10,fontWeight:700,background:unit===u?'rgba(77,159,255,0.25)':'transparent',color:unit===u?'#4D9FFF':'rgba(77,159,255,0.35)',fontFamily:"'Space Mono',monospace",letterSpacing:1,borderLeft:u==="kg"?'1px solid rgba(77,159,255,0.2)':'none'}}>{u.toUpperCase()}</div>)}
             </div>
-            <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
-              <div style={{fontSize:isMobile?13:34,fontWeight:900,color:"#69F0AE",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{(bpW*wM).toFixed(1)}</div>
-              <div style={{fontSize:isMobile?11:15,color:"rgba(77,159,255,0.75)",fontWeight:700}}>{unit}</div>
-              <div style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {wLim}</div>
-            </div>
-            <div style={{height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,overflow:"hidden",marginBottom:5}}>
-              <div style={{height:"100%",width:Math.min((bpW/wLim)*100,100)+"%",background:`linear-gradient(90deg,#1565FF,${(bpW*wM)>wLim?"#FF6B6B":"#4D9FFF"})`,borderRadius:4,transition:"width 0.4s ease"}}/>
-            </div>
-            <div style={{fontSize:isMobile?11:13,color:"rgba(77,159,255,0.7)",fontFamily:"monospace",fontWeight:600}}>{Math.round((bpW/wLim)*100)}% · {(bpW*wM).toFixed(1)}/{wLim}{unit}</div>
           </div>
-          {/* Volume hero */}
-          {(()=>{
-            const zeroV=items.filter(i=>i.bag==="Backpack"&&(parseFloat(i.volume)||0)===0).length;
-            const bpItems=items.filter(i=>i.bag==="Backpack").length;
-            const incomplete=bpItems>0&&(zeroV/bpItems)>0.4;
-            const dV=Math.min(bpV,VL),vPct=Math.min((bpV/VL)*100,100);
-            return(<div style={{background:"rgba(169,70,29,0.08)",border:"1px solid rgba(196,87,30,0.08)",borderRadius:10,padding:"12px 14px",boxShadow:'inset 0 1px 0 rgba(255,180,80,0.35),inset 1px 0 0 rgba(255,140,40,0.12),inset -1px 0 0 rgba(255,140,40,0.12),inset 0 -1px 0 rgba(255,100,20,0.08)'}}>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                <div style={{fontSize:isMobile?12:13,fontWeight:700,color:"#FFD93D",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace"}}>📦 VOLUME</div>
-                {incomplete&&<div style={{padding:"3px 8px",borderRadius:8,border:"1px solid rgba(255,159,67,0.4)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:isMobile?11:15,fontFamily:"monospace",fontWeight:700}}>⚠ PARTIAL</div>}
-              </div>
-              <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:7}}>
-                <div style={{fontSize:isMobile?13:34,fontWeight:900,color:"#FFD93D",lineHeight:1,letterSpacing:-1,fontFamily:"'Space Mono',monospace"}}>{dV.toFixed(1)}</div>
-                <div style={{fontSize:isMobile?11:15,color:"rgba(255,217,61,0.75)",fontWeight:700}}>L</div>
-                <div style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.4)",marginLeft:2}}>/ {VL}L</div>
-              </div>
-              <div style={{height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,overflow:"hidden",marginBottom:5}}>
-                <div style={{height:"100%",width:vPct+"%",background:"linear-gradient(90deg,#A9461D,#FFD93D)",borderRadius:4,transition:"width 0.4s ease"}}/>
-              </div>
-              {incomplete?<div style={{fontSize:isMobile?11:13,color:"rgba(255,159,67,0.7)",fontFamily:"monospace",fontWeight:600}}>⚠ {zeroV} missing</div>:<div style={{fontSize:isMobile?11:13,color:"rgba(255,217,61,0.55)",fontFamily:"monospace",fontWeight:600}}>{Math.round(vPct)}% · {dV.toFixed(1)}/45L</div>}
-            </div>);
-          })()}
+          <CircularRing value={parseFloat((bpW*wM).toFixed(1))} max={wLim} label="MAIN BAG" sublabel="carry-on limit" color="#4D9FFF" unit={unit}/>
+          <div style={{width:'1px',background:'rgba(255,255,255,0.06)',flexShrink:0}}/>
+          <CircularRing value={parseFloat(bpV.toFixed(1))} max={VL} label="MAIN BAG" sublabel="volume limit" color="#FF9F43" unit="L"/>
         </div>
         {/* 4 mini stats */}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%"}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%",padding:'10px 12px'}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(169,70,29,0.06)",border:"1px solid rgba(196,87,30,0.08)",borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:'inset 0 1px 0 rgba(255,180,80,0.35),inset 1px 0 0 rgba(255,140,40,0.12),inset -1px 0 0 rgba(255,140,40,0.12),inset 0 -1px 0 rgba(255,100,20,0.08)'}}>
-              <div style={{fontSize:isMobile?11:11,fontWeight:500,color:"rgba(255,255,255,0.4)",letterSpacing:0,marginBottom:2,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
+              <div style={{fontSize:10,fontWeight:500,color:"rgba(255,255,255,0.4)",letterSpacing:0,marginBottom:2,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
               <div style={{fontSize:isMobile?12:18,fontWeight:600,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
             </div>
           ))}
