@@ -1816,16 +1816,31 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           {!isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:2,marginTop:3,fontFamily:"'Space Mono',monospace"}}>{[...new Set(flatPhases.map(p=>p.country))].join(" · ")}</div>}
         </div>}
         {isMobile?(()=>{
-          const mobileStats=[heroStats.find(s=>s.label==="DEPARTS IN"),heroStats.find(s=>s.label==="BUDGET"),heroStats.find(s=>s.label==="NIGHTS"),heroStats.find(s=>s.label==="DIVES")||heroStats.find(s=>s.label==="NIGHTS")].filter((s,idx,arr)=>s&&arr.findIndex(x=>x?.label===s?.label)===idx);
+          const allSegD=loadSeg();
+          let totalSegs=0,filledSegs=0;
+          segPhases.forEach(p=>p.segments.forEach(s=>{totalSegs++;const d=allSegD[`${p.id}-${s.id}`]||{};if(d.transport?.mode||d.transport?.cost||d.stay?.name||d.stay?.cost||(d.activities?.length||0)>0)filledSegs++;}));
+          const readPct=totalSegs>0?Math.round((filledSegs/totalSegs)*100):0;
           return(
-            <div data-coach="trip-stats" style={{display:"grid",gridTemplateColumns:"1fr 1fr",position:"relative"}}>
-              {mobileStats.map((s,i)=>(
-                <div key={s.label} style={{textAlign:"center",padding:"12px 3px",borderRight:i%2===0?"1px solid rgba(255,255,255,0.10)":"none",borderBottom:i<2?"1px solid rgba(255,255,255,0.08)":"none"}}>
-                  <div style={{fontSize:10,fontWeight:700,color:"rgba(232,220,200,0.5)",letterSpacing:3,marginBottom:2,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div>
-                  <div className="stat-val" style={{fontSize:16,fontWeight:700,lineHeight:1,color:s.label==="BUDGET"?"#FFD93D":"#E8DCC8",fontFamily:"'Space Mono',monospace",animationDelay:`${i*0.1}s`}}>{s.value}</div>
-                  <div style={{fontSize:11,fontWeight:700,color:"rgba(232,220,200,0.4)",letterSpacing:2,marginTop:2,fontFamily:"'Space Mono',monospace"}}>{s.unit}</div>
+            <div data-coach="trip-stats" style={{display:'flex',flexDirection:'column',gap:8}}>
+              <div style={{background:'rgba(0,229,255,0.05)',borderRadius:12,padding:'14px 16px',boxShadow:'inset 0 1px 0 rgba(0,229,255,0.35),inset 1px 0 0 rgba(0,229,255,0.10),inset -1px 0 0 rgba(0,229,255,0.10),inset 0 -1px 0 rgba(0,229,255,0.06)'}}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+                  <span style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(0,229,255,0.55)',fontFamily:"'Space Mono',monospace",fontWeight:700}}>EXPEDITION READINESS</span>
+                  <span style={{fontSize:22,fontWeight:700,color:'#00E5FF',fontFamily:"'Space Mono',monospace"}}>{readPct}%</span>
                 </div>
-              ))}
+                <div style={{width:'100%',height:4,background:'rgba(255,255,255,0.08)',borderRadius:2,overflow:'hidden'}}>
+                  <div style={{height:'100%',width:`${readPct}%`,background:'linear-gradient(90deg,#00E5FF88,#00E5FF)',borderRadius:2,transition:'width 0.6s ease'}}/>
+                </div>
+                <div style={{fontSize:10,color:'rgba(255,255,255,0.35)',marginTop:6,fontFamily:"'Space Mono',monospace"}}>{filledSegs} of {totalSegs} planning tasks complete</div>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',background:'rgba(255,255,255,0.02)',borderRadius:10,border:'1px solid rgba(255,255,255,0.07)',overflow:'hidden'}}>
+                {[{label:'DEPARTS IN',value:daysToDepart,sub:'DAYS',color:'#E8DCC8'},{label:'NIGHTS',value:totalNights,sub:'NIGHTS',color:'#E8DCC8'},{label:'BUDGET',value:fmt(totalBudget),sub:'TOTAL',color:'#FFD93D'}].map((s,i)=>(
+                  <div key={s.label} style={{textAlign:'center',padding:'10px 4px',borderLeft:i>0?'1px solid rgba(255,255,255,0.08)':undefined}}>
+                    <div style={{fontSize:8,letterSpacing:'0.10em',color:'rgba(255,255,255,0.35)',fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:3}}>{s.label}</div>
+                    <div style={{fontSize:20,fontWeight:700,color:s.color,fontFamily:"'Space Mono',monospace",lineHeight:1}}>{s.value}</div>
+                    <div style={{fontSize:8,color:'rgba(255,255,255,0.30)',fontFamily:"'Space Mono',monospace",marginTop:2}}>{s.sub}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           );
         })():(
@@ -1886,9 +1901,9 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
               <span style={{fontSize:11,fontWeight:700,color:"#FFD93D",letterSpacing:2,fontFamily:"'Space Mono',monospace",flex:1}}>✦ EXPEDITION COMPLETE · TAP TO CELEBRATE</span>
               <span style={{fontSize:12,color:"rgba(255,217,61,0.5)"}}>→</span>
             </div>}
-            {tripData.visionNarrative&&<div style={{marginBottom:8}}><div style={{fontSize:10,color:"rgba(232,220,200,0.35)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.75,borderLeft:"2px solid rgba(232,220,200,0.12)",paddingLeft:12,textAlign:"left"}}>"{tripData.visionNarrative.slice(0,160)}{tripData.visionNarrative.length>160?"...":""}"</div></div>}
+            {tripData.visionNarrative&&(()=>{const _vn=tripData.visionNarrative;const _lim=160;const _trunc=_vn.length>_lim?_vn.slice(0,_lim).slice(0,_vn.slice(0,_lim).lastIndexOf(' '))+'...':_vn;return(<div style={{marginBottom:8}}><div style={{fontSize:10,color:"rgba(232,220,200,0.35)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.75,borderLeft:"2px solid rgba(232,220,200,0.12)",paddingLeft:12,textAlign:"left"}}>"{_trunc}"</div></div>);})()}
             <div style={{fontSize:isMobile?12:14,color:"#E8DCC8",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Space Mono',monospace",whiteSpace:isMobile?"normal":"nowrap"}}>{isMobile?`YOUR EXPEDITION · ${segPhases.length} PHASES`:`YOUR EXPEDITION · ${segPhases.length} PHASES · TAP PHASE TO EXPAND`}</div>
-            {isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.3)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>TAP PHASE TO EXPAND</div>}
+            {isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>TAP PHASE TO EXPAND</div>}
             {segPhases.map((phase,i)=>i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} autoOpen={segPhases.length===1} onTap={isMobile?p=>setPhaseDetailView(p):null}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={isMobile?p=>setPhaseDetailView(p):null}/>)}
           </div>
         )}
