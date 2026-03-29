@@ -185,6 +185,8 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 @keyframes logoPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 @keyframes ambientGlow{0%,100%{opacity:0.5}50%{opacity:0.9}}
 @keyframes slideOpen{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes activePulse{0%,100%{r:2.8;opacity:0.9}50%{r:4.5;opacity:1.0}}
 
 
   .dream-root,.mc-root,.build-root{font-size:18px}
@@ -1554,7 +1556,50 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
 }
 
 // ─── PhaseCard ────────────────────────────────────────────────────
-function PhaseCard({phase,intelData,idx,autoOpen=false}) {
+// ─── Activity Icons ───────────────────────────────────────────────
+const ACTIVITY_ICONS={'DIVE':'🤿','CULTURE':'🏛️','HIKING':'🥾','SAILING':'⛵','CITY':'🏙️','FOOD':'🍜','BEACH':'🏖️','SAFARI':'🦁','WELLNESS':'🧘','ADVENTURE':'🏔️','DEFAULT':'✦'};
+const SEG_TYPE_TO_ACT={Dive:'DIVE',Surf:'SAILING',Culture:'CULTURE',Exploration:'ADVENTURE',Nature:'SAFARI',Moto:'ADVENTURE',Trek:'HIKING',Relax:'WELLNESS',Transit:'DEFAULT',City:'CITY'};
+function getPhaseActivityIcon(phase){const t=phase.segments?.[0]?.type;return ACTIVITY_ICONS[SEG_TYPE_TO_ACT[t]||'DEFAULT']||'✦';}
+
+// ─── PhaseDetailPage ──────────────────────────────────────────────
+function PhaseDetailPage({phase,intelData,onBack}) {
+  const isMobile=useMobile();
+  const [hintVisible,setHintVisible]=useState(()=>{try{return!localStorage.getItem('1bn_phase_hint_shown');}catch(e){return false;}});
+  useEffect(()=>{
+    if(hintVisible){
+      const t=setTimeout(()=>{try{localStorage.setItem('1bn_phase_hint_shown','1');}catch(e){}setHintVisible(false);},4000);
+      return()=>clearTimeout(t);
+    }
+  },[hintVisible]);
+  return(
+    <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:'#03070F',overflowY:'auto',animation:'slideInRight 0.28s cubic-bezier(0.34,1.56,0.64,1)'}}>
+      {/* Header */}
+      <div style={{display:'flex',alignItems:'center',padding:'12px 16px',gap:12,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(0,229,255,0.12)',position:'sticky',top:0,zIndex:10}}>
+        <button onClick={onBack} style={{background:'none',border:'none',color:'#00E5FF',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center'}}>‹</button>
+        <span style={{fontSize:20}}>{phase.flag}</span>
+        <span style={{flex:1,fontSize:18,fontWeight:500,color:'#E8DCC8',fontFamily:"'Fraunces',serif"}}>{phase.name}</span>
+        <span style={{fontSize:14,fontWeight:700,color:'#FFD93D',fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</span>
+      </div>
+      {/* First-visit breadcrumb hint */}
+      {hintVisible&&<div style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(0,229,255,0.35)',padding:'6px 16px 0',textAlign:'center',fontFamily:"'Space Mono',monospace"}}>TAP ‹ TO RETURN TO EXPEDITION</div>}
+      {/* Stats bar */}
+      <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'10px 16px',flexShrink:0}}>
+        <span style={{flex:1,fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>{fD(phase.arrival)} – {fD(phase.departure)}</span>
+        <span style={{fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>🌙{phase.totalNights}n</span>
+        {phase.totalDives>0&&<span style={{fontSize:11,color:'#00E5FF',marginLeft:8,fontFamily:"'Space Mono',monospace"}}>🤿{phase.totalDives}</span>}
+      </div>
+      {/* Segment list */}
+      <div style={{padding:'6px 0 80px'}}>
+        <div style={{padding:'8px 16px 4px',fontSize:11,color:'rgba(255,255,255,0.28)',letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
+        {phase.segments.map((seg,i)=>(
+          <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1}/>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null}) {
   const isMobile=useMobile();
   const [open,setOpen]=useState(autoOpen);
   const [sheetOpen,setSheetOpen]=useState(false);
@@ -1576,10 +1621,10 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
   const phaseStatus=firstSeg.status||'planning';
   const statusDot=STATUS_CFG[phaseStatus]?.color||STATUS_CFG.planning.color;
 
-  // ── Mobile: slim itinerary row + BottomSheet ───────────────────
+  // ── Mobile: slim itinerary row + BottomSheet (or page nav) ──────
   if(isMobile) return(
     <>
-      <div className="tap-scale" onClick={()=>setSheetOpen(true)}
+      <div className="tap-scale" onClick={()=>onTap?onTap(phase):setSheetOpen(true)}
         onMouseOver={e=>{e.currentTarget.style.background='rgba(255,255,255,0.04)';e.currentTarget.style.border='1px solid rgba(0,229,255,0.18)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.5),inset 0 1px 0 rgba(0,229,255,0.30),inset 1px 0 0 rgba(0,229,255,0.10),inset -1px 0 0 rgba(0,229,255,0.10),inset 0 -1px 0 rgba(0,229,255,0.05)';}}
         onMouseOut={e=>{e.currentTarget.style.background='rgba(255,255,255,0.025)';e.currentTarget.style.border='1px solid rgba(0,229,255,0.08)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(0,229,255,0.22),inset 1px 0 0 rgba(0,229,255,0.08),inset -1px 0 0 rgba(0,229,255,0.08),inset 0 -1px 0 rgba(0,229,255,0.04)';}}
         style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(0,229,255,0.08)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(0,229,255,0.22),inset 1px 0 0 rgba(0,229,255,0.08),inset -1px 0 0 rgba(0,229,255,0.08),inset 0 -1px 0 rgba(0,229,255,0.04)',animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
@@ -1598,7 +1643,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
           <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'rgba(232,220,200,0.3)',whiteSpace:'nowrap'}}>· {phase.totalNights}n{phase.totalDives>0?` · 🤿${phase.totalDives}`:''}</span>
         </div>
       </div>
-      <BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500} hideClose={anyAskOpen}>
+      {!onTap&&<BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500} hideClose={anyAskOpen}>
         {/* Sheet header */}
         <div style={{padding:'16px 16px 14px',borderBottom:'1px solid rgba(255,255,255,0.12)'}}>
           <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
@@ -1627,7 +1672,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false}) {
             <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onAskOpenChange={setAnyAskOpen}/>
           ))}
         </div>
-      </BottomSheet>
+      </BottomSheet>}
     </>
   );
 
@@ -1679,6 +1724,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   const [loadingIntel,setLoadingIntel]=useState(false);
   const [showCoach,setShowCoach]=useState(()=>!loadCoach().trip);
   const [showOnboard,setShowOnboard]=useState(()=>!loadOnboard().trip);
+  const [phaseDetailView,setPhaseDetailView]=useState(null);
   useEffect(()=>{try{localStorage.setItem("1bn_intel",JSON.stringify(explorerData));}catch(e){};},[explorerData]);
 
   function handleNewTripClick(){if(confirmNewTrip){onNewTrip();}else{setConfirmNewTrip(true);setTimeout(()=>setConfirmNewTrip(false),4000);}}
@@ -1715,7 +1761,8 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
 
   return(
     <div className="mc-root" style={{animation:"consoleIn 0.38s cubic-bezier(0.34,1.56,0.64,1) both"}}>
-      <WorldMapBackground phases={tripData.phases||[]}/>
+      <WorldMapBackground phases={tripData.phases||[]} activeCountry={phaseDetailView?.country}/>
+      {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)}/>}
       {showOnboard&&<OnboardCard storageKey="trip" ctaLabel="✦ ENTER MY EXPEDITION" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,color:"rgba(0,229,255,0.75)",marginBottom:10}}>TRIP CONSOLE</div>
@@ -1832,7 +1879,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
             {tripData.visionNarrative&&<div style={{marginBottom:8}}><div style={{fontSize:10,color:"rgba(232,220,200,0.35)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.75,borderLeft:"2px solid rgba(232,220,200,0.12)",paddingLeft:12,textAlign:"left"}}>"{tripData.visionNarrative.slice(0,160)}{tripData.visionNarrative.length>160?"...":""}"</div></div>}
             <div style={{fontSize:isMobile?12:14,color:"#E8DCC8",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Space Mono',monospace",whiteSpace:isMobile?"normal":"nowrap"}}>{isMobile?`YOUR EXPEDITION · ${segPhases.length} PHASES`:`YOUR EXPEDITION · ${segPhases.length} PHASES · TAP PHASE TO EXPAND`}</div>
             {isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.3)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>TAP PHASE TO EXPAND</div>}
-            {segPhases.map((phase,i)=>i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} autoOpen={segPhases.length===1}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i}/>)}
+            {segPhases.map((phase,i)=>i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} autoOpen={segPhases.length===1} onTap={isMobile?p=>setPhaseDetailView(p):null}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={isMobile?p=>setPhaseDetailView(p):null}/>)}
           </div>
         )}
         {tab==="budget"&&(
