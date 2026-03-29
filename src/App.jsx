@@ -483,6 +483,7 @@ function AntiqueGlobe({size=120, glowColor="rgba(0,180,255,0.45)", animate=true}
 function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackConsole,children}) {
   const isDream=which==="dream", isTrip=which==="trip", isPack=which==="pack";
   const [profileOpen,setProfileOpen]=useState(false);
+  const [helpOpen,setHelpOpen]=useState(false);
   const bg=isDream?"rgba(21,15,10,0.95)":isTrip?"rgba(21,15,10,0.92)":"rgba(21,15,10,0.95)";
   const bc=isDream?"rgba(232,220,200,0.08)":isTrip?"rgba(232,220,200,0.06)":"rgba(196,87,30,0.35)";
   const dot=isDream?"#FFD93D":isTrip?"#00E5FF":"#FF9F43";
@@ -601,6 +602,32 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
             {!row.danger&&<span style={{fontSize:16,color:"rgba(255,255,255,0.18)"}}>›</span>}
           </div>
         ))}
+        {/* Help row */}
+        <div onClick={()=>setHelpOpen(h=>!h)} style={{display:"flex",alignItems:"center",gap:14,padding:"14px 4px",borderBottom:"1px solid rgba(255,255,255,0.05)",cursor:"pointer"}}>
+          <span style={{fontSize:20,width:28,textAlign:"center",flexShrink:0}}>❓</span>
+          <div style={{flex:1}}>
+            <div style={{fontSize:14,fontWeight:700,color:"rgba(255,255,255,0.88)",fontFamily:"'Space Mono',monospace",letterSpacing:0.5}}>Help</div>
+            <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",marginTop:2,fontFamily:"'Space Mono',monospace"}}>How to navigate the app</div>
+          </div>
+          <span style={{fontSize:14,color:"rgba(255,255,255,0.30)",transition:"transform 0.2s",display:"inline-block",transform:helpOpen?"rotate(90deg)":"rotate(0deg)"}}>›</span>
+        </div>
+        {helpOpen&&<div style={{background:"rgba(0,229,255,0.03)",border:"1px solid rgba(0,229,255,0.10)",borderRadius:10,padding:"14px 16px",marginTop:4,marginBottom:8,display:"flex",flexDirection:"column",gap:12}}>
+          {[
+            {icon:"🧭",title:"Trip Console",tip:"Tap any phase card to expand it. Tap a segment inside to plan transport, stay, activities, food and more."},
+            {icon:"📋",title:"Bottom Tabs",tip:"TRIP · BUDGET · BOOK · INTEL each show a different view of your expedition. PACK switches to your gear console."},
+            {icon:"🎒",title:"Pack Console",tip:"Tap a category to browse items. Check the box on any item once you own it. Use NEED TO BUY for your shopping list."},
+            {icon:"🔭",title:"Intel Tab",tip:"Ask the AI anything about your destinations — visa rules, weather, dive conditions, local tips."},
+            {icon:"✏️",title:"Revise Trip",tip:"Tap REVISE at any time to edit your trip dates, countries, budget or travel style with the AI planner."},
+          ].map(h=>(
+            <div key={h.title} style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+              <span style={{fontSize:16,flexShrink:0,marginTop:1}}>{h.icon}</span>
+              <div>
+                <div style={{fontSize:11,fontWeight:700,color:"rgba(0,229,255,0.75)",fontFamily:"'Space Mono',monospace",letterSpacing:1,marginBottom:2}}>{h.title}</div>
+                <div style={{fontSize:12,color:"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",lineHeight:1.6}}>{h.tip}</div>
+              </div>
+            </div>
+          ))}
+        </div>}
       </div>
     </BottomSheet>}
     </>
