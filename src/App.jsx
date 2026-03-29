@@ -58,19 +58,24 @@ const EXPEDITION_COORDS = {
   'Jordan':      [36.2,  30.6],
   'Tanzania':    [34.9,  -6.4],
 };
-const WorldMapBackground = memo(({phases, activeCountry}) => {
+const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp}) => {
   try {
+    const isPack = consoleProp === 'pack';
     const phaseList = phases||[];
     const coords = phaseList.map(p=>EXPEDITION_COORDS[p.country]).filter(Boolean);
     const activeCoord = activeCountry ? EXPEDITION_COORDS[activeCountry] : null;
     const isMobileMap = typeof window!=='undefined' && window.innerWidth < 480;
+    const geoFill = isPack ? '#FF9F43' : '#E8DCC8';
+    const geoFillOp = isPack ? 0.05 : (isMobileMap ? 0.08 : 0.06);
+    const geoStroke = isPack ? '#FF9F43' : '#00E5FF';
+    const geoStrokeOp = isPack ? 0.12 : (isMobileMap ? 0.22 : 0.18);
     return (
       <div style={{position:'fixed',top:0,left:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:0,overflow:'hidden'}}>
         <style>{`@keyframes dashMove{to{stroke-dashoffset:-50}}.route-line{animation:dashMove 6s linear infinite}@keyframes activePulseR{0%,100%{r:2.8}50%{r:5}}.active-dot{animation:activePulseR 1.4s ease-in-out infinite}`}</style>
         <ComposableMap projection="geoNaturalEarth1" projectionConfig={{scale:160,center:[20,10]}} style={{width:'100%',height:'100%'}}>
           <Geographies geography={GEO_URL}>
             {({geographies})=>geographies.map(geo=>(
-              <Geography key={geo.rsmKey} geography={geo} fill="#E8DCC8" fillOpacity={isMobileMap?0.08:0.06} stroke="#00E5FF" strokeWidth={0.4} strokeOpacity={isMobileMap?0.22:0.18} style={{default:{outline:'none'},hover:{outline:'none'},pressed:{outline:'none'}}}/>
+              <Geography key={geo.rsmKey} geography={geo} fill={geoFill} fillOpacity={geoFillOp} stroke={geoStroke} strokeWidth={0.4} strokeOpacity={geoStrokeOp} style={{default:{outline:'none'},hover:{outline:'none'},pressed:{outline:'none'}}}/>
             ))}
           </Geographies>
           {coords.length>1&&coords.map((coord,i)=>{
@@ -2336,6 +2341,8 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
 
   return(
     <div style={{fontFamily:"'Space Mono',monospace",background:"radial-gradient(ellipse at 50% 0%,rgba(255,159,67,0.10) 0%,transparent 55%) no-repeat fixed,#150F0A",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.38s cubic-bezier(0.34,1.56,0.64,1) both"}}>
+      <WorldMapBackground phases={tripData?.phases||[]} console="pack"/>
+      <div style={{position:'relative',zIndex:1,display:'flex',flexDirection:'column',flex:1,minHeight:'100vh'}}>
       {showOnboard&&<OnboardCard storageKey="pack" ctaLabel="✦ BUILD MY PACK" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,color:"rgba(255,159,67,0.75)",marginBottom:10}}>PACK CONSOLE</div>
@@ -2584,6 +2591,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
       )}
       {isMobile&&!isFullscreen&&<div style={{height:"calc(64px + env(safe-area-inset-bottom))"}}/>}
       {isMobile&&!isFullscreen&&<BottomNav activeTab="pack" onTab={t=>{if(t==="pack")return;if(onGoToTab)onGoToTab(t);else onExpedition();}}/>}
+      </div>
     </div>
   );
 }
