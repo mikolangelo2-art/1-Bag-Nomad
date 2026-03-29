@@ -781,20 +781,28 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
     const hasBudget=budgetMode!=="dream"&&budgetAmount&&Number(budgetAmount)>0;
     const nightCount=(date&&returnDate)?Math.round((new Date(returnDate)-new Date(date))/(1000*60*60*24)):null;
     const nightsDirective=nightCount?`CRITICAL: trip is exactly ${nightCount} nights — phases must sum to exactly ${nightCount} totalNights.`:"Infer duration from vision.";
-    const budgetConstraint=hasBudget?`⚠️ HARD BUDGET CONSTRAINT — READ THIS FIRST, HONOR IT ABSOLUTELY:\nBUDGET: The traveler has specified a budget of $${budgetAmount}. This is their ACTUAL available spend — not an estimate, not a guideline. You MUST build an itinerary where the realistic total cost reflects this budget level.\n- If budget is LOW (under $3,000): recommend hostels, guesthouses, street food, budget transport, free/low-cost activities\n- If budget is MID ($3,000–$10,000): recommend 3-star hotels, mix of local and mid-range dining, reasonable activities\n- If budget is HIGH ($10,000–$25,000): recommend 4-star hotels, quality dining, premium experiences, comfortable transport\n- If budget is LUXURY ($25,000+): recommend 5-star resorts, fine dining, business/first class flights, exclusive experiences\nDo NOT generate a totalBudget lower than 60% of $${budgetAmount} unless the trip genuinely cannot fill it. Do NOT ignore this number.\n`:"NO BUDGET SET — set totalBudget to 0.";
+    const bAmt=Number(budgetAmount)||0;
+    const budgetConstraint=hasBudget?`⚠️ BUDGET ALLOCATION DIRECTIVE:\nThe traveler's total budget is $${budgetAmount}. This is a SPEND TARGET, not a ceiling to stay under.\nYour job is to ALLOCATE this $${budgetAmount} across the phases — not to estimate what the trip "might" cost.\n- Divide $${budgetAmount} proportionally across phases based on nights and destination cost-of-living\n- A ${bAmt>=25000?"LUXURY":""}${bAmt>=10000&&bAmt<25000?"HIGH-END":""}${bAmt>=3000&&bAmt<10000?"MID-RANGE":""}${bAmt<3000?"BUDGET":""} trip: choose accommodations and experiences that would realistically spend this amount\n- The sum of all phase "budget" fields MUST equal approximately $${budgetAmount}\n- "totalBudget" in your JSON MUST be set to ${budgetAmount}\n`:"NO BUDGET SET — set totalBudget to 0.";
     try {
-      const budgetSchema=hasBudget?`"totalBudget":${budgetAmount} (MUST approximately equal $${budgetAmount} — the sum of all phase budget fields)`:`"totalBudget":0`;
-      const phaseSchema=hasBudget?`"budget":0 (realistic cost for this phase at the tier appropriate for a $${budgetAmount} total trip — NOT a conservative backpacker estimate)`:`"budget":0`;
-      const budgetJsonNote=hasBudget?`\nCRITICAL JSON FIELD RULE: The totalBudget field in your JSON response MUST reflect the traveler's stated budget of $${budgetAmount}. Per-phase "budget" fields must add up to approximately this total. Do not calculate conservative estimates — calculate realistic costs for the accommodation tier and experience level appropriate for this budget.`:"";
-      const basePrompt=`${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective}${budgetJsonNote} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍",${phaseSchema}}],${budgetSchema},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"}`;
+      const basePrompt=`${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"}${hasBudget?`\n\nREMINDER: "totalBudget" MUST be ${budgetAmount}. Each phase "budget" is that phase's share of $${budgetAmount}. Do NOT estimate from scratch — ALLOCATE the stated budget.`:''}`;
       let raw=await askAI(basePrompt,1800);
       let parsed=parseJSON(raw);
-      if(parsed&&hasBudget&&parsed.totalBudget<Number(budgetAmount)*0.6){
-        console.log(`[1BN] Budget retry triggered: AI returned $${parsed.totalBudget} vs stated $${budgetAmount} (${Math.round(parsed.totalBudget/Number(budgetAmount)*100)}%). Retrying...`);
-        const retryPrompt=basePrompt+`\n\n⚠️ CORRECTION: Your previous response had totalBudget of $${parsed.totalBudget}, which is less than 60% of the traveler's stated $${budgetAmount} budget. You MUST increase accommodation quality, add premium experiences, upgrade transport, or extend stays so that totalBudget realistically reflects $${budgetAmount}. Return corrected JSON only.`;
-        const retryRaw=await askAI(retryPrompt,1800);
-        const retryParsed=parseJSON(retryRaw);
-        if(retryParsed){console.log(`[1BN] Budget retry result: $${retryParsed.totalBudget}`);parsed=retryParsed;}
+      if(parsed&&hasBudget){
+        const returnedTotal=parsed.phases?.reduce((s,p)=>s+(p.budget||p.cost||0),0)||parsed.totalBudget||0;
+        if(returnedTotal<bAmt*0.6){
+          console.log(`[1BN] Budget retry: AI allocated $${returnedTotal} vs target $${budgetAmount} (${Math.round(returnedTotal/bAmt*100)}%). Retrying...`);
+          const retryRaw=await askAI(basePrompt+`\n\n⚠️ CORRECTION: You returned phase budgets totaling $${returnedTotal} for a $${budgetAmount} trip. That is ${Math.round(returnedTotal/bAmt*100)}% of the budget. ALLOCATE the full $${budgetAmount}. Set totalBudget to ${budgetAmount}. Return corrected JSON only.`,1800);
+          const retryParsed=parseJSON(retryRaw);
+          if(retryParsed) parsed=retryParsed;
+        }
+        // Code-level guarantee: scale phase budgets to match stated budget
+        const phaseSum=parsed.phases?.reduce((s,p)=>s+(p.budget||p.cost||0),0)||0;
+        if(parsed.phases&&phaseSum>0&&(phaseSum<bAmt*0.6||phaseSum>bAmt*1.5)){
+          const scale=bAmt/phaseSum;
+          console.log(`[1BN] Budget scale correction: $${phaseSum} -> $${bAmt} (${scale.toFixed(2)}x)`);
+          parsed.phases.forEach(p=>{p.budget=Math.round((p.budget||p.cost||0)*scale);});
+        }
+        parsed.totalBudget=bAmt;
       }
       if(parsed) setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount});
       else{setLoadError(true);setLoading(false);}
