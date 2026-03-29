@@ -788,6 +788,7 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
       const basePrompt=`${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"${breakdownSchema}}${hasBudget?`\n\nREMINDER: "totalBudget" MUST be ${budgetAmount}. Each phase "budget" is that phase's share of $${budgetAmount}. The budgetBreakdown fields (flights, accommodation, food, transport, activities, buffer) must sum to approximately $${budgetAmount}. Distribute realistically based on destination costs, trip length, and accommodation tier. Do NOT estimate from scratch — ALLOCATE the stated budget.`:''}`;
       let raw=await askAI(basePrompt,2200);
       let parsed=parseJSON(raw);
+      console.log('[1BN] AI budgetBreakdown returned:',parsed?.budgetBreakdown||'MISSING');
       if(parsed&&hasBudget&&parsed.phases?.length){
         // Pure math: scale AI's proportional split to match stated budget
         const phaseSum=parsed.phases.reduce((s,p)=>s+(p.budget||p.cost||0),0)||1;
@@ -795,18 +796,22 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
         console.log(`[1BN] Budget scaling: AI total $${phaseSum} x ${ratio.toFixed(2)} -> target $${bAmt}`);
         parsed.phases.forEach(p=>{p.budget=Math.round((p.budget||p.cost||0)*ratio/10)*10;});
         parsed.totalBudget=bAmt;
-        // Scale breakdown categories to match stated budget
-        if(parsed.budgetBreakdown){
-          const bd=parsed.budgetBreakdown;
-          const catSum=(bd.flights||0)+(bd.accommodation||0)+(bd.food||0)+(bd.transport||0)+(bd.activities||0)+(bd.buffer||0)||1;
-          const bRatio=bAmt/catSum;
-          bd.flights=Math.round((bd.flights||0)*bRatio/10)*10;
-          bd.accommodation=Math.round((bd.accommodation||0)*bRatio/10)*10;
-          bd.food=Math.round((bd.food||0)*bRatio/10)*10;
-          bd.transport=Math.round((bd.transport||0)*bRatio/10)*10;
-          bd.activities=Math.round((bd.activities||0)*bRatio/10)*10;
-          bd.buffer=Math.round((bd.buffer||0)*bRatio/10)*10;
+        // Scale or synthesize breakdown categories to match stated budget
+        if(!parsed.budgetBreakdown){
+          console.log('[1BN] budgetBreakdown missing from AI — synthesizing from budget');
+          const tn=parsed.phases.reduce((s,p)=>s+(p.nights||0),0)||1;
+          parsed.budgetBreakdown={flights:Math.round(bAmt*0.2),accommodation:Math.round(bAmt*0.3),food:Math.round(bAmt*0.18),transport:Math.round(bAmt*0.08),activities:Math.round(bAmt*0.16),buffer:Math.round(bAmt*0.08),flightsNote:(city||"Home")+" → "+parsed.phases[0]?.destination+" return",accommodationNote:bAmt>=25000?"Luxury resorts & 5-star hotels":bAmt>=10000?"4-star hotels & boutique stays":bAmt>=3000?"Mid-range hotels & guesthouses":"Hostels & guesthouses",foodNote:bAmt>=10000?"Quality restaurants & local dining":"Local restaurants & street food",routingNote:parsed.phases.length>1?`${parsed.phases.map(p=>p.destination).join(" → ")} — following the most efficient routing between destinations.`:""};
         }
+        const bd=parsed.budgetBreakdown;
+        const catSum=(bd.flights||0)+(bd.accommodation||0)+(bd.food||0)+(bd.transport||0)+(bd.activities||0)+(bd.buffer||0)||1;
+        const bRatio=bAmt/catSum;
+        bd.flights=Math.round((bd.flights||0)*bRatio/10)*10;
+        bd.accommodation=Math.round((bd.accommodation||0)*bRatio/10)*10;
+        bd.food=Math.round((bd.food||0)*bRatio/10)*10;
+        bd.transport=Math.round((bd.transport||0)*bRatio/10)*10;
+        bd.activities=Math.round((bd.activities||0)*bRatio/10)*10;
+        bd.buffer=Math.round((bd.buffer||0)*bRatio/10)*10;
+        console.log('[1BN] Final budgetBreakdown:',bd);
       }
       if(parsed) setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount});
       else{setLoadError(true);setLoading(false);}
