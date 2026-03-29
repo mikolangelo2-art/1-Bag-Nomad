@@ -778,12 +778,20 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
   async function handleReveal() {
     if(!canLaunch||loading)return;
     setLoading(true);setLoadError(false);
-    const bl=budgetMode==="dream"?"NO BUDGET SET — set totalBudget to 0.":"Traveler budget: $"+(budgetAmount||"flexible");
+    const hasBudget=budgetMode!=="dream"&&budgetAmount&&Number(budgetAmount)>0;
     const nightCount=(date&&returnDate)?Math.round((new Date(returnDate)-new Date(date))/(1000*60*60*24)):null;
     const nightsDirective=nightCount?`CRITICAL: trip is exactly ${nightCount} nights — phases must sum to exactly ${nightCount} totalNights.`:"Infer duration from vision.";
+    const budgetConstraint=hasBudget?`⚠️ HARD BUDGET CONSTRAINT — READ THIS FIRST, HONOR IT ABSOLUTELY:\nBUDGET: The traveler has specified a budget of $${budgetAmount}. This is their ACTUAL available spend — not an estimate, not a guideline. You MUST build an itinerary where the realistic total cost reflects this budget level.\n- If budget is LOW (under $3,000): recommend hostels, guesthouses, street food, budget transport, free/low-cost activities\n- If budget is MID ($3,000–$10,000): recommend 3-star hotels, mix of local and mid-range dining, reasonable activities\n- If budget is HIGH ($10,000–$25,000): recommend 4-star hotels, quality dining, premium experiences, comfortable transport\n- If budget is LUXURY ($25,000+): recommend 5-star resorts, fine dining, business/first class flights, exclusive experiences\nDo NOT generate a totalBudget lower than 60% of $${budgetAmount} unless the trip genuinely cannot fill it. Do NOT ignore this number.\n`:"NO BUDGET SET — set totalBudget to 0.";
     try {
-      const raw=await askAI(`Elite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} ${bl} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍"}],"totalNights":0,"totalBudget":0,"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"}`,1800);
-      const parsed=parseJSON(raw);
+      const basePrompt=`${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍"}],"totalNights":0,"totalBudget":0,"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"}`;
+      let raw=await askAI(basePrompt,1800);
+      let parsed=parseJSON(raw);
+      if(parsed&&hasBudget&&parsed.totalBudget<Number(budgetAmount)*0.6){
+        const retryPrompt=basePrompt+`\n\n⚠️ CORRECTION: Your previous response had totalBudget of $${parsed.totalBudget}, which is less than 60% of the traveler's stated $${budgetAmount} budget. You MUST increase accommodation quality, add premium experiences, upgrade transport, or extend stays so that totalBudget realistically reflects $${budgetAmount}. Return corrected JSON only.`;
+        const retryRaw=await askAI(retryPrompt,1800);
+        const retryParsed=parseJSON(retryRaw);
+        if(retryParsed) parsed=retryParsed;
+      }
       if(parsed) setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount});
       else{setLoadError(true);setLoading(false);}
     } catch(e){setLoadError(true);setLoading(false);}
