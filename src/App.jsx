@@ -2022,6 +2022,8 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const BAG_C={"Backpack":"#00E5FF","Global Briefcase":"#A29BFE","Worn":"#FFD93D","Digital":"#69F0AE","Day Bag":"#FF9F43"};
 
   const [packTab,setPackTab]=useState("pack");
+  const [packView,setPackView]=useState("dashboard");
+  const [activeCategory,setActiveCategory]=useState(null);
   const [items,setItems]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_v5");if(s){const p=JSON.parse(s);if(p?.length>0)return p;}}catch(e){}return getDefaultPack();});
   const [filterCat,setFilterCat]=useState("all");
   const [openCats,setOpenCats]=useState({});
@@ -2181,97 +2183,67 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     );
   }
 
-  // ─── Category Card ─────────────────────────────────────────────
+  // ─── Category Tile ─────────────────────────────────────────────
   function CatCard({cat,idx}) {
     const catItems=itemsForCat(cat.id);
-    const [catSheetOpen,setCatSheetOpen]=useState(false);
-    const [hasNestedDrawer,setHasNestedDrawer]=useState(false);
-    const open=!!openCats[cat.id];
     const ownedInCat=catItems.filter(i=>i.owned).length;
     const catW=catItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM;
     const catCost=catItems.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
-    if(catItems.length===0&&filterCat!=="all"&&filterCat!==cat.id)return null;
-    if(isMobile) return(
-      <>
-        <div className="tap-scale" onClick={()=>setCatSheetOpen(true)}
-          onMouseOver={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.15)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,180,80,0.40),inset 1px 0 0 rgba(255,140,40,0.15),inset -1px 0 0 rgba(255,140,40,0.15),inset 0 -1px 0 rgba(255,100,20,0.10)';}}
-          onMouseOut={e=>{e.currentTarget.style.border='1px solid rgba(212,180,120,0.08)';e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,180,80,0.35),inset 1px 0 0 rgba(255,140,40,0.12),inset -1px 0 0 rgba(255,140,40,0.12),inset 0 -1px 0 rgba(255,100,20,0.08)';}}
-          style={{display:'flex',alignItems:'center',padding:'20px 16px',background:'rgba(255,255,255,0.025)',border:'1px solid rgba(212,180,120,0.08)',borderRadius:12,marginBottom:8,boxShadow:'0 2px 8px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,180,80,0.35),inset 1px 0 0 rgba(255,140,40,0.12),inset -1px 0 0 rgba(255,140,40,0.12),inset 0 -1px 0 rgba(255,100,20,0.08)',gap:12,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}>
-          <span style={{fontSize:32,flexShrink:0}}>{cat.icon}</span>
-          <div style={{flex:1,minWidth:0,textAlign:'left'}}>
-            <div style={{fontSize:15,fontWeight:500,color:'#E8DCC8',fontFamily:"'Space Mono',monospace"}}>{cat.label}</div>
-            <div style={{display:'flex',gap:8,alignItems:'center',marginTop:3}}>
-              <span style={{fontSize:11,color:'rgba(232,220,200,0.45)',fontFamily:'monospace'}}>{catItems.length} items</span>
-              {catW>0&&<span style={{fontSize:11,color:'#FFD93D',fontFamily:'monospace',fontWeight:600}}>{catW.toFixed(1)}{unit}</span>}
-            </div>
-          </div>
-          <div style={{display:'flex',alignItems:'center',gap:10,flexShrink:0}}>
-            <div style={{textAlign:'right'}}>
-              <div style={{fontSize:11,color:'rgba(232,220,200,0.45)',fontFamily:'monospace',marginBottom:4}}>{ownedInCat}/{catItems.length}</div>
-              <div style={{width:48,height:3,background:'rgba(255,255,255,0.06)',borderRadius:2,overflow:'hidden'}}>
-                <div style={{height:'100%',width:(catItems.length>0?(ownedInCat/catItems.length)*100:0)+'%',background:'linear-gradient(90deg,rgba(255,159,67,0.6),#FF9F43)',borderRadius:2,transition:'width 0.4s'}}/>
-              </div>
-            </div>
-            <span style={{fontSize:20,color:'rgba(212,180,120,0.3)'}}>›</span>
-          </div>
-        </div>
-        <BottomSheet open={catSheetOpen} onClose={()=>setCatSheetOpen(false)} zIndex={500} hideClose={hasNestedDrawer}>
-          <div style={{padding:'16px 16px 14px',borderBottom:'1px solid rgba(255,255,255,0.14)',display:'flex',alignItems:'center',gap:12}}>
-            <span style={{fontSize:28}}>{cat.icon}</span>
-            <div style={{flex:1}}>
-              <div style={{fontFamily:"'Space Mono',monospace",fontSize:16,fontWeight:700,color:cat.color}}>{cat.label}</div>
-              <div style={{fontSize:12,color:'rgba(255,255,255,0.4)',fontFamily:'monospace',marginTop:2}}>{catItems.length} items · {catW.toFixed(1)}{unit} · {ownedInCat}/{catItems.length} owned</div>
-            </div>
-            {catCost>0&&<div style={{fontSize:15,fontWeight:700,color:'#FFD93D',fontFamily:"'Space Mono',monospace",flexShrink:0}}>${catCost.toLocaleString()}</div>}
-          </div>
-          <div style={{paddingBottom:20}}>
-            {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1} onEditOpenChange={setHasNestedDrawer}/>)}
-            <div style={{padding:'12px 16px',display:'flex',justifyContent:'center'}}>
-              <button onClick={()=>addItemToCat(cat.id)} style={{padding:'8px 24px',borderRadius:20,border:`1px dashed ${cat.color}44`,background:'transparent',color:`${cat.color}77`,fontSize:12,cursor:'pointer',fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700}}>+ ADD ITEM</button>
-            </div>
-          </div>
-        </BottomSheet>
-      </>
-    );
-    // Desktop accordion
+    const needCount=catItems.filter(i=>!i.owned).length;
+    const needCost=catItems.filter(i=>!i.owned).reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
+    const pct=catItems.length>0?Math.round((ownedInCat/catItems.length)*100):0;
     return(
-      <div style={{borderRadius:13,border:open?`1.5px solid ${cat.color}`:"1px solid rgba(255,255,255,0.07)",boxShadow:open?`0 0 0 1px ${cat.color}22,0 4px 28px ${cat.color}18,inset 0 1px 0 ${cat.color}12`:"none",background:open?`linear-gradient(145deg,${cat.color}06,rgba(8,3,0,0.98))`:"rgba(18,8,0,0.85)",overflow:"hidden",transition:"all 0.25s",animation:`fadeUp 0.3s ease ${idx*.05}s both`,marginBottom:8}}>
-        <div onClick={()=>toggleCat(cat.id)} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",alignItems:"center",padding:"12px 16px",cursor:"pointer",minHeight:52,borderLeft:`3px solid ${open?cat.color:cat.color+"44"}`}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <div style={{fontSize:18,flexShrink:0}}>{cat.icon}</div>
-            <div style={{display:"flex",flexDirection:"column",gap:2}}>
-              <span style={{fontSize:15,color:"rgba(255,255,255,0.5)",fontFamily:"monospace"}}>{catItems.length} items</span>
-              <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                {catW>0&&<span style={{fontSize:15,color:cat.color,fontWeight:600,fontFamily:"monospace"}}>{catW.toFixed(1)}{unit}</span>}
-                <span style={{fontSize:15,color:"rgba(255,255,255,0.38)",fontFamily:"monospace"}}>{ownedInCat}/{catItems.length} owned</span>
-              </div>
-            </div>
-          </div>
-          <div style={{textAlign:"center"}}>
-            <div style={{fontSize:15,fontWeight:600,color:open?cat.color:"#E8DCC8",fontFamily:"'Space Mono',monospace",transition:"color 0.2s"}}>{cat.label}</div>
-          </div>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end",gap:8}}>
-            <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5}}>
-              {catCost>0&&<div style={{fontSize:15,fontWeight:600,color:"rgba(255,217,61,0.8)",fontFamily:"'Space Mono',monospace"}}>${catCost.toLocaleString()}</div>}
-              <div style={{width:60,height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:(catItems.length>0?(ownedInCat/catItems.length)*100:0)+"%",background:`linear-gradient(90deg,${cat.color}66,${cat.color})`,borderRadius:2,transition:"width 0.4s ease"}}/></div>
-            </div>
-            <div style={{width:22,height:22,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.2":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-              <span style={{fontSize:10,color:open?cat.color:"rgba(255,255,255,0.45)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
-            </div>
+      <div onClick={()=>{setActiveCategory(cat);setPackView('category');}}
+        style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.10)',borderTop:`1px solid ${cat.color}40`,borderRadius:12,padding:'14px 16px',marginBottom:8,cursor:'pointer',display:'flex',flexDirection:'column',gap:8,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}
+        onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,0.055)'}
+        onMouseOut={e=>e.currentTarget.style.background='rgba(255,255,255,0.03)'}>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <span style={{fontSize:24}}>{cat.icon}</span>
+          <span style={{flex:1,fontSize:14,fontWeight:600,color:'#E8DCC8',letterSpacing:'0.06em',fontFamily:"'Space Mono',monospace"}}>{cat.label.toUpperCase()}</span>
+          <span style={{fontSize:13,fontWeight:700,color:cat.color}}>{pct}%</span>
+          <span style={{fontSize:16,color:'rgba(255,255,255,0.30)',marginLeft:6}}>›</span>
+        </div>
+        <div style={{display:'flex',gap:12,fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>
+          <span>{catItems.length} items</span>
+          <span>·</span>
+          <span style={{color:cat.color}}>{catW.toFixed(1)}{unit}</span>
+          <span style={{marginLeft:'auto',color:'#FFD93D'}}>{needCount>0?`$${Math.round(needCost)} still needed`:'✓ all owned'}</span>
+        </div>
+        <div style={{height:3,background:'rgba(255,255,255,0.08)',borderRadius:2,overflow:'hidden'}}>
+          <div style={{height:'100%',width:`${pct}%`,background:`linear-gradient(90deg,${cat.color}88,${cat.color})`,borderRadius:2,transition:'width 0.5s ease'}}/>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Category Detail Page ──────────────────────────────────────
+  function CategoryDetailPage({cat,onBack}) {
+    const catItems=itemsForCat(cat.id);
+    const ownedInCat=catItems.filter(i=>i.owned).length;
+    const catW=catItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM;
+    const catCost=catItems.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
+    return(
+      <div style={{display:'flex',flexDirection:'column',flex:1,overflowY:'auto',animation:'fadeIn 0.25s ease'}}>
+        {/* Header */}
+        <div style={{display:'flex',alignItems:'center',padding:'16px',gap:12,borderBottom:'1px solid rgba(255,255,255,0.08)',flexShrink:0,background:'rgba(10,4,0,0.95)',position:'sticky',top:0,zIndex:10}}>
+          <button onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:22,cursor:'pointer',padding:'0 8px 0 0',lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',justifyContent:'center'}}>‹</button>
+          <span style={{fontSize:18}}>{cat.icon}</span>
+          <span style={{flex:1,fontSize:16,fontWeight:600,color:'#E8DCC8',fontFamily:"'Space Mono',monospace"}}>{cat.label}</span>
+          <span style={{fontSize:12,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>{ownedInCat}/{catItems.length}</span>
+        </div>
+        {/* Subheader */}
+        <div style={{display:'flex',gap:16,padding:'10px 16px',borderBottom:'1px solid rgba(255,255,255,0.06)',flexShrink:0}}>
+          <span style={{fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}><span style={{color:cat.color,fontWeight:700}}>{catW.toFixed(1)}{unit}</span> total weight</span>
+          {catCost>0&&<span style={{fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}><span style={{color:'#FFD93D',fontWeight:700}}>${catCost.toLocaleString()}</span> total cost</span>}
+        </div>
+        {/* Item list */}
+        <div style={{flex:1,padding:'8px 16px 24px'}}>
+          {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1}/>)}
+          {catItems.length===0&&<div style={{textAlign:'center',padding:'40px 0'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,159,67,0.45)'}}>No items yet. Add one below.</div></div>}
+          <div style={{marginTop:12,display:'flex',justifyContent:'center'}}>
+            <button onClick={()=>addItemToCat(cat.id)} style={{padding:'10px 32px',borderRadius:20,border:`1px dashed ${cat.color}55`,background:'transparent',color:`${cat.color}88`,fontSize:12,cursor:'pointer',fontFamily:"'Space Mono',monospace",letterSpacing:1.5,fontWeight:700}} onMouseOver={e=>{e.currentTarget.style.background=`${cat.color}12`;e.currentTarget.style.color=cat.color;}} onMouseOut={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color=`${cat.color}88`;}}>+ ADD ITEM</button>
           </div>
         </div>
-        {open&&(
-          <div style={{animation:"slideOpen 0.2s ease",background:"rgba(0,0,0,0.2)"}}>
-            <div style={{padding:"6px 18px",borderTop:`1px solid ${cat.color}15`,borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",gap:6}}>
-              <div style={{width:4,height:4,borderRadius:"50%",background:cat.color,flexShrink:0}}/>
-              <span style={{fontSize:11,color:`${cat.color}aa`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500}}>{catItems.length} ITEM{catItems.length!==1?"S":""} · TAP TO EXPAND</span>
-            </div>
-            {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1}/>)}
-            <div style={{padding:"10px 18px",borderTop:"1px solid rgba(255,255,255,0.04)",display:"flex",justifyContent:"center"}}>
-              <button onClick={()=>addItemToCat(cat.id)} style={{padding:"8px 20px",borderRadius:8,border:`1px dashed ${cat.color}44`,background:"transparent",color:`${cat.color}88`,fontSize:15,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,transition:"all 0.15s"}} onMouseOver={e=>{e.currentTarget.style.background=`${cat.color}10`;e.currentTarget.style.color=cat.color;}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=`${cat.color}88`;}}>+ ADD ITEM</button>
-            </div>
-          </div>
-        )}
       </div>
     );
   }
@@ -2354,33 +2326,26 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
           <span style={{fontSize:isMobile?9:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
         </button>
         {[{id:"pack",label:isMobile?"PACK":"PACK LIST",emoji:"🎒"},{id:"refine",label:"REFINE",emoji:"✦"},{id:"weight",label:isMobile?"WEIGHT":"BREAKDOWN",emoji:"⚖️"}].map(t=>(
-          <button key={t.id} onClick={()=>setPackTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Space Mono',monospace",position:"relative"}}>
+          <button key={t.id} onClick={()=>{setPackTab(t.id);if(t.id!=="pack"){setPackView('dashboard');setActiveCategory(null);}}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Space Mono',monospace",position:"relative"}}>
             {t.emoji&&<span style={{fontSize:isMobile?13:15,lineHeight:1}}>{t.emoji}</span>}
             <span style={{fontSize:isMobile?12:13,letterSpacing:isMobile?0:1,fontWeight:700,whiteSpace:"nowrap"}}>{t.label}</span>
             {t.id==="refine"&&suggestions.length>0&&<div style={{position:"absolute",top:6,right:"20%",width:7,height:7,borderRadius:"50%",background:"#4D9FFF",boxShadow:"0 0 8px #4D9FFF"}}/>}
           </button>
         ))}
       </div>
-      {/* Category filter pills */}
-      {packTab==="pack"&&<div data-coach="pack-filters" style={{display:"flex",gap:6,padding:"10px 16px",overflowX:"auto",borderBottom:"1px solid rgba(169,70,29,0.25)",background:"rgba(10,4,0,0.8)",flexShrink:0,WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
-        <button onClick={()=>{setFilterCat("all");setOpenCats({});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat==="all"?"rgba(255,255,255,0.5)":"rgba(255,255,255,0.12)"),background:filterCat==="all"?"rgba(255,255,255,0.08)":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
-          <span style={{fontSize:isMobile?13:15}}>📋</span><span style={{fontSize:isMobile?12:15,color:filterCat==="all"?"#FFF":"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="all"?700:400}}>All</span>
-        </button>
-        {CATS.map(c=>(
-          <button key={c.id} onClick={()=>{setFilterCat(c.id);setOpenCats({[c.id]:true});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat===c.id?c.color+"80":"rgba(169,70,29,0.4)"),background:filterCat===c.id?c.color+"14":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
-            <span style={{fontSize:isMobile?13:15}}>{c.icon}</span>
-            <span style={{fontSize:isMobile?12:15,color:filterCat===c.id?c.color:"rgba(255,255,255,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat===c.id?700:400}}>{c.label}</span>
-          </button>
-        ))}
-        <button onClick={()=>{setFilterCat("needtobuy");setOpenCats({});}} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 16px",borderRadius:20,border:"1px solid "+(filterCat==="needtobuy"?"rgba(255,107,107,0.7)":"rgba(255,107,107,0.3)"),background:filterCat==="needtobuy"?"rgba(255,107,107,0.12)":"transparent",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minHeight:36}}>
-          <span style={{fontSize:isMobile?13:15}}>🛒</span>
-          <span style={{fontSize:isMobile?11:15,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.65)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="needtobuy"?700:400}}>Need to Buy</span>
+      {/* Need to Buy pill (retained as a standalone shortcut) */}
+      {packTab==="pack"&&packView==="dashboard"&&<div data-coach="pack-filters" style={{display:"flex",padding:"8px 16px",borderBottom:"1px solid rgba(169,70,29,0.2)",background:"rgba(10,4,0,0.8)",flexShrink:0}}>
+        <button onClick={()=>setFilterCat(f=>f==="needtobuy"?"all":"needtobuy")} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 16px",borderRadius:20,border:"1px solid "+(filterCat==="needtobuy"?"rgba(255,107,107,0.7)":"rgba(255,107,107,0.25)"),background:filterCat==="needtobuy"?"rgba(255,107,107,0.12)":"transparent",cursor:"pointer",whiteSpace:"nowrap",minHeight:34}}>
+          <span style={{fontSize:13}}>🛒</span>
+          <span style={{fontSize:11,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="needtobuy"?700:400,letterSpacing:1}}>NEED TO BUY</span>
         </button>
       </div>}
       {/* Main content */}
-      {packTab==="pack"&&(
+      {packTab==="pack"&&packView==="category"&&activeCategory&&(
+        <CategoryDetailPage cat={activeCategory} onBack={()=>{setPackView('dashboard');setActiveCategory(null);}}/>
+      )}
+      {packTab==="pack"&&packView==="dashboard"&&(
         <div style={{overflowY:"auto",flex:1,padding:"12px 16px 32px"}}>
-          {Object.keys(openCats).length===0&&filterCat!=="needtobuy"&&<div style={{textAlign:"center",padding:"8px 0 4px",animation:"fadeIn 0.5s ease"}}><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?11:13,fontStyle:"italic",color:"rgba(255,159,67,0.4)",lineHeight:1.5}}>Tap a category to expand, then check items you already own</div></div>}
           {filterCat==="needtobuy"?(()=>{
             const unowned=[...items].filter(i=>!i.owned).sort((a,b)=>(parseFloat(b.cost)||0)-(parseFloat(a.cost)||0));
             const total=unowned.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
@@ -2420,7 +2385,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
                 </div>
               )}
             </div>);
-          })():visibleCats.map((cat,i)=>i===0?<div key={cat.id} data-coach="pack-first-cat"><CatCard cat={cat} idx={i}/></div>:<CatCard key={cat.id} cat={cat} idx={i}/>)}
+          })():CATS.map((cat,i)=>i===0?<div key={cat.id} data-coach="pack-first-cat"><CatCard cat={cat} idx={i}/></div>:<CatCard key={cat.id} cat={cat} idx={i}/>)}
           <div style={{textAlign:"center",marginTop:8,padding:"8px 0",borderTop:"1px solid rgba(169,70,29,0.12)"}}>
             <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.35)",letterSpacing:2}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
           </div>
