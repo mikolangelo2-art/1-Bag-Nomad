@@ -2436,9 +2436,9 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
       </div>
       {/* Need to Buy pill (retained as a standalone shortcut) */}
       {packTab==="pack"&&packView==="dashboard"&&<div data-coach="pack-filters" style={{display:"flex",padding:"8px 16px",borderBottom:"1px solid rgba(169,70,29,0.2)",background:"rgba(10,4,0,0.8)",flexShrink:0}}>
-        <button onClick={()=>setFilterCat(f=>f==="needtobuy"?"all":"needtobuy")} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 16px",borderRadius:20,border:"1px solid "+(filterCat==="needtobuy"?"rgba(255,107,107,0.7)":"rgba(255,107,107,0.25)"),background:filterCat==="needtobuy"?"rgba(255,107,107,0.12)":"transparent",cursor:"pointer",whiteSpace:"nowrap",minHeight:34}}>
-          <span style={{fontSize:13}}>🛒</span>
-          <span style={{fontSize:11,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="needtobuy"?700:400,letterSpacing:1}}>NEED TO BUY</span>
+        <button onClick={()=>setFilterCat(f=>f==="needtobuy"?"all":"needtobuy")} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 16px",borderRadius:20,border:"1px solid "+(filterCat==="needtobuy"?"rgba(255,107,107,0.85)":"rgba(255,107,107,0.25)"),background:filterCat==="needtobuy"?"rgba(255,107,107,0.18)":"transparent",cursor:"pointer",whiteSpace:"nowrap",minHeight:34,boxShadow:filterCat==="needtobuy"?"0 0 10px rgba(255,107,107,0.30)":"none",transition:"all 0.2s"}}>
+          <span style={{fontSize:13}}>{filterCat==="needtobuy"?"✕":"🛒"}</span>
+          <span style={{fontSize:11,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.6)",fontFamily:"'Space Mono',monospace",fontWeight:filterCat==="needtobuy"?700:400,letterSpacing:1}}>{filterCat==="needtobuy"?"CLEAR FILTER":"NEED TO BUY"}</span>
         </button>
       </div>}
       {/* Main content */}
