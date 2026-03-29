@@ -66,9 +66,9 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp}) 
     const activeCoord = activeCountry ? EXPEDITION_COORDS[activeCountry] : null;
     const isMobileMap = typeof window!=='undefined' && window.innerWidth < 480;
     const geoFill = isPack ? '#FF9F43' : '#E8DCC8';
-    const geoFillOp = isPack ? 0.05 : (isMobileMap ? 0.08 : 0.06);
+    const geoFillOp = isPack ? 0.035 : (isMobileMap ? 0.08 : 0.06);
     const geoStroke = isPack ? '#FF9F43' : '#00E5FF';
-    const geoStrokeOp = isPack ? 0.12 : (isMobileMap ? 0.22 : 0.18);
+    const geoStrokeOp = isPack ? 0.08 : (isMobileMap ? 0.22 : 0.18);
     return (
       <div style={{position:'fixed',top:0,left:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:0,overflow:'hidden'}}>
         <style>{`@keyframes dashMove{to{stroke-dashoffset:-50}}.route-line{animation:dashMove 6s linear infinite}@keyframes activePulseR{0%,100%{r:2.8}50%{r:5}}.active-dot{animation:activePulseR 1.4s ease-in-out infinite}`}</style>
@@ -80,7 +80,7 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp}) 
           </Geographies>
           {coords.length>1&&coords.map((coord,i)=>{
             if(i===coords.length-1)return null;
-            return(<Line key={i} from={coord} to={coords[i+1]} stroke="#FFD93D" strokeWidth={1.2} strokeOpacity={0.65} strokeDasharray="4,4" className="route-line"/>);
+            return(<Line key={i} from={coord} to={coords[i+1]} stroke="#FFD93D" strokeWidth={1.2} strokeOpacity={isPack?0.35:0.65} strokeDasharray="4,4" className="route-line"/>);
           })}
           {phaseList.map((phase,i)=>{
             const coord = EXPEDITION_COORDS[phase.country];
@@ -88,8 +88,8 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp}) 
             const isActive = activeCountry && phase.country === activeCountry;
             return(
               <Marker key={i} coordinates={coord}>
-                <circle r={isActive?14:6} fill={isActive?"#00E5FF":"#FF9F43"} fillOpacity={isActive?0.18:0.15}/>
-                <circle r="2.8" fill={isActive?"#00E5FF":"#FFD93D"} fillOpacity={isActive?1:0.9} className={isActive?"active-dot":undefined}/>
+                <circle r={isActive?14:6} fill={isActive?"#00E5FF":"#FF9F43"} fillOpacity={isActive?0.18:(isPack?0.08:0.15)}/>
+                <circle r="2.8" fill={isActive?"#00E5FF":"#FFD93D"} fillOpacity={isActive?1:(isPack?0.45:0.9)} className={isActive?"active-dot":undefined}/>
               </Marker>
             );
           })}
@@ -1843,9 +1843,9 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
                 </div>
                 <div style={{fontSize:10,color:'rgba(255,255,255,0.35)',marginTop:6,fontFamily:"'Space Mono',monospace"}}>{filledSegs} of {totalSegs} planning tasks complete</div>
               </div>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',background:'rgba(255,255,255,0.02)',borderRadius:10,border:'1px solid rgba(255,255,255,0.07)',overflow:'hidden'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',overflow:'hidden'}}>
                 {[{label:'DEPARTS IN',value:daysToDepart,sub:'DAYS',color:'#E8DCC8'},{label:'NIGHTS',value:totalNights,sub:'NIGHTS',color:'#E8DCC8'},{label:'BUDGET',value:fmt(totalBudget),sub:'TOTAL',color:'#FFD93D'}].map((s,i)=>(
-                  <div key={s.label} style={{textAlign:'center',padding:'10px 4px',borderLeft:i>0?'1px solid rgba(255,255,255,0.08)':undefined}}>
+                  <div key={s.label} style={{textAlign:'center',padding:'10px 4px',borderLeft:i>0?'1px solid rgba(255,255,255,0.08)':undefined,background:'transparent'}}>
                     <div style={{fontSize:8,letterSpacing:'0.10em',color:'rgba(255,255,255,0.35)',fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:3}}>{s.label}</div>
                     <div style={{fontSize:20,fontWeight:700,color:s.color,fontFamily:"'Space Mono',monospace",lineHeight:1}}>{s.value}</div>
                     <div style={{fontSize:8,color:'rgba(255,255,255,0.30)',fontFamily:"'Space Mono',monospace",marginTop:2}}>{s.sub}</div>
