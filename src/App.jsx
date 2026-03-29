@@ -595,11 +595,11 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
 // ─── BottomNav ─────────────────────────────────────────────────────
 function BottomNav({activeTab,onTab}) {
   const NAV=[
-    {id:"next",  icon:"🧭",lbl:"TRIP"},
-    {id:"budget",icon:"💰",lbl:"BUDGET"},
-    {id:"book",  icon:"✈️",lbl:"BOOK"},
-    {id:"intel", icon:"🔭",lbl:"INTEL"},
-    {id:"pack",  icon:"🎒",lbl:"PACK"},
+    {id:"next",  icon:"🧭",lbl:"TRIP",   glowColor:"rgba(0,229,255,0.6)",   glowFaint:"rgba(0,229,255,0.2)"},
+    {id:"budget",icon:"💰",lbl:"BUDGET", glowColor:"rgba(255,255,255,0.4)", glowFaint:"rgba(255,255,255,0.15)"},
+    {id:"book",  icon:"✈️", lbl:"BOOK",   glowColor:"rgba(255,255,255,0.4)", glowFaint:"rgba(255,255,255,0.15)"},
+    {id:"intel", icon:"🔭",lbl:"INTEL",  glowColor:"rgba(255,255,255,0.4)", glowFaint:"rgba(255,255,255,0.15)"},
+    {id:"pack",  icon:"🎒",lbl:"PACK",   glowColor:"rgba(255,159,67,0.6)",   glowFaint:"rgba(255,159,67,0.2)"},
   ];
   return(
     <div className="bnav">
@@ -607,8 +607,14 @@ function BottomNav({activeTab,onTab}) {
         const active=activeTab===n.id;
         const isPack=n.id==="pack";
         const pipColor=isPack?"#FF9F43":"#FFD93D";
+        const borderColor=n.id==="next"?"#00E5FF":n.id==="pack"?"#FF9F43":"rgba(255,255,255,0.6)";
         return(
-          <button key={n.id} className={`bnav-btn${isPack?" bnav-pack":""}${active?" active":""}`} onClick={()=>onTab(n.id)}>
+          <button key={n.id} className={`bnav-btn${isPack?" bnav-pack":""}${active?" active":""}`} onClick={()=>onTab(n.id)}
+            style={active?{
+              borderTop:`2px solid ${borderColor}`,
+              marginTop:'-2px',
+              boxShadow:`0 0 12px ${n.glowColor}, 0 0 24px ${n.glowFaint}`,
+            }:undefined}>
             <div className="bnav-pip" style={{background:pipColor,boxShadow:active?`0 0 8px ${pipColor}`:undefined}}/>
             <span className="bnav-icon">{n.icon}</span>
             <span className="bnav-lbl">{n.lbl}</span>
