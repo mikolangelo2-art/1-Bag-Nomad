@@ -2088,11 +2088,11 @@ function CircularRing({value,max,label,sublabel,color,unit}) {
           strokeDasharray={`${dash} ${gap}`} strokeDashoffset={circ*0.25}
           style={{transition:'stroke-dasharray 0.6s ease'}}/>
         <text x="65" y="58" textAnchor="middle" fill={color} fontSize="22" fontWeight="700" fontFamily="Space Mono">{value}</text>
-        <text x="65" y="74" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="11" fontFamily="Space Mono">{unit}</text>
-        <text x="65" y="90" textAnchor="middle" fill="rgba(255,255,255,0.25)" fontSize="9" fontFamily="Space Mono">/ {max} {unit}</text>
+        <text x="65" y="74" textAnchor="middle" fill="rgba(255,255,255,0.65)" fontSize="11" fontFamily="Space Mono">{unit}</text>
+        <text x="65" y="90" textAnchor="middle" fill="rgba(255,255,255,0.50)" fontSize="10" fontFamily="Space Mono">/ {max} {unit}</text>
       </svg>
-      <div style={{fontSize:11,fontWeight:700,letterSpacing:'0.10em',color:'rgba(255,255,255,0.70)',marginTop:4}}>{label}</div>
-      <div style={{fontSize:9,color:'rgba(255,255,255,0.35)',letterSpacing:'0.08em',marginTop:2}}>{sublabel}</div>
+      <div style={{fontSize:11,fontWeight:700,letterSpacing:'0.10em',color:'rgba(255,255,255,0.80)',marginTop:4}}>{label}</div>
+      <div style={{fontSize:10,color:'rgba(255,255,255,0.55)',letterSpacing:'0.08em',marginTop:2}}>{sublabel}</div>
     </div>
   );
 }
@@ -2286,16 +2286,16 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     const pct=catItems.length>0?Math.round((ownedInCat/catItems.length)*100):0;
     return(
       <div onClick={()=>{setActiveCategory(cat);setPackView('category');}}
-        style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.10)',borderTop:`1px solid ${cat.color}40`,borderRadius:12,padding:'14px 16px',marginBottom:8,cursor:'pointer',display:'flex',flexDirection:'column',gap:8,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}
-        onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,0.055)'}
-        onMouseOut={e=>e.currentTarget.style.background='rgba(255,255,255,0.03)'}>
+        style={{background:'rgba(255,255,255,0.015)',border:'1px solid rgba(255,255,255,0.07)',borderTop:`1px solid ${cat.color}30`,borderRadius:12,padding:'14px 16px',marginBottom:8,cursor:'pointer',display:'flex',flexDirection:'column',gap:8,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}
+        onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,0.035)'}
+        onMouseOut={e=>e.currentTarget.style.background='rgba(255,255,255,0.015)'}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
           <span style={{fontSize:24}}>{cat.icon}</span>
           <span style={{flex:1,fontSize:14,fontWeight:600,color:'#E8DCC8',letterSpacing:'0.06em',fontFamily:"'Space Mono',monospace"}}>{cat.label.toUpperCase()}</span>
-          <span style={{fontSize:13,fontWeight:700,color:cat.color}}>{pct}%</span>
-          <span style={{fontSize:16,color:'rgba(255,255,255,0.30)',marginLeft:6}}>›</span>
+          <span style={{fontSize:14,fontWeight:700,color:cat.color}}>{pct}%</span>
+          <span style={{fontSize:14,color:'rgba(255,255,255,0.30)',marginLeft:6}}>›</span>
         </div>
-        <div style={{display:'flex',gap:12,fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>
+        <div style={{display:'flex',gap:12,fontSize:14,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>
           <span>{catItems.length} items</span>
           <span>·</span>
           <span style={{color:cat.color}}>{catW.toFixed(1)}{unit}</span>
