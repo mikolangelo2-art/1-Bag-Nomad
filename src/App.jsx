@@ -63,13 +63,14 @@ const WorldMapBackground = memo(({phases, activeCountry}) => {
     const phaseList = phases||[];
     const coords = phaseList.map(p=>EXPEDITION_COORDS[p.country]).filter(Boolean);
     const activeCoord = activeCountry ? EXPEDITION_COORDS[activeCountry] : null;
+    const isMobileMap = typeof window!=='undefined' && window.innerWidth < 480;
     return (
       <div style={{position:'fixed',top:0,left:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:0,overflow:'hidden'}}>
         <style>{`@keyframes dashMove{to{stroke-dashoffset:-50}}.route-line{animation:dashMove 6s linear infinite}@keyframes activePulseR{0%,100%{r:2.8}50%{r:5}}.active-dot{animation:activePulseR 1.4s ease-in-out infinite}`}</style>
         <ComposableMap projection="geoNaturalEarth1" projectionConfig={{scale:160,center:[20,10]}} style={{width:'100%',height:'100%'}}>
           <Geographies geography={GEO_URL}>
             {({geographies})=>geographies.map(geo=>(
-              <Geography key={geo.rsmKey} geography={geo} fill="#E8DCC8" fillOpacity={0.06} stroke="#00E5FF" strokeWidth={0.4} strokeOpacity={0.18} style={{default:{outline:'none'},hover:{outline:'none'},pressed:{outline:'none'}}}/>
+              <Geography key={geo.rsmKey} geography={geo} fill="#E8DCC8" fillOpacity={isMobileMap?0.08:0.06} stroke="#00E5FF" strokeWidth={0.4} strokeOpacity={isMobileMap?0.22:0.18} style={{default:{outline:'none'},hover:{outline:'none'},pressed:{outline:'none'}}}/>
             ))}
           </Geographies>
           {coords.length>1&&coords.map((coord,i)=>{
@@ -616,13 +617,18 @@ function BottomNav({activeTab,onTab}) {
         const active=activeTab===n.id;
         const isPack=n.id==="pack";
         const pipColor=isPack?"#FF9F43":"#FFD93D";
-        const borderColor=n.id==="next"?"#00E5FF":n.id==="pack"?"#FF9F43":"rgba(255,255,255,0.6)";
+        const borderColor=n.id==="next"?"rgba(0,229,255,0.90)":n.id==="pack"?"rgba(255,159,67,0.90)":"rgba(255,255,255,0.60)";
+        const activeGlow=n.id==="next"
+          ?'0 -3px 12px rgba(0,229,255,0.45),0 -1px 6px rgba(0,229,255,0.25)'
+          :n.id==="pack"
+          ?'0 -3px 12px rgba(255,159,67,0.45),0 -1px 6px rgba(255,159,67,0.25)'
+          :'0 -3px 10px rgba(255,255,255,0.20)';
         return(
           <button key={n.id} className={`bnav-btn${isPack?" bnav-pack":""}${active?" active":""}`} onClick={()=>onTab(n.id)}
             style={active?{
               borderTop:`2px solid ${borderColor}`,
               marginTop:'-2px',
-              boxShadow:`0 0 12px ${n.glowColor}, 0 0 24px ${n.glowFaint}`,
+              boxShadow:activeGlow,
             }:undefined}>
             <div className="bnav-pip" style={{background:pipColor,boxShadow:active?`0 0 8px ${pipColor}`:undefined}}/>
             <span className="bnav-icon">{n.icon}</span>
@@ -2376,7 +2382,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
       </div>}
       {/* Hero rings */}
       {!isFullscreen&&<div data-coach="pack-stats">
-        <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',position:'relative'}}>
+        <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',position:'relative',boxShadow:'inset 0 1px 0 rgba(255,159,67,0.40),inset 1px 0 0 rgba(255,159,67,0.12),inset -1px 0 0 rgba(255,159,67,0.12),inset 0 -1px 0 rgba(255,159,67,0.06)'}}>
           {/* LBS/KG toggle pill above weight ring */}
           <div style={{position:'absolute',top:10,left:'25%',transform:'translateX(-50%)',zIndex:1}}>
             <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{display:'flex',borderRadius:20,border:'1px solid rgba(77,159,255,0.35)',overflow:'hidden',cursor:'pointer',background:'rgba(0,8,20,0.8)'}}>
