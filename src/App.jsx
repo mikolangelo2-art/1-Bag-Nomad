@@ -58,12 +58,14 @@ const EXPEDITION_COORDS = {
   'Jordan':      [36.2,  30.6],
   'Tanzania':    [34.9,  -6.4],
 };
-const WorldMapBackground = memo(({phases}) => {
+const WorldMapBackground = memo(({phases, activeCountry}) => {
   try {
-    const coords = (phases||[]).map(p=>EXPEDITION_COORDS[p.country]).filter(Boolean);
+    const phaseList = phases||[];
+    const coords = phaseList.map(p=>EXPEDITION_COORDS[p.country]).filter(Boolean);
+    const activeCoord = activeCountry ? EXPEDITION_COORDS[activeCountry] : null;
     return (
       <div style={{position:'fixed',top:0,left:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:0,overflow:'hidden'}}>
-        <style>{`@keyframes dashMove{to{stroke-dashoffset:-50}}.route-line{animation:dashMove 6s linear infinite}`}</style>
+        <style>{`@keyframes dashMove{to{stroke-dashoffset:-50}}.route-line{animation:dashMove 6s linear infinite}@keyframes activePulseR{0%,100%{r:2.8}50%{r:5}}.active-dot{animation:activePulseR 1.4s ease-in-out infinite}`}</style>
         <ComposableMap projection="geoNaturalEarth1" projectionConfig={{scale:160,center:[20,10]}} style={{width:'100%',height:'100%'}}>
           <Geographies geography={GEO_URL}>
             {({geographies})=>geographies.map(geo=>(
@@ -74,12 +76,17 @@ const WorldMapBackground = memo(({phases}) => {
             if(i===coords.length-1)return null;
             return(<Line key={i} from={coord} to={coords[i+1]} stroke="#FFD93D" strokeWidth={1.2} strokeOpacity={0.65} strokeDasharray="4,4" className="route-line"/>);
           })}
-          {coords.map((coord,i)=>(
-            <Marker key={i} coordinates={coord}>
-              <circle r={6} fill="#FF9F43" fillOpacity={0.15}/>
-              <circle r={2.8} fill="#FFD93D" fillOpacity={0.9}/>
-            </Marker>
-          ))}
+          {phaseList.map((phase,i)=>{
+            const coord = EXPEDITION_COORDS[phase.country];
+            if(!coord) return null;
+            const isActive = activeCountry && phase.country === activeCountry;
+            return(
+              <Marker key={i} coordinates={coord}>
+                <circle r={isActive?14:6} fill={isActive?"#00E5FF":"#FF9F43"} fillOpacity={isActive?0.18:0.15}/>
+                <circle r="2.8" fill={isActive?"#00E5FF":"#FFD93D"} fillOpacity={isActive?1:0.9} className={isActive?"active-dot":undefined}/>
+              </Marker>
+            );
+          })}
         </ComposableMap>
       </div>
     );
