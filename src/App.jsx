@@ -787,21 +787,12 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
       const basePrompt=`${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"}${hasBudget?`\n\nREMINDER: "totalBudget" MUST be ${budgetAmount}. Each phase "budget" is that phase's share of $${budgetAmount}. Do NOT estimate from scratch — ALLOCATE the stated budget.`:''}`;
       let raw=await askAI(basePrompt,1800);
       let parsed=parseJSON(raw);
-      if(parsed&&hasBudget){
-        const returnedTotal=parsed.phases?.reduce((s,p)=>s+(p.budget||p.cost||0),0)||parsed.totalBudget||0;
-        if(returnedTotal<bAmt*0.6){
-          console.log(`[1BN] Budget retry: AI allocated $${returnedTotal} vs target $${budgetAmount} (${Math.round(returnedTotal/bAmt*100)}%). Retrying...`);
-          const retryRaw=await askAI(basePrompt+`\n\n⚠️ CORRECTION: You returned phase budgets totaling $${returnedTotal} for a $${budgetAmount} trip. That is ${Math.round(returnedTotal/bAmt*100)}% of the budget. ALLOCATE the full $${budgetAmount}. Set totalBudget to ${budgetAmount}. Return corrected JSON only.`,1800);
-          const retryParsed=parseJSON(retryRaw);
-          if(retryParsed) parsed=retryParsed;
-        }
-        // Code-level guarantee: scale phase budgets to match stated budget
-        const phaseSum=parsed.phases?.reduce((s,p)=>s+(p.budget||p.cost||0),0)||0;
-        if(parsed.phases&&phaseSum>0&&(phaseSum<bAmt*0.6||phaseSum>bAmt*1.5)){
-          const scale=bAmt/phaseSum;
-          console.log(`[1BN] Budget scale correction: $${phaseSum} -> $${bAmt} (${scale.toFixed(2)}x)`);
-          parsed.phases.forEach(p=>{p.budget=Math.round((p.budget||p.cost||0)*scale);});
-        }
+      if(parsed&&hasBudget&&parsed.phases?.length){
+        // Pure math: scale AI's proportional split to match stated budget
+        const phaseSum=parsed.phases.reduce((s,p)=>s+(p.budget||p.cost||0),0)||1;
+        const ratio=bAmt/phaseSum;
+        console.log(`[1BN] Budget scaling: AI total $${phaseSum} x ${ratio.toFixed(2)} -> target $${bAmt}`);
+        parsed.phases.forEach(p=>{p.budget=Math.round((p.budget||p.cost||0)*ratio/10)*10;});
         parsed.totalBudget=bAmt;
       }
       if(parsed) setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount});
@@ -984,7 +975,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
     return Math.round(nights*170);
   }
   const colors=["#00E5FF","#69F0AE","#FFD93D","#FF9F43","#A29BFE","#FF6B6B","#55EFC4","#74B9FF"];
-  const [items,setItems]=useState(()=>(visionData.phases||[]).map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8],why:p.why||""})));
+  const [items,setItems]=useState(()=>(visionData.phases||[]).map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:p.budget||estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8],why:p.why||""})));
   const [startDate,setStartDate]=useState(data.date||"2026-09-16");
   const [chat,setChat]=useState([{role:"ai",text:data.isRevision?"Welcome back — let's revise your expedition. ✏️\n\nYour itinerary is loaded. Tell me what you'd like to change.":"Welcome — I'm your expedition co-architect. ✨\n\nYour vision is incredible and I'm genuinely excited to help you build it.",isWelcome:true}]);
   const [input,setInput]=useState("");
