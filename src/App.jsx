@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
+import { ComposableMap, Geographies, Geography, Line, Marker } from "react-simple-maps";
 // ╔══════════════════════════════════════════════════════════════╗
 // ║  1 BAG NOMAD — v5_r4                                        ║
 // ║  Merged: v5 + TripConsoleSandbox · March 23 2026            ║
@@ -31,6 +32,59 @@ const STATUS_CFG={
 // Tap cycles forward; booked tapped = show modal instead
 const STATUS_NEXT={planning:"confirmed",confirmed:"booked",changed:"booked",cancelled:"planning"};
 const CAT_DOT_COLORS = ["#00E5FF","#69F0AE","#FFD93D","#FF9F43","#A29BFE","#FF6B6B"];
+
+// ─── World Map ────────────────────────────────────────────────────
+const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+const EXPEDITION_COORDS = {
+  'Honduras':    [-86.2, 15.2],
+  'Belize':      [-88.5, 17.2],
+  'Barbados':    [-59.5, 13.2],
+  'Egypt':       [30.8,  26.8],
+  'India':       [78.9,  20.6],
+  'Malaysia':    [109.7,  4.2],
+  'Thailand':    [100.9, 15.9],
+  'Indonesia':   [113.9, -0.8],
+  'Japan':       [138.2, 36.2],
+  'Vietnam':     [108.3, 14.1],
+  'Philippines': [122.9, 12.9],
+  'Maldives':    [73.2,   3.2],
+  'Italy':       [12.6,  41.9],
+  'France':      [2.3,   46.2],
+  'Portugal':    [-8.2,  39.6],
+  'Mexico':      [-102.5, 23.6],
+  'Costa Rica':  [-83.8,  9.7],
+  'Panama':      [-80.8,  8.5],
+  'Greece':      [21.8,  39.1],
+  'Jordan':      [36.2,  30.6],
+  'Tanzania':    [34.9,  -6.4],
+};
+const WorldMapBackground = memo(({phases}) => {
+  try {
+    const coords = (phases||[]).map(p=>EXPEDITION_COORDS[p.country]).filter(Boolean);
+    return (
+      <div style={{position:'fixed',top:0,left:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:0,overflow:'hidden'}}>
+        <style>{`@keyframes dashMove{to{stroke-dashoffset:-50}}.route-line{animation:dashMove 6s linear infinite}`}</style>
+        <ComposableMap projection="geoNaturalEarth1" projectionConfig={{scale:160,center:[20,10]}} style={{width:'100%',height:'100%'}}>
+          <Geographies geography={GEO_URL}>
+            {({geographies})=>geographies.map(geo=>(
+              <Geography key={geo.rsmKey} geography={geo} fill="#E8DCC8" fillOpacity={0.06} stroke="#00E5FF" strokeWidth={0.4} strokeOpacity={0.18} style={{default:{outline:'none'},hover:{outline:'none'},pressed:{outline:'none'}}}/>
+            ))}
+          </Geographies>
+          {coords.length>1&&coords.map((coord,i)=>{
+            if(i===coords.length-1)return null;
+            return(<Line key={i} from={coord} to={coords[i+1]} stroke="#FFD93D" strokeWidth={1.2} strokeOpacity={0.65} strokeDasharray="4,4" className="route-line"/>);
+          })}
+          {coords.map((coord,i)=>(
+            <Marker key={i} coordinates={coord}>
+              <circle r={6} fill="#FF9F43" fillOpacity={0.15}/>
+              <circle r={2.8} fill="#FFD93D" fillOpacity={0.9}/>
+            </Marker>
+          ))}
+        </ComposableMap>
+      </div>
+    );
+  } catch(e) { return null; }
+});
 
 // ─── Storage: 1bn_seg_v2 only ────────────────────────────────────
 const SEG_KEY = "1bn_seg_v2";
@@ -1655,6 +1709,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
 
   return(
     <div className="mc-root" style={{animation:"consoleIn 0.38s cubic-bezier(0.34,1.56,0.64,1) both"}}>
+      <WorldMapBackground phases={tripData.phases||[]}/>
       {showOnboard&&<OnboardCard storageKey="trip" ctaLabel="✦ ENTER MY EXPEDITION" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,color:"rgba(0,229,255,0.75)",marginBottom:10}}>TRIP CONSOLE</div>
@@ -1687,11 +1742,11 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
         {target:"trip-pack-switch",title:"Pack Console",body:"When you're ready, switch here to manage your one-bag gear list."}
       ]}/>}
       {!isFullscreen&&<ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/>}
-      {isMobile&&!isFullscreen&&<div style={{padding:"5px 16px",borderBottom:"1px solid rgba(0,229,255,0.08)",display:"flex",justifyContent:"space-between",background:"rgba(0,8,20,0.98)",flexShrink:0}}>
+      {isMobile&&!isFullscreen&&<div style={{padding:"5px 16px",borderBottom:"1px solid rgba(0,229,255,0.08)",display:"flex",justifyContent:"space-between",background:"rgba(0,8,20,0.98)",flexShrink:0,position:"relative",zIndex:1}}>
         <button onClick={onRevise} style={{padding:"6px 16px",borderRadius:7,border:"1.5px solid rgba(0,229,255,0.55)",background:"rgba(0,229,255,0.12)",color:"#00E5FF",fontSize:14,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:600,letterSpacing:1,minHeight:32}}>✏️ REVISE</button>
         <button onClick={handleNewTripClick} style={{padding:"6px 14px",borderRadius:7,border:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(255,255,255,0.18)",background:confirmNewTrip?"rgba(255,107,107,0.12)":"transparent",color:confirmNewTrip?"#FF6B6B":"rgba(255,255,255,0.45)",fontSize:13,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:confirmNewTrip?700:400,letterSpacing:1,minHeight:32}}>{confirmNewTrip?"⚠️ CONFIRM?":"+ NEW TRIP"}</button>
       </div>}
-      {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:"linear-gradient(180deg,rgba(21,15,10,0.98),rgba(21,15,10,0.99))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden"}}>
+      {!isFullscreen&&<div style={{padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:"linear-gradient(180deg,rgba(21,15,10,0.98),rgba(21,15,10,0.99))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden",zIndex:1}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(232,220,200,0.02) 0%,transparent 60%)",pointerEvents:"none"}}/>
         {tripData.tripName&&<div style={{marginBottom:isMobile?5:7,position:"relative"}}>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:17,fontWeight:300,fontStyle:"italic",color:"#E8DCC8",lineHeight:1}}>{tripData.tripName}</div>
@@ -1722,7 +1777,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           </div>
         )}
       </div>}
-      {!isFullscreen&&!isMobile&&<div style={{display:"flex",borderBottom:"1px solid rgba(0,229,255,0.1)",flexShrink:0}}>
+      {!isFullscreen&&!isMobile&&<div style={{display:"flex",borderBottom:"1px solid rgba(0,229,255,0.1)",flexShrink:0,position:"relative",zIndex:1}}>
         <div style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,borderRight:"1px solid rgba(0,229,255,0.1)",background:"rgba(0,229,255,0.04)"}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"#00E5FF",boxShadow:"0 0 6px #00E5FF",animation:"consolePulse 2.5s ease-in-out infinite"}}/>
           <span style={{fontSize:13,fontWeight:700,color:"#00E5FF",letterSpacing:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
@@ -1734,7 +1789,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
       </div>}
       {/* Tab bar */}
       {!isMobile&&(
-        <div style={{display:"flex",borderBottom:"1px solid rgba(232,220,200,0.06)",background:"#150F0A",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch"}}>
+        <div style={{display:"flex",borderBottom:"1px solid rgba(232,220,200,0.06)",background:"#150F0A",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch",position:"relative",zIndex:1}}>
           <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)",border:"none",borderRight:"1px solid rgba(0,229,255,0.2)",cursor:"pointer",flexShrink:0,color:"#00E5FF"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.22)"} onMouseOut={e=>e.currentTarget.style.background=isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)"}>
             <span style={{fontSize:15,lineHeight:1,textShadow:"0 0 10px rgba(0,229,255,0.9)"}}>{isFullscreen?"⊡":"⛶"}</span>
             <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
@@ -1756,11 +1811,11 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           </button>
         </div>
       )}
-      {confirmNewTrip&&<div style={{padding:"7px 14px",background:"rgba(255,107,107,0.1)",borderBottom:"1px solid rgba(255,107,107,0.3)",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+      {confirmNewTrip&&<div style={{padding:"7px 14px",background:"rgba(255,107,107,0.1)",borderBottom:"1px solid rgba(255,107,107,0.3)",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,position:"relative",zIndex:1}}>
         <span style={{fontSize:15,color:"rgba(255,107,107,0.9)",letterSpacing:1}}>⚠️ This will clear your expedition. Tap CONFIRM? again to proceed.</span>
         <button onClick={()=>setConfirmNewTrip(false)} style={{fontSize:15,color:"rgba(255,255,255,0.4)",background:"none",border:"none",cursor:"pointer",padding:"2px 6px"}}>✕</button>
       </div>}
-      <div className="mc-content">
+      <div className="mc-content" style={{position:"relative",zIndex:1}}>
         {tab==="next"&&(
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
             {isComplete&&<div onClick={onHomecoming} style={{marginBottom:4,padding:"11px 14px",background:"linear-gradient(135deg,rgba(255,217,61,0.1),rgba(255,159,67,0.06))",border:"1px solid rgba(255,217,61,0.35)",borderRadius:10,cursor:"pointer",display:"flex",alignItems:"center",gap:8,animation:"consolePulse 2.8s ease-in-out infinite"}} onMouseOver={e=>e.currentTarget.style.background="linear-gradient(135deg,rgba(255,217,61,0.18),rgba(255,159,67,0.12))"} onMouseOut={e=>e.currentTarget.style.background="linear-gradient(135deg,rgba(255,217,61,0.1),rgba(255,159,67,0.06))"}>
