@@ -1196,9 +1196,9 @@ function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00
   return(
     <div style={{display:"flex",flexDirection:"column",gap:mob?2:3}}>
       <div style={{fontSize:mob?9:11,color:"rgba(212,180,120,0.7)",letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500}}>{label}</div>
-      {multiline?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={1} style={s} onFocus={e=>e.target.style.borderColor=`${accent}55`} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>
-      :type==="date"?<div style={{position:"relative"}}><input type="date" value={value} onChange={e=>onChange(e.target.value)} style={{...s,colorScheme:"dark",paddingRight:26}} onFocus={e=>e.target.style.borderColor=`${accent}55`} onBlur={e=>e.target.style.borderColor=`${accent}18`}/><div style={{position:"absolute",right:7,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:13,lineHeight:1}}>📅</div></div>
-      :<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={e=>e.target.style.borderColor=`${accent}55`} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>}
+      {multiline?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={1} style={s} onFocus={e=>{e.target.style.borderColor=`${accent}55`;setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'center'}),320);}} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>
+      :type==="date"?<div style={{position:"relative"}}><input type="date" value={value} onChange={e=>onChange(e.target.value)} style={{...s,colorScheme:"dark",paddingRight:26}} onFocus={e=>{e.target.style.borderColor=`${accent}55`;setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'center'}),320);}} onBlur={e=>e.target.style.borderColor=`${accent}18`}/><div style={{position:"absolute",right:7,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:13,lineHeight:1}}>📅</div></div>
+      :<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={e=>{e.target.style.borderColor=`${accent}55`;setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'center'}),320);}} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>}
     </div>
   );
 }
