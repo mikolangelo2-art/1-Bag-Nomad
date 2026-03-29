@@ -2607,7 +2607,7 @@ export default function App() {
 
   useEffect(()=>{
     // Version bump — clears stale pack data; purges legacy booking keys (arch #3)
-    const VER="1bn_v5_r4";
+    const VER="1bn_v5_r5";
     try{
       if(localStorage.getItem("1bn_pack_version")!==VER){
         localStorage.removeItem("1bn_pack_v5");
