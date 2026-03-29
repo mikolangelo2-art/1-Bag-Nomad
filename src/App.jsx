@@ -784,8 +784,9 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
     const bAmt=Number(budgetAmount)||0;
     const budgetConstraint=hasBudget?`⚠️ BUDGET ALLOCATION DIRECTIVE:\nThe traveler's total budget is $${budgetAmount}. This is a SPEND TARGET, not a ceiling to stay under.\nYour job is to ALLOCATE this $${budgetAmount} across the phases — not to estimate what the trip "might" cost.\n- Divide $${budgetAmount} proportionally across phases based on nights and destination cost-of-living\n- A ${bAmt>=25000?"LUXURY":""}${bAmt>=10000&&bAmt<25000?"HIGH-END":""}${bAmt>=3000&&bAmt<10000?"MID-RANGE":""}${bAmt<3000?"BUDGET":""} trip: choose accommodations and experiences that would realistically spend this amount\n- The sum of all phase "budget" fields MUST equal approximately $${budgetAmount}\n- "totalBudget" in your JSON MUST be set to ${budgetAmount}\n`:"NO BUDGET SET — set totalBudget to 0.";
     try {
-      const basePrompt=`${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"}${hasBudget?`\n\nREMINDER: "totalBudget" MUST be ${budgetAmount}. Each phase "budget" is that phase's share of $${budgetAmount}. Do NOT estimate from scratch — ALLOCATE the stated budget.`:''}`;
-      let raw=await askAI(basePrompt,1800);
+      const breakdownSchema=hasBudget?`,"budgetBreakdown":{"flights":NUMBER,"accommodation":NUMBER,"food":NUMBER,"transport":NUMBER,"activities":NUMBER,"buffer":NUMBER,"flightsNote":"flight routing e.g. LAX → Lisbon return","accommodationNote":"e.g. Guesthouses and boutique hotels","foodNote":"e.g. Local restaurants and cafes","routingNote":"one sentence explaining why this route was chosen"}`:'';
+      const basePrompt=`${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"${breakdownSchema}}${hasBudget?`\n\nREMINDER: "totalBudget" MUST be ${budgetAmount}. Each phase "budget" is that phase's share of $${budgetAmount}. The budgetBreakdown fields (flights, accommodation, food, transport, activities, buffer) must sum to approximately $${budgetAmount}. Do NOT estimate from scratch — ALLOCATE the stated budget.`:''}`;
+      let raw=await askAI(basePrompt,2200);
       let parsed=parseJSON(raw);
       if(parsed&&hasBudget&&parsed.phases?.length){
         // Pure math: scale AI's proportional split to match stated budget
@@ -794,6 +795,18 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
         console.log(`[1BN] Budget scaling: AI total $${phaseSum} x ${ratio.toFixed(2)} -> target $${bAmt}`);
         parsed.phases.forEach(p=>{p.budget=Math.round((p.budget||p.cost||0)*ratio/10)*10;});
         parsed.totalBudget=bAmt;
+        // Scale breakdown categories to match stated budget
+        if(parsed.budgetBreakdown){
+          const bd=parsed.budgetBreakdown;
+          const catSum=(bd.flights||0)+(bd.accommodation||0)+(bd.food||0)+(bd.transport||0)+(bd.activities||0)+(bd.buffer||0)||1;
+          const bRatio=bAmt/catSum;
+          bd.flights=Math.round((bd.flights||0)*bRatio/10)*10;
+          bd.accommodation=Math.round((bd.accommodation||0)*bRatio/10)*10;
+          bd.food=Math.round((bd.food||0)*bRatio/10)*10;
+          bd.transport=Math.round((bd.transport||0)*bRatio/10)*10;
+          bd.activities=Math.round((bd.activities||0)*bRatio/10)*10;
+          bd.buffer=Math.round((bd.buffer||0)*bRatio/10)*10;
+        }
       }
       if(parsed) setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount});
       else{setLoadError(true);setLoading(false);}
@@ -1011,6 +1024,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   // Architecture #1: each item auto-wraps as 1 segment
   function buildHandoff(){
     return{tripName:data.tripName||"My Expedition",startDate,vision:data.vision,visionNarrative:visionData.narrative,visionHighlight:visionData.highlight,goalLabel,
+      budgetBreakdown:visionData.budgetBreakdown||null,
       phases:items.map((item,i)=>({id:i+1,name:item.destination,flag:item.flag,color:item.color,budget:item.cost,nights:item.nights,type:item.type,arrival:dates[i]?.arrival.toISOString().split("T")[0]||"",departure:dates[i]?.departure.toISOString().split("T")[0]||"",country:item.country,diveCount:item.type==="Dive"?Math.floor(item.nights*1.5):0,cost:item.cost,note:item.why||visionData.phases?.[i]?.why||""})),
       totalNights,totalBudget:totalCost,totalDives:items.filter(i=>i.type==="Dive").reduce((s,i)=>s+Math.floor(i.nights*1.5),0)};
   }
@@ -1969,6 +1983,22 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
                 </div>
               ))}
             </div>
+            {(()=>{const bd=tripData.budgetBreakdown;if(!bd)return null;const cats=[{key:"flights",icon:"✈️",label:"FLIGHTS",color:"#00E5FF",note:bd.flightsNote},{key:"accommodation",icon:"🏨",label:"ACCOMMODATION",color:"#A29BFE",note:bd.accommodationNote},{key:"food",icon:"🍽️",label:"FOOD & DRINK",color:"#FFD93D",note:bd.foodNote},{key:"transport",icon:"🚌",label:"TRANSPORT",color:"#69F0AE",note:null},{key:"activities",icon:"🎯",label:"ACTIVITIES",color:"#FF9F43",note:null},{key:"buffer",icon:"🛡️",label:"BUFFER",color:"rgba(255,255,255,0.5)",note:null}];const maxCat=Math.max(...cats.map(c=>bd[c.key]||0),1);return(
+              <div style={{marginBottom:16,background:"linear-gradient(135deg,rgba(0,8,20,0.7),rgba(0,20,40,0.4))",border:"1px solid rgba(255,217,61,0.12)",borderRadius:10,padding:isMobile?"10px 12px":"14px 16px"}}>
+                <div style={{fontSize:11,color:"rgba(255,217,61,0.7)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:10}}>BUDGET BREAKDOWN</div>
+                {cats.map(c=>{const val=bd[c.key]||0;const pct=(val/maxCat)*100;return(
+                  <div key={c.key} style={{marginBottom:8}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}>
+                      <div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:13}}>{c.icon}</span><span style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.7)",fontFamily:"'Space Mono',monospace",fontWeight:600,letterSpacing:1}}>{c.label}</span></div>
+                      <span style={{fontSize:isMobile?13:15,fontWeight:900,color:c.color,fontFamily:"'Space Mono',monospace"}}>{fmt(val)}</span>
+                    </div>
+                    <div style={{height:5,background:"rgba(255,255,255,0.05)",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${c.color}66,${c.color})`,borderRadius:3,transition:"width 0.6s ease"}}/></div>
+                    {c.note&&<div style={{fontSize:isMobile?10:12,color:"rgba(255,255,255,0.4)",fontStyle:"italic",marginTop:2}}>{c.note}</div>}
+                  </div>
+                );})}
+                {bd.routingNote&&<div style={{marginTop:8,padding:"8px 10px",background:"rgba(0,229,255,0.04)",border:"1px solid rgba(0,229,255,0.1)",borderRadius:6,fontSize:isMobile?11:13,color:"rgba(255,255,255,0.55)",fontStyle:"italic",lineHeight:1.5}}>🗺️ {bd.routingNote}</div>}
+              </div>
+            );})()}
             {flatPhases.map(phase=>{
               const budget=phase.budget||phase.cost||0;
               const pct=(budget/Math.max(...flatPhases.map(p=>p.budget||p.cost||0)))*100;
