@@ -480,7 +480,7 @@ function AntiqueGlobe({size=120, glowColor="rgba(0,180,255,0.45)", animate=true}
 }
 
 // ─── ConsoleHeader ────────────────────────────────────────────────
-function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackConsole,children}) {
+function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackConsole,screenLabel,children}) {
   const isDream=which==="dream", isTrip=which==="trip", isPack=which==="pack";
   const [profileOpen,setProfileOpen]=useState(false);
   const [helpOpen,setHelpOpen]=useState(false);
@@ -541,8 +541,9 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
       {/* Top row: [left slot] [center: logo+wordmark] [right slot] */}
       <div style={{display:"flex",alignItems:"center",padding:isMobile?"5px 8px":"7px 14px",gap:6}}>
         {/* Left slot */}
-        <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"flex-start"}}>
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"flex-start",justifyContent:"center",gap:2}}>
           {(!isMobile&&(isTrip||isPack)) ? <TripBtn active={isTrip}/> : null}
+          {screenLabel&&<div style={{fontFamily:"'Space Mono',monospace",fontSize:9,color:"rgba(255,255,255,0.45)",letterSpacing:2,textTransform:"uppercase",paddingLeft:2}}>{screenLabel}</div>}
         </div>
         {/* Center: logo + wordmark */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
@@ -750,10 +751,10 @@ function GenerationScreen({onComplete}) {
 }
 
 // ─── DreamScreen ──────────────────────────────────────────────────
-function DreamHeader({step}) {
+function DreamHeader({step,screenLabel}) {
   const isMobile=useMobile();
   const pillColors=["#00E5FF","#69F0AE","#A29BFE","#FFD93D"];const pills=<div style={{display:"flex",gap:5,alignItems:"center"}}>{[1,2,3,4].map(n=><div key={n} style={{width:n===step?28:18,height:6,borderRadius:3,background:n<step?pillColors[n-1]+"88":n===step?pillColors[n-1]:"rgba(255,255,255,0.08)",boxShadow:n===step?`0 0 10px ${pillColors[n-1]}66`:"none",transition:"all 0.3s ease"}}/>)}</div>;
-  return <ConsoleHeader console="dream" isMobile={isMobile} rightSlot={pills}/>;
+  return <ConsoleHeader console="dream" isMobile={isMobile} rightSlot={pills} screenLabel={screenLabel}/>;
 }
 
 function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
@@ -889,7 +890,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
   const [loading,setLoading]=useState(false);
   const [launching,setLaunching]=useState(false);
   const [mounted,setMounted]=useState(!freshMount);
-  const [bdOpen,setBdOpen]=useState(false);
+  const [bdOpen,setBdOpen]=useState(true);
   useEffect(()=>{window.scrollTo(0,0);if(freshMount){const t=setTimeout(()=>setMounted(true),50);return()=>clearTimeout(t);}},[]);
   useEffect(()=>{
     let i=0;const txt=vd.narrative||"";
@@ -915,7 +916,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
   return (
     <div className="dream-root" style={{opacity:mounted?1:0,transition:"opacity 0.5s ease"}}>
       <div className="dream-glow"/>
-      <DreamHeader step={2}/>
+      <DreamHeader step={2} screenLabel="VISION REVEAL"/>
       <div style={{padding:"22px 18px 44px",maxWidth:640,margin:"0 auto",position:"relative",zIndex:10}}>
         <div className="narrative-card">
           <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"90%",height:"130%",background:"radial-gradient(ellipse,rgba(169,70,29,0.22) 0%,transparent 68%)",pointerEvents:"none"}}/>
@@ -937,7 +938,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
           return(
             <div style={{marginBottom:16,animation:"fadeUp 0.5s ease"}}>
               <button onClick={()=>setBdOpen(o=>!o)} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"11px 14px",background:"linear-gradient(135deg,rgba(169,70,29,0.08),rgba(0,8,20,0.6))",border:"1px solid rgba(169,70,29,0.3)",borderRadius:bdOpen?"11px 11px 0 0":11,cursor:"pointer",transition:"border-radius 0.2s"}}>
-                <span style={{fontSize:isMobile?11:12,color:"rgba(255,159,67,0.85)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700}}>✦ HOW YOUR CO-ARCHITECT BUILT THIS BUDGET</span>
+                <span style={{fontSize:isMobile?11:12,color:"rgba(255,159,67,0.85)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700}}>✦ How I built your budget</span>
                 <span style={{fontSize:14,color:"rgba(255,159,67,0.6)",transition:"transform 0.3s",transform:bdOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
               </button>
               <div style={{maxHeight:bdOpen?600:0,overflow:"hidden",transition:"max-height 0.3s ease"}}>
@@ -1074,7 +1075,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   }
   return(
     <div className="build-root" style={{opacity:mounted?1:0,transform:mounted?"translateY(0)":"translateY(32px)",transition:"opacity 0.55s ease,transform 0.55s cubic-bezier(0.22,1,0.36,1)"}}>
-      <ConsoleHeader console="dream" isMobile={isMobile} rightSlot={<div style={{display:"flex",gap:5,alignItems:"center"}}>{[1,2,3,4].map(n=><div key={n} style={{width:n<3?18:n===3?28:18,height:6,borderRadius:3,background:n<3?"rgba(169,70,29,0.55)":n===3?"#FFD93D":"rgba(255,255,255,0.1)",boxShadow:n===3?"0 0 8px rgba(255,217,61,0.6)":"none"}}/>)}</div>}/>
+      <ConsoleHeader console="dream" isMobile={isMobile} screenLabel="CO-ARCHITECT" rightSlot={<div style={{display:"flex",gap:5,alignItems:"center"}}>{[1,2,3,4].map(n=><div key={n} style={{width:n<3?18:n===3?28:18,height:6,borderRadius:3,background:n<3?"rgba(169,70,29,0.55)":n===3?"#FFD93D":"rgba(255,255,255,0.1)",boxShadow:n===3?"0 0 8px rgba(255,217,61,0.6)":"none"}}/>)}</div>}/>
       <div style={{display:"flex",border:"none",background:"#080D14",flexShrink:0}}>
         {[{label:"STOPS",val:items.length,c:"#00E5FF"},{label:"COUNTRIES",val:countries.length,c:"#69F0AE"},{label:"NIGHTS",val:totalNights,c:"#A29BFE"},{label:"BUDGET",val:fmt(totalCost),c:"#FFD93D"}].map((s,i)=>(
           <div key={s.label} style={{flex:1,padding:"8px 6px",textAlign:"center",borderRight:i<3?"1px solid #111D2A":"none"}}>
@@ -1128,7 +1129,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
                   <div style={{width:20,height:20,borderRadius:"50%",background:msg.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flexShrink:0}}>{msg.role==="ai"?"✨":"👤"}</div>
                   {msg.isWelcome
                     ?<div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.2),rgba(255,217,61,0.07))",border:"1px solid rgba(169,70,29,0.5)",borderRadius:12,padding:"13px 15px",fontSize:15,color:"#FFF",lineHeight:1.8,maxWidth:"92%",whiteSpace:"pre-line",fontFamily:"'Fraunces',serif",fontStyle:"italic",animation:"fadeUp 0.6s ease"}}>{msg.text}</div>
-                    :<div className="chat-bubble" style={{background:msg.role==="ai"?"rgba(169,70,29,0.12)":"rgba(255,255,255,0.05)",border:`1px solid ${msg.role==="ai"?"rgba(169,70,29,0.52)":"rgba(255,255,255,0.08)"}`}}>{msg.text}</div>}
+                    :<div className="chat-bubble" style={{background:msg.role==="ai"?"rgba(169,70,29,0.12)":"rgba(255,255,255,0.05)",border:`1px solid ${msg.role==="ai"?"rgba(169,70,29,0.52)":"rgba(255,255,255,0.08)"}`}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>}
                 </div>
               ))}
               {loading&&<div style={{display:"flex",gap:6,animation:"msgIn 0.25s ease"}}><div style={{width:20,height:20,borderRadius:"50%",background:"#A9461D",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>✨</div><div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",padding:"4px 0"}}>thinking...</div></div>}
@@ -1872,7 +1873,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   }
 
   const heroStats=[{label:"DEPARTS IN",value:daysToDepart,unit:"DAYS",color:"#FFD93D",glow:"rgba(255,217,61,0.35)"},{label:"NIGHTS",value:totalNights,unit:"NIGHTS",color:"#E8DCC8",glow:"rgba(232,220,200,0.2)"},...(totalDives>0?[{label:"DIVES",value:totalDives,unit:"DIVES",color:"#00E5FF",glow:"rgba(0,229,255,0.4)"}]:[]),{label:"BUDGET",value:fmt(totalBudget),unit:"TOTAL",color:"#FFD93D",glow:"rgba(255,217,61,0.35)"}];
-  const TABS=[{id:"next",label:"🗺️ EXPEDITION"},{id:"budget",label:"💰 BUDGET"},{id:"book",label:"🔗 BOOK"},{id:"intel",label:"🔭 INTEL"}];
+  const TABS=[{id:"next",label:"🗺️ EXPEDITION"},{id:"budget",label:"💰 BUDGET"},{id:"book",label:"🔗 BOOK"},{id:"intel",label:"🔭 INTEL"},{id:"blueprint",label:isMobile?"✦":"✦ BLUEPRINT"}];
   const {changedSegs,cancelledSegs}=(()=>{const allSeg=loadSeg();const cs=[],xs=[];segPhases.forEach(p=>p.segments.forEach(s=>{const d=allSeg[`${p.id}-${s.id}`]||{};const st=d.status||'planning';if(st==='changed')cs.push({phase:p,seg:s});if(st==='cancelled')xs.push({phase:p,seg:s});}));return{changedSegs:cs,cancelledSegs:xs};})();
 
   return(
@@ -2175,6 +2176,41 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
                     {d.diveHighlight&&<div className="intel-section" style={{borderColor:"rgba(0,229,255,0.2)"}}><div className="intel-section-label" style={{color:"#00E5FF"}}>🤿 DIVE INTEL</div><div style={{fontSize:isMobile?13:15,color:"#FFF"}}>{d.diveHighlight}</div></div>}
                   </div>);
                 })():null}
+              </div>
+            )}
+          </div>
+        )}
+        {tab==="blueprint"&&(
+          <div>
+            {tripData.budgetBreakdown?(
+              <div>
+                {tripData.visionNarrative&&<div style={{borderLeft:"2px solid rgba(255,159,67,0.4)",paddingLeft:12,marginBottom:18}}><div style={{fontSize:11,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:4}}>✦ ORIGINAL VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.7}}>"{tripData.visionNarrative}"</div></div>}
+                {(()=>{const bd=tripData.budgetBreakdown;const cats=[{key:"flights",icon:"✈️",label:"Flights",note:bd.flightsNote},{key:"accommodation",icon:"🏨",label:"Accommodation",note:bd.accommodationNote},{key:"food",icon:"🍜",label:"Food",note:bd.foodNote},{key:"transport",icon:"🚌",label:"Transport",note:null},{key:"activities",icon:"🎯",label:"Activities",note:null},{key:"buffer",icon:"🎒",label:"Buffer",note:null}].filter(c=>bd[c.key]>0);const total=cats.reduce((s,c)=>s+(bd[c.key]||0),0);return(
+                  <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.08),rgba(0,8,20,0.6))",border:"1px solid rgba(169,70,29,0.3)",borderRadius:11,padding:"12px 14px",marginBottom:16}}>
+                    <div style={{fontSize:11,color:"rgba(255,159,67,0.85)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:10}}>✦ BUDGET BLUEPRINT</div>
+                    {cats.map(c=>{const val=bd[c.key]||0;return(
+                      <div key={c.key} style={{display:"flex",alignItems:"center",padding:"7px 0",gap:8}}>
+                        <span style={{fontSize:14,width:22,textAlign:"center",flexShrink:0}}>{c.icon}</span>
+                        <span style={{fontSize:isMobile?12:14,color:"rgba(255,255,255,0.75)",fontWeight:600,width:isMobile?90:110,flexShrink:0}}>{c.label}</span>
+                        <span style={{flex:1,fontSize:isMobile?11:13,fontFamily:"'Fraunces',serif",fontStyle:"italic",color:"rgba(255,255,255,0.45)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.note||""}</span>
+                        <span style={{fontSize:isMobile?13:15,fontWeight:700,color:"#FFD93D",fontFamily:"'Space Mono',monospace",flexShrink:0,marginLeft:8}}>~{fmt(val)}</span>
+                      </div>
+                    );})}
+                    <div style={{height:1,background:"rgba(255,255,255,0.12)",margin:"8px 0"}}/>
+                    <div style={{display:"flex",alignItems:"center",padding:"4px 0",gap:8}}>
+                      <span style={{fontSize:14,width:22,flexShrink:0}}> </span>
+                      <span style={{fontSize:isMobile?12:14,color:"rgba(255,255,255,0.9)",fontWeight:700,width:isMobile?90:110,flexShrink:0}}>TOTAL</span>
+                      <span style={{flex:1}}/>
+                      <span style={{fontSize:isMobile?14:16,fontWeight:900,color:"#FFD93D",fontFamily:"'Space Mono',monospace",flexShrink:0,marginLeft:8}}>~{fmt(total)}</span>
+                    </div>
+                    {bd.routingNote&&<div style={{marginTop:10,borderLeft:"2px solid rgba(255,159,67,0.4)",paddingLeft:10}}><div style={{fontSize:11,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Space Mono',monospace",marginBottom:3}}>✦ WHY THIS ROUTE</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?12:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.6}}>{bd.routingNote}</div></div>}
+                  </div>
+                );})()}
+              </div>
+            ):(
+              <div style={{textAlign:"center",padding:"40px 20px"}}>
+                <div style={{fontSize:32,marginBottom:12}}>✦</div>
+                <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:16,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.55)",lineHeight:1.7}}>Complete your first expedition to unlock your Blueprint.</div>
               </div>
             )}
           </div>
