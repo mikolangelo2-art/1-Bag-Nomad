@@ -17,7 +17,7 @@
     .fade-in.visible{opacity:1;transform:translateY(0)}
 
     @keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-    @keyframes chevronBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
     @keyframes playGlow{0%,100%{box-shadow:0 0 40px rgba(255,159,67,0.15),0 0 80px rgba(255,159,67,0.05)}50%{box-shadow:0 0 60px rgba(255,159,67,0.25),0 0 120px rgba(255,159,67,0.10)}}
 
     /* ── HERO ── */
@@ -36,7 +36,7 @@
     .btn-amber:hover{background:linear-gradient(135deg,rgba(196,87,30,0.40),rgba(255,159,67,0.20));box-shadow:0 0 24px rgba(255,159,67,0.15)}
     .scroll-indicator{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px}
     .scroll-indicator-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.50)}
-    .scroll-indicator-arrow{font-size:32px;color:#FFD93D;opacity:0.85;animation:chevronBounce 1.5s ease-in-out infinite}
+    .scroll-indicator-arrow{font-size:32px;color:#FFD93D;opacity:0.85;animation:bounce 1.5s ease-in-out infinite;display:block;line-height:1}
 
     /* ── THE FEELING ── */
     .feeling{padding:100px 24px;max-width:720px;margin:0 auto;text-align:center}
@@ -137,7 +137,7 @@
     <button class="btn-ghost" onclick="document.querySelector('.demo-section').scrollIntoView({behavior:'smooth'})">&#9654; WATCH THE DEMO</button>
     <a href="https://1bagnomad.com/?new=true" target="_blank" rel="noopener" class="btn-amber cta-primary">&#10022; BUILD MY EXPEDITION &#8594;</a>
   </div>
-  <div class="scroll-indicator"><span class="scroll-indicator-label">SCROLL TO EXPLORE</span><span class="scroll-indicator-arrow">&#8595;</span></div>
+  <div class="scroll-indicator"><span class="scroll-indicator-label">SCROLL TO EXPLORE</span><span class="scroll-indicator-arrow" style="animation:bounce 1.5s ease-in-out infinite;color:#FFD93D;font-size:32px">&#8595;</span></div>
 </section>
 
 <!-- SECTION 2: THE FEELING -->
