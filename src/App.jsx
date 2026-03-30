@@ -2981,7 +2981,8 @@ Return ONLY a JSON array:
 
 // ─── Root App ─────────────────────────────────────────────────────
 export default function App() {
-  const [screen,setScreen]=useState("console");
+  const isNewFromLanding=(()=>{try{return new URLSearchParams(window.location.search).get("new")==="true";}catch(e){return false;}})();
+  const [screen,setScreen]=useState(isNewFromLanding?"dream":"console");
   const [appData,setAppData]=useState(null);
   const [fullscreen,setFullscreen]=useState(false);
   const [prefilledVision,setPrefilledVision]=useState("");
@@ -3015,7 +3016,15 @@ export default function App() {
   },[]);
 
   const [tripData,setTripData]=useState(()=>{
-    try{const t=localStorage.getItem("1bn_tripData_v5");if(t){const p=JSON.parse(t);if(p?.phases?.length>0)return p;}}catch(e){}
+    try{
+      const params=new URLSearchParams(window.location.search);
+      if(params.get("new")==="true"){
+        localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_intel");localStorage.removeItem("1bn_pack_v5");
+        window.history.replaceState({},"","/");
+        return null;
+      }
+      const t=localStorage.getItem("1bn_tripData_v5");if(t){const p=JSON.parse(t);if(p?.phases?.length>0)return p;}
+    }catch(e){}
     return MICHAEL_EXPEDITION;
   });
   useEffect(()=>{try{if(tripData)localStorage.setItem("1bn_tripData_v5",JSON.stringify(tripData));}catch(e){};},[tripData]);

@@ -17,7 +17,7 @@
     .fade-in.visible{opacity:1;transform:translateY(0)}
 
     @keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-    @keyframes chevronPulse{0%,100%{opacity:0.35;transform:translateY(0)}50%{opacity:0.65;transform:translateY(6px)}}
+    @keyframes chevronBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
     @keyframes playGlow{0%,100%{box-shadow:0 0 40px rgba(255,159,67,0.15),0 0 80px rgba(255,159,67,0.05)}50%{box-shadow:0 0 60px rgba(255,159,67,0.25),0 0 120px rgba(255,159,67,0.10)}}
 
     /* ── HERO ── */
@@ -34,7 +34,9 @@
     .btn-ghost:hover{border-color:rgba(255,255,255,0.5);color:#FFF;background:rgba(255,255,255,0.04)}
     .btn-amber{padding:14px 32px;border-radius:12px;border:1px solid rgba(255,159,67,0.5);background:linear-gradient(135deg,rgba(196,87,30,0.25),rgba(255,159,67,0.12));color:#FF9F43;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;min-height:52px;display:inline-flex;align-items:center;justify-content:center}
     .btn-amber:hover{background:linear-gradient(135deg,rgba(196,87,30,0.40),rgba(255,159,67,0.20));box-shadow:0 0 24px rgba(255,159,67,0.15)}
-    .scroll-chevron{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);font-size:24px;color:rgba(255,255,255,0.35);animation:chevronPulse 2.5s ease-in-out infinite}
+    .scroll-indicator{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px}
+    .scroll-indicator-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.50)}
+    .scroll-indicator-arrow{font-size:32px;color:#FFD93D;opacity:0.85;animation:chevronBounce 1.5s ease-in-out infinite}
 
     /* ── THE FEELING ── */
     .feeling{padding:100px 24px;max-width:720px;margin:0 auto;text-align:center}
@@ -133,9 +135,9 @@
   <p class="hero-sub">1 Bag Nomad builds your expedition around what you want to feel — not just where you want to go.</p>
   <div class="hero-buttons">
     <button class="btn-ghost" onclick="document.querySelector('.demo-section').scrollIntoView({behavior:'smooth'})">&#9654; WATCH THE DEMO</button>
-    <a href="https://1bagnomad.com" target="_blank" rel="noopener" class="btn-amber cta-primary">&#10022; BUILD MY EXPEDITION &#8594;</a>
+    <a href="https://1bagnomad.com/?new=true" target="_blank" rel="noopener" class="btn-amber cta-primary">&#10022; BUILD MY EXPEDITION &#8594;</a>
   </div>
-  <div class="scroll-chevron">&#8595;</div>
+  <div class="scroll-indicator"><span class="scroll-indicator-label">SCROLL TO EXPLORE</span><span class="scroll-indicator-arrow">&#8595;</span></div>
 </section>
 
 <!-- SECTION 2: THE FEELING -->
@@ -248,7 +250,7 @@
   <div class="final-headline fade-in">DREAM BIG.</div>
   <div class="final-headline-light fade-in">travel light.</div>
   <p class="final-sub fade-in">Your expedition starts now.</p>
-  <a href="https://1bagnomad.com" target="_blank" rel="noopener" class="final-btn cta-primary fade-in">&#10022; BUILD MY EXPEDITION — IT'S FREE &#8594;</a>
+  <a href="https://1bagnomad.com/?new=true" target="_blank" rel="noopener" class="final-btn cta-primary fade-in">&#10022; BUILD MY EXPEDITION — IT'S FREE &#8594;</a>
   <p class="fine-print fade-in">No account required &#183; Free to build &#183; Patent Pending</p>
   <div class="footer">&#169; 2026 SHAREGOOD Co. &#183; 1 Bag Nomad &#183; Dream Big. Travel Light.</div>
 </section>
