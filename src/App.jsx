@@ -1016,17 +1016,17 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
         <div className="narrative-card">
           <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"90%",height:"130%",background:"radial-gradient(ellipse,rgba(169,70,29,0.22) 0%,transparent 68%)",pointerEvents:"none"}}/>
           <div style={{fontSize:15,color:"#C4571E",letterSpacing:3,marginBottom:12,position:"relative"}}>✦ YOUR EXPEDITION VISION</div>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.85,position:"relative",minHeight:80}}>"{narrative}{!narrativeDone&&<span className="hero-cursor">|</span>}"</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?15:17,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.85,position:"relative",minHeight:80}}>"{narrative}{!narrativeDone&&<span className="hero-cursor">|</span>}"</div>
           {narrativeDone&&<div style={{display:"flex",gap:7,flexWrap:"wrap",marginTop:14,position:"relative"}}>{(vd.vibe||"").split(" · ").filter(Boolean).map((w,i)=><span key={i} className="vibe-tag">{w}</span>)}</div>}
         </div>
         {showStats&&(
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16,animation:"fadeUp 0.5s ease"}}>
             {[{label:"COUNTRIES",value:vd.countries,color:"#00E5FF"},{label:"PHASES",value:vd.phases?.length,color:"#FFD93D"},{label:"NIGHTS",value:vd.totalNights,color:"#A29BFE"},{label:"BUDGET",value:fmt(vd.totalBudget||0),color:"#FF9F43"}].map(s=>(
-              <div key={s.label} className="stat-card"><div style={{fontSize:15,color:"rgba(255,255,255,0.45)",letterSpacing:1.5,marginBottom:4}}>{s.label}</div><div style={{fontSize:isMobile?13:16,fontWeight:700,color:s.color}}>{s.value}</div></div>
+              <div key={s.label} className="stat-card"><div style={{fontSize:11,color:"rgba(255,255,255,0.45)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>{s.label}</div><div style={{fontSize:isMobile?20:22,fontWeight:700,color:s.color}}>{s.value}</div></div>
             ))}
           </div>
         )}
-        {narrativeDone&&vd.highlight&&<div style={{background:"rgba(0,229,255,0.04)",border:"1px solid rgba(0,229,255,0.18)",borderRadius:11,padding:"10px 12px",marginBottom:18}}><div style={{fontSize:15,color:"#00E5FF",letterSpacing:2.5,marginBottom:7}}>⚡ EXPEDITION HIGHLIGHT</div><div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.7}}>{vd.highlight}</div></div>}
+        {narrativeDone&&vd.highlight&&<div style={{background:"rgba(0,229,255,0.04)",border:"1px solid rgba(0,229,255,0.18)",borderRadius:11,padding:"10px 12px",marginBottom:18}}><div style={{fontSize:12,color:"#00E5FF",letterSpacing:2.5,marginBottom:7,fontFamily:"'Space Mono',monospace"}}>⚡ EXPEDITION HIGHLIGHT</div><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.7}}>{vd.highlight}</div></div>}
         {showPhases&&(
           <div style={{animation:"fadeUp 0.5s ease"}}>
             <div style={{fontSize:15,color:"rgba(255,159,67,0.8)",letterSpacing:4,marginBottom:12,paddingBottom:7,borderBottom:"1px solid rgba(169,70,29,0.2)"}}>YOUR EXPEDITION PHASES</div>
@@ -1037,12 +1037,12 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
                   <div style={{width:22,height:22,borderRadius:"50%",background:`${c}18`,border:`1px solid ${c}44`,color:c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,flexShrink:0,marginTop:1}}>{i+1}</div>
                   <div style={{flex:1}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2,flexWrap:"wrap"}}>
-                      <span style={{fontSize:15,fontWeight:700,color:"#FFF"}}>{p.flag||"🌍"} {p.destination}</span>
-                      <span style={{fontSize:15,color:c}}>{TI[p.type]||"✈️"} {p.type}</span>
-                      <span style={{fontSize:15,color:"rgba(255,255,255,0.82)",marginLeft:"auto"}}>🌙 {p.nights}n</span>
+                      <span style={{fontSize:14,fontWeight:600,color:"#FFF"}}>{p.flag||"🌍"} {p.destination}</span>
+                      <span style={{fontSize:11,color:c}}>{TI[p.type]||"✈️"} {p.type}</span>
+                      <span style={{fontSize:13,color:"rgba(255,255,255,0.82)",marginLeft:"auto"}}>🌙 {p.nights}n</span>
                     </div>
-                    <div style={{fontSize:15,fontWeight:700,color:"rgba(255,255,255,0.75)",marginBottom:3,letterSpacing:0.5}}>{p.country}</div>
-                    <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.5}}>{p.why}</div>
+                    <div style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.80)",marginBottom:3,letterSpacing:0.5}}>{p.country}</div>
+                    <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.5}}>{p.why}</div>
                   </div>
                 </div>);
               })}
@@ -1773,6 +1773,7 @@ function getPhaseActivityIcon(phase){const t=phase.segments?.[0]?.type;return AC
 // ─── PhaseDetailPage ──────────────────────────────────────────────
 function PhaseDetailPage({phase,intelData,onBack}) {
   const isMobile=useMobile();
+  useEffect(()=>{window.scrollTo(0,0);},[]);
   const [hintVisible,setHintVisible]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;return!localStorage.getItem('1bn_phase_hint_shown');}catch(e){return false;}});
   useEffect(()=>{
     if(hintVisible){
@@ -2363,6 +2364,7 @@ function getPackBrief(pp,tripData){
 // ─── PackConsole ──────────────────────────────────────────────────
 function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen}) {
   const isMobile=useMobile();
+  useEffect(()=>{window.scrollTo(0,0);},[]);
   const ALL_CATS=[
     {id:"clothes",label:"Clothes",icon:"👕",color:"#FFD93D"},
     {id:"tech",label:"Tech",icon:"💻",color:"#00D4FF"},
@@ -2831,13 +2833,13 @@ Return ONLY a JSON array:
         <div style={{overflowY:"auto",flex:1,padding:"12px 16px"}}>
           <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.15),rgba(255,217,61,0.05))",border:"1px solid rgba(169,70,29,0.35)",borderRadius:12,marginBottom:16,overflow:"hidden"}}>
             <button onClick={()=>{const next=!packBriefCollapsed;setPackBriefCollapsed(next);if(next)try{localStorage.setItem(briefKey,"1");}catch(e){}}} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"none",border:"none",cursor:"pointer"}}>
-              <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:"#FF9F43",letterSpacing:2,fontWeight:700}}>✦ CO-ARCHITECT PACK BRIEF</div>
+              <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"#FF9F43",letterSpacing:2,fontWeight:700}}>✦ CO-ARCHITECT PACK BRIEF</div>
               <div style={{fontSize:10,color:"rgba(255,255,255,0.45)",fontFamily:"'Space Mono',monospace"}}>{packBriefCollapsed?"▼":"▲"}</div>
             </button>
             <div style={{maxHeight:packBriefCollapsed?0:400,overflow:"hidden",transition:"max-height 0.28s ease-out"}}>
               <div style={{padding:"0 12px 12px"}}>
-                <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.80)",lineHeight:1.6,marginBottom:10}}>{getPackBrief(pp,tripData)||`Reviewing your pack for a ${goalLabel} trip across ${countries.slice(0,3).join(", ")}${countries.length>3?" +"+(countries.length-3)+" more":""} — ${totalNights} nights.`}</div>
-                <div style={{fontFamily:"'Space Mono',monospace",fontSize:9,color:"rgba(255,255,255,0.55)",letterSpacing:1,marginBottom:8}}>Built for: {tripData?.tripName||"your expedition"} · {totalNights} nights · {pp?.tripType||goalLabel} · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
+                <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,255,255,0.80)",lineHeight:1.7,marginBottom:10}}>{getPackBrief(pp,tripData)||`Reviewing your pack for a ${goalLabel} trip across ${countries.slice(0,3).join(", ")}${countries.length>3?" +"+(countries.length-3)+" more":""} — ${totalNights} nights.`}</div>
+                <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:"rgba(255,255,255,0.55)",letterSpacing:1,marginBottom:8}}>Built for: {tripData?.tripName||"your expedition"} · {totalNights} nights · {pp?.tripType||goalLabel} · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
                 <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{tripTypes.map(t=><span key={t} style={{fontSize:11,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.18)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:10,padding:"3px 9px",letterSpacing:1,fontWeight:700}}>{TI[t]||"🗺️"} {t}</span>)}</div>
               </div>
             </div>
@@ -2861,7 +2863,7 @@ Return ONLY a JSON array:
             </div>)}
           </div>}
           {!suggestLoading&&suggestions.length>0&&<div>
-            <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:"rgba(255,159,67,0.9)",letterSpacing:3,marginBottom:12,fontWeight:700}}>SUGGESTED FOR YOUR TRIP</div>
+            <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,159,67,0.9)",letterSpacing:3,marginBottom:12,fontWeight:700}}>SUGGESTED FOR YOUR TRIP</div>
             {suggestions.map(s=>{
               const CAT_COLORS_P={docs:"#E0E0E0",tech:"#00D4FF",clothes:"#FFD93D",health:"#69F0AE",travel:"#55EFC4",creator:"#FF9F43",dive:"#00E5FF",adventure:"#55EFC4",safari:"#FFD93D",moto:"#FF6B6B",work:"#A29BFE"};
               const c=CAT_COLORS_P[s.cat]||"#FF9F43";
@@ -2871,23 +2873,23 @@ Return ONLY a JSON array:
                   <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
                     <div style={{flex:1}}>
                       <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}>
-                        {isEssential?<span style={{fontSize:9,color:"#FF9F43",background:"rgba(255,159,67,0.18)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:6,padding:"2px 8px",letterSpacing:1.5,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>ESSENTIAL</span>:<span style={{fontSize:9,color:"rgba(105,240,174,0.85)",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.3)",borderRadius:6,padding:"2px 8px",letterSpacing:1.5,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>RECOMMENDED</span>}
-                        <span style={{fontSize:9,color:c,background:c+"14",border:`1px solid ${c}44`,borderRadius:6,padding:"2px 8px",letterSpacing:1,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>{s.cat}</span>
+                        {isEssential?<span style={{fontSize:11,color:"#FF9F43",background:"rgba(255,159,67,0.18)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:6,padding:"2px 8px",letterSpacing:1.5,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>ESSENTIAL</span>:<span style={{fontSize:11,color:"rgba(105,240,174,0.85)",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.3)",borderRadius:6,padding:"2px 8px",letterSpacing:1.5,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>RECOMMENDED</span>}
+                        <span style={{fontSize:11,color:c,background:c+"14",border:`1px solid ${c}44`,borderRadius:6,padding:"2px 8px",letterSpacing:1,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>{s.cat}</span>
                       </div>
-                      <div style={{fontSize:13,fontWeight:600,color:"#FFF",marginBottom:4}}>{s.name}</div>
-                      <div style={{fontFamily:"'Fraunces',serif",fontSize:12,fontStyle:"italic",color:"rgba(255,255,255,0.70)",lineHeight:1.6}}>{s.reason}</div>
+                      <div style={{fontSize:14,fontWeight:600,color:"#FFF",marginBottom:4}}>{s.name}</div>
+                      <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.70)",lineHeight:1.6}}>{s.reason}</div>
                     </div>
-                    <div style={{textAlign:"right",flexShrink:0,fontFamily:"'Space Mono',monospace"}}>{s.cost>0&&<div style={{fontSize:11,fontWeight:700,color:"#FFD93D",marginBottom:3}}>~${s.cost}</div>}{s.weight>0&&<div style={{fontSize:10,color:"rgba(255,255,255,0.45)"}}>~{s.weight}lb</div>}</div>
+                    <div style={{textAlign:"right",flexShrink:0,fontFamily:"'Space Mono',monospace"}}>{s.cost>0&&<div style={{fontSize:12,fontWeight:700,color:"#FFD93D",marginBottom:3}}>~${s.cost}</div>}{s.weight>0&&<div style={{fontSize:12,color:"rgba(255,255,255,0.45)"}}>~{s.weight}lb</div>}</div>
                   </div>
                   <div style={{display:"flex",gap:8}}>
-                    <button onClick={()=>acceptSuggestion(s)} style={{flex:1,padding:"10px",borderRadius:8,border:"1px solid rgba(105,240,174,0.5)",background:"rgba(105,240,174,0.08)",color:"#69F0AE",fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,minHeight:40}}>+ ADD TO PACK</button>
-                    <button onClick={()=>dismissSuggestion(s.id)} style={{padding:"10px 16px",borderRadius:8,border:"1px solid rgba(255,255,255,0.12)",background:"transparent",color:"rgba(255,255,255,0.70)",fontSize:12,fontWeight:500,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:44}}>SKIP</button>
+                    <button onClick={()=>acceptSuggestion(s)} style={{flex:1,padding:"10px",borderRadius:8,border:"1px solid rgba(105,240,174,0.5)",background:"rgba(105,240,174,0.08)",color:"#69F0AE",fontSize:13,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,minHeight:40}}>+ ADD TO PACK</button>
+                    <button onClick={()=>dismissSuggestion(s.id)} style={{padding:"10px 16px",borderRadius:8,border:"1px solid rgba(255,255,255,0.12)",background:"transparent",color:"rgba(255,255,255,0.70)",fontSize:13,fontWeight:500,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:44}}>SKIP</button>
                   </div>
                 </div>
               </div>);
             })}
           </div>}
-          {!suggestLoading&&suggestions.length>0&&<div style={{textAlign:"center",paddingTop:8,marginBottom:12}}><button onClick={()=>{try{localStorage.removeItem(suggestCacheKey);}catch(e){}setSuggestions([]);setSuggestDone(false);setAccepted([]);genSuggestions(true);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.45)",fontSize:10,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,padding:"6px 12px"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.70)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.45)"}>↻ Refresh suggestions</button></div>}
+          {!suggestLoading&&suggestions.length>0&&<div style={{textAlign:"center",paddingTop:8,marginBottom:12}}><button onClick={()=>{try{localStorage.removeItem(suggestCacheKey);}catch(e){}setSuggestions([]);setSuggestDone(false);setAccepted([]);genSuggestions(true);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.45)",fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,padding:"6px 12px"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.70)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.45)"}>↻ Refresh suggestions</button></div>}
           {!suggestLoading&&suggestions.length===0&&suggestDone&&<div style={{marginBottom:16}}>
             <div style={{textAlign:"center",padding:"24px 0 18px"}}>
               <div style={{fontSize:22,marginBottom:10,color:"#FF9F43"}}>✦</div>
@@ -2977,7 +2979,7 @@ export default function App() {
         const dir=to==="pack"?"left":"right";
         setPrevScreen(prev);setSlideDir(dir);
         if(slideTimerRef.current)clearTimeout(slideTimerRef.current);
-        slideTimerRef.current=setTimeout(()=>{setPrevScreen(null);setSlideDir(null);},240);
+        slideTimerRef.current=setTimeout(()=>{setPrevScreen(null);setSlideDir(null);},370);
       }
       return to;
     });
@@ -3033,8 +3035,8 @@ export default function App() {
       {screen==="coarchitect" && appData && <CoArchitect data={appData} visionData={appData.visionData} onLaunch={appData.isRevision?handleReviseLaunch:handleLaunch} onBack={()=>setScreen(appData.isRevision?"console":"dream")}/>}
       {screen==="handoff"     && tripData && <HandoffScreen tripData={tripData} onComplete={handleHandoffComplete}/>}
       {screen==="homecoming"  && tripData && <HomecomingScreen tripData={tripData} onPlanNext={handlePlanNext}/>}
-      {(screen==="console"||prevScreen==="console") && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 220ms cubic-bezier(0.32,0.72,0,1) forwards":"consoleSlideOutRight 220ms cubic-bezier(0.32,0.72,0,1) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 220ms cubic-bezier(0.32,0.72,0,1) forwards":"consoleSlideInRight 220ms cubic-bezier(0.32,0.72,0,1) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab}/></div>}
-      {(screen==="pack"||prevScreen==="pack") && <div style={{position:prevScreen==="pack"||slideDir?"fixed":"relative",inset:prevScreen==="pack"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="pack"?0:1,animation:prevScreen==="pack"?(slideDir==="right"?"consoleSlideOutRight 220ms cubic-bezier(0.32,0.72,0,1) forwards":"consoleSlideOutLeft 220ms cubic-bezier(0.32,0.72,0,1) forwards"):screen==="pack"&&slideDir?(slideDir==="left"?"consoleSlideInRight 220ms cubic-bezier(0.32,0.72,0,1) forwards":"consoleSlideInLeft 220ms cubic-bezier(0.32,0.72,0,1) forwards"):"none",overflow:"hidden"}}><PackConsole tripData={tripData} onExpedition={()=>slideScreen("console")} onGoToTab={t=>{setPendingTab(t||"next");slideScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen}/></div>}
+      {(screen==="console"||prevScreen==="console") && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab}/></div>}
+      {(screen==="pack"||prevScreen==="pack") && <div style={{position:prevScreen==="pack"||slideDir?"fixed":"relative",inset:prevScreen==="pack"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="pack"?0:1,animation:prevScreen==="pack"?(slideDir==="right"?"consoleSlideOutRight 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutLeft 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="pack"&&slideDir?(slideDir==="left"?"consoleSlideInRight 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInLeft 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><PackConsole tripData={tripData} onExpedition={()=>slideScreen("console")} onGoToTab={t=>{setPendingTab(t||"next");slideScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen}/></div>}
     </>
   );
 }
