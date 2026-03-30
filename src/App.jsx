@@ -2656,10 +2656,20 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
         </div>
       </div>}
       {/* Built-for strip */}
-      {!isFullscreen&&pp&&<div style={{padding:"6px 16px",background:"rgba(255,159,67,0.04)",borderBottom:"1px solid rgba(255,159,67,0.12)",display:"flex",alignItems:"center",gap:6,overflow:"hidden"}}>
-        <span style={{fontSize:11,color:"rgba(255,159,67,0.7)",flexShrink:0}}>✦</span>
-        <span style={{fontSize:isMobile?10:11,color:"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",letterSpacing:0.5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Built for: {tripData.tripName||"Your Trip"} · {totalNights}n · {pp.tripType} · {pp.climate?.replace(/-/g," ")}{coupleMode?" · for 2":""}</span>
-      </div>}
+      {!isFullscreen&&pp&&(()=>{
+        const getClimateAdvisory=(climate,season)=>{const map={'tropical-hot':{dry:{label:'Tropical',advice:'Pack light — reef-safe sunscreen essential'},wet:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'},default:{label:'Tropical',advice:'Pack light, breathable fabrics only'}},'tropical-wet':{default:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'}},'temperate-cool':{default:{label:'Temperate',advice:'Layer up — mornings cold, afternoons warm'}},'cold-alpine':{default:{label:'Alpine Cold',advice:'Warm layers essential — windproof shell critical'}},'mediterranean':{default:{label:'Mediterranean',advice:'Light clothing + one smart dinner outfit'}},'desert-hot':{default:{label:'Desert',advice:'UV protection critical — cover up at midday'}},'varied':{default:{label:'Mixed Climate',advice:'Pack for range — layers are your friend'}}};return map[climate]?.[season]||map[climate]?.default||{label:'Varied',advice:'Check conditions per destination'};};
+        const ca=pp.climate?getClimateAdvisory(pp.climate,pp.season):null;
+        return <div style={{padding:"6px 16px",background:"rgba(255,159,67,0.04)",borderBottom:"1px solid rgba(255,159,67,0.12)",overflow:"hidden"}}>
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            <span style={{fontSize:11,color:"rgba(255,159,67,0.7)",flexShrink:0}}>✦</span>
+            <span style={{fontSize:isMobile?10:11,color:"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",letterSpacing:0.5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Built for: {tripData.tripName||"Your Trip"} · {totalNights}n · {pp.tripType}{coupleMode?" · for 2":""}</span>
+          </div>
+          {ca&&<div style={{display:"flex",alignItems:"center",gap:6,marginTop:2,paddingLeft:17}}>
+            <span style={{fontSize:9,color:"rgba(255,255,255,0.6)",fontFamily:"'Space Mono',monospace",letterSpacing:0.5,whiteSpace:"nowrap"}}>🌡 {ca.label}{pp.tempRange?" · "+pp.tempRange:""}</span>
+            <span style={{fontSize:10,fontFamily:"'Fraunces',serif",fontStyle:"italic",color:"rgba(255,159,67,0.5)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{ca.advice}</span>
+          </div>}
+        </div>;
+      })()}
       {/* Tab bar */}
       <div style={{display:"flex",alignItems:"stretch",background:"rgba(12,5,0,0.98)",borderBottom:"1px solid rgba(196,87,30,0.2)"}}>
         <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(255,159,67,0.15)":"rgba(255,159,67,0.06)",border:"none",borderRight:"1px solid rgba(196,87,30,0.3)",cursor:"pointer",flexShrink:0,color:"#FFD93D"}}>
