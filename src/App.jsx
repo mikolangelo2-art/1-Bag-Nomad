@@ -2714,11 +2714,11 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
           })():<>
             {pp&&!packExplainerDismissed&&<div style={{background:"rgba(0,8,20,0.6)",border:"1px solid rgba(255,159,67,0.3)",borderLeft:"3px solid #FF9F43",borderRadius:10,padding:"10px 13px",marginBottom:12,display:"flex",alignItems:"flex-start",gap:10}}>
               <div style={{flex:1}}>
-                <div style={{fontSize:11,color:"rgba(255,159,67,0.85)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:4}}>✦ Your pack list was built for this trip</div>
-                <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?12:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.6)",lineHeight:1.5}}>Gear selected for {tripData.tripName||"your trip"} — {pp.tripType}, {pp.duration}, {pp.climate?.replace(/-/g," ")}. Categories not relevant to your trip are hidden.</div>
-                <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",marginTop:4,fontFamily:"'Space Mono',monospace"}}>Tap "＋ Add gear categories" below to unlock everything.</div>
+                <div style={{fontSize:12,color:"rgba(255,159,67,0.85)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:600,marginBottom:4}}>✦ Your pack list was built for this trip</div>
+                <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?12:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.7)",lineHeight:1.5}}>Gear selected for {tripData.tripName||"your trip"} — {pp.tripType}, {pp.duration}, {pp.climate?.replace(/-/g," ")}. Categories not relevant to your trip are hidden.</div>
+                <div style={{fontSize:11,color:"rgba(255,255,255,0.7)",marginTop:4,fontFamily:"'Space Mono',monospace"}}>Tap "＋ Add gear categories" below to unlock everything.</div>
               </div>
-              <button onClick={()=>{setPackExplainerDismissed(true);try{localStorage.setItem("1bn_pack_explainer_v1","1");}catch(e){}}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.35)",fontSize:16,cursor:"pointer",padding:"0 4px",flexShrink:0,lineHeight:1}}>✕</button>
+              <button onClick={()=>{setPackExplainerDismissed(true);try{localStorage.setItem("1bn_pack_explainer_v1","1");}catch(e){}}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.8)",fontSize:14,cursor:"pointer",padding:"0 4px",flexShrink:0,lineHeight:1}}>✕</button>
             </div>}
             {CATS.map((cat,i)=>i===0?<div key={cat.id} data-coach="pack-first-cat"><CatCard cat={cat} idx={i}/></div>:<CatCard key={cat.id} cat={cat} idx={i}/>)}
             {pp&&<>
