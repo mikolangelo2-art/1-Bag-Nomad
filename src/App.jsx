@@ -790,8 +790,10 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
     const travelerConstraints=`TRAVELER PROFILE — HARD CONSTRAINTS:\n- Traveling party: ${travelerGroup==='couple'?'Couple or 2 friends traveling together — budget covers both people, activities and accommodation for 2':'Solo traveler'}\n- Travel style: ${travelStyle||'Independent explorer'}${hasBudget?`\n- Budget: $${budgetAmount} FIRM — reflects total spend for the traveling party`:''}\n${nightCount?`- Nights: ${nightCount} — do not deviate`:''}\n${interests.length>0?`- Interests: ${interests.join(', ')} — weight destinations and activities toward these\n`:''}- If "First Timer": 1-2 countries max, beginner-friendly destinations, simple logistics, reassuring tone\n- If "Luxury": 5-star properties, premium experiences, business class\n- If "Couple/2 friends": romantic or buddy-trip framing as appropriate, experiences that work for two`;
     try {
       const breakdownSchema=hasBudget?`,"budgetBreakdown":{"flights":NUMBER,"accommodation":NUMBER,"food":NUMBER,"transport":NUMBER,"activities":NUMBER,"buffer":NUMBER,"flightsNote":"flight routing e.g. LAX → Lisbon return","accommodationNote":"e.g. Guesthouses and boutique hotels","foodNote":"e.g. Local restaurants and cafes","routingNote":"one sentence explaining WHY this route was chosen — the key routing decision in plain English, why these destinations in this order"}`:'';
-      const basePrompt=`${travelerConstraints}\n\n${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"${breakdownSchema}}${hasBudget?`\n\nREMINDER: "totalBudget" MUST be ${budgetAmount}. Each phase "budget" is that phase's share of $${budgetAmount}. The budgetBreakdown fields (flights, accommodation, food, transport, activities, buffer) must sum to approximately $${budgetAmount}. Distribute realistically based on destination costs, trip length, and accommodation tier. Do NOT estimate from scratch — ALLOCATE the stated budget.`:''}`;
-      let raw=await askAI(basePrompt,2200);
+      const packSchema=`,"packProfile":{"categories":["clothes","tech","documents","travel","health"],"hiddenCategories":["dive","creator"],"tripType":"culture","climate":"mediterranean","season":"dry","tempRange":"18-28C","activities":["city-walking","fine-dining"],"duration":"medium","essentialItems":["walking shoes","universal adapter"],"optionalItems":["wetsuit","down jacket"]}`;
+      const basePrompt=`${travelerConstraints}\n\n${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"${breakdownSchema}${packSchema}}${hasBudget?`\n\nREMINDER: "totalBudget" MUST be ${budgetAmount}. Each phase "budget" is that phase's share of $${budgetAmount}. The budgetBreakdown fields (flights, accommodation, food, transport, activities, buffer) must sum to approximately $${budgetAmount}. Distribute realistically based on destination costs, trip length, and accommodation tier. Do NOT estimate from scratch — ALLOCATE the stated budget.`:''}
+packProfile must reflect the actual generated itinerary. categories should include only what this specific traveler needs. essentialItems should name specific gear critical for the trip (e.g. "BCD", "wetsuit", "hiking boots", "down jacket"). optionalItems should name items unnecessary for this trip.`;
+      let raw=await askAI(basePrompt,2800);
       let parsed=parseJSON(raw);
       console.log('[1BN] AI budgetBreakdown returned:',parsed?.budgetBreakdown||'MISSING');
       if(parsed&&hasBudget&&parsed.phases?.length){
@@ -818,6 +820,35 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
         bd.buffer=Math.round((bd.buffer||0)*bRatio/10)*10;
         console.log('[1BN] Final budgetBreakdown:',bd);
       }
+      // Synthesize packProfile if AI omitted it
+      if(parsed&&!parsed.packProfile){
+        console.log('[1BN] packProfile missing from AI — synthesizing from trip data');
+        const phTypes=(parsed.phases||[]).map(p=>(p.type||'').toLowerCase());
+        const hasDive=phTypes.includes('dive')||interests.includes('diving');
+        const hasTrek=phTypes.includes('trek')||interests.includes('adventure');
+        const hasCreator=interests.includes('vlog');
+        const hasMoto=interests.includes('moto');
+        const hasSafari=interests.includes('safari');
+        const cats=["clothes","tech","travel","health","docs"];
+        const hidden=[];
+        if(hasDive)cats.push("dive");else hidden.push("dive");
+        if(hasCreator)cats.push("creator");else hidden.push("creator");
+        if(hasMoto){cats.push("moto");} if(hasSafari){cats.push("safari");} if(hasTrek){cats.push("adventure");}
+        const tn=(parsed.phases||[]).reduce((s,p)=>s+(p.nights||0),0);
+        const dur=tn<14?"short":tn<=30?"medium":"long";
+        const tropical=["thailand","indonesia","philippines","maldives","honduras","belize","costa rica","vietnam","malaysia","india","mexico","barbados","tanzania"];
+        const cold=["iceland","norway","switzerland","japan","nepal"];
+        const dests=(parsed.phases||[]).map(p=>(p.country||'').toLowerCase());
+        const climate=dests.some(d=>tropical.some(t=>d.includes(t)))?"tropical-hot":dests.some(d=>cold.some(c=>d.includes(c)))?"temperate-cool":"mediterranean";
+        const acts=[];
+        if(hasDive){acts.push("diving","snorkeling");} if(hasTrek)acts.push("trekking"); acts.push("city-walking");
+        if(travelStyle==="Luxury")acts.push("fine-dining"); if(interests.includes('food'))acts.push("fine-dining");
+        if(interests.includes('wellness'))acts.push("yoga");
+        const essential=["passport","universal adapter"];
+        if(hasDive){essential.push("mask","dive computer","reef-safe sunscreen");} if(hasTrek)essential.push("hiking boots","rain jacket"); if(climate==="tropical-hot")essential.push("sunscreen","insect repellent");
+        parsed.packProfile={categories:cats,hiddenCategories:hidden,tripType:phTypes[0]||"culture",climate,season:"dry",tempRange:climate==="tropical-hot"?"28-35C":climate==="temperate-cool"?"10-18C":"18-28C",activities:[...new Set(acts)],duration:dur,essentialItems:essential,optionalItems:hasDive?[]:["wetsuit","dive computer","BCD"]};
+      }
+      console.log('[1BN] packProfile:',parsed?.packProfile);
       if(parsed) setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount,travelerProfile:{group:travelerGroup,style:travelStyle,interests}});
       else{setLoadError(true);setLoading(false);}
     } catch(e){setLoadError(true);setLoading(false);}
@@ -1100,7 +1131,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   // Architecture #1: each item auto-wraps as 1 segment
   function buildHandoff(){
     return{tripName:data.tripName||"My Expedition",startDate,vision:data.vision,visionNarrative:visionData.narrative,visionHighlight:visionData.highlight,goalLabel,
-      budgetBreakdown:visionData.budgetBreakdown||null,travelerProfile:data.travelerProfile||null,
+      budgetBreakdown:visionData.budgetBreakdown||null,travelerProfile:data.travelerProfile||null,packProfile:visionData.packProfile||null,
       phases:items.map((item,i)=>({id:i+1,name:item.destination,flag:item.flag,color:item.color,budget:item.cost,nights:item.nights,type:item.type,arrival:dates[i]?.arrival.toISOString().split("T")[0]||"",departure:dates[i]?.departure.toISOString().split("T")[0]||"",country:item.country,diveCount:item.type==="Dive"?Math.floor(item.nights*1.5):0,cost:item.cost,note:item.why||visionData.phases?.[i]?.why||""})),
       totalNights,totalBudget:totalCost,totalDives:items.filter(i=>i.type==="Dive").reduce((s,i)=>s+Math.floor(i.nights*1.5),0)};
   }
@@ -2285,7 +2316,7 @@ function CircularRing({value,max,label,sublabel,color,unit}) {
 // ─── PackConsole ──────────────────────────────────────────────────
 function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen}) {
   const isMobile=useMobile();
-  const CATS=[
+  const ALL_CATS=[
     {id:"clothes",label:"Clothes",icon:"👕",color:"#FFD93D"},
     {id:"tech",label:"Tech",icon:"💻",color:"#00D4FF"},
     {id:"creator",label:"Creator",icon:"🎥",color:"#FF9F43"},
@@ -2293,7 +2324,15 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     {id:"health",label:"Health",icon:"🏥",color:"#69F0AE"},
     {id:"travel",label:"Travel",icon:"🧳",color:"#55EFC4"},
     {id:"docs",label:"Docs",icon:"📄",color:"#E0E0E0"},
+    {id:"adventure",label:"Adventure",icon:"🥾",color:"#55EFC4"},
+    {id:"moto",label:"Moto",icon:"🏍️",color:"#FF6B6B"},
+    {id:"safari",label:"Safari",icon:"🦁",color:"#FFD93D"},
+    {id:"work",label:"Work",icon:"💼",color:"#A29BFE"},
   ];
+  const pp=tripData.packProfile||null;
+  const [enabledCats,setEnabledCats]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_cats_v1");if(s)return JSON.parse(s);}catch(e){}return null;});
+  const CATS=enabledCats?ALL_CATS.filter(c=>enabledCats.includes(c.id)):pp?ALL_CATS.filter(c=>pp.categories?.includes(c.id)):ALL_CATS.filter(c=>["clothes","tech","creator","dive","health","travel","docs"].includes(c.id));
+  useEffect(()=>{if(enabledCats)try{localStorage.setItem("1bn_pack_cats_v1",JSON.stringify(enabledCats));}catch(e){}},[enabledCats]);
   const BAGS=["Backpack","Global Briefcase","Worn","Digital","Day Bag"];
   const WL=15,KGL=7,VL=45;
   const BAG_C={"Backpack":"#00E5FF","Global Briefcase":"#A29BFE","Worn":"#FFD93D","Digital":"#69F0AE","Day Bag":"#FF9F43"};
@@ -2301,7 +2340,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const [packTab,setPackTab]=useState("pack");
   const [packView,setPackView]=useState("dashboard");
   const [activeCategory,setActiveCategory]=useState(null);
-  const [items,setItems]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_v5");if(s){const p=JSON.parse(s);if(p?.length>0)return p;}}catch(e){}return getDefaultPack();});
+  const [items,setItems]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_v5");if(s){const p=JSON.parse(s);if(p?.length>0)return p;}}catch(e){}const base=getDefaultPack();if(!pp)return base;const visCats=pp.categories||[];const ess=(pp.essentialItems||[]).map(n=>n.toLowerCase());const opt=(pp.optionalItems||[]).map(n=>n.toLowerCase());return base.filter(i=>visCats.includes(i.cat)||i.cat==="docs").map(i=>({...i,essential:ess.some(e=>i.name.toLowerCase().includes(e)),optional:opt.some(o=>i.name.toLowerCase().includes(o))})).sort((a,b)=>(b.essential?1:0)-(a.essential?1:0)||(a.optional?1:0)-(b.optional?1:0));});
   const [filterCat,setFilterCat]=useState("all");
   const [openCats,setOpenCats]=useState({});
   const [unit,setUnit]=useState("lbs");
@@ -2316,6 +2355,9 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const [chatLoading,setChatLoading]=useState(false);
   const [showCoach,setShowCoach]=useState(()=>!loadCoach().pack);
   const [showOnboard,setShowOnboard]=useState(()=>!loadOnboard().pack);
+  const [packExplainerDismissed,setPackExplainerDismissed]=useState(()=>{try{return localStorage.getItem("1bn_pack_explainer_v1")==="1";}catch(e){return false;}});
+  const [showAddCats,setShowAddCats]=useState(false);
+  const coupleMode=tripData.travelerProfile?.group==="couple";
   const chatEnd=useRef(null);
 
   useEffect(()=>{chatEnd.current?.scrollIntoView({behavior:"smooth"});},[chat]);
@@ -2374,7 +2416,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
             {item.owned&&<span style={{color:'#69F0AE',fontSize:15,fontWeight:900,lineHeight:1}}>✓</span>}
           </button>
           <div style={{flex:1,minWidth:0,textAlign:'left'}}>
-            <div style={{fontSize:13,fontWeight:500,color:item.owned?'#69F0AE':'#E8DCC8',fontFamily:"'Space Mono',monospace",whiteSpace:'normal',overflow:'visible',textOverflow:'clip',lineHeight:1.3}}>{item.name||'Unnamed'}</div>
+            <div style={{fontSize:13,fontWeight:500,color:item.owned?'#69F0AE':'#E8DCC8',fontFamily:"'Space Mono',monospace",whiteSpace:'normal',overflow:'visible',textOverflow:'clip',lineHeight:1.3}}>{item.essential&&<span style={{fontSize:9,color:'#FFD93D',marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:'rgba(255,255,255,0.3)',marginRight:2}}>~</span>}{item.name||'Unnamed'}</div>
             <div style={{display:'flex',gap:8,marginTop:2}}>
               {parseFloat(item.weight)>0&&<span style={{fontSize:11,color:'rgba(255,255,255,0.38)',fontFamily:'monospace'}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
               {parseFloat(item.cost)>0&&<span style={{fontSize:11,color:'rgba(255,217,61,0.5)',fontFamily:'monospace'}}>${item.cost}</span>}
@@ -2424,7 +2466,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
           </button>
           <div onClick={()=>setOpen(o=>!o)} style={{flex:1,display:"flex",alignItems:"center",gap:10,padding:"10px 8px 10px 4px",cursor:"pointer",minWidth:0}}>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:13,fontWeight:500,color:item.owned?"rgba(105,240,174,0.82)":"rgba(255,242,210,0.78)",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2}}>{item.name||"Unnamed"}</div>
+              <div style={{fontSize:13,fontWeight:500,color:item.owned?"rgba(105,240,174,0.82)":"rgba(255,242,210,0.78)",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2}}>{item.essential&&<span style={{fontSize:9,color:"#FFD93D",marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginRight:2}}>~</span>}{item.name||"Unnamed"}</div>
               <div style={{display:"flex",gap:8,alignItems:"center"}}>
                 {parseFloat(item.weight)>0&&<span style={{fontSize:13,color:"rgba(255,255,255,0.45)",fontFamily:"monospace"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
                 {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(255,217,61,0.55)",fontFamily:"monospace"}}>${item.cost}</span>}
@@ -2598,6 +2640,11 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
           ))}
         </div>
       </div>}
+      {/* Built-for strip */}
+      {!isFullscreen&&pp&&<div style={{padding:"6px 16px",background:"rgba(255,159,67,0.04)",borderBottom:"1px solid rgba(255,159,67,0.12)",display:"flex",alignItems:"center",gap:6,overflow:"hidden"}}>
+        <span style={{fontSize:11,color:"rgba(255,159,67,0.7)",flexShrink:0}}>✦</span>
+        <span style={{fontSize:isMobile?10:11,color:"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",letterSpacing:0.5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Built for: {tripData.tripName||"Your Trip"} · {totalNights}n · {pp.tripType} · {pp.climate?.replace(/-/g," ")}{coupleMode?" · for 2":""}</span>
+      </div>}
       {/* Tab bar */}
       <div style={{display:"flex",alignItems:"stretch",background:"rgba(12,5,0,0.98)",borderBottom:"1px solid rgba(196,87,30,0.2)"}}>
         <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(255,159,67,0.15)":"rgba(255,159,67,0.06)",border:"none",borderRight:"1px solid rgba(196,87,30,0.3)",cursor:"pointer",flexShrink:0,color:"#FFD93D"}}>
@@ -2664,7 +2711,31 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
                 </div>
               )}
             </div>);
-          })():CATS.map((cat,i)=>i===0?<div key={cat.id} data-coach="pack-first-cat"><CatCard cat={cat} idx={i}/></div>:<CatCard key={cat.id} cat={cat} idx={i}/>)}
+          })():<>
+            {pp&&!packExplainerDismissed&&<div style={{background:"rgba(0,8,20,0.6)",border:"1px solid rgba(255,159,67,0.3)",borderLeft:"3px solid #FF9F43",borderRadius:10,padding:"10px 13px",marginBottom:12,display:"flex",alignItems:"flex-start",gap:10}}>
+              <div style={{flex:1}}>
+                <div style={{fontSize:11,color:"rgba(255,159,67,0.85)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:4}}>✦ Your pack list was built for this trip</div>
+                <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?12:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.6)",lineHeight:1.5}}>Gear selected for {tripData.tripName||"your trip"} — {pp.tripType}, {pp.duration}, {pp.climate?.replace(/-/g," ")}. Categories not relevant to your trip are hidden.</div>
+                <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",marginTop:4,fontFamily:"'Space Mono',monospace"}}>Tap "＋ Add gear categories" below to unlock everything.</div>
+              </div>
+              <button onClick={()=>{setPackExplainerDismissed(true);try{localStorage.setItem("1bn_pack_explainer_v1","1");}catch(e){}}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.35)",fontSize:16,cursor:"pointer",padding:"0 4px",flexShrink:0,lineHeight:1}}>✕</button>
+            </div>}
+            {CATS.map((cat,i)=>i===0?<div key={cat.id} data-coach="pack-first-cat"><CatCard cat={cat} idx={i}/></div>:<CatCard key={cat.id} cat={cat} idx={i}/>)}
+            {pp&&<>
+              <button onClick={()=>setShowAddCats(o=>!o)} style={{width:"100%",padding:"10px 14px",marginTop:4,borderRadius:10,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.02)",color:"rgba(255,255,255,0.4)",fontSize:12,fontFamily:"'Space Mono',monospace",cursor:"pointer",letterSpacing:1,textAlign:"center",minHeight:40}}>＋ Add gear categories</button>
+              {showAddCats&&<div style={{marginTop:8,padding:"10px 14px",background:"rgba(0,8,20,0.6)",border:"1px solid rgba(255,159,67,0.2)",borderRadius:10}}>
+                <div style={{fontSize:10,color:"rgba(255,159,67,0.7)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:8}}>HIDDEN CATEGORIES</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                  {ALL_CATS.filter(c=>!CATS.find(v=>v.id===c.id)).map(c=>(
+                    <button key={c.id} onClick={()=>{const next=[...CATS.map(x=>x.id),c.id];setEnabledCats(next);}} style={{padding:"6px 12px",borderRadius:16,border:"1px solid rgba(255,255,255,0.15)",background:"transparent",color:"rgba(255,255,255,0.5)",fontSize:12,fontFamily:"'Space Mono',monospace",cursor:"pointer",display:"flex",alignItems:"center",gap:5,minHeight:32}}>
+                      <span>{c.icon}</span>{c.label}
+                    </button>
+                  ))}
+                  {ALL_CATS.filter(c=>!CATS.find(v=>v.id===c.id)).length===0&&<div style={{fontSize:12,color:"rgba(255,255,255,0.35)",fontStyle:"italic"}}>All categories are visible</div>}
+                </div>
+              </div>}
+            </>}
+          </>}
           <div style={{textAlign:"center",marginTop:8,padding:"8px 0",borderTop:"1px solid rgba(169,70,29,0.12)"}}>
             <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.35)",letterSpacing:2}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
           </div>
@@ -2813,7 +2884,7 @@ export default function App() {
   function handleLoadDemo(){try{localStorage.clear();}catch(e){}setTripData(MICHAEL_EXPEDITION);setScreen("console");}
   function handleGoGen(data,vd){setAppData({...data,visionData:vd});setScreen("gen");}
   function handleGenComplete(){setScreen("coarchitect");}
-  function handleLaunch(hd){try{localStorage.removeItem("1bn_pack_v5");}catch(e){}setTripData(hd);setScreen("handoff");}
+  function handleLaunch(hd){try{localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem("1bn_pack_explainer_v1");}catch(e){}setTripData(hd);setScreen("handoff");}
   function handleReviseLaunch(hd){setTripData(hd);setScreen("handoff");}
   function handleHandoffComplete(){setScreen("console");}
   function handleRevise(){
@@ -2823,13 +2894,13 @@ export default function App() {
   }
   function handleNewTrip(){
     setScreen("dream");setAppData(null);
-    try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");}catch(e){}
+    try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem("1bn_pack_explainer_v1");}catch(e){}
   }
   function handleHomecoming(){setScreen("homecoming");}
   function handlePlanNext(){
     const name=tripData?.tripName||"my expedition";
     setPrefilledVision(`I just completed ${name}. Now I want to `);
-    try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");}catch(e){}
+    try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem("1bn_pack_explainer_v1");}catch(e){}
     setAppData(null);setScreen("dream");
   }
 
