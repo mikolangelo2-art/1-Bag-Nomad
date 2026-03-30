@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>1 Bag Nomad — Dream Big. Travel Light.</title>
+  <meta name="description" content="1 Bag Nomad builds your expedition around what you want to feel — not just where you want to go. AI-powered trip planning, packing, and budgeting in one place."/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{background:#0A0604;color:#FFF;font-family:'Fraunces',serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{color:inherit;text-decoration:none}
+
+    .fade-in{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease}
+    .fade-in.visible{opacity:1;transform:translateY(0)}
+
+    @keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    @keyframes chevronPulse{0%,100%{opacity:0.35;transform:translateY(0)}50%{opacity:0.65;transform:translateY(6px)}}
+    @keyframes playGlow{0%,100%{box-shadow:0 0 40px rgba(255,159,67,0.15),0 0 80px rgba(255,159,67,0.05)}50%{box-shadow:0 0 60px rgba(255,159,67,0.25),0 0 120px rgba(255,159,67,0.10)}}
+
+    /* ── HERO ── */
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;position:relative;background:radial-gradient(ellipse at 50% 30%,rgba(169,70,29,0.08) 0%,transparent 60%),#0A0604}
+    .hero-logo{width:80px;height:80px;margin-bottom:32px;animation:logoFloat 4s ease-in-out infinite}
+    .hero-headline{font-size:42px;letter-spacing:2px;margin-bottom:8px;line-height:1.2}
+    .hero-headline .bold{font-weight:900;color:#FFD93D}
+    .hero-headline .light{font-weight:100;font-style:italic;color:rgba(255,255,255,0.6);font-size:38px}
+    .hero-headline .sep{color:rgba(255,255,255,0.15);font-weight:100;margin:0 12px}
+    .hero-tagline{font-style:italic;font-size:22px;font-weight:300;color:rgba(255,255,255,0.75);margin-bottom:16px}
+    .hero-sub{font-size:16px;font-weight:300;color:rgba(255,255,255,0.50);max-width:500px;line-height:1.7;margin:0 auto 40px}
+    .hero-buttons{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+    .btn-ghost{padding:14px 28px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:transparent;color:rgba(255,255,255,0.80);font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;min-height:52px}
+    .btn-ghost:hover{border-color:rgba(255,255,255,0.5);color:#FFF;background:rgba(255,255,255,0.04)}
+    .btn-amber{padding:14px 32px;border-radius:12px;border:1px solid rgba(255,159,67,0.5);background:linear-gradient(135deg,rgba(196,87,30,0.25),rgba(255,159,67,0.12));color:#FF9F43;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;min-height:52px;display:inline-flex;align-items:center;justify-content:center}
+    .btn-amber:hover{background:linear-gradient(135deg,rgba(196,87,30,0.40),rgba(255,159,67,0.20));box-shadow:0 0 24px rgba(255,159,67,0.15)}
+    .scroll-chevron{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);font-size:24px;color:rgba(255,255,255,0.35);animation:chevronPulse 2.5s ease-in-out infinite}
+
+    /* ── THE FEELING ── */
+    .feeling{padding:100px 24px;max-width:720px;margin:0 auto;text-align:center}
+    .feeling-line{font-size:24px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.80);line-height:2.0;margin-bottom:8px}
+    .feeling-line.gold{color:#FFD93D;font-weight:400}
+    .feeling-line.break{margin-bottom:32px}
+    .feeling-line.dim{color:rgba(255,255,255,0.50)}
+    .feeling-line.spacer{margin-bottom:0;line-height:1.2}
+
+    /* ── HOW IT WORKS ── */
+    .how-section{padding:80px 24px;max-width:1100px;margin:0 auto}
+    .how-label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(255,159,67,0.75);text-align:center;margin-bottom:12px}
+    .how-title{text-align:center;font-size:28px;font-weight:700;color:#FFD93D;margin-bottom:48px}
+    .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .how-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,159,67,0.15);border-radius:16px;padding:32px 24px}
+    .how-card-label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;margin-bottom:14px;font-weight:700}
+    .how-card-label.amber{color:#FF9F43}
+    .how-card-label.cyan{color:#00E5FF}
+    .how-card-title{font-size:20px;font-weight:700;color:#FFF;margin-bottom:12px;line-height:1.3}
+    .how-card-body{font-size:14px;font-weight:300;color:rgba(255,255,255,0.60);line-height:1.7}
+
+    /* ── DEMO ── */
+    .demo-section{padding:80px 24px;text-align:center}
+    .demo-label{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:3px;color:rgba(255,159,67,0.75);margin-bottom:32px}
+    .demo-play{width:120px;height:120px;border-radius:50%;border:2px solid rgba(255,159,67,0.4);background:rgba(169,70,29,0.08);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;cursor:pointer;transition:all 0.3s;animation:playGlow 3s ease-in-out infinite}
+    .demo-play:hover{border-color:rgba(255,159,67,0.7);background:rgba(169,70,29,0.15)}
+    .demo-play span{font-size:36px;color:#FF9F43;margin-left:6px}
+    .demo-note{font-size:14px;font-style:italic;font-weight:300;color:rgba(255,255,255,0.40)}
+
+    /* ── FOUNDER ── */
+    .founder-section{padding:80px 24px;max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+    .founder-text h3{font-size:26px;font-weight:700;color:#FFD93D;margin-bottom:20px;line-height:1.3}
+    .founder-text p{font-size:16px;font-weight:300;color:rgba(255,255,255,0.70);line-height:1.8;margin-bottom:16px}
+    .founder-text p em{font-weight:400;color:rgba(255,255,255,0.90)}
+    .founder-attr{font-size:14px;font-style:italic;color:rgba(255,255,255,0.50);margin-top:24px;line-height:1.6}
+    .patent-badge{display:inline-block;margin-top:16px;padding:6px 16px;border-radius:20px;border:1px solid rgba(255,159,67,0.35);background:rgba(255,159,67,0.06);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;color:rgba(255,159,67,0.80)}
+    .founder-visual{display:flex;align-items:center;justify-content:center}
+    .founder-logo-ring{position:relative;width:180px;height:180px}
+    .founder-logo-ring img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70px;opacity:0.6}
+    .founder-logo-ring::before,.founder-logo-ring::after{content:'';position:absolute;border-radius:50%;border:1px solid rgba(255,159,67,0.12)}
+    .founder-logo-ring::before{inset:0}
+    .founder-logo-ring::after{inset:20px;border-color:rgba(255,159,67,0.20)}
+
+    /* ── FEATURES ── */
+    .features-section{padding:80px 24px;max-width:900px;margin:0 auto}
+    .features-label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(255,159,67,0.75);text-align:center;margin-bottom:40px}
+    .features-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .feature-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:24px 20px}
+    .feature-icon{font-size:20px;margin-bottom:10px}
+    .feature-title{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.90);margin-bottom:8px}
+    .feature-body{font-size:13px;font-weight:300;color:rgba(255,255,255,0.50);line-height:1.6}
+
+    /* ── FINAL CTA ── */
+    .final-cta{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;background:radial-gradient(ellipse at 50% 60%,rgba(169,70,29,0.06) 0%,transparent 60%),#0A0604}
+    .final-headline{font-size:52px;font-weight:900;color:#FFD93D;letter-spacing:2px;line-height:1.15;margin-bottom:4px}
+    .final-headline-light{font-size:44px;font-weight:100;font-style:italic;color:rgba(255,255,255,0.55);margin-bottom:24px}
+    .final-sub{font-size:20px;font-style:italic;font-weight:300;color:rgba(255,255,255,0.65);margin-bottom:40px}
+    .final-btn{padding:18px 40px;border-radius:14px;border:1.5px solid rgba(255,159,67,0.55);background:linear-gradient(135deg,rgba(196,87,30,0.30),rgba(255,159,67,0.15));color:#FF9F43;font-family:'Space Mono',monospace;font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all 0.25s;min-height:58px;margin-bottom:20px;display:inline-flex;align-items:center;justify-content:center}
+    .final-btn:hover{background:linear-gradient(135deg,rgba(196,87,30,0.45),rgba(255,159,67,0.25));box-shadow:0 0 32px rgba(255,159,67,0.2);transform:translateY(-1px)}
+    .fine-print{font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:1px;margin-bottom:48px}
+    .footer{font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:1px}
+
+    /* ── MOBILE ── */
+    @media(max-width:768px){
+      .hero-logo{width:60px;height:60px}
+      .hero-headline{font-size:28px}
+      .hero-headline .light{font-size:26px}
+      .hero-headline .sep{margin:0 8px}
+      .hero-tagline{font-size:18px}
+      .hero-sub{font-size:14px}
+      .hero-buttons{flex-direction:column;width:100%;max-width:320px}
+      .hero-buttons button,.hero-buttons a{width:100%;text-align:center}
+      .feeling-line{font-size:18px}
+      .how-grid{grid-template-columns:1fr}
+      .how-title{font-size:22px}
+      .founder-section{grid-template-columns:1fr;text-align:center}
+      .founder-text h3{font-size:22px}
+      .founder-visual{order:-1}
+      .features-grid{grid-template-columns:1fr}
+      .final-headline{font-size:36px}
+      .final-headline-light{font-size:30px}
+      .final-sub{font-size:17px}
+      .final-btn{font-size:12px;padding:16px 28px;width:100%;max-width:360px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- SECTION 1: HERO -->
+<section class="hero">
+  <img src="/sharegood-logo.svg" alt="1 Bag Nomad" class="hero-logo"/>
+  <div class="hero-headline">
+    <span class="bold">DREAM BIG</span><span class="sep">|</span><span class="light">travel light</span>
+  </div>
+  <p class="hero-tagline">Stop searching. Start dreaming.</p>
+  <p class="hero-sub">1 Bag Nomad builds your expedition around what you want to feel — not just where you want to go.</p>
+  <div class="hero-buttons">
+    <button class="btn-ghost" onclick="document.querySelector('.demo-section').scrollIntoView({behavior:'smooth'})">&#9654; WATCH THE DEMO</button>
+    <a href="https://1bagnomad.com" target="_blank" rel="noopener" class="btn-amber cta-primary">&#10022; BUILD MY EXPEDITION &#8594;</a>
+  </div>
+  <div class="scroll-chevron">&#8595;</div>
+</section>
+
+<!-- SECTION 2: THE FEELING -->
+<section class="feeling">
+  <p class="feeling-line fade-in">Real travel begins with a feeling.</p>
+  <p class="feeling-line fade-in spacer">&nbsp;</p>
+  <p class="feeling-line fade-in">A reef you need to dive.</p>
+  <p class="feeling-line fade-in">A city you need to disappear into.</p>
+  <p class="feeling-line fade-in break">A version of yourself you're chasing.</p>
+  <p class="feeling-line fade-in spacer">&nbsp;</p>
+  <p class="feeling-line fade-in dim">Every travel app starts the same way &mdash;</p>
+  <p class="feeling-line fade-in dim break">Where are you going? When are you leaving?</p>
+  <p class="feeling-line fade-in spacer">&nbsp;</p>
+  <p class="feeling-line fade-in">But that's not how real travel begins.</p>
+  <p class="feeling-line fade-in spacer">&nbsp;</p>
+  <p class="feeling-line fade-in gold">Your ultimate travel journey starts right here, right now.</p>
+</section>
+
+<!-- SECTION 3: HOW IT WORKS -->
+<section class="how-section">
+  <div class="how-label fade-in">HOW IT WORKS</div>
+  <h2 class="how-title fade-in">Three consoles. One expedition.</h2>
+  <div class="how-grid">
+    <div class="how-card fade-in">
+      <div class="how-card-label amber">&#127758; DREAM</div>
+      <div class="how-card-title">Your vision. Your expedition.</div>
+      <div class="how-card-body">Tell your co-architect what you want to feel. Set your budget. Watch your expedition get built around your vision in seconds.</div>
+    </div>
+    <div class="how-card fade-in">
+      <div class="how-card-label cyan">&#128309; TRIP</div>
+      <div class="how-card-title">Everything at a glance.</div>
+      <div class="how-card-body">Phases, budget, bookings, intel — your full expedition managed from dream to departure. The world map shows exactly where you're going.</div>
+    </div>
+    <div class="how-card fade-in">
+      <div class="how-card-label amber">&#127890; PACK</div>
+      <div class="how-card-title">Travel light, for real.</div>
+      <div class="how-card-body">Your pack list built for your specific trip — climate, activities, duration. The co-architect knows what you need before you do.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: DEMO VIDEO -->
+<section class="demo-section">
+  <div class="demo-label fade-in">&#10022; SEE IT IN ACTION</div>
+  <div class="demo-play fade-in">
+    <span>&#9654;</span>
+  </div>
+  <p class="demo-note fade-in">Demo coming soon — follow the journey</p>
+</section>
+
+<!-- SECTION 5: FOUNDER STORY -->
+<section class="founder-section">
+  <div class="founder-text fade-in">
+    <h3>Built by a traveler, for travelers.</h3>
+    <p>I planned my 180-night global expedition in a Google Sheets spreadsheet. Every leg, every budget line.</p>
+    <p>Then I thought: <em>what if this existed as an app?</em></p>
+    <p><em>Six weeks later — patent pending.</em></p>
+    <div class="founder-attr">
+      Michael Angelo Holly II<br/>
+      Founder, SHAREGOOD Co.
+    </div>
+    <div class="patent-badge">&#9889; Patent Pending &#183; USPTO #64/014,106</div>
+  </div>
+  <div class="founder-visual fade-in">
+    <div class="founder-logo-ring">
+      <img src="/sharegood-logo.svg" alt="SHAREGOOD"/>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6: FEATURES GRID -->
+<section class="features-section">
+  <div class="features-label fade-in">WHAT MAKES IT DIFFERENT</div>
+  <div class="features-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&#10022;</div>
+      <div class="feature-title">Goal-first generation</div>
+      <div class="feature-body">Your vision drives everything. Not a search form.</div>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&#128176;</div>
+      <div class="feature-title">Budget reality check</div>
+      <div class="feature-body">Know exactly what's possible before you commit.</div>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&#128506;&#65039;</div>
+      <div class="feature-title">Real expedition map</div>
+      <div class="feature-body">Your route on a real map. Every phase, every stop.</div>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&#127890;</div>
+      <div class="feature-title">Trip-aware pack list</div>
+      <div class="feature-body">Gear selected for YOUR trip. Climate. Activities. Duration.</div>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&#10022;</div>
+      <div class="feature-title">Co-Architect transparency</div>
+      <div class="feature-body">See every decision. Every budget allocation. Every routing choice.</div>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&#128279;</div>
+      <div class="feature-title">Expedition Linking</div>
+      <div class="feature-body">Build once. Invite friends. Everyone gets their own pack list.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 7: FINAL CTA -->
+<section class="final-cta">
+  <div class="final-headline fade-in">DREAM BIG.</div>
+  <div class="final-headline-light fade-in">travel light.</div>
+  <p class="final-sub fade-in">Your expedition starts now.</p>
+  <a href="https://1bagnomad.com" target="_blank" rel="noopener" class="final-btn cta-primary fade-in">&#10022; BUILD MY EXPEDITION — IT'S FREE &#8594;</a>
+  <p class="fine-print fade-in">No account required &#183; Free to build &#183; Patent Pending</p>
+  <div class="footer">&#169; 2026 SHAREGOOD Co. &#183; 1 Bag Nomad &#183; Dream Big. Travel Light.</div>
+</section>
+
+<!-- SCROLL ANIMATIONS -->
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        var delay=entry.target.dataset.delay||0;
+        setTimeout(function(){entry.target.classList.add('visible')},delay);
+        observer.unobserve(entry.target);
+      }
+    });
+  },{threshold:0.15});
+  document.querySelectorAll('.feeling .fade-in').forEach(function(el,i){el.dataset.delay=i*120});
+  document.querySelectorAll('.how-card.fade-in').forEach(function(el,i){el.dataset.delay=i*100});
+  document.querySelectorAll('.feature-card.fade-in').forEach(function(el,i){el.dataset.delay=i*80});
+  document.querySelectorAll('.fade-in').forEach(function(el){observer.observe(el)});
+});
+</script>
+
+<!-- POSTHOG -->
+<script>
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+" (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init('phc_O9hQZjy2VLHhAPuZPFhQeZTfAtXnXKfZh39qWZS966u',{
+  api_host:'https://us.i.posthog.com',
+  loaded:function(ph){if(window.location.hostname==='localhost')ph.opt_out_capturing()}
+});
+posthog.capture('landing_page_viewed');
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.cta-primary').forEach(function(btn,i){
+    btn.addEventListener('click',function(){
+      posthog.capture('landing_cta_clicked',{location:i===0?'hero':'footer'});
+    });
+  });
+});
+</script>
+
+</body>
+</html>
