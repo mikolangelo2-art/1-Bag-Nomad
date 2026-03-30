@@ -624,8 +624,8 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
             {icon:"🧭",title:"Trip Console",tip:"Tap any phase card to expand it. Tap a segment inside to plan transport, stay, activities, food and more."},
             {icon:"📋",title:"Bottom Tabs",tip:"TRIP · BUDGET · BOOK · INTEL each show a different view of your expedition. PACK switches to your gear console."},
             {icon:"🎒",title:"Pack Console",tip:"Tap a category to browse items. Check the box on any item once you own it. Use NEED TO BUY for your shopping list."},
-            {icon:"🔭",title:"Intel Tab",tip:"Ask the AI anything about your destinations — visa rules, weather, dive conditions, local tips."},
-            {icon:"✏️",title:"Revise Trip",tip:"Tap REVISE at any time to edit your trip dates, countries, budget or travel style with the AI planner."},
+            {icon:"🔭",title:"Intel Tab",tip:"Ask your co-architect anything about your destinations — visa rules, weather, dive conditions, local tips."},
+            {icon:"✏️",title:"Revise Trip",tip:"Tap REVISE at any time to edit your trip dates, countries, budget or travel style with the Co-Architect planner."},
           ].map(h=>(
             <div key={h.title} style={{display:"flex",gap:10,alignItems:"flex-start"}}>
               <span style={{fontSize:16,flexShrink:0,marginTop:1}}>{h.icon}</span>
@@ -922,7 +922,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
               <div style={{paddingTop:12,marginTop:4,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
                 <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,marginBottom:8}}>SPECIALTY INTERESTS <span style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:300,color:"rgba(255,159,67,0.50)",fontSize:13}}>· optional</span></div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                  {[{id:"fishing",icon:"🎣",label:"Fishing"},{id:"climbing",icon:"🧗",label:"Climbing"},{id:"skiing",icon:"🎿",label:"Skiing/Snow"},{id:"nightlife",icon:"🎉",label:"Nightlife"},{id:"music",icon:"🎵",label:"Music/Festivals"},{id:"wine",icon:"🍷",label:"Wine Tourism"},{id:"eco",icon:"🌿",label:"Eco Travel"},{id:"photography",icon:"🎨",label:"Photography"},{id:"camping",icon:"🏕️",label:"Camping"},{id:"yoga",icon:"🤸",label:"Yoga Retreat"},{id:"watersports",icon:"🏄",label:"Water Sports"}].map(c=>{const on=specialtyInterests.includes(c.id);return(
+                  {[{id:"fishing",icon:"🎣",label:"Fishing"},{id:"climbing",icon:"🧗",label:"Climbing"},{id:"skiing",icon:"🎿",label:"Skiing/Snow"},{id:"nightlife",icon:"🎉",label:"Nightlife"},{id:"music",icon:"🎵",label:"Music/Festivals"},{id:"shopping",icon:"🛍️",label:"Shopping"},{id:"wine",icon:"🍷",label:"Wine Tourism"},{id:"eco",icon:"🌿",label:"Eco Travel"},{id:"photography",icon:"🎨",label:"Photography"},{id:"camping",icon:"🏕️",label:"Camping"},{id:"yoga",icon:"🤸",label:"Yoga Retreat"},{id:"watersports",icon:"🏄",label:"Water Sports"}].map(c=>{const on=specialtyInterests.includes(c.id);return(
                     <button key={c.id} onClick={()=>setSpecialtyInterests(p=>on?p.filter(x=>x!==c.id):[...p,c.id])} style={{padding:"5px 12px",borderRadius:20,border:on?"1.5px solid rgba(255,159,67,0.80)":"1px solid rgba(255,255,255,0.30)",background:on?"rgba(255,159,67,0.08)":"transparent",color:on?"#FF9F43":"rgba(255,255,255,0.68)",fontSize:13,fontFamily:"'Space Mono',monospace",fontWeight:on?600:400,cursor:"pointer",transition:"all 0.2s",minHeight:40,userSelect:"none",boxShadow:on?"0 0 10px rgba(255,159,67,0.22)":"0 0 5px rgba(255,255,255,0.05)"}}>{c.icon} {c.label}</button>
                   );})}
                 </div>
@@ -1577,7 +1577,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
           {cat==="food"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:5}}>
             <div style={{display:"flex",gap:8,alignItems:"flex-end"}}>
               <div style={{flex:1}}><SDF label="DAILY FOOD BUDGET ($)" type="number" value={det.food.dailyBudget} onChange={v=>uF("dailyBudget",v)} placeholder="e.g. 45" accent="#FF9F43"/></div>
-              <button onClick={aiFood} disabled={aiLoad} style={{padding:"5px 10px",borderRadius:5,border:"1px solid rgba(255,159,67,0.3)",background:"rgba(255,159,67,0.05)",color:"rgba(255,159,67,0.8)",fontSize:11,cursor:aiLoad?"wait":"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:600,whiteSpace:"nowrap",height:28,flexShrink:0}}>{aiLoad?"✦...":"✦ AI EST"}</button>
+              <button onClick={aiFood} disabled={aiLoad} style={{padding:"5px 10px",borderRadius:5,border:"1px solid rgba(255,159,67,0.3)",background:"rgba(255,159,67,0.05)",color:"rgba(255,159,67,0.8)",fontSize:11,cursor:aiLoad?"wait":"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:600,whiteSpace:"nowrap",height:28,flexShrink:0}}>{aiLoad?"✦...":"✦ CO-ARCH EST"}</button>
             </div>
             {det.food.dailyBudget&&<div style={{display:"flex",justifyContent:"space-between",padding:"8px 12px",background:"rgba(255,159,67,0.05)",border:"1px solid rgba(255,159,67,0.16)",borderRadius:7}}>
               <span style={{fontSize:12,color:"rgba(255,255,255,0.35)",fontFamily:"monospace"}}>{segment.nights} nights × ${det.food.dailyBudget}/day</span>
@@ -1982,7 +1982,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
             {icon:"🗺️",label:"EXPEDITION",color:"#00E5FF",desc:"Country-by-country breakdown. Tap any card to expand segments, add stays, transport, and activities."},
             {icon:"💰",label:"BUDGET",color:"#FFD93D",desc:"Real-time cost tracking across every leg. See where your money goes before you leave."},
             {icon:"🔗",label:"BOOK",color:"#69F0AE",desc:"Direct links for flights, stays, and experiences — everything to action in one place."},
-            {icon:"🔭",label:"INTEL",color:"#A29BFE",desc:"AI-powered briefings for every stop. Local tips, must-dos, food, street intel, and culture."},
+            {icon:"🔭",label:"INTEL",color:"#A29BFE",desc:"Co-Architect briefings for every stop. Local tips, must-dos, food, street intel, and culture."},
           ].map(t=>(
             <div key={t.label} style={{display:"flex",gap:8,alignItems:"flex-start",padding:isMobile?"6px 8px":"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.04)",border:`1px solid ${t.color}44`}}>
               <span style={{fontSize:isMobile?13:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
@@ -1999,7 +1999,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
         {target:"trip-stats",title:"Your Mission Dashboard",body:"Countdown, nights, dives, and budget — your expedition at a glance."},
         {target:"trip-phases",title:"Country Phases",body:"Each card is a country. Tap to expand and see the segments within."},
         {target:"trip-tabs",title:"Explore Your Data",body:"Switch between Expedition, Budget, Booking links, and Intel views."},
-        {target:"trip-intel",title:"Destination Intel",body:"AI-powered briefings — local tips, must-dos, food, culture, and street intel for every stop."},
+        {target:"trip-intel",title:"Destination Intel",body:"Co-Architect briefings — local tips, must-dos, food, culture, and street intel for every stop."},
         {target:"trip-pack-switch",title:"Pack Console",body:"When you're ready, switch here to manage your one-bag gear list."}
       ]}/>}
       {!isFullscreen&&<ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/>}
@@ -2609,7 +2609,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
         <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:4}}>
           {[
             {icon:"📦",label:"PACK LIST",color:"#FF9F43",desc:"Full gear list by category. Expand sections, check off what you own, edit weights and volumes."},
-            {icon:"✨",label:"REFINE",color:"#69F0AE",desc:"AI suggestions based on your destinations and travel style. Add what fits, skip what doesn't."},
+            {icon:"✨",label:"REFINE",color:"#69F0AE",desc:"Co-Architect suggestions based on your destinations and travel style. Add what fits, skip what doesn't."},
             {icon:"📊",label:"BREAKDOWN",color:"#A29BFE",desc:"Visual weight and volume breakdown across every bag category."},
             {icon:"🛒",label:"NEED TO BUY",color:"#00E5FF",desc:"Focused list of items you haven't checked off yet. Your pre-trip shopping list."},
           ].map(t=>(
