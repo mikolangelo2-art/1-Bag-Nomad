@@ -771,6 +771,9 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
   const [loadError,setLoadError]=useState(false);
   const [visionData,setVisionData]=useState(null);
   const [focused,setFocused]=useState(false);
+  const [travelerGroup,setTravelerGroup]=useState("solo");
+  const [travelStyle,setTravelStyle]=useState("");
+  const [interests,setInterests]=useState([]);
   useEffect(()=>{
     const ts=[setTimeout(()=>setHeroPhase(1),400),setTimeout(()=>setHeroPhase(2),1200),setTimeout(()=>setHeroPhase(3),2100),setTimeout(()=>setHeroPhase(4),3000)];
     return()=>ts.forEach(clearTimeout);
@@ -784,9 +787,10 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
     const nightsDirective=nightCount?`CRITICAL: trip is exactly ${nightCount} nights — phases must sum to exactly ${nightCount} totalNights.`:"Infer duration from vision.";
     const bAmt=Number(budgetAmount)||0;
     const budgetConstraint=hasBudget?`⚠️ BUDGET ALLOCATION DIRECTIVE:\nThe traveler's total budget is $${budgetAmount}. This is a SPEND TARGET, not a ceiling to stay under.\nYour job is to ALLOCATE this $${budgetAmount} across the phases — not to estimate what the trip "might" cost.\n- Divide $${budgetAmount} proportionally across phases based on nights and destination cost-of-living\n- A ${bAmt>=25000?"LUXURY":""}${bAmt>=10000&&bAmt<25000?"HIGH-END":""}${bAmt>=3000&&bAmt<10000?"MID-RANGE":""}${bAmt<3000?"BUDGET":""} trip: choose accommodations and experiences that would realistically spend this amount\n- The sum of all phase "budget" fields MUST equal approximately $${budgetAmount}\n- "totalBudget" in your JSON MUST be set to ${budgetAmount}\n`:"NO BUDGET SET — set totalBudget to 0.";
+    const travelerConstraints=`TRAVELER PROFILE — HARD CONSTRAINTS:\n- Traveling party: ${travelerGroup==='couple'?'Couple or 2 friends traveling together — budget covers both people, activities and accommodation for 2':'Solo traveler'}\n- Travel style: ${travelStyle||'Independent explorer'}${hasBudget?`\n- Budget: $${budgetAmount} FIRM — reflects total spend for the traveling party`:''}\n${nightCount?`- Nights: ${nightCount} — do not deviate`:''}\n${interests.length>0?`- Interests: ${interests.join(', ')} — weight destinations and activities toward these\n`:''}- If "First Timer": 1-2 countries max, beginner-friendly destinations, simple logistics, reassuring tone\n- If "Luxury": 5-star properties, premium experiences, business class\n- If "Couple/2 friends": romantic or buddy-trip framing as appropriate, experiences that work for two`;
     try {
       const breakdownSchema=hasBudget?`,"budgetBreakdown":{"flights":NUMBER,"accommodation":NUMBER,"food":NUMBER,"transport":NUMBER,"activities":NUMBER,"buffer":NUMBER,"flightsNote":"flight routing e.g. LAX → Lisbon return","accommodationNote":"e.g. Guesthouses and boutique hotels","foodNote":"e.g. Local restaurants and cafes","routingNote":"one sentence explaining WHY this route was chosen — the key routing decision in plain English, why these destinations in this order"}`:'';
-      const basePrompt=`${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"${breakdownSchema}}${hasBudget?`\n\nREMINDER: "totalBudget" MUST be ${budgetAmount}. Each phase "budget" is that phase's share of $${budgetAmount}. The budgetBreakdown fields (flights, accommodation, food, transport, activities, buffer) must sum to approximately $${budgetAmount}. Distribute realistically based on destination costs, trip length, and accommodation tier. Do NOT estimate from scratch — ALLOCATE the stated budget.`:''}`;
+      const basePrompt=`${travelerConstraints}\n\n${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"${breakdownSchema}}${hasBudget?`\n\nREMINDER: "totalBudget" MUST be ${budgetAmount}. Each phase "budget" is that phase's share of $${budgetAmount}. The budgetBreakdown fields (flights, accommodation, food, transport, activities, buffer) must sum to approximately $${budgetAmount}. Distribute realistically based on destination costs, trip length, and accommodation tier. Do NOT estimate from scratch — ALLOCATE the stated budget.`:''}`;
       let raw=await askAI(basePrompt,2200);
       let parsed=parseJSON(raw);
       console.log('[1BN] AI budgetBreakdown returned:',parsed?.budgetBreakdown||'MISSING');
@@ -814,7 +818,7 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
         bd.buffer=Math.round((bd.buffer||0)*bRatio/10)*10;
         console.log('[1BN] Final budgetBreakdown:',bd);
       }
-      if(parsed) setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount});
+      if(parsed) setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount,travelerProfile:{group:travelerGroup,style:travelStyle,interests}});
       else{setLoadError(true);setLoading(false);}
     } catch(e){setLoadError(true);setLoading(false);}
   }
@@ -838,6 +842,33 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:14,fontStyle:"italic",fontWeight:300,color:"rgba(255,159,67,0.6)",marginBottom:10,lineHeight:1.6}}>Describe the expedition you've always imagined — the countries, the feeling, who you want to become out there.</div>
           <textarea className="vision-ta" style={{animation:focused?"none":"visionGlow 3.5s ease-in-out infinite"}} value={vision} onChange={e=>setVision(e.target.value)} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder="Start anywhere. The reefs you want to dive. The markets you want to get lost in. The version of yourself you're chasing. Your co-architect will shape it into a real route." rows={isMobile?5:6}/>
           {canLaunch&&<div style={{marginTop:8,fontFamily:"'Fraunces',serif",fontSize:isMobile?13:14,fontStyle:"italic",color:"rgba(105,240,174,0.75)",animation:"fadeUp 0.4s ease",textShadow:"0 0 20px rgba(105,240,174,0.2)"}}>✦ Your co-architect is ready to build this.</div>}
+        </div>
+        <div style={{marginBottom:24,borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:20}}>
+          <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:"rgba(255,255,255,0.45)",letterSpacing:3,textTransform:"uppercase",marginBottom:14}}>TRAVELER BRIEF</div>
+          <div style={{marginBottom:14}}>
+            <div className="f-label" style={{marginBottom:8}}>WHO'S GOING</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+              {[{id:"solo",label:"Solo"},{id:"couple",label:"Couple / 2 Friends"}].map(g=>(
+                <button key={g.id} onClick={()=>setTravelerGroup(g.id)} style={{padding:"7px 14px",borderRadius:20,border:travelerGroup===g.id?"1px solid rgba(255,159,67,0.7)":"1px solid rgba(255,255,255,0.15)",background:travelerGroup===g.id?"rgba(255,159,67,0.08)":"transparent",color:travelerGroup===g.id?"#FF9F43":"rgba(255,255,255,0.45)",fontSize:isMobile?13:14,fontFamily:"'Space Mono',monospace",fontWeight:600,cursor:"pointer",transition:"all 0.2s",minHeight:36}}>{g.label}</button>
+              ))}
+            </div>
+          </div>
+          <div style={{marginBottom:14}}>
+            <div className="f-label" style={{marginBottom:8}}>YOUR TRAVEL STYLE</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+              {["First Timer","Independent Explorer","Comfort & Quality","Adventure First","Luxury"].map(s=>(
+                <button key={s} onClick={()=>setTravelStyle(v=>v===s?"":s)} style={{padding:"7px 14px",borderRadius:20,border:travelStyle===s?"1px solid rgba(255,159,67,0.7)":"1px solid rgba(255,255,255,0.15)",background:travelStyle===s?"rgba(255,159,67,0.08)":"transparent",color:travelStyle===s?"#FF9F43":"rgba(255,255,255,0.45)",fontSize:isMobile?13:14,fontFamily:"'Space Mono',monospace",fontWeight:600,cursor:"pointer",transition:"all 0.2s",minHeight:36}}>{s}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="f-label" style={{marginBottom:8}}><span>INTERESTS</span><span style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:300,color:"rgba(255,255,255,0.3)",marginLeft:6,fontSize:11}}>optional</span></div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+              {[{id:"diving",icon:"🤿",label:"Diving"},{id:"culture",icon:"🌍",label:"Culture"},{id:"vlog",icon:"🎥",label:"Vlog"},{id:"food",icon:"🍜",label:"Food & Wine"},{id:"adventure",icon:"🥾",label:"Adventure"},{id:"golf",icon:"⛳",label:"Golf"},{id:"wellness",icon:"🧘",label:"Wellness"},{id:"remote",icon:"💻",label:"Remote Work"},{id:"safari",icon:"🦁",label:"Safari"}].map(c=>{const on=interests.includes(c.id);return(
+                <button key={c.id} onClick={()=>setInterests(p=>on?p.filter(x=>x!==c.id):[...p,c.id])} style={{padding:"5px 11px",borderRadius:16,border:on?"1px solid rgba(255,159,67,0.7)":"1px solid rgba(255,255,255,0.15)",background:on?"rgba(255,159,67,0.08)":"transparent",color:on?"#FF9F43":"rgba(255,255,255,0.45)",fontSize:isMobile?12:13,fontFamily:"'Space Mono',monospace",fontWeight:600,cursor:"pointer",transition:"all 0.2s",minHeight:32}}>{c.icon} {c.label}</button>
+              );})}
+            </div>
+          </div>
         </div>
         <div className="sec-label">EXPEDITION DETAILS</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22}}>
@@ -1069,7 +1100,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   // Architecture #1: each item auto-wraps as 1 segment
   function buildHandoff(){
     return{tripName:data.tripName||"My Expedition",startDate,vision:data.vision,visionNarrative:visionData.narrative,visionHighlight:visionData.highlight,goalLabel,
-      budgetBreakdown:visionData.budgetBreakdown||null,
+      budgetBreakdown:visionData.budgetBreakdown||null,travelerProfile:data.travelerProfile||null,
       phases:items.map((item,i)=>({id:i+1,name:item.destination,flag:item.flag,color:item.color,budget:item.cost,nights:item.nights,type:item.type,arrival:dates[i]?.arrival.toISOString().split("T")[0]||"",departure:dates[i]?.departure.toISOString().split("T")[0]||"",country:item.country,diveCount:item.type==="Dive"?Math.floor(item.nights*1.5):0,cost:item.cost,note:item.why||visionData.phases?.[i]?.why||""})),
       totalNights,totalBudget:totalCost,totalDives:items.filter(i=>i.type==="Dive").reduce((s,i)=>s+Math.floor(i.nights*1.5),0)};
   }
