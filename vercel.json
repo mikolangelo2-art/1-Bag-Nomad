@@ -1,17 +1,1 @@
-{
-  "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "npm run build && mkdir -p dist/app && mv dist/index.html dist/app/index.html && mv dist/assets dist/app/assets && cp -r dist/favicon.svg dist/icons.svg dist/sharegood-logo.svg dist/sharegood-logo-v2.svg dist/sharegood-logo-backup.svg dist/app/ 2>/dev/null; cp landing.html dist/index.html",
-  "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/app/(.*)", "destination": "/app/$1" },
-    { "source": "/app", "destination": "/app/index.html" }
-  ],
-  "routes": [
-    { "src": "/app/assets/(.*)", "dest": "/app/assets/$1" },
-    { "src": "/app/(favicon\\.svg|icons\\.svg|sharegood-logo.*\\.svg)", "dest": "/app/$1" },
-    { "src": "/app(.*)", "dest": "/app/index.html" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "^/$", "dest": "/index.html" },
-    { "src": "/(.*)", "dest": "/index.html" }
-  ]
-}
+{ "installCommand": "npm install --legacy-peer-deps" }
