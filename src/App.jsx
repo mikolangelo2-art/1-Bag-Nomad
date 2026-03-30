@@ -2393,9 +2393,10 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const [unit,setUnit]=useState("lbs");
   const [expandedItem,setExpandedItem]=useState(null);
   const [resetConfirm,setResetConfirm]=useState(false);
-  const [suggestions,setSuggestions]=useState([]);
+  const suggestCacheKey="1bn_refine_"+(tripData?.tripName||"default").replace(/\s+/g,"_").toLowerCase();
+  const [suggestions,setSuggestions]=useState(()=>{try{const c=localStorage.getItem(suggestCacheKey);if(c){const p=JSON.parse(c);if(Array.isArray(p)&&p.length>0)return p;}}catch(e){}return[];});
   const [suggestLoading,setSuggestLoading]=useState(false);
-  const [suggestDone,setSuggestDone]=useState(false);
+  const [suggestDone,setSuggestDone]=useState(()=>{try{const c=localStorage.getItem(suggestCacheKey);if(c){const p=JSON.parse(c);if(Array.isArray(p))return true;}}catch(e){}return false;});
   const [accepted,setAccepted]=useState([]);
   const [chat,setChat]=useState([]);
   const [chatInput,setChatInput]=useState("");
@@ -2435,16 +2436,42 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const visibleCats=filterCat==="all"?CATS:CATS.filter(c=>c.id===filterCat);
   const itemsForCat=catId=>items.filter(i=>i.cat===catId);
 
-  async function genSuggestions(){
+  async function genSuggestions(skipCache){
+    if(!skipCache){try{const c=localStorage.getItem(suggestCacheKey);if(c){const p=JSON.parse(c);if(Array.isArray(p)&&p.length>0){setSuggestions(p);setSuggestDone(true);return;}}}catch(e){}}
     setSuggestLoading(true);
     const existing=items.map(i=>i.name.toLowerCase());
-    const raw=await askAI(`Quiet luxury gear concierge."${goalLabel}",${totalNights}n,${countries.join(",")}.Types:${tripTypes.join(",")}.Has:${existing.slice(0,15).join(",")}.Suggest 6-8 MISSING items.Return ONLY JSON array:[{"name","cat","reason","weight":0.2,"volume":0.3,"cost":25,"bag":"Backpack","priority":"essential|nice-to-have"}]`,1000);
+    const tp=tripData.travelerProfile;
+    const prompt=`You are a travel packing expert and co-architect for a ${pp?.tripType||"exploration"} trip.
+
+TRIP DETAILS:
+- Trip: ${tripData.tripName||"expedition"}
+- Duration: ${pp?.duration||"medium"} (${totalNights} nights)
+- Destinations: ${tripData.phases.map(p=>`${p.name||p.destination||""}, ${p.country} (${p.nights}n, ${p.type})`).join("; ")}
+- Climate: ${pp?.climate?.replace(/-/g," ")||"mixed"}, ${pp?.season||"dry"} season
+- Temperature: ${pp?.tempRange||"20-30C"}
+- Activities: ${pp?.activities?.join(", ")||tripTypes.join(", ")}
+- Travel style: ${tp?.style||"independent"}
+- Group: ${tp?.group||"solo"}
+${pp?.essentialItems?.length?`- Essential gear already flagged: ${pp.essentialItems.join(", ")}`:""}
+
+ALREADY IN PACK (do NOT suggest these): ${existing.slice(0,25).join(", ")}
+
+Generate 6-8 specific packing suggestions for this exact trip. For each suggestion:
+- Be specific to THIS trip (mention the destination, climate, activities by name)
+- Explain WHY this item matters for this specific trip
+- Include realistic cost and weight estimates in lbs
+- Assign to correct category: clothes, tech, travel, health, docs, dive, creator, adventure, safari, moto, work
+- Assign bag: Backpack, Global Briefcase, Worn, Digital, Day Bag
+
+Return ONLY a JSON array:
+[{"name":"item name","cat":"category","reason":"specific reason for THIS trip","weight":0.3,"volume":0.2,"cost":25,"bag":"Backpack","priority":"essential|nice-to-have"}]`;
+    const raw=await askAI(prompt,1200);
     const parsed=parseJSON(raw);
-    if(parsed&&Array.isArray(parsed))setSuggestions(parsed.map((s,i)=>({...s,id:"s"+Date.now()+i})));
+    if(parsed&&Array.isArray(parsed)){const tagged=parsed.map((s,i)=>({...s,id:"s"+Date.now()+i}));setSuggestions(tagged);try{localStorage.setItem(suggestCacheKey,JSON.stringify(tagged));}catch(e){}}
     setSuggestLoading(false);setSuggestDone(true);
   }
-  const acceptSuggestion=s=>{setItems(p=>[...p,{id:Date.now(),name:s.name,cat:s.cat||"travel",weight:s.weight||0,volume:s.volume||0,cost:s.cost||0,bag:s.bag||"Backpack",owned:false,status:"needed"}]);setAccepted(p=>[...p,s.id]);setSuggestions(p=>p.filter(x=>x.id!==s.id));};
-  const dismissSuggestion=id=>setSuggestions(p=>p.filter(s=>s.id!==id));
+  const acceptSuggestion=s=>{setItems(p=>[...p,{id:Date.now(),name:s.name,cat:s.cat||"travel",weight:s.weight||0,volume:s.volume||0,cost:s.cost||0,bag:s.bag||"Backpack",owned:false,status:"needed"}]);setAccepted(p=>[...p,s.id]);setSuggestions(p=>{const next=p.filter(x=>x.id!==s.id);try{localStorage.setItem(suggestCacheKey,JSON.stringify(next));}catch(e){}return next;});};
+  const dismissSuggestion=id=>setSuggestions(p=>{const next=p.filter(s=>s.id!==id);try{localStorage.setItem(suggestCacheKey,JSON.stringify(next));}catch(e){}return next;});
   async function sendChat(){
     if(!chatInput.trim()||chatLoading)return;
     const msg=chatInput;setChatInput("");setChat(p=>[...p,{role:"user",text:msg}]);setChatLoading(true);
@@ -2815,48 +2842,59 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
               </div>
             </div>
           </div>
-          {suggestLoading&&<div style={{textAlign:"center",padding:"36px 20px"}}>
-            <div style={{position:"relative",width:72,height:72,margin:"0 auto 20px"}}>
-              <div style={{position:"absolute",inset:-8,borderRadius:"50%",border:"1.5px solid rgba(255,159,67,0.5)",animation:"amberPulse 1.8s ease-in-out infinite"}}/>
-              <div style={{position:"absolute",inset:-2,borderRadius:"50%",border:"1px solid rgba(255,159,67,0.35)",animation:"amberPulse 1.8s ease-in-out infinite 0.4s"}}/>
-              <div style={{width:72,height:72,borderRadius:"50%",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(255,159,67,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,animation:"logoPulse 2s ease-in-out infinite"}}>✦</div>
+          {suggestLoading&&<div>
+            <div style={{textAlign:"center",padding:"20px 20px 16px"}}>
+              <div style={{position:"relative",width:52,height:52,margin:"0 auto 14px"}}>
+                <div style={{position:"absolute",inset:-6,borderRadius:"50%",border:"1.5px solid rgba(255,159,67,0.5)",animation:"amberPulse 1.8s ease-in-out infinite"}}/>
+                <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(255,159,67,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,animation:"logoPulse 2s ease-in-out infinite"}}>✦</div>
+              </div>
+              <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:4}}>Analyzing your trip and current pack...</div>
+              <div style={{fontSize:10,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>{tripData.tripName||"your expedition"} · {totalNights}N · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
             </div>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:6}}>Reviewing your pack...</div>
-            <div style={{fontSize:15,color:"rgba(255,159,67,0.7)",letterSpacing:2}}>Checking what your trip needs</div>
+            {[0,1,2].map(i=><div key={i} style={{borderRadius:12,marginBottom:9,background:"rgba(18,8,0,0.85)",border:"1px solid rgba(255,255,255,0.06)",padding:"14px 12px",animation:`shimmer 1.5s ease-in-out infinite ${i*0.2}s`}}>
+              <div style={{display:"flex",gap:8,marginBottom:10}}>
+                <div style={{width:70,height:14,borderRadius:6,background:"rgba(255,159,67,0.12)"}}/>
+                <div style={{width:50,height:14,borderRadius:6,background:"rgba(255,255,255,0.06)"}}/>
+              </div>
+              <div style={{width:"80%",height:13,borderRadius:6,background:"rgba(255,255,255,0.06)",marginBottom:8}}/>
+              <div style={{width:"60%",height:12,borderRadius:6,background:"rgba(255,255,255,0.04)"}}/>
+            </div>)}
           </div>}
           {!suggestLoading&&suggestions.length>0&&<div>
-            <div style={{fontSize:15,color:"rgba(255,159,67,0.9)",letterSpacing:3,marginBottom:12,fontWeight:700}}>SUGGESTED FOR YOUR TRIP</div>
+            <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:"rgba(255,159,67,0.9)",letterSpacing:3,marginBottom:12,fontWeight:700}}>SUGGESTED FOR YOUR TRIP</div>
             {suggestions.map(s=>{
-              const CAT_COLORS_P={docs:"#E0E0E0",tech:"#00D4FF",clothes:"#FFD93D",health:"#69F0AE",travel:"#55EFC4",creator:"#FF9F43",dive:"#00E5FF"};
+              const CAT_COLORS_P={docs:"#E0E0E0",tech:"#00D4FF",clothes:"#FFD93D",health:"#69F0AE",travel:"#55EFC4",creator:"#FF9F43",dive:"#00E5FF",adventure:"#55EFC4",safari:"#FFD93D",moto:"#FF6B6B",work:"#A29BFE"};
               const c=CAT_COLORS_P[s.cat]||"#FF9F43";
-              return(<div key={s.id} style={{borderRadius:12,marginBottom:9,background:"rgba(18,8,0,0.85)",border:"1px solid "+(s.priority==="essential"?"rgba(255,159,67,0.4)":"rgba(255,255,255,0.08)"),animation:"fadeUp 0.4s ease"}}>
+              const isEssential=s.priority==="essential"||s.essential;
+              return(<div key={s.id} style={{borderRadius:12,marginBottom:9,background:"rgba(18,8,0,0.85)",border:"1px solid "+(isEssential?"rgba(255,159,67,0.4)":"rgba(255,255,255,0.08)"),animation:"fadeUp 0.4s ease"}}>
                 <div style={{padding:"10px 12px"}}>
                   <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
                     <div style={{flex:1}}>
                       <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}>
-                        {s.priority==="essential"&&<span style={{fontSize:15,color:"#FF9F43",background:"rgba(255,159,67,0.18)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:8,padding:"2px 8px",letterSpacing:1,fontWeight:700}}>ESSENTIAL</span>}
-                        <span style={{fontSize:15,color:c,background:c+"14",border:`1px solid ${c}44`,borderRadius:8,padding:"2px 8px",letterSpacing:1,fontWeight:700}}>{s.cat}</span>
+                        {isEssential?<span style={{fontSize:9,color:"#FF9F43",background:"rgba(255,159,67,0.18)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:6,padding:"2px 8px",letterSpacing:1.5,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>ESSENTIAL</span>:<span style={{fontSize:9,color:"rgba(105,240,174,0.85)",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.3)",borderRadius:6,padding:"2px 8px",letterSpacing:1.5,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>RECOMMENDED</span>}
+                        <span style={{fontSize:9,color:c,background:c+"14",border:`1px solid ${c}44`,borderRadius:6,padding:"2px 8px",letterSpacing:1,fontWeight:700,fontFamily:"'Space Mono',monospace"}}>{s.cat}</span>
                       </div>
-                      <div style={{fontSize:15,fontWeight:700,color:"#FFF",marginBottom:5}}>{s.name}</div>
-                      <div style={{fontSize:15,color:"rgba(255,255,255,0.75)",lineHeight:1.6}}>{s.reason}</div>
+                      <div style={{fontSize:13,fontWeight:600,color:"#FFF",marginBottom:4}}>{s.name}</div>
+                      <div style={{fontFamily:"'Fraunces',serif",fontSize:12,fontStyle:"italic",color:"rgba(255,255,255,0.70)",lineHeight:1.6}}>{s.reason}</div>
                     </div>
-                    <div style={{textAlign:"right",flexShrink:0}}>{s.cost>0&&<div style={{fontSize:15,fontWeight:700,color:"#FFD93D",marginBottom:3}}>${s.cost}</div>}{s.weight>0&&<div style={{fontSize:15,color:"rgba(255,255,255,0.5)"}}>{s.weight}lb</div>}</div>
+                    <div style={{textAlign:"right",flexShrink:0,fontFamily:"'Space Mono',monospace"}}>{s.cost>0&&<div style={{fontSize:11,fontWeight:700,color:"#FFD93D",marginBottom:3}}>~${s.cost}</div>}{s.weight>0&&<div style={{fontSize:10,color:"rgba(255,255,255,0.45)"}}>~{s.weight}lb</div>}</div>
                   </div>
                   <div style={{display:"flex",gap:8}}>
-                    <button onClick={()=>acceptSuggestion(s)} style={{flex:1,padding:"10px",borderRadius:8,border:"1px solid rgba(105,240,174,0.5)",background:"rgba(105,240,174,0.08)",color:"#69F0AE",fontSize:15,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,fontWeight:700,minHeight:40}}>+ ADD TO PACK</button>
-                    <button onClick={()=>dismissSuggestion(s.id)} style={{padding:"10px 16px",borderRadius:8,border:"1px solid rgba(255,255,255,0.12)",background:"transparent",color:"rgba(255,255,255,0.70)",fontSize:15,fontWeight:500,cursor:"pointer",fontFamily:"monospace",minHeight:44}}>SKIP</button>
+                    <button onClick={()=>acceptSuggestion(s)} style={{flex:1,padding:"10px",borderRadius:8,border:"1px solid rgba(105,240,174,0.5)",background:"rgba(105,240,174,0.08)",color:"#69F0AE",fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,minHeight:40}}>+ ADD TO PACK</button>
+                    <button onClick={()=>dismissSuggestion(s.id)} style={{padding:"10px 16px",borderRadius:8,border:"1px solid rgba(255,255,255,0.12)",background:"transparent",color:"rgba(255,255,255,0.70)",fontSize:12,fontWeight:500,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:44}}>SKIP</button>
                   </div>
                 </div>
               </div>);
             })}
           </div>}
+          {!suggestLoading&&suggestions.length>0&&<div style={{textAlign:"center",paddingTop:8,marginBottom:12}}><button onClick={()=>{try{localStorage.removeItem(suggestCacheKey);}catch(e){}setSuggestions([]);setSuggestDone(false);setAccepted([]);genSuggestions(true);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.45)",fontSize:10,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,padding:"6px 12px"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.70)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.45)"}>↻ Refresh suggestions</button></div>}
           {!suggestLoading&&suggestions.length===0&&suggestDone&&<div style={{marginBottom:16}}>
             <div style={{textAlign:"center",padding:"24px 0 18px"}}>
               <div style={{fontSize:22,marginBottom:10,color:"#FF9F43"}}>✦</div>
-              <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:5}}>{accepted.length>0?`${accepted.length} item${accepted.length>1?"s":""} added.`:"Your pack looks solid for this trip."}</div>
-              <div style={{fontSize:15,color:"rgba(255,159,67,0.75)",letterSpacing:2}}>Anything else? I'm here.</div>
+              <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:5}}>{accepted.length>0?`${accepted.length} item${accepted.length>1?"s":""} added to your pack.`:"Your pack looks solid for this trip."}</div>
+              <div style={{fontSize:10,color:"rgba(255,159,67,0.65)",letterSpacing:2,fontFamily:"'Space Mono',monospace"}}>Anything else? I'm here.</div>
             </div>
-            <button onClick={()=>{setSuggestions([]);setSuggestDone(false);setAccepted([]);genSuggestions();}} style={{width:"100%",padding:10,borderRadius:8,border:"1px solid rgba(169,70,29,0.35)",background:"rgba(169,70,29,0.1)",color:"rgba(255,159,67,0.75)",fontSize:15,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,marginBottom:18,fontWeight:700}}>↺ REFRESH SUGGESTIONS</button>
+            <button onClick={()=>{try{localStorage.removeItem(suggestCacheKey);}catch(e){}setSuggestions([]);setSuggestDone(false);setAccepted([]);genSuggestions(true);}} style={{width:"100%",padding:10,borderRadius:8,border:"1px solid rgba(169,70,29,0.35)",background:"rgba(169,70,29,0.1)",color:"rgba(255,159,67,0.75)",fontSize:11,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,marginBottom:18,fontWeight:700}}>↺ REFRESH SUGGESTIONS</button>
           </div>}
           {suggestDone&&!suggestLoading&&<div style={{borderTop:"1px solid rgba(196,87,30,0.25)",paddingTop:16}}>
             <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",fontWeight:300,color:"#FFD93D",marginBottom:12,lineHeight:1.4}}>Refine packing list with your co-architect</div>
