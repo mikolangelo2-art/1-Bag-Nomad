@@ -894,7 +894,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
         </div>
         <div style={{marginBottom:28,borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:24}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:3,textTransform:"uppercase",marginBottom:16}}>TRAVELER BRIEF</div>
-          <div style={{marginBottom:20}}>
+          <div style={{marginBottom:12,border:travelerGroup?"1px solid rgba(255,159,67,0.20)":"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:"14px 16px",background:"rgba(255,255,255,0.02)",transition:"border 0.3s ease"}}>
             <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>WHO'S GOING</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
               {[{id:"solo",label:"Solo"},{id:"couple",label:"Couple / 2 Friends"}].map(g=>(
@@ -902,7 +902,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
               ))}
             </div>
           </div>
-          <div style={{marginBottom:20}}>
+          <div style={{marginBottom:12,border:travelStyle?"1px solid rgba(255,159,67,0.20)":"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:"14px 16px",background:"rgba(255,255,255,0.02)",transition:"border 0.3s ease"}}>
             <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>YOUR TRAVEL STYLE</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
               {["First Timer","Independent Explorer","Comfort & Quality","Adventure First","Luxury"].map(s=>(
@@ -910,7 +910,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
               ))}
             </div>
           </div>
-          <div style={{marginBottom:0}}>
+          <div style={{marginBottom:12,border:"1px solid rgba(255,255,255,0.05)",borderRadius:12,padding:"12px 16px",background:"transparent",transition:"border 0.3s ease"}}>
             <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>INTERESTS <span style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:300,color:"rgba(255,159,67,0.50)",fontSize:13,textTransform:"none"}}>· optional</span></div>
             <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
               {[{id:"diving",icon:"🤿",label:"Diving"},{id:"culture",icon:"🌍",label:"Culture"},{id:"vlog",icon:"🎥",label:"Vlog"},{id:"food",icon:"🍜",label:"Food & Wine"},{id:"adventure",icon:"🥾",label:"Adventure"},{id:"golf",icon:"⛳",label:"Golf"},{id:"wellness",icon:"🧘",label:"Wellness"},{id:"remote",icon:"💻",label:"Remote Work"},{id:"safari",icon:"🦁",label:"Safari"}].map(c=>{const on=interests.includes(c.id);return(
@@ -919,7 +919,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
               <button onClick={()=>setSpecialtyOpen(o=>!o)} style={{padding:"6px 14px",borderRadius:20,border:specialtyInterests.length>0?"1.5px solid rgba(255,217,61,0.90)":specialtyOpen?"1.5px solid rgba(255,217,61,0.55)":"1px solid rgba(255,217,61,0.40)",background:specialtyInterests.length>0?"rgba(255,217,61,0.08)":"transparent",color:specialtyInterests.length>0?"#FFD93D":specialtyOpen?"rgba(255,217,61,0.75)":"rgba(255,217,61,0.60)",fontSize:13,fontFamily:"'Space Mono',monospace",fontWeight:specialtyInterests.length>0?600:400,cursor:"pointer",transition:"all 0.2s",minHeight:40,userSelect:"none",boxShadow:specialtyInterests.length>0?"0 0 10px rgba(255,217,61,0.25)":"0 0 6px rgba(255,217,61,0.10)"}}>✦ Specialty{specialtyInterests.length>0?` (${specialtyInterests.length})`:"..."}</button>
             </div>
             <div style={{maxHeight:specialtyOpen?300:0,overflow:"hidden",transition:"max-height 0.28s ease-out"}}>
-              <div style={{paddingTop:12,marginTop:4,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+              <div style={{marginTop:8,border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:"12px 14px",background:"rgba(255,255,255,0.015)"}}>
                 <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,marginBottom:8}}>SPECIALTY INTERESTS <span style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:300,color:"rgba(255,159,67,0.50)",fontSize:13}}>· optional</span></div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
                   {[{id:"fishing",icon:"🎣",label:"Fishing"},{id:"climbing",icon:"🧗",label:"Climbing"},{id:"skiing",icon:"🎿",label:"Skiing/Snow"},{id:"nightlife",icon:"🎉",label:"Nightlife"},{id:"music",icon:"🎵",label:"Music/Festivals"},{id:"shopping",icon:"🛍️",label:"Shopping"},{id:"wine",icon:"🍷",label:"Wine Tourism"},{id:"eco",icon:"🌿",label:"Eco Travel"},{id:"photography",icon:"🎨",label:"Photography"},{id:"camping",icon:"🏕️",label:"Camping"},{id:"yoga",icon:"🤸",label:"Yoga Retreat"},{id:"watersports",icon:"🏄",label:"Water Sports"}].map(c=>{const on=specialtyInterests.includes(c.id);return(
