@@ -1446,7 +1446,7 @@ function CoachOverlay({steps,storageKey,accentColor="#00E5FF",onDismiss}) {
         </div>
         <div style={{fontSize:isMobile?11:12,color:"rgba(255,255,255,0.65)",fontFamily:"'Space Mono',monospace",lineHeight:1.7,marginBottom:14}}>{s.body}</div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <button onClick={e=>{e.stopPropagation();finish();}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.35)",fontSize:11,cursor:"pointer",fontFamily:"'Space Mono',monospace",padding:"8px 4px",minHeight:44}}>Skip tour</button>
+          <button onClick={e=>{e.stopPropagation();finish();}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.70)",fontSize:13,fontWeight:500,cursor:"pointer",fontFamily:"'Space Mono',monospace",padding:"8px 16px",minHeight:44}} onMouseOver={e=>e.currentTarget.style.textDecoration="underline"} onMouseOut={e=>e.currentTarget.style.textDecoration="none"}>Skip tour</button>
           <button onClick={e=>{e.stopPropagation();goNext();}} style={{background:`${accentColor}14`,border:`1px solid ${accentColor}55`,borderRadius:8,color:accentColor,fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,padding:"8px 18px",letterSpacing:1,minHeight:44}}>{step>=steps.length-1?"Got it":"Next"}</button>
         </div>
       </div>
@@ -1467,7 +1467,7 @@ function OnboardCard({storageKey,ctaLabel,onDismiss,children}) {
         {children}
         <div style={{marginTop:isMobile?16:24,display:"flex",flexDirection:"column",gap:8}}>
           <button onClick={dismiss} style={{width:"100%",padding:"14px",borderRadius:12,border:"1px solid rgba(255,159,67,0.5)",background:"linear-gradient(135deg,rgba(196,87,30,0.2),rgba(255,159,67,0.1))",color:"#FF9F43",fontSize:isMobile?12:13,fontWeight:700,letterSpacing:2.5,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:48,transition:"all 0.2s"}} onMouseOver={e=>{e.currentTarget.style.background="linear-gradient(135deg,rgba(196,87,30,0.35),rgba(255,159,67,0.2))";e.currentTarget.style.boxShadow="0 0 20px rgba(255,159,67,0.2)";}} onMouseOut={e=>{e.currentTarget.style.background="linear-gradient(135deg,rgba(196,87,30,0.2),rgba(255,159,67,0.1))";e.currentTarget.style.boxShadow="none";}}>{ctaLabel}</button>
-          <button onClick={dismiss} style={{background:"none",border:"none",color:"rgba(255,255,255,0.5)",fontSize:12,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,padding:"8px",minHeight:36,textAlign:"center",transition:"color 0.2s"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.8)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.5)"}>I know my way around →</button>
+          <button onClick={dismiss} style={{background:"none",border:"none",color:"rgba(255,255,255,0.70)",fontSize:13,fontWeight:500,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,padding:"8px 16px",minHeight:44,textAlign:"center",transition:"color 0.2s"}} onMouseOver={e=>{e.currentTarget.style.color="rgba(255,255,255,0.9)";e.currentTarget.style.textDecoration="underline";}} onMouseOut={e=>{e.currentTarget.style.color="rgba(255,255,255,0.70)";e.currentTarget.style.textDecoration="none";}}>I know my way around →</button>
         </div>
       </div>
     </div>
@@ -1769,7 +1769,7 @@ function getPhaseActivityIcon(phase){const t=phase.segments?.[0]?.type;return AC
 // ─── PhaseDetailPage ──────────────────────────────────────────────
 function PhaseDetailPage({phase,intelData,onBack}) {
   const isMobile=useMobile();
-  const [hintVisible,setHintVisible]=useState(()=>{try{return!localStorage.getItem('1bn_phase_hint_shown');}catch(e){return false;}});
+  const [hintVisible,setHintVisible]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;return!localStorage.getItem('1bn_phase_hint_shown');}catch(e){return false;}});
   useEffect(()=>{
     if(hintVisible){
       const t=setTimeout(()=>{try{localStorage.setItem('1bn_phase_hint_shown','1');}catch(e){}setHintVisible(false);},4000);
@@ -1930,8 +1930,8 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   const [explorerDest,setExplorerDest]=useState(null);
   const [explorerData,setExplorerData]=useState(()=>{try{const s=localStorage.getItem("1bn_intel");return s?JSON.parse(s):{}}catch(e){return{};}});
   const [loadingIntel,setLoadingIntel]=useState(false);
-  const [showCoach,setShowCoach]=useState(()=>!loadCoach().trip);
-  const [showOnboard,setShowOnboard]=useState(()=>!loadOnboard().trip);
+  const [showCoach,setShowCoach]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadCoach().trip;});
+  const [showOnboard,setShowOnboard]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadOnboard().trip;});
   const [phaseDetailView,setPhaseDetailView]=useState(null);
   useEffect(()=>{try{localStorage.setItem("1bn_intel",JSON.stringify(explorerData));}catch(e){};},[explorerData]);
 
@@ -2307,6 +2307,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           </div>
         )}
       </div>
+      {(()=>{try{return localStorage.getItem("1bn_hide_all_tips")!=="1";}catch(e){return true;}})()&&<div style={{padding:"12px 16px",textAlign:"center"}}><button onClick={()=>{try{localStorage.setItem("1bn_hide_all_tips","1");}catch(e){}setShowCoach(false);setShowOnboard(false);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.40)",fontSize:10,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,padding:"6px 12px"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.65)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.40)"}>Hide all tips</button></div>}
       {isMobile&&!isFullscreen&&<div style={{height:"calc(64px + env(safe-area-inset-bottom))"}}/>}
       {isMobile&&!isFullscreen&&<BottomNav activeTab={tab} onTab={t=>{if(t==="pack")onPackConsole();else{setTab(t);if(t!=="intel")setExplorerDest(null);}}}/>}
     </div>
@@ -2382,9 +2383,9 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const [chat,setChat]=useState([]);
   const [chatInput,setChatInput]=useState("");
   const [chatLoading,setChatLoading]=useState(false);
-  const [showCoach,setShowCoach]=useState(()=>!loadCoach().pack);
-  const [showOnboard,setShowOnboard]=useState(()=>!loadOnboard().pack);
-  const [packExplainerDismissed,setPackExplainerDismissed]=useState(()=>{try{return localStorage.getItem("1bn_pack_explainer_v1")==="1";}catch(e){return false;}});
+  const [showCoach,setShowCoach]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadCoach().pack;});
+  const [showOnboard,setShowOnboard]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadOnboard().pack;});
+  const [packExplainerDismissed,setPackExplainerDismissed]=useState(()=>{try{return localStorage.getItem("1bn_hide_all_tips")==="1"||localStorage.getItem("1bn_pack_explainer_v1")==="1";}catch(e){return false;}});
   const [showAddCats,setShowAddCats]=useState(false);
   const coupleMode=tripData.travelerProfile?.group==="couple";
   const chatEnd=useRef(null);
@@ -2815,7 +2816,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
                   </div>
                   <div style={{display:"flex",gap:8}}>
                     <button onClick={()=>acceptSuggestion(s)} style={{flex:1,padding:"10px",borderRadius:8,border:"1px solid rgba(105,240,174,0.5)",background:"rgba(105,240,174,0.08)",color:"#69F0AE",fontSize:15,cursor:"pointer",fontFamily:"monospace",letterSpacing:1,fontWeight:700,minHeight:40}}>+ ADD TO PACK</button>
-                    <button onClick={()=>dismissSuggestion(s.id)} style={{padding:"10px 16px",borderRadius:8,border:"1px solid rgba(255,255,255,0.12)",background:"transparent",color:"rgba(255,255,255,0.5)",fontSize:15,cursor:"pointer",fontFamily:"monospace",minHeight:40}}>SKIP</button>
+                    <button onClick={()=>dismissSuggestion(s.id)} style={{padding:"10px 16px",borderRadius:8,border:"1px solid rgba(255,255,255,0.12)",background:"transparent",color:"rgba(255,255,255,0.70)",fontSize:15,fontWeight:500,cursor:"pointer",fontFamily:"monospace",minHeight:44}}>SKIP</button>
                   </div>
                 </div>
               </div>);
@@ -2885,6 +2886,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
           })}
         </div>
       )}
+      {(()=>{try{return localStorage.getItem("1bn_hide_all_tips")!=="1";}catch(e){return true;}})()&&<div style={{padding:"12px 16px",textAlign:"center"}}><button onClick={()=>{try{localStorage.setItem("1bn_hide_all_tips","1");}catch(e){}setShowCoach(false);setShowOnboard(false);setPackExplainerDismissed(true);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.40)",fontSize:10,cursor:"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,padding:"6px 12px"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.65)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.40)"}>Hide all tips</button></div>}
       {isMobile&&!isFullscreen&&<div style={{height:"calc(64px + env(safe-area-inset-bottom))"}}/>}
       {isMobile&&!isFullscreen&&<BottomNav activeTab="pack" onTab={t=>{if(t==="pack")return;if(onGoToTab)onGoToTab(t);else onExpedition();}}/>}
       </div>
@@ -2920,10 +2922,10 @@ export default function App() {
   });
   useEffect(()=>{try{if(tripData)localStorage.setItem("1bn_tripData_v5",JSON.stringify(tripData));}catch(e){};},[tripData]);
 
-  function handleLoadDemo(){try{localStorage.clear();}catch(e){}setTripData(MICHAEL_EXPEDITION);setScreen("console");}
+  function handleLoadDemo(){try{const preserve=["1bn_coach_v1","1bn_onboard_v1","1bn_pack_explainer_v1","1bn_phase_hint_shown","1bn_hide_all_tips"];const saved={};preserve.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)saved[k]=v;});localStorage.clear();Object.entries(saved).forEach(([k,v])=>localStorage.setItem(k,v));}catch(e){}setTripData(MICHAEL_EXPEDITION);setScreen("console");}
   function handleGoGen(data,vd){setAppData({...data,visionData:vd});setScreen("gen");}
   function handleGenComplete(){setScreen("coarchitect");}
-  function handleLaunch(hd){try{localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem("1bn_pack_explainer_v1");}catch(e){}setTripData(hd);setScreen("handoff");}
+  function handleLaunch(hd){try{localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");}catch(e){}setTripData(hd);setScreen("handoff");}
   function handleReviseLaunch(hd){setTripData(hd);setScreen("handoff");}
   function handleHandoffComplete(){setScreen("console");}
   function handleRevise(){
@@ -2933,13 +2935,13 @@ export default function App() {
   }
   function handleNewTrip(){
     setScreen("dream");setAppData(null);
-    try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem("1bn_pack_explainer_v1");}catch(e){}
+    try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");}catch(e){}
   }
   function handleHomecoming(){setScreen("homecoming");}
   function handlePlanNext(){
     const name=tripData?.tripName||"my expedition";
     setPrefilledVision(`I just completed ${name}. Now I want to `);
-    try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem("1bn_pack_explainer_v1");}catch(e){}
+    try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");}catch(e){}
     setAppData(null);setScreen("dream");
   }
 
