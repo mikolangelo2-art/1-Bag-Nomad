@@ -1,5 +1,19 @@
 import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { ComposableMap, Geographies, Geography, Line, Marker } from "react-simple-maps";
+import posthog from "posthog-js";
+
+// Initialize PostHog — only in production
+if (typeof window !== "undefined") {
+  posthog.init("phc_O9hQZjy2VLHhAPuZPFhQeZTfAtXnXKfZh39qWZS966u", {
+    api_host: "https://us.i.posthog.com",
+    person_profiles: "identified_only",
+    capture_pageview: true,
+    capture_pageleave: true,
+    loaded: (ph) => {
+      if (window.location.hostname === "localhost") ph.opt_out_capturing();
+    }
+  });
+}
 // ╔══════════════════════════════════════════════════════════════╗
 // ║  1 BAG NOMAD — v5_r4                                        ║
 // ║  Merged: v5 + TripConsoleSandbox · March 23 2026            ║
@@ -798,6 +812,7 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
   const canLaunch=vision.trim().length>20;
   async function handleReveal() {
     if(!canLaunch||loading)return;
+    posthog.capture("expedition_built",{budget_mode:budgetMode,has_budget:Number(budgetAmount)>0,traveler_group:travelerGroup,travel_style:travelStyle,interests,specialty_interests:specialtyInterests});
     setLoading(true);setLoadError(false);setLogoState("thinking");
     const hasBudget=budgetMode!=="dream"&&budgetAmount&&Number(budgetAmount)>0;
     const nightCount=(date&&returnDate)?Math.round((new Date(returnDate)-new Date(date))/(1000*60*60*24)):null;
@@ -893,7 +908,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
         <div style={{marginBottom:28}}>
           <div className="sec-label">WHAT'S <span style={{color:"#FFD93D",fontWeight:900}}>YOUR</span> VISION?</div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:14,fontStyle:"italic",fontWeight:300,color:"rgba(255,159,67,0.6)",marginBottom:10,lineHeight:1.6}}>Describe the expedition you've always imagined — the countries, the feeling, who you want to become out there.</div>
-          <textarea className="vision-ta" style={{animation:focused?"none":"visionGlow 3.5s ease-in-out infinite"}} value={vision} onChange={e=>setVision(e.target.value)} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder="Start anywhere. The reefs you want to dive. The markets you want to get lost in. The version of yourself you're chasing. Your co-architect will shape it into a real route." rows={isMobile?5:6}/>
+          <textarea className="vision-ta" style={{animation:focused?"none":"visionGlow 3.5s ease-in-out infinite"}} value={vision} onChange={e=>{if(vision.length===0&&e.target.value.length>0)posthog.capture("vision_started");setVision(e.target.value);}} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder="Start anywhere. The reefs you want to dive. The markets you want to get lost in. The version of yourself you're chasing. Your co-architect will shape it into a real route." rows={isMobile?5:6}/>
           {canLaunch&&<div style={{marginTop:8,fontFamily:"'Fraunces',serif",fontSize:isMobile?13:14,fontStyle:"italic",color:"rgba(105,240,174,0.75)",animation:"fadeUp 0.4s ease",textShadow:"0 0 20px rgba(105,240,174,0.2)"}}>✦ Your co-architect is ready to build this.</div>}
         </div>
         <div style={{marginBottom:28,borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:24}}>
@@ -986,7 +1001,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
   const [launching,setLaunching]=useState(false);
   const [mounted,setMounted]=useState(!freshMount);
   const [bdOpen,setBdOpen]=useState(true);
-  useEffect(()=>{window.scrollTo(0,0);if(freshMount){const t=setTimeout(()=>setMounted(true),50);return()=>clearTimeout(t);}},[]);
+  useEffect(()=>{window.scrollTo(0,0);posthog.capture("vision_reveal_viewed",{phases_count:vd.phases?.length,total_budget:vd.totalBudget,countries_count:vd.countries});posthog.capture("$pageview",{$current_url:"/vision-reveal"});if(freshMount){const t=setTimeout(()=>setMounted(true),50);return()=>clearTimeout(t);}},[]);
   useEffect(()=>{
     let i=0;const txt=vd.narrative||"";
     const t=setTimeout(()=>{
@@ -1114,7 +1129,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   const [mobileTab,setMobileTab]=useState(data.isRevision?"chat":"itinerary");
   const [mounted,setMounted]=useState(false);
   useEffect(()=>{const t=setTimeout(()=>setMounted(true),60);return()=>clearTimeout(t);},[]);
-  useEffect(()=>{requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:"instant"});});},[]);
+  useEffect(()=>{requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:"instant"});});posthog.capture("co_architect_opened");posthog.capture("$pageview",{$current_url:"/co-architect"});},[]);
   useEffect(()=>{window.scrollTo(0,0);},[]);
   function estCost(dest,country,type,nights){
     const d=(dest||"").toLowerCase(),c=(country||"").toLowerCase();
@@ -1929,7 +1944,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null}) {
 function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next"}) {
   const isMobile=useMobile();
   const [tab,setTab]=useState(initialTab);
-  useEffect(()=>{requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:"instant"});});},[]);
+  useEffect(()=>{requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:"instant"});});posthog.capture("$pageview",{$current_url:"/trip-console"});},[]);
   const [confirmNewTrip,setConfirmNewTrip]=useState(false);
   const [showMobileMenu,setShowMobileMenu]=useState(false);
   const [explorerDest,setExplorerDest]=useState(null);
@@ -2364,7 +2379,7 @@ function getPackBrief(pp,tripData){
 // ─── PackConsole ──────────────────────────────────────────────────
 function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen}) {
   const isMobile=useMobile();
-  useEffect(()=>{window.scrollTo(0,0);},[]);
+  useEffect(()=>{window.scrollTo(0,0);posthog.capture("pack_console_opened");posthog.capture("$pageview",{$current_url:"/pack-console"});},[]);
   const ALL_CATS=[
     {id:"clothes",label:"Clothes",icon:"👕",color:"#FFD93D"},
     {id:"tech",label:"Tech",icon:"💻",color:"#00D4FF"},
@@ -2414,7 +2429,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
 
   useEffect(()=>{chatEnd.current?.scrollIntoView({behavior:"smooth"});},[chat]);
   useEffect(()=>{try{localStorage.setItem("1bn_pack_v5",JSON.stringify(items));}catch(e){};},[items]);
-  useEffect(()=>{if(packTab==="refine"&&!suggestDone&&!suggestLoading){const t=setTimeout(()=>genSuggestions(),800);return()=>clearTimeout(t);}},[ packTab]);
+  useEffect(()=>{if(packTab==="refine"){posthog.capture("refine_tab_opened");if(!suggestDone&&!suggestLoading){const t=setTimeout(()=>genSuggestions(),800);return()=>clearTimeout(t);}}},[ packTab]);
 
   const countries=[...new Set(tripData.phases.map(p=>p.country))];
   const tripTypes=[...new Set(tripData.phases.map(p=>p.type))];
@@ -2472,10 +2487,11 @@ Return ONLY a JSON array:
     if(parsed&&Array.isArray(parsed)){const tagged=parsed.map((s,i)=>({...s,id:"s"+Date.now()+i}));setSuggestions(tagged);try{localStorage.setItem(suggestCacheKey,JSON.stringify(tagged));}catch(e){}}
     setSuggestLoading(false);setSuggestDone(true);
   }
-  const acceptSuggestion=s=>{setItems(p=>[...p,{id:Date.now(),name:s.name,cat:s.cat||"travel",weight:s.weight||0,volume:s.volume||0,cost:s.cost||0,bag:s.bag||"Backpack",owned:false,status:"needed"}]);setAccepted(p=>[...p,s.id]);setSuggestions(p=>{const next=p.filter(x=>x.id!==s.id);try{localStorage.setItem(suggestCacheKey,JSON.stringify(next));}catch(e){}return next;});};
+  const acceptSuggestion=s=>{posthog.capture("refine_item_added",{item_name:s.name,item_category:s.cat,essential:s.priority==="essential"||s.essential||false});setItems(p=>[...p,{id:Date.now(),name:s.name,cat:s.cat||"travel",weight:s.weight||0,volume:s.volume||0,cost:s.cost||0,bag:s.bag||"Backpack",owned:false,status:"needed"}]);setAccepted(p=>[...p,s.id]);setSuggestions(p=>{const next=p.filter(x=>x.id!==s.id);try{localStorage.setItem(suggestCacheKey,JSON.stringify(next));}catch(e){}return next;});};
   const dismissSuggestion=id=>setSuggestions(p=>{const next=p.filter(s=>s.id!==id);try{localStorage.setItem(suggestCacheKey,JSON.stringify(next));}catch(e){}return next;});
   async function sendChat(){
     if(!chatInput.trim()||chatLoading)return;
+    posthog.capture("pack_coarchitect_asked");
     const msg=chatInput;setChatInput("");setChat(p=>[...p,{role:"user",text:msg}]);setChatLoading(true);
     const res=await askAI(`Quiet luxury gear concierge.Trip:"${goalLabel}",${totalNights}n,${countries.join(",")}.Pack:${items.map(i=>i.name).join(",")}.User:"${msg}".2 sentences max.`,300);
     setChat(p=>[...p,{role:"ai",text:res}]);setChatLoading(false);
@@ -3007,7 +3023,7 @@ export default function App() {
   function handleLoadDemo(){try{const preserve=["1bn_coach_v1","1bn_onboard_v1","1bn_pack_explainer_v1","1bn_phase_hint_shown","1bn_hide_all_tips"];const saved={};preserve.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)saved[k]=v;});localStorage.clear();Object.entries(saved).forEach(([k,v])=>localStorage.setItem(k,v));}catch(e){}setTripData(MICHAEL_EXPEDITION);setScreen("console");}
   function handleGoGen(data,vd){setAppData({...data,visionData:vd});setScreen("gen");}
   function handleGenComplete(){setScreen("coarchitect");}
-  function handleLaunch(hd){try{localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");}catch(e){}setTripData(hd);setScreen("handoff");}
+  function handleLaunch(hd){posthog.capture("trip_console_launched",{total_budget:hd?.totalBudget,nights:hd?.totalNights,phases:hd?.phases?.length});try{localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");}catch(e){}setTripData(hd);setScreen("handoff");}
   function handleReviseLaunch(hd){setTripData(hd);setScreen("handoff");}
   function handleHandoffComplete(){setScreen("console");}
   function handleRevise(){
