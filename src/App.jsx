@@ -183,6 +183,10 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes coachFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes consoleSlideOutLeft{from{transform:translateX(0);opacity:1}to{transform:translateX(-100%);opacity:0}}
+@keyframes consoleSlideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+@keyframes consoleSlideInLeft{from{transform:translateX(-100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes consoleSlideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes coachPulse{0%,100%{box-shadow:0 0 0 2px rgba(0,229,255,0.2),0 0 16px rgba(0,229,255,0.08)}50%{box-shadow:0 0 0 3px rgba(0,229,255,0.35),0 0 24px rgba(0,229,255,0.14)}}
 @keyframes spinGlobe{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes glowPulse{0%,100%{opacity:0.5;transform:scale(1)}50%{opacity:0.85;transform:scale(1.04)}}
@@ -2902,6 +2906,20 @@ export default function App() {
   const [fullscreen,setFullscreen]=useState(false);
   const [prefilledVision,setPrefilledVision]=useState("");
   const [pendingTab,setPendingTab]=useState("next");
+  const [slideDir,setSlideDir]=useState(null);
+  const [prevScreen,setPrevScreen]=useState(null);
+  const slideTimerRef=useRef(null);
+  const slideScreen=useCallback((to)=>{
+    setScreen(prev=>{
+      if((prev==="console"&&to==="pack")||(prev==="pack"&&to==="console")){
+        const dir=to==="pack"?"left":"right";
+        setPrevScreen(prev);setSlideDir(dir);
+        if(slideTimerRef.current)clearTimeout(slideTimerRef.current);
+        slideTimerRef.current=setTimeout(()=>{setPrevScreen(null);setSlideDir(null);},240);
+      }
+      return to;
+    });
+  },[]);
 
   useEffect(()=>{
     // Version bump — clears stale pack data; purges legacy booking keys (arch #3)
@@ -2953,8 +2971,8 @@ export default function App() {
       {screen==="coarchitect" && appData && <CoArchitect data={appData} visionData={appData.visionData} onLaunch={appData.isRevision?handleReviseLaunch:handleLaunch} onBack={()=>setScreen(appData.isRevision?"console":"dream")}/>}
       {screen==="handoff"     && tripData && <HandoffScreen tripData={tripData} onComplete={handleHandoffComplete}/>}
       {screen==="homecoming"  && tripData && <HomecomingScreen tripData={tripData} onPlanNext={handlePlanNext}/>}
-      {screen==="console"     && tripData && <MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");setScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab}/>}
-      {screen==="pack"        && <PackConsole tripData={tripData} onExpedition={()=>setScreen("console")} onGoToTab={t=>{setPendingTab(t||"next");setScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen}/>}
+      {(screen==="console"||prevScreen==="console") && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 220ms cubic-bezier(0.32,0.72,0,1) forwards":"consoleSlideOutRight 220ms cubic-bezier(0.32,0.72,0,1) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 220ms cubic-bezier(0.32,0.72,0,1) forwards":"consoleSlideInRight 220ms cubic-bezier(0.32,0.72,0,1) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab}/></div>}
+      {(screen==="pack"||prevScreen==="pack") && <div style={{position:prevScreen==="pack"||slideDir?"fixed":"relative",inset:prevScreen==="pack"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="pack"?0:1,animation:prevScreen==="pack"?(slideDir==="right"?"consoleSlideOutRight 220ms cubic-bezier(0.32,0.72,0,1) forwards":"consoleSlideOutLeft 220ms cubic-bezier(0.32,0.72,0,1) forwards"):screen==="pack"&&slideDir?(slideDir==="left"?"consoleSlideInRight 220ms cubic-bezier(0.32,0.72,0,1) forwards":"consoleSlideInLeft 220ms cubic-bezier(0.32,0.72,0,1) forwards"):"none",overflow:"hidden"}}><PackConsole tripData={tripData} onExpedition={()=>slideScreen("console")} onGoToTab={t=>{setPendingTab(t||"next");slideScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen}/></div>}
     </>
   );
 }
