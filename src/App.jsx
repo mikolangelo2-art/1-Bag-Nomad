@@ -200,6 +200,11 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 @keyframes slideOpen{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes activePulse{0%,100%{r:2.8;opacity:0.9}50%{r:4.5;opacity:1.0}}
+@keyframes logoIdle{0%,100%{transform:translateY(0);filter:drop-shadow(0 0 8px var(--logo-glow,rgba(255,159,67,0.4)))}50%{transform:translateY(-4px);filter:drop-shadow(0 0 14px var(--logo-glow,rgba(255,159,67,0.6)))}}
+@keyframes logoThinking{0%,100%{transform:scale(1);filter:drop-shadow(0 0 12px var(--logo-glow,rgba(255,159,67,0.7)))}50%{transform:scale(1.04);filter:drop-shadow(0 0 22px var(--logo-glow,rgba(255,159,67,0.9)))}}
+@keyframes logoDone{0%{transform:scale(1)}40%{transform:scale(1.12);filter:drop-shadow(0 0 30px var(--logo-glow,rgba(255,159,67,1)))}100%{transform:scale(1)}}
+@keyframes logoError{0%,100%{transform:translateX(0);opacity:0.4}20%{transform:translateX(-2px)}40%{transform:translateX(2px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+@keyframes hintFade{0%{opacity:0}10%{opacity:0.65}70%{opacity:0.65}100%{opacity:0}}
 
 
   .dream-root,.mc-root,.build-root{font-size:18px}
@@ -384,9 +389,11 @@ function getDefaultPack() {
 }
 
 // ─── SharegoodLogo ────────────────────────────────────────────────
-function SharegoodLogo({size=40,opacity=1,glowColor="rgba(169,70,29,0.5)",animate=true}) {
+function SharegoodLogo({size=40,opacity=1,glowColor="rgba(169,70,29,0.5)",animate=true,logoState="idle"}) {
+  const anim={idle:"logoIdle 5s ease-in-out infinite",thinking:"logoThinking 1.2s ease-in-out infinite",done:"logoDone 0.6s ease forwards",error:"logoError 0.4s ease"}[logoState]||"logoIdle 5s ease-in-out infinite";
+  const finalAnim=animate?anim:"none";
   return (
-    <div style={{position:"relative",width:size,height:size,flexShrink:0,animation:animate?"float 5s ease-in-out infinite":"none",filter:`drop-shadow(0 0 ${size*.25}px ${glowColor})`,opacity}}>
+    <div style={{position:"relative",width:size,height:size,flexShrink:0,animation:finalAnim,filter:`drop-shadow(0 0 ${size*.25}px ${glowColor})`,opacity,"--logo-glow":glowColor}}>
       <img src="/sharegood-logo.svg" width={size} height={size} alt="Sharegood" style={{display:"block",borderRadius:"50%"}}/>
     </div>
   );
@@ -771,6 +778,8 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
   const [loadError,setLoadError]=useState(false);
   const [visionData,setVisionData]=useState(null);
   const [focused,setFocused]=useState(false);
+  const [logoState,setLogoState]=useState("idle");
+  const [hintIdx,setHintIdx]=useState(0);
   const [travelerGroup,setTravelerGroup]=useState("solo");
   const [travelStyle,setTravelStyle]=useState("");
   const [interests,setInterests]=useState([]);
@@ -780,10 +789,12 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
     const ts=[setTimeout(()=>setHeroPhase(1),400),setTimeout(()=>setHeroPhase(2),1200),setTimeout(()=>setHeroPhase(3),2100),setTimeout(()=>setHeroPhase(4),3000)];
     return()=>ts.forEach(clearTimeout);
   },[]);
+  const GENERATION_HINTS=["Reading your vision...","Mapping your expedition...","Building your blueprint...","Calculating your budget...","Crafting your narrative...","Selecting your destinations..."];
+  useEffect(()=>{if(!loading)return;setHintIdx(0);const iv=setInterval(()=>setHintIdx(p=>(p+1)%6),2500);return()=>clearInterval(iv);},[loading]);
   const canLaunch=vision.trim().length>20;
   async function handleReveal() {
     if(!canLaunch||loading)return;
-    setLoading(true);setLoadError(false);
+    setLoading(true);setLoadError(false);setLogoState("thinking");
     const hasBudget=budgetMode!=="dream"&&budgetAmount&&Number(budgetAmount)>0;
     const nightCount=(date&&returnDate)?Math.round((new Date(returnDate)-new Date(date))/(1000*60*60*24)):null;
     const nightsDirective=nightCount?`CRITICAL: trip is exactly ${nightCount} nights — phases must sum to exactly ${nightCount} totalNights.`:"Infer duration from vision.";
@@ -853,9 +864,9 @@ packProfile must reflect the actual generated itinerary. categories should inclu
         parsed.packProfile={categories:cats,hiddenCategories:hidden,tripType:phTypes[0]||"culture",climate,season:"dry",tempRange:climate==="tropical-hot"?"28-35C":climate==="temperate-cool"?"10-18C":"18-28C",activities:[...new Set(acts)],duration:dur,essentialItems:essential,optionalItems:hasDive?[]:["wetsuit","dive computer","BCD"]};
       }
       console.log('[1BN] packProfile:',parsed?.packProfile);
-      if(parsed) setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount,travelerProfile:{group:travelerGroup,style:travelStyle,interests,specialtyInterests}});
-      else{setLoadError(true);setLoading(false);}
-    } catch(e){setLoadError(true);setLoading(false);}
+      if(parsed){setLogoState("done");setTimeout(()=>setLogoState("idle"),600);setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount,travelerProfile:{group:travelerGroup,style:travelStyle,interests,specialtyInterests}});}
+      else{setLogoState("error");setTimeout(()=>setLogoState("idle"),2000);setLoadError(true);setLoading(false);}
+    } catch(e){setLogoState("error");setTimeout(()=>setLogoState("idle"),2000);setLoadError(true);setLoading(false);}
   }
   if(visionData) return <VisionReveal data={visionData} onBuild={vd=>onGoGen(visionData,vd)} onBack={()=>{setVisionData(null);setLoading(false);}} freshMount={true}/>;
   return (
@@ -864,7 +875,10 @@ packProfile must reflect the actual generated itinerary. categories should inclu
       <DreamHeader step={1}/>
       <div className="dream-content">
         <div style={{textAlign:"center",marginBottom:isMobile?20:28,animation:"fadeUp 0.6s ease"}}>
-          <div style={{display:"flex",justifyContent:"center",marginBottom:8,animation:loading?"logoPulse 1.6s ease-in-out infinite":"float 5s ease-in-out infinite"}}><SharegoodLogo size={isMobile?72:96} animate={false} glowColor={loading?"rgba(0,229,255,0.7)":"rgba(0,229,255,0.3)"} opacity={loading?1:0.92}/></div>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:8}}>
+            <SharegoodLogo size={isMobile?72:96} animate={true} logoState={logoState} glowColor={loading?"rgba(0,229,255,0.7)":"rgba(0,229,255,0.3)"} opacity={loading?1:0.92}/>
+            {loading&&<div key={hintIdx} style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,159,67,0.65)",marginTop:10,animation:"hintFade 2.5s ease forwards",textAlign:"center",letterSpacing:0.5}}>{GENERATION_HINTS[hintIdx]}</div>}
+          </div>
           <div style={{minHeight:isMobile?80:110}}>
             {heroPhase>=1&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?28:38,fontWeight:100,color:"rgba(255,255,255,0.88)",lineHeight:1.15,letterSpacing:2,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>Your expedition</div>}
             {heroPhase>=2&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?28:38,fontWeight:300,color:"#FFF",lineHeight:1.15,letterSpacing:1,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>starts now.</div>}
@@ -1200,13 +1214,13 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
         {(!isMobile||mobileTab==="chat")&&(
           <div style={{width:isMobile?"100%":"44%",display:"flex",flexDirection:"column",borderLeft:isMobile?"none":"1px solid #111D2A",...(isMobile?{flex:1,borderTop:"1px solid #111D2A"}:{})}}>
             <div style={{padding:"8px 11px",borderBottom:"1px solid #111D2A",fontSize:15,color:"#C4571E",letterSpacing:2,flexShrink:0}}>{data.isRevision?"✏️ REVISE YOUR EXPEDITION":"✨ DREAM CONSOLE"}</div>
-            <div style={{flex:1,overflowY:"auto",padding:10,display:"flex",flexDirection:"column",gap:8}}>
+            <div style={{flex:1,overflowY:"auto",padding:20,display:"flex",flexDirection:"column",gap:14}}>
               {chat.map((msg,i)=>(
-                <div key={i} style={{display:"flex",gap:6,alignItems:"flex-start",flexDirection:msg.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>
-                  <div style={{width:20,height:20,borderRadius:"50%",background:msg.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flexShrink:0}}>{msg.role==="ai"?"✨":"👤"}</div>
+                <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",flexDirection:msg.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>
+                  <div style={{width:22,height:22,borderRadius:"50%",background:msg.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{msg.role==="ai"?"✨":"👤"}</div>
                   {msg.isWelcome
-                    ?<div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.2),rgba(255,217,61,0.07))",border:"1px solid rgba(169,70,29,0.5)",borderRadius:12,padding:"13px 15px",fontSize:15,color:"#FFF",lineHeight:1.8,maxWidth:"92%",whiteSpace:"pre-line",fontFamily:"'Fraunces',serif",fontStyle:"italic",animation:"fadeUp 0.6s ease"}}>{msg.text}</div>
-                    :<div className="chat-bubble" style={{background:msg.role==="ai"?"rgba(169,70,29,0.12)":"rgba(255,255,255,0.05)",border:`1px solid ${msg.role==="ai"?"rgba(169,70,29,0.52)":"rgba(255,255,255,0.08)"}`}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>}
+                    ?<div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.2),rgba(255,217,61,0.07))",border:"2px solid rgba(255,159,67,0.30)",borderRadius:12,padding:"18px 20px",fontSize:18,fontWeight:400,color:"rgba(255,255,255,0.88)",lineHeight:1.7,maxWidth:"92%",whiteSpace:"pre-line",fontFamily:"'Fraunces',serif",animation:"fadeUp 0.6s ease",boxShadow:"inset 0 0 24px rgba(255,159,67,0.04)"}}>{msg.text}</div>
+                    :<div style={{background:msg.role==="ai"?"rgba(255,159,67,0.04)":"rgba(255,255,255,0.05)",border:msg.role==="ai"?"2px solid rgba(255,159,67,0.30)":`1px solid rgba(255,255,255,0.08)`,borderRadius:12,padding:msg.role==="ai"?"18px 20px":"10px 14px",fontSize:msg.role==="ai"?14:12,fontFamily:msg.role==="ai"?"'Fraunces',serif":"'Space Mono',monospace",fontStyle:msg.role==="ai"?"italic":"normal",color:"#FFF",lineHeight:msg.role==="ai"?1.7:1.5,maxWidth:"92%",boxShadow:msg.role==="ai"?"inset 0 0 24px rgba(255,159,67,0.04)":"none"}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>}
                 </div>
               ))}
               {loading&&<div style={{display:"flex",gap:6,animation:"msgIn 0.25s ease"}}><div style={{width:20,height:20,borderRadius:"50%",background:"#A9461D",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>✨</div><div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",padding:"4px 0"}}>thinking...</div></div>}
