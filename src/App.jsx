@@ -2347,6 +2347,19 @@ function CircularRing({value,max,label,sublabel,color,unit}) {
   );
 }
 
+// ─── Pack Brief helper ────────────────────────────────────────────
+function getPackBrief(pp,tripData){
+  if(!pp)return null;
+  const {tripType,climate,duration}=pp;
+  const tripName=tripData?.tripName||"your expedition";
+  const typeContext={dive:"underwater exploration — dive gear is front and center, everything else is minimal",adventure:"physical adventure — durability and weather protection are priorities",culture:"city and cultural exploration — versatile, presentable, lightweight",luxury:"premium travel — quality over quantity, smart casual essentials",nomad:"long-term travel — tech-forward, laundry-friendly, multi-purpose items",beach:"coastal living — sun protection, quick-dry, minimal footprint",moto:"motorbike travel — weather protection, packable layers, security essentials",wellness:"wellness retreat — comfortable layers, yoga-friendly, minimal distractions",Trek:"alpine trekking — layered warmth, durable footwear, weather protection",Exploration:"broad exploration — versatile pieces that work across settings",Relax:"relaxed travel — comfort-first, easy layers, minimal fuss",Surf:"surf travel — boardshorts, rashguards, reef-safe sun protection",Nature:"nature immersion — earth tones, insect protection, quick-dry layers",Transit:"transit-heavy routing — wrinkle-resistant, packable, security-conscious"};
+  const climateAdvice={"tropical-hot":"The heat and humidity mean breathable fabrics are essential — avoid anything that traps moisture.","tropical-wet":"Wet season means rain is guaranteed — waterproof everything, quick-dry only.","temperate-cool":"Layering is key — mornings and evenings will be cold even if afternoons are mild.","cold-alpine":"Warmth is non-negotiable — down layers, windproof shell, thermal base layers.",mediterranean:"Mild days, cooler evenings — one light layer handles most situations.","desert-hot":"UV protection is critical — cover up during midday, light breathable fabrics."};
+  let msg=`For ${tripName}, I've selected gear appropriate for `+(typeContext[tripType]||"your specific trip type")+". "+(climateAdvice[climate]||"");
+  if(duration==="short")msg+=" For a short trip, pack lighter than you think you need.";
+  else if(duration==="long")msg+=" For an extended trip, plan for laundry every 5-7 days.";
+  return msg;
+}
+
 // ─── PackConsole ──────────────────────────────────────────────────
 function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen}) {
   const isMobile=useMobile();
@@ -2390,6 +2403,8 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const [showCoach,setShowCoach]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadCoach().pack;});
   const [showOnboard,setShowOnboard]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadOnboard().pack;});
   const [packExplainerDismissed,setPackExplainerDismissed]=useState(()=>{try{return localStorage.getItem("1bn_hide_all_tips")==="1"||localStorage.getItem("1bn_pack_explainer_v1")==="1";}catch(e){return false;}});
+  const briefKey="1bn_pack_brief_"+(tripData?.tripName||"default").replace(/\s+/g,"_").toLowerCase();
+  const [packBriefCollapsed,setPackBriefCollapsed]=useState(()=>{try{return localStorage.getItem(briefKey)==="1";}catch(e){return false;}});
   const [showAddCats,setShowAddCats]=useState(false);
   const coupleMode=tripData.travelerProfile?.group==="couple";
   const chatEnd=useRef(null);
@@ -2787,9 +2802,18 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
       )}
       {packTab==="refine"&&(
         <div style={{overflowY:"auto",flex:1,padding:"12px 16px"}}>
-          <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.15),rgba(255,217,61,0.05))",border:"1px solid rgba(169,70,29,0.35)",borderRadius:12,padding:"10px 12px",marginBottom:16}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.6,marginBottom:8}}>Reviewing your pack for a <span style={{color:"#FF9F43"}}>{goalLabel}</span> trip across <span style={{color:"#FFD93D"}}>{countries.slice(0,3).join(", ")}{countries.length>3?" +"+(countries.length-3)+" more":""}</span> — {totalNights} nights.</div>
-            <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{tripTypes.map(t=><span key={t} style={{fontSize:15,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.18)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:10,padding:"3px 9px",letterSpacing:1,fontWeight:700}}>{TI[t]||"🗺️"} {t}</span>)}</div>
+          <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.15),rgba(255,217,61,0.05))",border:"1px solid rgba(169,70,29,0.35)",borderRadius:12,marginBottom:16,overflow:"hidden"}}>
+            <button onClick={()=>{const next=!packBriefCollapsed;setPackBriefCollapsed(next);if(next)try{localStorage.setItem(briefKey,"1");}catch(e){}}} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"none",border:"none",cursor:"pointer"}}>
+              <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:"#FF9F43",letterSpacing:2,fontWeight:700}}>✦ CO-ARCHITECT PACK BRIEF</div>
+              <div style={{fontSize:10,color:"rgba(255,255,255,0.45)",fontFamily:"'Space Mono',monospace"}}>{packBriefCollapsed?"▼":"▲"}</div>
+            </button>
+            <div style={{maxHeight:packBriefCollapsed?0:400,overflow:"hidden",transition:"max-height 0.28s ease-out"}}>
+              <div style={{padding:"0 12px 12px"}}>
+                <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.80)",lineHeight:1.6,marginBottom:10}}>{getPackBrief(pp,tripData)||`Reviewing your pack for a ${goalLabel} trip across ${countries.slice(0,3).join(", ")}${countries.length>3?" +"+(countries.length-3)+" more":""} — ${totalNights} nights.`}</div>
+                <div style={{fontFamily:"'Space Mono',monospace",fontSize:9,color:"rgba(255,255,255,0.55)",letterSpacing:1,marginBottom:8}}>Built for: {tripData?.tripName||"your expedition"} · {totalNights} nights · {pp?.tripType||goalLabel} · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
+                <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{tripTypes.map(t=><span key={t} style={{fontSize:11,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.18)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:10,padding:"3px 9px",letterSpacing:1,fontWeight:700}}>{TI[t]||"🗺️"} {t}</span>)}</div>
+              </div>
+            </div>
           </div>
           {suggestLoading&&<div style={{textAlign:"center",padding:"36px 20px"}}>
             <div style={{position:"relative",width:72,height:72,margin:"0 auto 20px"}}>
