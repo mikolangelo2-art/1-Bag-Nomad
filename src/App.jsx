@@ -1400,7 +1400,7 @@ function HomecomingScreen({tripData,onPlanNext}) {
 // ─── SegmentDetailField ───────────────────────────────────────────
 function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00E5FF"}) {
   const mob=useMobile();
-  const s={background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:6,color:"#FFF",fontSize:mob?12:15,padding:multiline?(mob?"5px 7px":"6px 8px"):(mob?"4px 7px":"5px 8px"),fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",lineHeight:1.6,resize:multiline?"none":undefined,transition:"border-color 0.2s,box-shadow 0.2s"};
+  const s={background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:6,color:"#FFF",fontSize:mob?12:15,padding:multiline?(mob?"5px 7px":"6px 8px"):(mob?"4px 7px":"5px 8px"),fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",maxWidth:"100%",boxSizing:"border-box",lineHeight:1.6,resize:multiline?"none":undefined,transition:"border-color 0.2s,box-shadow 0.2s"};
   const onF=e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'center'}),320);};
   const onB=e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";};
   return(
@@ -1602,7 +1602,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
             </div>}
             <div style={{background:"rgba(255,217,61,0.02)",border:"1px dashed rgba(255,217,61,0.12)",borderRadius:8,padding:"9px 10px"}}>
               <div style={{fontSize:11,color:"rgba(255,217,61,0.4)",letterSpacing:1.5,marginBottom:6,fontFamily:"'Space Mono',monospace",fontWeight:500}}>ADD ACTIVITY</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:5,marginBottom:6}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:5,marginBottom:6,overflow:"hidden"}}>
                 <SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/>
                 <SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#FFD93D"/>
                 <SDF label="COST ($)" type="number" value={nAct.cost} onChange={v=>setNAct(a=>({...a,cost:v}))} placeholder="0" accent="#FFD93D"/>
@@ -1929,7 +1929,7 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
           {det.activities.length===0&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,217,61,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
           <div style={{background:'rgba(255,217,61,0.02)',border:'1px dashed rgba(255,217,61,0.15)',borderRadius:10,padding:'14px 16px'}}>
             <div style={{fontSize:12,color:'rgba(255,217,61,0.50)',letterSpacing:2,marginBottom:10,fontFamily:"'Space Mono',monospace",fontWeight:700}}>+ ADD ACTIVITY</div>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:8}}>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:8,overflow:'hidden'}}>
               <SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/>
               <SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#FFD93D"/>
               <SDF label="COST ($)" type="number" value={nAct.cost} onChange={v=>setNAct(a=>({...a,cost:v}))} placeholder="0" accent="#FFD93D"/>
