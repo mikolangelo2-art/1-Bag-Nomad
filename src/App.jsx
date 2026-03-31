@@ -1407,7 +1407,7 @@ function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00
     <div style={{display:"flex",flexDirection:"column",gap:mob?2:3}}>
       <div style={{fontSize:mob?9:11,color:"rgba(212,180,120,0.7)",letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500}}>{label}</div>
       {multiline?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={1} style={s} onFocus={onF} onBlur={onB}/>
-      :type==="date"?<div style={{position:"relative",width:"100%"}}><input type="date" value={value} onChange={e=>onChange(e.target.value)} style={{...s,colorScheme:"dark",paddingRight:26}} onFocus={onF} onBlur={onB}/><div style={{position:"absolute",right:7,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:13,lineHeight:1}}>📅</div></div>
+      :type==="date"?<div style={{width:"100%"}}><input type="date" value={value} onChange={e=>onChange(e.target.value)} style={{...s,colorScheme:"dark"}} onFocus={onF} onBlur={onB}/></div>
       :<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={onF} onBlur={onB}/>}
     </div>
   );
@@ -1600,7 +1600,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
                 <span style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"monospace"}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
               </div>
             </div>}
-            <div style={{background:"rgba(255,217,61,0.02)",border:"1px dashed rgba(255,217,61,0.12)",borderRadius:8,padding:"9px 10px"}}>
+            <div style={{padding:"9px 0px"}}>
               <div style={{fontSize:11,color:"rgba(255,217,61,0.4)",letterSpacing:1.5,marginBottom:6,fontFamily:"'Space Mono',monospace",fontWeight:500}}>ADD ACTIVITY</div>
               <div style={{display:"flex",gap:5,marginBottom:5,overflow:"hidden"}}>
                 <div style={{flex:1,minWidth:0}}><SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/></div>
@@ -1929,7 +1929,7 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
             </div>
           </div>}
           {det.activities.length===0&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,217,61,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
-          <div style={{background:'rgba(255,217,61,0.02)',border:'1px dashed rgba(255,217,61,0.15)',borderRadius:10,padding:'14px 16px'}}>
+          <div style={{padding:'0px 0px 4px'}}>
             <div style={{fontSize:12,color:'rgba(255,217,61,0.50)',letterSpacing:2,marginBottom:10,fontFamily:"'Space Mono',monospace",fontWeight:700}}>+ ADD ACTIVITY</div>
             <div style={{display:'flex',gap:8,marginBottom:8,overflow:'hidden'}}>
               <div style={{flex:1,minWidth:0}}><SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/></div>
