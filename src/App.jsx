@@ -1740,19 +1740,19 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
           {/* Row 1: dot + name + type badge + budget */}
           <div style={{display:"flex",alignItems:"center",gap:6,minWidth:0}}>
             <div style={{width:7,height:7,borderRadius:"50%",background:tc,flexShrink:0,boxShadow:open?`0 0 7px ${tc}`:"none"}}/>
-            <span style={{fontSize:isMobile?14:15,fontWeight:600,color:isCancelled?"rgba(255,255,255,0.4)":"#E8DCC8",fontFamily:"'Space Mono',monospace",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textDecoration:isCancelled?"line-through":"none"}}>{segment.name}</span>
+            <span style={{fontSize:isMobile?14:15,fontWeight:600,color:isCancelled?"rgba(255,255,255,0.4)":"rgba(255,255,255,0.92)",fontFamily:"'Space Mono',monospace",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textDecoration:isCancelled?"line-through":"none"}}>{segment.name}</span>
             <span style={{fontSize:11,color:`${tc}bb`,background:`${tc}0e`,border:`1px solid ${tc}1e`,borderRadius:6,padding:"1px 6px",letterSpacing:0.5,fontWeight:500,whiteSpace:"nowrap",flexShrink:0}}>{segment.type?.toUpperCase()}</span>
             <span style={{fontSize:isMobile?12:14,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",flexShrink:0,textDecoration:isCancelled?"line-through":"none"}}>{fmt(segment.budget)}</span>
           </div>
-          {/* Row 2: date + nights + dives + progdots + status badge */}
-          <div style={{display:"flex",alignItems:"center",gap:isMobile?5:6,marginTop:4,paddingLeft:13,minWidth:0,flexWrap:"nowrap"}}>
-            <span style={{color:"rgba(255,255,255,0.50)",fontFamily:"'Space Mono',monospace",fontSize:11,whiteSpace:"nowrap"}}>{fD(segment.arrival)}→{fD(segment.departure)}</span>
-            <span style={{color:"rgba(255,255,255,0.38)",fontSize:11,whiteSpace:"nowrap"}}>· {segment.nights}n</span>
-            {segment.diveCount>0&&<span style={{color:"rgba(0,229,255,0.6)",fontSize:11,whiteSpace:"nowrap"}}>· 🤿{segment.diveCount}</span>}
+          {/* Row 2: date + nights + dives */}
+          <div style={{display:"flex",alignItems:"center",gap:6,marginTop:4,paddingLeft:13,minWidth:0,flexWrap:"wrap"}}>
+            <span style={{color:"rgba(255,255,255,0.75)",fontFamily:"'Space Mono',monospace",fontSize:13,whiteSpace:"nowrap"}}>{fD(segment.arrival)}→{fD(segment.departure)}</span>
+            <span style={{color:"rgba(255,255,255,0.60)",fontSize:13,whiteSpace:"nowrap"}}>· {segment.nights}n</span>
+            {segment.diveCount>0&&<span style={{color:"rgba(0,229,255,0.7)",fontSize:13,whiteSpace:"nowrap"}}>· 🤿{segment.diveCount}</span>}
             <div style={{flex:1,minWidth:0}}/>
             <ProgDots phaseId={phaseId} segment={segment} intelSnippet={intelSnippet}/>
-            <button onClick={handleBadgeTap} style={{background:planStatus?planStatus.bg:`${sc.color}18`,border:planStatus?`1px solid ${planStatus.border}`:`1px solid ${sc.color}55`,borderRadius:12,padding:"4px 10px",fontSize:12,fontWeight:700,letterSpacing:1,color:(planStatus||sc).color,cursor:"pointer",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:3,lineHeight:1.4,minHeight:24,transition:"all 0.2s",animation:status==='planning'&&completedCount===0?'planningPulse 2.2s ease-in-out infinite':'none'}}>
-              <span style={{fontSize:12}}>{planStatus?completedCount>=3?"✓":sc.icon:sc.icon}</span>{planStatus?planStatus.label:sc.label}
+            <button onClick={handleBadgeTap} style={{background:planStatus?planStatus.bg:`${sc.color}18`,border:planStatus?`1px solid ${planStatus.border}`:`1px solid ${sc.color}55`,borderRadius:12,padding:"3px 8px",fontSize:11,fontWeight:700,letterSpacing:0.5,color:(planStatus||sc).color,cursor:"pointer",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:2,lineHeight:1.4,minHeight:22,transition:"all 0.2s",flexShrink:0,maxWidth:120,overflow:"hidden",textOverflow:"ellipsis",animation:status==='planning'&&completedCount===0?'planningPulse 2.2s ease-in-out infinite':'none'}}>
+              <span style={{fontSize:11}}>{planStatus?completedCount>=3?"✓":sc.icon:sc.icon}</span>{planStatus?planStatus.label:sc.label}
             </button>
           </div>
         </div>
@@ -1848,22 +1848,18 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:300,background:'#03070F',overflowY:'auto',animation:'slideInRight 0.28s cubic-bezier(0.32,0.72,0,1)'}}>
       {/* Header */}
       <div style={{display:'flex',alignItems:'center',padding:'12px 16px',gap:10,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(255,159,67,0.15)',position:'sticky',top:0,zIndex:10}}>
-        <button onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center'}}>‹</button>
+        <button onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6}}>‹ <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",letterSpacing:2,opacity:0.60}}>{phaseName.toUpperCase()}</span></button>
         <div style={{flex:1,minWidth:0}}>
-          <div style={{fontSize:11,color:'rgba(255,159,67,0.60)',fontFamily:"'Space Mono',monospace",letterSpacing:2,marginBottom:2}}>{phaseFlag} {phaseName}</div>
-          <div style={{fontSize:17,fontWeight:600,color:'#E8DCC8',fontFamily:"'Fraunces',serif"}}>{segment.name}</div>
-        </div>
-        <div style={{textAlign:'right',flexShrink:0}}>
-          <div style={{fontSize:14,fontWeight:700,color:'#FFD93D',fontFamily:"'Space Mono',monospace"}}>{fmt(segment.budget)}</div>
-          <div style={{fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>{segment.nights}n · {segment.type}</div>
+          <div style={{fontSize:17,fontWeight:600,color:'#FFFFFF',fontFamily:"'Fraunces',serif"}}>{segment.name}</div>
+          <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',fontFamily:"'Space Mono',monospace",marginTop:2}}>{segment.nights}n · {segment.type} · {fmt(segment.budget)}</div>
         </div>
       </div>
       {/* Tab bar */}
-      <div style={{display:'flex',background:'rgba(0,4,12,0.95)',borderBottom:'1px solid rgba(255,159,67,0.10)',position:'sticky',top:68,zIndex:9,overflowX:'auto',WebkitOverflowScrolling:'touch',scrollbarWidth:'none'}}>
+      <div style={{display:'flex',background:'rgba(0,4,12,0.95)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:68,zIndex:9,overflowX:'auto',WebkitOverflowScrolling:'touch',scrollbarWidth:'none',padding:'0 8px',position:'relative'}}>
         {TABS.map(t=>{const on=tab===t.id;return(
-          <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,minWidth:0,padding:'10px 4px',background:'none',border:'none',borderBottom:on?'2px solid #FF9F43':'2px solid transparent',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',gap:2,transition:'all 0.15s'}}>
-            <span style={{fontSize:14,lineHeight:1}}>{t.icon}</span>
-            <span style={{fontSize:12,fontWeight:700,fontFamily:"'Space Mono',monospace",color:on?'#FF9F43':'rgba(255,255,255,0.45)',whiteSpace:'nowrap'}}>{t.label}{t.count>0?<span style={{color:'#FF9F43',fontSize:11}}> ({t.count})</span>:""}</span>
+          <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,minWidth:0,padding:'12px 12px',background:'none',border:'none',borderBottom:on?'2px solid #FF9F43':'2px solid transparent',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:4,transition:'all 0.15s'}}>
+            <span style={{fontSize:13,lineHeight:1}}>{t.icon}</span>
+            <span style={{fontSize:12,fontWeight:600,fontFamily:"'Space Mono',monospace",color:on?'#FF9F43':'rgba(255,255,255,0.45)',whiteSpace:'nowrap',letterSpacing:0.5}}>{t.label}{t.count>0?<span style={{color:'#FF9F43',fontSize:11}}> ({t.count})</span>:""}</span>
           </button>
         );})}
         {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Space Mono',monospace",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
@@ -1873,8 +1869,8 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
         {/* TRANSPORT */}
         {tab==="transport"&&<div>
           {hasT&&<div style={{background:'rgba(0,229,255,0.04)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:12,padding:16,marginBottom:16}}>
-            <div style={{fontSize:15,fontWeight:600,color:'rgba(255,255,255,0.92)',fontFamily:"'Space Mono',monospace",marginBottom:4}}>✈️ {det.transport.mode||"Transport"}{det.transport.from&&det.transport.to?` · ${det.transport.from} → ${det.transport.to}`:""}{det.transport.cost?` · $${det.transport.cost}`:""}</div>
-            {(det.transport.depTime||det.transport.arrTime)&&<div style={{fontSize:13,color:'rgba(255,255,255,0.65)',fontFamily:"'Space Mono',monospace"}}>{det.transport.depTime?`Departs ${det.transport.depTime}`:""}{det.transport.depTime&&det.transport.arrTime?" · ":""}{det.transport.arrTime?`Arrives ${det.transport.arrTime}`:""}</div>}
+            <div style={{fontSize:15,fontWeight:600,color:'#FFFFFF',fontFamily:"'Space Mono',monospace",marginBottom:4}}>✈️ {det.transport.mode||"Transport"}{det.transport.from&&det.transport.to?` · ${det.transport.from} → ${det.transport.to}`:""}{det.transport.cost?` · $${det.transport.cost}`:""}</div>
+            {(det.transport.depTime||det.transport.arrTime)&&<div style={{fontSize:13,color:'rgba(255,255,255,0.75)',fontFamily:"'Space Mono',monospace"}}>{det.transport.depTime?`Departs ${det.transport.depTime}`:""}{det.transport.depTime&&det.transport.arrTime?" · ":""}{det.transport.arrTime?`Arrives ${det.transport.arrTime}`:""}</div>}
           </div>}
           {!hasT&&<div style={{textAlign:'center',padding:'24px 0 20px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.40)',marginBottom:12}}>No transport planned yet.</div></div>}
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
@@ -1891,8 +1887,8 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
         {/* STAY */}
         {tab==="stay"&&<div>
           {hasS&&<div style={{background:'rgba(105,240,174,0.04)',border:'1px solid rgba(105,240,174,0.15)',borderRadius:12,padding:16,marginBottom:16}}>
-            <div style={{fontSize:15,fontWeight:600,color:'rgba(255,255,255,0.92)',fontFamily:"'Space Mono',monospace"}}>🏨 {det.stay.name}</div>
-            {(det.stay.checkin||det.stay.checkout||det.stay.cost)&&<div style={{fontSize:13,color:'rgba(255,255,255,0.65)',fontFamily:"'Space Mono',monospace",marginTop:4}}>{det.stay.checkin?`Check-in ${fD(det.stay.checkin)}`:""}{det.stay.checkin&&det.stay.checkout?" · ":""}{det.stay.checkout?`Check-out ${fD(det.stay.checkout)}`:""}{det.stay.cost?` · $${det.stay.cost}`:""}</div>}
+            <div style={{fontSize:15,fontWeight:600,color:'#FFFFFF',fontFamily:"'Space Mono',monospace"}}>🏨 {det.stay.name}</div>
+            {(det.stay.checkin||det.stay.checkout||det.stay.cost)&&<div style={{fontSize:13,color:'rgba(255,255,255,0.75)',fontFamily:"'Space Mono',monospace",marginTop:4}}>{det.stay.checkin?`Check-in ${fD(det.stay.checkin)}`:""}{det.stay.checkin&&det.stay.checkout?" · ":""}{det.stay.checkout?`Check-out ${fD(det.stay.checkout)}`:""}{det.stay.cost?` · $${det.stay.cost}`:""}</div>}
           </div>}
           {!hasS&&<div style={{textAlign:'center',padding:'24px 0 20px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.40)',marginBottom:12}}>No accommodation planned yet.</div></div>}
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
@@ -1911,7 +1907,7 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
               <div key={a.id} style={{background:'rgba(255,217,61,0.03)',border:'1px solid rgba(255,217,61,0.12)',borderRadius:10,padding:'12px 14px',marginBottom:8}}>
                 <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:15,fontWeight:700,color:'rgba(255,255,255,0.95)',fontFamily:"'Space Mono',monospace",marginBottom:4}}>{a.name}</div>
+                    <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',fontFamily:"'Space Mono',monospace",marginBottom:4}}>{a.name}</div>
                     <div style={{fontSize:13,color:'rgba(255,255,255,0.65)',fontFamily:"'Space Mono',monospace",display:'flex',gap:8,flexWrap:'wrap'}}>
                       {a.date&&<span>{fD(a.date)}</span>}{a.cost&&<span style={{color:'#FFD93D'}}>${a.cost}</span>}{a.transit&&<span style={{color:'rgba(255,255,255,0.50)'}}>🚕 {a.transit}</span>}
                     </div>
@@ -2005,9 +2001,9 @@ function PhaseDetailPage({phase,intelData,onBack}) {
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:'#03070F',overflowY:'auto',animation:'slideInRight 0.28s cubic-bezier(0.34,1.56,0.64,1)'}}>
       {/* Header */}
       <div style={{display:'flex',alignItems:'center',padding:'12px 16px',gap:12,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(0,229,255,0.12)',position:'sticky',top:0,zIndex:10}}>
-        <button onClick={onBack} style={{background:'none',border:'none',color:'#00E5FF',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center'}}>‹</button>
+        <button onClick={onBack} style={{background:'none',border:'none',color:'#00E5FF',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6}}>‹ <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",letterSpacing:2,opacity:0.60}}>EXPEDITION</span></button>
         <span style={{fontSize:20}}>{phase.flag}</span>
-        <span style={{flex:1,fontSize:18,fontWeight:500,color:'#E8DCC8',fontFamily:"'Fraunces',serif"}}>{phase.name}</span>
+        <span style={{flex:1,fontSize:18,fontWeight:500,color:'#FFFFFF',fontFamily:"'Fraunces',serif"}}>{phase.name}</span>
         <span style={{fontSize:14,fontWeight:700,color:'#FFD93D',fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</span>
       </div>
       {/* First-visit breadcrumb hint */}
@@ -2074,8 +2070,8 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null}) {
         </div>
         {/* Row 2: date + nights/dives */}
         <div style={{display:'flex',alignItems:'center',gap:10,marginTop:5,paddingLeft:46}}>
-          <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'rgba(232,220,200,0.4)',whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</span>
-          <span style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:'rgba(232,220,200,0.3)',whiteSpace:'nowrap'}}>· {phase.totalNights}n{phase.totalDives>0?` · 🤿${phase.totalDives}`:''}</span>
+          <span style={{fontFamily:"'Space Mono',monospace",fontSize:14,fontWeight:500,color:'rgba(255,255,255,0.80)',whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</span>
+          <span style={{fontFamily:"'Space Mono',monospace",fontSize:14,fontWeight:600,color:'rgba(255,255,255,0.80)',whiteSpace:'nowrap',marginLeft:6}}>· {phase.totalNights}n{phase.totalDives>0?` · 🤿${phase.totalDives}`:''}</span>
         </div>
       </div>
       {!onTap&&<BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500} hideClose={anyAskOpen}>
@@ -2846,12 +2842,12 @@ Return ONLY a JSON array:
     const catW=catItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM;
     const catCost=catItems.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
     return(
-      <div style={{display:'flex',flexDirection:'column',flex:1,overflowY:'auto',animation:'fadeIn 0.25s ease'}}>
+      <div style={{display:'flex',flexDirection:'column',flex:1,overflowY:'auto',animation:'slideInRight 0.28s cubic-bezier(0.34,1.56,0.64,1)'}}>
         {/* Header */}
         <div style={{display:'flex',alignItems:'center',padding:'16px',gap:12,borderBottom:'1px solid rgba(255,255,255,0.08)',flexShrink:0,background:'rgba(10,4,0,0.95)',position:'sticky',top:0,zIndex:10}}>
-          <button onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:22,cursor:'pointer',padding:'0 8px 0 0',lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',justifyContent:'center'}}>‹</button>
+          <button onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:22,cursor:'pointer',padding:'0 8px 0 0',lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>‹ <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",letterSpacing:2,opacity:0.60}}>PACK LIST</span></button>
           <span style={{fontSize:18}}>{cat.icon}</span>
-          <span style={{flex:1,fontSize:16,fontWeight:600,color:'#E8DCC8',fontFamily:"'Space Mono',monospace"}}>{cat.label}</span>
+          <span style={{flex:1,fontSize:16,fontWeight:600,color:'#FFFFFF',fontFamily:"'Space Mono',monospace"}}>{cat.label}</span>
           <span style={{fontSize:12,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>{ownedInCat}/{catItems.length}</span>
         </div>
         {/* Subheader */}
