@@ -217,7 +217,7 @@ const suggestionCardStyle = {
   marginBottom: '16px'
 };
 const suggestionHeaderStyle = {
-  fontSize: '10px',
+  fontSize: '11px',
   fontFamily: "'Space Mono',monospace",
   color: '#FF9F43',
   letterSpacing: '2px',
@@ -225,7 +225,7 @@ const suggestionHeaderStyle = {
   opacity: 0.85
 };
 const disclaimerStyle = {
-  fontSize: '10px',
+  fontSize: '11px',
   fontFamily: "'Space Mono',monospace",
   color: 'rgba(255,255,255,0.30)',
   fontStyle: 'italic',
@@ -238,7 +238,7 @@ const acceptBtnStyle = {
   border: '1px solid rgba(255,159,67,0.50)',
   borderRadius: '8px',
   color: '#FF9F43',
-  fontSize: '11px',
+  fontSize: '12px',
   fontFamily: "'Space Mono',monospace",
   fontWeight: 600,
   cursor: 'pointer'
@@ -249,7 +249,7 @@ const dismissBtnStyle = {
   border: '1px solid rgba(255,255,255,0.12)',
   borderRadius: '8px',
   color: 'rgba(255,255,255,0.45)',
-  fontSize: '11px',
+  fontSize: '12px',
   fontFamily: "'Space Mono',monospace",
   cursor: 'pointer'
 };
@@ -1697,10 +1697,10 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
           {cat==="transport"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:7}}>
             {suggestion?.transport&&!isDismSD('transport')&&!det.transport.mode&&!det.transport.from&&<div style={suggestionCardStyle}>
               <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
-              <div style={{fontSize:13,fontWeight:600,color:'#FFF',marginBottom:4}}>{suggestion.transport.route}</div>
-              <div style={{fontSize:12,color:'rgba(255,255,255,0.70)',marginBottom:3}}>{suggestion.transport.duration}</div>
-              <div style={{fontSize:12,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {suggestion.transport.estimatedCost}</div>
-              {suggestion.transport.notes&&<div style={{fontSize:11,color:'rgba(255,255,255,0.50)',fontStyle:'italic',marginBottom:8}}>{suggestion.transport.notes}</div>}
+              <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{suggestion.transport.route}</div>
+              <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:3}}>{suggestion.transport.duration}</div>
+              <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {suggestion.transport.estimatedCost}</div>
+              {suggestion.transport.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:8}}>{suggestion.transport.notes}</div>}
               <div style={disclaimerStyle}>⚡ Estimates — actual prices vary when booked</div>
               <div style={{display:'flex',gap:6}}>
                 <button onClick={()=>acceptTransportSD(suggestion.transport)} style={acceptBtnStyle}>USE THIS ROUTE</button>
@@ -1724,10 +1724,10 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
           {cat==="stay"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:5}}>
             {suggestion?.stay&&!isDismSD('stay')&&!det.stay.name&&<div style={suggestionCardStyle}>
               <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
-              <div style={{fontSize:13,fontWeight:600,color:'#FFF',marginBottom:4}}>{suggestion.stay.recommendation}</div>
-              <div style={{fontSize:12,color:'rgba(255,255,255,0.70)',marginBottom:3}}>{suggestion.stay.type}</div>
-              {suggestion.stay.suggestions?.length>0&&<div style={{fontSize:11,color:'rgba(255,255,255,0.55)',marginBottom:3}}>Options: {suggestion.stay.suggestions.join(' · ')}</div>}
-              <div style={{fontSize:12,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
+              <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{suggestion.stay.recommendation}</div>
+              <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:3}}>{suggestion.stay.type}</div>
+              {suggestion.stay.suggestions?.length>0&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:3}}>Options: {suggestion.stay.suggestions.join(' · ')}</div>}
+              <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
               <div style={disclaimerStyle}>⚡ Estimates — actual prices vary when booked</div>
               <div style={{display:'flex',gap:6}}>
                 <button onClick={()=>acceptStaySD(suggestion.stay)} style={acceptBtnStyle}>ADD TO STAY NOTES</button>
@@ -1753,10 +1753,10 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
             {suggestion?.activities?.map((activity,idx)=>(
               !isDismSD(`activity_${idx}`)&&<div key={idx} style={{...suggestionCardStyle,marginBottom:8}}>
                 <div style={suggestionHeaderStyle}>✦ SUGGESTED ACTIVITY</div>
-                <div style={{fontSize:13,fontWeight:700,color:'#FFF',marginBottom:4}}>{activity.name}</div>
-                {activity.provider&&<div style={{fontSize:11,color:'rgba(255,255,255,0.65)',marginBottom:3}}>{activity.provider}</div>}
-                <div style={{fontSize:12,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {activity.estimatedCost}</div>
-                {activity.notes&&<div style={{fontSize:11,color:'rgba(255,255,255,0.50)',fontStyle:'italic',marginBottom:8}}>{activity.notes}</div>}
+                <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{activity.name}</div>
+                {activity.provider&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:3}}>{activity.provider}</div>}
+                <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {activity.estimatedCost}</div>
+                {activity.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:8}}>{activity.notes}</div>}
                 <div style={disclaimerStyle}>⚡ Estimates only — prices vary when booked</div>
                 <div style={{display:'flex',gap:6}}>
                   <button onClick={()=>{acceptActivitySD(activity);dismissSD(`activity_${idx}`);}} style={acceptBtnStyle}>+ ADD TO PLAN</button>
@@ -1803,11 +1803,11 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
           {cat==="food"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:5}}>
             {suggestion?.food&&!isDismSD('food')&&<div style={suggestionCardStyle}>
               <div style={suggestionHeaderStyle}>✦ FOOD & DINING</div>
-              <div style={{fontSize:13,fontWeight:600,color:'#FFD93D',marginBottom:6}}>Est. {suggestion.food.dailyBudget}/day · ~{suggestion.food.totalEstimate} total</div>
+              <div style={{fontSize:14,fontWeight:600,color:'#FFD93D',marginBottom:6}}>Est. {suggestion.food.dailyBudget}/day · ~{suggestion.food.totalEstimate} total</div>
               {suggestion.food.recommendations?.map((rec,i)=>(
-                <div key={i} style={{fontSize:12,color:'rgba(255,255,255,0.75)',marginBottom:4,paddingLeft:8,borderLeft:'2px solid rgba(255,159,67,0.30)'}}>{rec}</div>
+                <div key={i} style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:4,paddingLeft:8,borderLeft:'2px solid rgba(255,159,67,0.30)'}}>{rec}</div>
               ))}
-              {suggestion.food.notes&&<div style={{fontSize:11,color:'rgba(255,255,255,0.45)',fontStyle:'italic',marginTop:6}}>{suggestion.food.notes}</div>}
+              {suggestion.food.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginTop:6}}>{suggestion.food.notes}</div>}
               <div style={{...disclaimerStyle,marginTop:8}}>⚡ Suggestions based on current market knowledge — always verify locally</div>
               <div style={{display:'flex',gap:6}}>
                 <button onClick={()=>{const bud=(suggestion.food.dailyBudget||"").replace(/[^0-9]/g,'');if(bud)uF("dailyBudget",bud);uF("notes",suggestion.food.recommendations?.join('\n')||"");dismissSD('food');}} style={acceptBtnStyle}>USE ESTIMATES</button>
@@ -2089,11 +2089,11 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
           {suggestion?.transport&&!isDism('transport')&&!hasT&&<div style={suggestionCardStyle}>
             <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
-            <div style={{fontSize:14,fontWeight:600,color:'#FFFFFF',marginBottom:6}}>{suggestion.transport.route}</div>
-            <div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:4}}>{suggestion.transport.duration}</div>
-            <div style={{fontSize:13,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {suggestion.transport.estimatedCost}</div>
-            {suggestion.transport.bestTiming&&<div style={{fontSize:12,color:'rgba(255,255,255,0.55)',marginBottom:4}}>{suggestion.transport.bestTiming}</div>}
-            {suggestion.transport.notes&&<div style={{fontSize:12,color:'rgba(255,255,255,0.50)',fontStyle:'italic',marginBottom:12}}>{suggestion.transport.notes}</div>}
+            <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{suggestion.transport.route}</div>
+            <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:4}}>{suggestion.transport.duration}</div>
+            <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {suggestion.transport.estimatedCost}</div>
+            {suggestion.transport.bestTiming&&<div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:4}}>{suggestion.transport.bestTiming}</div>}
+            {suggestion.transport.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{suggestion.transport.notes}</div>}
             <div style={disclaimerStyle}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
             <div style={{display:'flex',gap:8}}>
               <button onClick={()=>acceptTransport(suggestion.transport)} style={acceptBtnStyle}>USE THIS ROUTE</button>
@@ -2124,11 +2124,11 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
           {suggestion?.stay&&!isDism('stay')&&!hasS&&<div style={suggestionCardStyle}>
             <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
-            <div style={{fontSize:14,fontWeight:600,color:'#FFF',marginBottom:6}}>{suggestion.stay.recommendation}</div>
-            <div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:4}}>{suggestion.stay.type}</div>
-            {suggestion.stay.suggestions?.length>0&&<div style={{fontSize:12,color:'rgba(255,255,255,0.55)',marginBottom:4}}>Options: {suggestion.stay.suggestions.join(' · ')}</div>}
-            <div style={{fontSize:13,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
-            {suggestion.stay.notes&&<div style={{fontSize:12,color:'rgba(255,255,255,0.50)',fontStyle:'italic',marginBottom:12}}>{suggestion.stay.notes}</div>}
+            <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{suggestion.stay.recommendation}</div>
+            <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:4}}>{suggestion.stay.type}</div>
+            {suggestion.stay.suggestions?.length>0&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:4}}>Options: {suggestion.stay.suggestions.join(' · ')}</div>}
+            <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
+            {suggestion.stay.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{suggestion.stay.notes}</div>}
             <div style={disclaimerStyle}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
             <div style={{display:'flex',gap:8}}>
               <button onClick={()=>acceptStay(suggestion.stay)} style={acceptBtnStyle}>ADD TO STAY NOTES</button>
@@ -2160,10 +2160,10 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           {suggestion?.activities?.map((activity,idx)=>(
             !isDism(`activity_${idx}`)&&<div key={idx} style={{...suggestionCardStyle,marginBottom:10}}>
               <div style={suggestionHeaderStyle}>✦ SUGGESTED ACTIVITY</div>
-              <div style={{fontSize:15,fontWeight:700,color:'#FFF',marginBottom:6}}>{activity.name}</div>
-              {activity.provider&&<div style={{fontSize:13,color:'rgba(255,255,255,0.65)',marginBottom:4}}>{activity.provider}</div>}
-              <div style={{fontSize:13,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {activity.estimatedCost}</div>
-              {activity.notes&&<div style={{fontSize:12,color:'rgba(255,255,255,0.50)',fontStyle:'italic',marginBottom:12}}>{activity.notes}</div>}
+              <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{activity.name}</div>
+              {activity.provider&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:4}}>{activity.provider}</div>}
+              <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {activity.estimatedCost}</div>
+              {activity.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{activity.notes}</div>}
               <div style={disclaimerStyle}>⚡ Estimates only — prices vary when booked</div>
               <div style={{display:'flex',gap:8}}>
                 <button onClick={()=>{acceptActivity(activity);dismiss(`activity_${idx}`);}} style={acceptBtnStyle}>+ ADD TO PLAN</button>
@@ -2219,7 +2219,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {suggestion.food.recommendations?.map((rec,i)=>(
               <div key={i} style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:6,paddingLeft:8,borderLeft:'2px solid rgba(255,159,67,0.30)'}}>{rec}</div>
             ))}
-            {suggestion.food.notes&&<div style={{fontSize:12,color:'rgba(255,255,255,0.45)',fontStyle:'italic',marginTop:8}}>{suggestion.food.notes}</div>}
+            {suggestion.food.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginTop:8}}>{suggestion.food.notes}</div>}
             <div style={{...disclaimerStyle,marginTop:12}}>⚡ Suggestions based on current market knowledge — always verify locally</div>
             <div style={{display:'flex',gap:8}}>
               <button onClick={()=>{const bud=(suggestion.food.dailyBudget||"").replace(/[^0-9]/g,'');if(bud)uF("dailyBudget",bud);uF("notes",suggestion.food.recommendations?.join('\n')||"");dismiss('food');}} style={acceptBtnStyle}>USE ESTIMATES</button>
