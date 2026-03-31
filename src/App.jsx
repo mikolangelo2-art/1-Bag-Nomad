@@ -2096,6 +2096,11 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const [dismissed,setDismissed]=useState(()=>loadDismissed());
   const isDism=(type)=>!!dismissed[`${dismissKey}_${type}`];
   const dismiss=(type)=>{const d={...dismissed,[`${dismissKey}_${type}`]:true};setDismissed(d);saveDismissed(d);};
+  const [docsData,setDocsData]=useState(()=>{try{const s=localStorage.getItem(`1bn_docs_${phaseId}_v1`);return s?JSON.parse(s):null;}catch(e){return null;}});
+  const [docsLoading,setDocsLoading]=useState(false);
+  const [docsNote,setDocsNote]=useState(det.intel?.notes||"");
+  const [bookDropdown,setBookDropdown]=useState(null);
+  async function loadDocs(){if(docsData||docsLoading)return;setDocsLoading(true);try{const raw=await askAI(`Travel advisor. Destination:${segment.name},${segment.country}. Home:USA. Return JSON only:{"visa":{"required":true,"details":"","cost":""},"health":{"required":[],"recommended":[],"notes":""},"money":{"currency":"","tips":"","warning":""},"connectivity":{"tips":""},"safety":{"level":"low","notes":""},"customs":{"tips":""},"emergency":{"police":"","ambulance":"","embassy":""}}`,800);const m=raw.match(/\{[\s\S]*\}/);if(m){const d=JSON.parse(m[0]);setDocsData(d);localStorage.setItem(`1bn_docs_${phaseId}_v1`,JSON.stringify(d));}}catch(e){}setDocsLoading(false);}
   useEffect(()=>{window.scrollTo(0,0);},[]);
   useEffect(()=>{if(isFirst.current){isFirst.current=false;return;}const a=loadSeg();const ex=a[key]||{};a[key]={...ex,...det,status:ex.status||'planning',statusUpdatedAt:ex.statusUpdatedAt||null,changes:ex.changes||[]};saveSeg(a);setSaveFlash(true);if(saveFlashRef.current)clearTimeout(saveFlashRef.current);saveFlashRef.current=setTimeout(()=>setSaveFlash(false),2000);},[det]);
   const uT=(f,v)=>setDet(d=>({...d,transport:{...d.transport,[f]:v}}));
@@ -2107,7 +2112,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const acceptActivity=(a)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');setDet(d=>({...d,activities:[...d.activities,{name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''),notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()}]}));};
   const hasT=Object.values(det.transport||{}).some(v=>v&&String(v).length>0);
   const hasS=det.stay?.name?.length>0;
-  const TABS=[{id:"transport",label:"TRANSPORT",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:"ACTIVITIES",icon:"⚡",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"misc",label:"MISC",icon:"💸",count:det.misc.length},{id:"intel",label:"INTEL",icon:"🔭"}];
+  const TABS=[{id:"transport",label:"TRANSPORT",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:"ACTIVITIES",icon:"⚡",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"budget",label:"BUDGET",icon:"💰"},{id:"docs",label:"DOCS",icon:"📋"}];
   return(
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:300,background:'#03070F',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
       {/* Header */}
@@ -2160,6 +2165,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           {hasT&&<div style={{border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:14,background:'rgba(255,140,50,0.10)',padding:'18px 20px',marginBottom:14}}>
             <div style={{display:'flex',alignItems:'center',marginBottom:10}}>
               <span style={{fontSize:10,fontFamily:"'Space Mono',monospace",color:'rgba(255,159,67,0.65)',letterSpacing:2,flex:1}}>✈️ TRANSPORT</span>
+              <button onClick={()=>{const from=encodeURIComponent(det.transport.from||'');const to=encodeURIComponent(det.transport.to||'');setBookDropdown(bookDropdown==='transport'?null:'transport');}} style={{background:'none',border:'1px solid rgba(0,229,255,0.25)',borderRadius:6,color:'rgba(0,229,255,0.60)',fontSize:11,fontFamily:"'Space Mono',monospace",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>🔗</button>
               <button onClick={()=>setEditingTransport(e=>!e)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Space Mono',monospace",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28}}>{editingTransport?'DONE':'EDIT'}</button>
             </div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{det.transport.from&&det.transport.to?`${det.transport.from} → ${det.transport.to}`:det.transport.mode||"Transport"}</div>
@@ -2167,6 +2173,10 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {det.transport.notes&&!editingTransport&&<div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:'rgba(255,255,255,0.45)',marginTop:6,lineHeight:1.5,whiteSpace:'pre-line'}}>{det.transport.notes.length>120?det.transport.notes.slice(0,120)+'...':det.transport.notes}</div>}
             {det.transport.link&&<a href={det.transport.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:4}}>{det.transport.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
           </div>}
+          {bookDropdown==='transport'&&<div style={{position:'relative',zIndex:100,marginBottom:10}}><div style={{background:'#1A1208',border:'1px solid rgba(255,255,255,0.12)',borderRadius:12,padding:8,boxShadow:'0 8px 32px rgba(0,0,0,0.6)'}}>
+            <div style={{fontSize:9,color:'rgba(255,255,255,0.30)',letterSpacing:2,padding:'4px 14px'}}>SEARCH FLIGHTS</div>
+            {[{n:'Google Flights',u:`https://www.google.com/travel/flights?q=${encodeURIComponent((det.transport.from||'')+' to '+(det.transport.to||''))}`},{n:'Skyscanner',u:'https://www.skyscanner.com'},{n:'Kayak',u:'https://www.kayak.com/flights'},{n:'Rome2rio',u:`https://www.rome2rio.com/map/${encodeURIComponent(det.transport.from||'')}/${encodeURIComponent(det.transport.to||'')}`}].map(l=><a key={l.n} href={l.u} target="_blank" rel="noopener noreferrer" onClick={()=>setBookDropdown(null)} style={{display:'block',padding:'10px 14px',fontSize:13,color:'rgba(255,255,255,0.75)',borderRadius:8,cursor:'pointer',textDecoration:'none'}} onMouseOver={e=>e.currentTarget.style.background='rgba(255,159,67,0.08)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>{l.n}</a>)}
+          </div></div>}
           {hasT&&editingTransport&&<div style={{border:'1px solid rgba(255,255,255,0.10)',borderRadius:12,background:'rgba(255,255,255,0.04)',padding:16,marginBottom:14,animation:'slideOpen 0.40s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
               <SDF label="MODE" value={det.transport.mode} onChange={v=>uT("mode",v)} placeholder="Flight / Ferry / Car..." accent="#00E5FF"/>
@@ -2226,6 +2236,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           {hasS&&<div style={{border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:14,background:'rgba(255,140,50,0.10)',padding:'18px 20px',marginBottom:14}}>
             <div style={{display:'flex',alignItems:'center',marginBottom:10}}>
               <span style={{fontSize:10,fontFamily:"'Space Mono',monospace",color:'rgba(255,159,67,0.65)',letterSpacing:2,flex:1}}>🏨 ACCOMMODATION</span>
+              <button onClick={()=>setBookDropdown(bookDropdown==='stay'?null:'stay')} style={{background:'none',border:'1px solid rgba(0,229,255,0.25)',borderRadius:6,color:'rgba(0,229,255,0.60)',fontSize:11,fontFamily:"'Space Mono',monospace",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>🔗</button>
               <button onClick={()=>setEditingStay(e=>!e)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Space Mono',monospace",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28}}>{editingStay?'DONE':'EDIT'}</button>
             </div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{det.stay.name}</div>
@@ -2234,6 +2245,10 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {det.stay.notes&&!editingStay&&<div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:'rgba(255,255,255,0.45)',marginTop:6,lineHeight:1.5,whiteSpace:'pre-line'}}>{det.stay.notes.length>140?det.stay.notes.slice(0,140)+'...':det.stay.notes}</div>}
             {det.stay.link&&<a href={det.stay.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:4}}>{det.stay.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
           </div>}
+          {bookDropdown==='stay'&&<div style={{position:'relative',zIndex:100,marginBottom:10}}><div style={{background:'#1A1208',border:'1px solid rgba(255,255,255,0.12)',borderRadius:12,padding:8,boxShadow:'0 8px 32px rgba(0,0,0,0.6)'}}>
+            <div style={{fontSize:9,color:'rgba(255,255,255,0.30)',letterSpacing:2,padding:'4px 14px'}}>SEARCH STAYS</div>
+            {[{n:'Booking.com',u:`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(segment.name)}`},{n:'Airbnb',u:`https://www.airbnb.com/s/${encodeURIComponent(segment.name)}/homes`},{n:'Hotels.com',u:`https://www.hotels.com/search.do?q-destination=${encodeURIComponent(segment.name)}`},{n:'Hostelworld',u:`https://www.hostelworld.com/search?search_keywords=${encodeURIComponent(segment.name)}`}].map(l=><a key={l.n} href={l.u} target="_blank" rel="noopener noreferrer" onClick={()=>setBookDropdown(null)} style={{display:'block',padding:'10px 14px',fontSize:13,color:'rgba(255,255,255,0.75)',borderRadius:8,cursor:'pointer',textDecoration:'none'}} onMouseOver={e=>e.currentTarget.style.background='rgba(255,159,67,0.08)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>{l.n}</a>)}
+          </div></div>}
           {hasS&&editingStay&&<div style={{border:'1px solid rgba(255,255,255,0.10)',borderRadius:12,background:'rgba(255,255,255,0.04)',padding:16,marginBottom:14,animation:'slideOpen 0.40s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
               <SDF label="PROPERTY" value={det.stay.name} onChange={v=>uS("name",v)} placeholder="Hotel / hostel / resort..." accent="#69F0AE"/>
@@ -2286,6 +2301,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <div key={a.id} style={{border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:14,background:'rgba(255,140,50,0.10)',padding:'18px 20px',marginBottom:14}}>
                 <div style={{display:'flex',alignItems:'center',marginBottom:8}}>
                   <span style={{fontSize:10,fontFamily:"'Space Mono',monospace",color:'rgba(255,159,67,0.65)',letterSpacing:2,flex:1}}>⚡ ACTIVITY</span>
+                  <a href={`https://www.viator.com/search/${encodeURIComponent(segment.name+' '+a.name)}`} target="_blank" rel="noopener noreferrer" style={{background:'none',border:'1px solid rgba(0,229,255,0.25)',borderRadius:6,color:'rgba(0,229,255,0.60)',fontSize:11,fontFamily:"'Space Mono',monospace",padding:'3px 8px',textDecoration:'none',minHeight:24,display:'flex',alignItems:'center'}}>🔗</a>
                   <button onClick={()=>setDet(d=>({...d,activities:d.activities.filter(x=>x.id!==a.id)}))} style={{background:'none',border:'1px solid rgba(255,255,255,0.15)',borderRadius:6,color:'rgba(255,255,255,0.35)',fontSize:11,fontFamily:"'Space Mono',monospace",padding:'3px 8px',cursor:'pointer',minHeight:24}}>✕</button>
                 </div>
                 <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{a.name}</div>
@@ -2346,37 +2362,51 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
           <SDF label="FOOD NOTES" value={det.food.notes} onChange={v=>uF("notes",v)} placeholder="Must-try dishes, market days, dietary notes..." accent="#FF9F43" multiline/>
         </div>}
-        {/* MISC */}
-        {tab==="misc"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
-          {det.misc.length>0&&<div style={{marginBottom:16}}>
-            {det.misc.map(m=>(
-              <div key={m.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 0',borderBottom:'1px solid rgba(162,155,254,0.08)'}}>
-                <div style={{flex:1,fontSize:14,color:'#FFF',fontFamily:"'Space Mono',monospace"}}>{m.name}</div>
-                <span style={{fontSize:14,fontWeight:700,color:'#A29BFE',fontFamily:'monospace',flexShrink:0}}>${parseFloat(m.cost||0).toLocaleString()}</span>
-                <button onClick={()=>setDet(d=>({...d,misc:d.misc.filter(x=>x.id!==m.id)}))} style={{background:'none',border:'none',color:'rgba(255,255,255,0.25)',fontSize:16,cursor:'pointer',lineHeight:1,padding:'2px 4px',flexShrink:0}}>✕</button>
+        {/* BUDGET */}
+        {tab==="budget"&&(()=>{const tCost=parseFloat(det.transport?.cost)||0;const sCost=parseFloat(det.stay?.cost)||0;const aCost=det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0);const fCost=(parseFloat(det.food?.dailyBudget)||0)*segment.nights;const mCost=det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0);const total=tCost+sCost+aCost+fCost+mCost;const budget=segment.budget||0;const pct=budget>0?Math.round((total/budget)*100):0;const barColor=pct>=100?'#FF6B6B':pct>=80?'#FFD93D':'#00E5FF';return(
+          <div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
+            <div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12}}>PHASE BUDGET</div>
+            <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{segment.name}</div>
+            <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Space Mono',monospace",marginBottom:16}}>{segment.nights} Nights · Budget: {fmt(budget)}</div>
+            {[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hasT},{icon:'🏨',label:'STAY',cost:sCost,has:hasS},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0},{icon:'🍜',label:'FOOD',cost:fCost,has:!!det.food?.dailyBudget},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0}].map(r=>(
+              <div key={r.label} style={{display:'flex',alignItems:'center',padding:'12px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                <span style={{fontSize:14,marginRight:10}}>{r.icon}</span>
+                <span style={{flex:1,fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.55)',letterSpacing:1}}>{r.label}</span>
+                <span style={{fontSize:14,fontWeight:600,color:'#FFFFFF',fontFamily:"'Space Mono',monospace",marginRight:12}}>{r.cost>0?fmt(r.cost):'—'}</span>
+                <span style={{fontSize:10,fontFamily:"'Space Mono',monospace",color:r.has?'#69F0AE':'rgba(255,255,255,0.25)',letterSpacing:1}}>{r.has?'✓ Added':'—'}</span>
               </div>
             ))}
-            <div style={{paddingTop:8,display:'flex',justifyContent:'space-between'}}><span style={{fontSize:12,color:'rgba(255,255,255,0.30)',fontFamily:'monospace',letterSpacing:1}}>TOTAL MISC</span><span style={{fontSize:14,fontWeight:600,color:'rgba(162,155,254,0.8)',fontFamily:'monospace'}}>${det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0).toLocaleString()}</span></div>
-          </div>}
-          <div style={{background:'rgba(162,155,254,0.02)',border:'1px dashed rgba(162,155,254,0.18)',borderRadius:10,padding:'14px 16px'}}>
-            <div style={{fontSize:12,color:'rgba(162,155,254,0.50)',letterSpacing:2,marginBottom:10,fontFamily:"'Space Mono',monospace",fontWeight:700}}>+ ADD EXPENSE</div>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:8}}>
-              <SDF label="ITEM" value={(det._nMiscName||"")} onChange={v=>setDet(d=>({...d,_nMiscName:v}))} placeholder="Visa / permit / rental..." accent="#A29BFE"/>
-              <SDF label="COST ($)" type="number" value={(det._nMiscCost||"")} onChange={v=>setDet(d=>({...d,_nMiscCost:v}))} placeholder="0" accent="#A29BFE"/>
+            <div style={{display:'flex',justifyContent:'space-between',padding:'14px 0 6px',borderTop:'1px solid rgba(255,255,255,0.12)',marginTop:4}}>
+              <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.45)',letterSpacing:1}}>TOTAL PLANNED</span>
+              <span style={{fontSize:15,fontWeight:700,color:'#FFFFFF',fontFamily:"'Space Mono',monospace"}}>{fmt(total)}</span>
             </div>
-            <button onClick={()=>{const name=det._nMiscName,cost=det._nMiscCost;if(!name)return;setDet(d=>({...d,misc:[...d.misc,{name,cost,id:Date.now()}],_nMiscName:"",_nMiscCost:""}));}} style={{padding:'10px 20px',borderRadius:8,border:`1px solid rgba(162,155,254,${det._nMiscName?"0.45":"0.15"})`,background:det._nMiscName?'rgba(162,155,254,0.10)':'transparent',color:det._nMiscName?'#A29BFE':'rgba(255,255,255,0.20)',fontSize:13,cursor:det._nMiscName?'pointer':'default',fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,width:'100%'}}>ADD EXPENSE</button>
-          </div>
-        </div>}
-        {/* INTEL */}
-        {tab==="intel"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
-          {intelSnippet&&!intelSnippet.error&&<div style={{padding:'14px 16px',background:'rgba(255,107,107,0.04)',border:'1px solid rgba(255,107,107,0.14)',borderRadius:10,marginBottom:16}}>
-            <div style={{fontSize:12,color:'rgba(255,107,107,0.65)',letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:8}}>DESTINATION INTEL</div>
-            {intelSnippet.tagline&&<div style={{fontSize:14,color:'#A29BFE',fontStyle:'italic',marginBottom:10,lineHeight:1.55}}>{intelSnippet.tagline}</div>}
-            {intelSnippet.mustDo?.slice(0,4).map((item,i)=><div key={i} style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:5,paddingLeft:10}}>• {item}</div>)}
-            {intelSnippet.streetIntel?.[0]&&<div style={{marginTop:10,padding:'8px 10px',background:'rgba(255,107,107,0.07)',border:'1px solid rgba(255,107,107,0.18)',borderRadius:6}}><div style={{fontSize:11,color:'#FF6B6B',fontWeight:700,letterSpacing:1.5,marginBottom:3}}>{intelSnippet.streetIntel[0].type}</div><div style={{fontSize:13,color:'#FFF'}}>{intelSnippet.streetIntel[0].alert}</div></div>}
+            <div style={{display:'flex',justifyContent:'space-between',padding:'6px 0'}}>
+              <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.45)',letterSpacing:1}}>REMAINING</span>
+              <span style={{fontSize:15,fontWeight:700,color:budget-total>=0?'#69F0AE':'#FF6B6B',fontFamily:"'Space Mono',monospace"}}>{fmt(budget-total)}</span>
+            </div>
+            <div style={{marginTop:12,height:6,background:'rgba(255,255,255,0.06)',borderRadius:3,overflow:'hidden'}}>
+              <div style={{height:'100%',width:Math.min(pct,100)+'%',background:barColor,borderRadius:3,transition:'width 0.60s cubic-bezier(0.25,0.46,0.45,0.94)'}}/>
+            </div>
+            <div style={{textAlign:'center',marginTop:6,fontSize:11,fontFamily:"'Space Mono',monospace",color:barColor}}>{pct}% allocated</div>
+            {pct>=100&&<div style={{marginTop:10,padding:'10px 14px',border:'1.5px solid rgba(255,107,107,0.40)',borderRadius:8,background:'rgba(255,107,107,0.06)',fontSize:12,color:'#FF6B6B',fontFamily:"'Space Mono',monospace"}}>⚠️ Over budget by {fmt(total-budget)}</div>}
+          </div>);})()}
+        {/* DOCS & VISA */}
+        {tab==="docs"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
+          <div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12}}>DOCS & VISA</div>
+          <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{segment.name}, {segment.country}</div>
+          <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Space Mono',monospace",marginBottom:16}}>{segment.nights} Nights</div>
+          {!docsData&&!docsLoading&&<div style={{textAlign:'center',padding:'24px 0'}}><button onClick={loadDocs} style={{padding:'12px 24px',borderRadius:10,border:'1px solid rgba(255,159,67,0.40)',background:'rgba(255,159,67,0.08)',color:'#FF9F43',fontSize:12,fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,cursor:'pointer',minHeight:44}}>✦ GENERATE TRAVEL DOCS BRIEF</button></div>}
+          {docsLoading&&<div style={{textAlign:'center',padding:'24px 0'}}><div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite',margin:'0 auto 8px'}}/><span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>GENERATING DOCS BRIEF...</span></div>}
+          {docsData&&<div style={{display:'flex',flexDirection:'column',gap:14}}>
+            {docsData.visa&&<div><div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'#FF9F43',letterSpacing:2,marginBottom:6}}>🛂 VISA REQUIREMENTS</div><div style={{fontFamily:"'Fraunces',serif",fontSize:13,color:'rgba(255,255,255,0.80)',lineHeight:1.6}}>{docsData.visa.details}{docsData.visa.cost?` · Cost: ${docsData.visa.cost}`:''}</div></div>}
+            {docsData.health&&<div><div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'#FF9F43',letterSpacing:2,marginBottom:6}}>💉 HEALTH</div>{docsData.health.required?.length>0&&<div style={{padding:'6px 10px',background:'rgba(255,200,0,0.06)',border:'1px solid rgba(255,200,0,0.20)',borderRadius:6,marginBottom:4,fontSize:13,color:'#FFD93D'}}>⚠️ Required: {docsData.health.required.join(', ')}</div>}{docsData.health.recommended?.length>0&&<div style={{fontSize:13,color:'rgba(255,255,255,0.75)',lineHeight:1.5}}>Recommended: {docsData.health.recommended.join(', ')}</div>}{docsData.health.notes&&<div style={{fontSize:12,color:'rgba(255,255,255,0.55)',marginTop:4}}>{docsData.health.notes}</div>}</div>}
+            {docsData.money&&<div><div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'#FF9F43',letterSpacing:2,marginBottom:6}}>💵 MONEY & CURRENCY</div>{docsData.money.warning&&<div style={{padding:'6px 10px',background:'rgba(255,200,0,0.06)',border:'1px solid rgba(255,200,0,0.20)',borderRadius:6,marginBottom:4,fontSize:13,color:'#FFD93D'}}>⚠️ {docsData.money.warning}</div>}<div style={{fontSize:13,color:'rgba(255,255,255,0.80)',lineHeight:1.5}}>{docsData.money.currency}{docsData.money.tips?` · ${docsData.money.tips}`:''}</div></div>}
+            {docsData.connectivity&&<div><div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'#FF9F43',letterSpacing:2,marginBottom:6}}>📶 CONNECTIVITY</div><div style={{fontSize:13,color:'rgba(255,255,255,0.75)',lineHeight:1.5}}>{docsData.connectivity.tips}</div></div>}
+            {docsData.safety&&<div><div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'#FF9F43',letterSpacing:2,marginBottom:6}}>🛡️ SAFETY</div><div style={{fontSize:13,color:'rgba(255,255,255,0.75)',lineHeight:1.5}}>Level: {docsData.safety.level}{docsData.safety.notes?` · ${docsData.safety.notes}`:''}</div></div>}
+            {docsData.customs&&<div><div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'#FF9F43',letterSpacing:2,marginBottom:6}}>🤝 LOCAL CUSTOMS</div><div style={{fontSize:13,color:'rgba(255,255,255,0.75)',lineHeight:1.5}}>{docsData.customs.tips}</div></div>}
+            {docsData.emergency&&<div><div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'#FF9F43',letterSpacing:2,marginBottom:6}}>🆘 EMERGENCY CONTACTS</div><div style={{display:'flex',flexDirection:'column',gap:4}}>{docsData.emergency.police&&<div style={{fontSize:12,fontFamily:"'Space Mono',monospace",color:'#00E5FF'}}>Police: {docsData.emergency.police}</div>}{docsData.emergency.ambulance&&<div style={{fontSize:12,fontFamily:"'Space Mono',monospace",color:'#00E5FF'}}>Ambulance: {docsData.emergency.ambulance}</div>}{docsData.emergency.embassy&&<div style={{fontSize:12,fontFamily:"'Space Mono',monospace",color:'#00E5FF'}}>Embassy: {docsData.emergency.embassy}</div>}</div></div>}
           </div>}
-          {(!intelSnippet||intelSnippet.error)&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontSize:18,opacity:0.3,marginBottom:8}}>🔭</div><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.40)'}}>No briefing for {segment.name} yet.</div><div style={{fontSize:12,color:'rgba(0,229,255,0.50)',fontFamily:"'Space Mono',monospace",marginTop:4}}>→ Generate in the INTEL tab</div></div>}
-          <SDF label="YOUR NOTES" value={det.intel.notes} onChange={v=>setDet(d=>({...d,intel:{...d.intel,notes:v}}))} placeholder="Visa requirements, local contacts, personal tips..." accent="#FF6B6B" multiline/>
+          <div style={{marginTop:16}}><SDF label="PERSONAL NOTES" value={docsNote} onChange={v=>{setDocsNote(v);setDet(d=>({...d,intel:{...d.intel,notes:v}}));}} placeholder="Visa application status, insurance details, personal contacts..." accent="#FF9F43" multiline/></div>
         </div>}
       </div>
     </div>
