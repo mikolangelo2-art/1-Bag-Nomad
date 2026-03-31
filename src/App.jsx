@@ -234,11 +234,11 @@ function detectMode(route) {
 }
 
 const suggestionCardStyle = {
-  border: '1px solid rgba(255,159,67,0.35)',
-  borderRadius: '12px',
-  background: 'rgba(255,159,67,0.05)',
-  padding: '16px',
-  marginBottom: '16px',
+  border: '1.5px solid rgba(255,255,255,0.14)',
+  borderRadius: '14px',
+  background: 'rgba(255,159,67,0.06)',
+  padding: '18px',
+  marginBottom: '14px',
   animation: 'suggestIn 0.40s cubic-bezier(0.25,0.46,0.45,0.94) both'
 };
 const suggestionHeaderStyle = {
@@ -1334,9 +1334,9 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
     if(!input.trim())return;
     const msg=input;setInput("");setChat(p=>[...p,{role:"user",text:msg}]);setLoading(true);
     try{
-      const raw=await askAI(`Co-architect. Goal:"${goalLabel}". Vision:"${data.vision}". ${data.budgetMode!=="dream"?"Budget:"+data.budgetAmount+".":"No budget."} Items:${JSON.stringify(items.map(i=>({id:i.id,destination:i.destination,country:i.country,nights:i.nights,type:i.type})))} Traveler:"${msg}" Return ONLY valid JSON:{"response":"warm 2-3 sentences","changes":[{"id":0,"field":"destination","value":"New Place","country":"New Country"}]}. When changing destination always include country.`,550);
+      const raw=await askAI(`Co-architect. Goal:"${goalLabel}". Vision:"${data.vision}". ${data.budgetMode!=="dream"?"Budget:"+data.budgetAmount+".":"No budget."} Items:${JSON.stringify(items.map(i=>({id:i.id,destination:i.destination,country:i.country,nights:i.nights,type:i.type})))} Traveler:"${msg}" Return ONLY valid JSON:{"response":"warm 2-3 sentences","changes":[{"id":0,"field":"destination","value":"New Place","country":"New Country"}],"warnings":[{"phaseIndex":0,"type":"date_conflict","message":"...","suggestion":"...","dismissible":true}]}. When changing destination always include country. If you detect a date conflict or seasonal mismatch include a warning.`,600);
       const parsed=parseJSON(raw);
-      if(parsed){setChat(p=>[...p,{role:"ai",text:parsed.response}]);if(parsed.changes?.length)setItems(p=>{let u=[...p];parsed.changes.forEach(c=>{u=u.map(it=>{if(it.id!==c.id)return it;const upd={...it,[c.field]:c.value};if(c.field==="destination"&&c.country)upd.country=c.country;if(c.field==="country")upd.country=c.value;return upd;})});return u;});}
+      if(parsed){setChat(p=>[...p,{role:"ai",text:parsed.response}]);if(parsed.changes?.length)setItems(p=>{let u=[...p];parsed.changes.forEach(c=>{u=u.map(it=>{if(it.id!==c.id)return it;const upd={...it,[c.field]:c.value};if(c.field==="destination"&&c.country)upd.country=c.country;if(c.field==="country")upd.country=c.value;return upd;})});return u;});if(parsed.warnings?.length)parsed.warnings.forEach(w=>{try{const existing=JSON.parse(localStorage.getItem('1bn_warnings_v1')||'[]');existing.push(w);localStorage.setItem('1bn_warnings_v1',JSON.stringify(existing));}catch(e){}});}
       else setChat(p=>[...p,{role:"ai",text:"Got it — which stop would you like to change?"}]);
     }catch(e){setChat(p=>[...p,{role:"ai",text:"What specifically would you like to change?"}]);}
     setLoading(false);
@@ -1951,7 +1951,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
     setAskChat(p=>[...p,{role:"ai",text:res}]);setAskLoading(false);
   }
   return(
-    <div style={{borderBottom:isLast?"none":"1px solid rgba(255,255,255,0.07)",opacity:isCancelled?0.65:1,transition:"opacity 0.2s"}}>
+    <div style={{border:'1px solid rgba(255,255,255,0.12)',borderRadius:12,background:'rgba(255,255,255,0.03)',padding:'2px 0',marginBottom:8,opacity:isCancelled?0.65:1,transition:"opacity 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
       {/* Change Flow Modal */}
       {showChangeModal&&(
         <div onClick={()=>setShowChangeModal(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,4,14,0.88)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
@@ -2117,7 +2117,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Space Mono',monospace",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
       </div>
       {/* Tab content */}
-      <div style={{border:'1px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(255,255,255,0.03)',padding:20,margin:'12px 16px',minHeight:300}}>
+      <div style={{border:'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(255,255,255,0.025)',padding:20,margin:'12px 16px',minHeight:300}}>
         {/* TRANSPORT */}
         {tab==="transport"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
@@ -2137,7 +2137,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <button onClick={()=>dismiss('transport')} style={dismissBtnStyle}>PLAN MY OWN</button>
             </div>
           </div>}
-          {hasT&&<div style={{background:'rgba(0,229,255,0.04)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:12,padding:16,marginBottom:16}}>
+          {hasT&&<div style={{background:'rgba(0,229,255,0.04)',border:'1.5px solid rgba(255,255,255,0.14)',borderRadius:14,padding:18,marginBottom:14}}>
             <div style={{display:'flex',alignItems:'flex-start',gap:8}}>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontSize:15,fontWeight:600,color:'#FFFFFF',fontFamily:"'Space Mono',monospace",marginBottom:4}}>✈️ {det.transport.mode||"Transport"}{det.transport.from&&det.transport.to?` · ${det.transport.from} → ${det.transport.to}`:""}{det.transport.cost?` · $${det.transport.cost}`:""}</div>
@@ -2177,7 +2177,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <button onClick={()=>dismiss('stay')} style={dismissBtnStyle}>PLAN MY OWN</button>
             </div>
           </div>}
-          {hasS&&<div style={{background:'rgba(105,240,174,0.04)',border:'1px solid rgba(105,240,174,0.15)',borderRadius:12,padding:16,marginBottom:16}}>
+          {hasS&&<div style={{background:'rgba(105,240,174,0.04)',border:'1.5px solid rgba(255,255,255,0.14)',borderRadius:14,padding:18,marginBottom:14}}>
             <div style={{display:'flex',alignItems:'flex-start',gap:8}}>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontSize:15,fontWeight:600,color:'#FFFFFF',fontFamily:"'Space Mono',monospace"}}>🏨 {det.stay.name}</div>
@@ -2220,7 +2220,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           ))}
           {det.activities.length>0&&<div style={{marginBottom:16}}>
             {det.activities.map(a=>(
-              <div key={a.id} style={{background:'rgba(255,217,61,0.03)',border:'1px solid rgba(255,217,61,0.12)',borderRadius:10,padding:'12px 14px',marginBottom:8}}>
+              <div key={a.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.10)',borderRadius:12,padding:16,marginBottom:10}}>
                 <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',fontFamily:"'Space Mono',monospace",marginBottom:2}}>{a.name}</div>
@@ -2241,18 +2241,16 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             </div>
           </div>}
           {det.activities.length===0&&!(suggestion?.activities?.some((_,i)=>!isDism(`activity_${i}`)))&&!suggestionsLoading&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,217,61,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
-          <div style={{padding:'0px 0px 4px'}}>
-            <div style={{fontSize:12,color:'rgba(255,217,61,0.50)',letterSpacing:2,marginBottom:10,fontFamily:"'Space Mono',monospace",fontWeight:700}}>+ ADD ACTIVITY</div>
-            <div style={{display:'flex',gap:8,marginBottom:8,overflow:'hidden'}}>
-              <div style={{flex:1,minWidth:0}}><SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/></div>
-              <div style={{flex:1,minWidth:0}}><SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#FFD93D"/></div>
-            </div>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:8,overflow:'hidden'}}>
+          <div style={{border:'1px solid rgba(255,255,255,0.10)',borderRadius:12,background:'rgba(255,255,255,0.04)',padding:16,marginTop:4}}>
+            <div style={{fontSize:10,color:'rgba(255,217,61,0.50)',letterSpacing:2,marginBottom:12,fontFamily:"'Space Mono',monospace",fontWeight:700}}>+ ADD ACTIVITY</div>
+            <SDF label="ACTIVITY NAME" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginTop:8,overflow:'hidden'}}>
+              <SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#FFD93D"/>
               <SDF label="COST ($)" type="number" value={nAct.cost} onChange={v=>setNAct(a=>({...a,cost:v}))} placeholder="0" accent="#FFD93D"/>
-              <SDF label="TRANSIT" value={nAct.transit} onChange={v=>setNAct(a=>({...a,transit:v}))} placeholder="Taxi from hotel..." accent="#FFD93D"/>
             </div>
-            <SDF label="BOOKING LINK" value={nAct.link} onChange={v=>setNAct(a=>({...a,link:v}))} placeholder="https://..." accent="#FFD93D"/>
-            <button onClick={()=>{if(!nAct.name)return;setDet(d=>({...d,activities:[...d.activities,{...nAct,id:Date.now()}]}));setNAct({name:"",date:"",cost:"",transit:"",link:""});}} style={{marginTop:10,padding:'10px 20px',borderRadius:8,border:`1px solid rgba(255,217,61,${nAct.name?"0.45":"0.15"})`,background:nAct.name?'rgba(255,217,61,0.10)':'transparent',color:nAct.name?'#FFD93D':'rgba(255,255,255,0.20)',fontSize:13,cursor:nAct.name?'pointer':'default',fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,width:'100%'}}>ADD TO PLAN</button>
+            <div style={{marginTop:8}}><SDF label="BOOKING LINK" value={nAct.link} onChange={v=>setNAct(a=>({...a,link:v}))} placeholder="https://..." accent="#FFD93D"/></div>
+            <div style={{marginTop:8}}><SDF label="NOTES" value={nAct.transit} onChange={v=>setNAct(a=>({...a,transit:v}))} placeholder="Tips, what to bring..." accent="#FFD93D" multiline/></div>
+            <button onClick={()=>{if(!nAct.name)return;setDet(d=>({...d,activities:[...d.activities,{...nAct,id:Date.now()}]}));setNAct({name:"",date:"",cost:"",transit:"",link:""});}} style={{marginTop:12,padding:'12px 20px',borderRadius:10,border:'none',background:nAct.name?'linear-gradient(135deg,rgba(255,159,67,0.25),rgba(255,217,61,0.15))':'rgba(255,255,255,0.04)',color:nAct.name?'#FFD93D':'rgba(255,255,255,0.20)',fontSize:12,cursor:nAct.name?'pointer':'default',fontFamily:"'Space Mono',monospace",letterSpacing:1.5,fontWeight:700,width:'100%',minHeight:44}}>ADD TO PLAN</button>
           </div>
           <div style={{marginTop:14}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code..." accent="#FFD93D" multiline/></div>
         </div>}
@@ -2322,7 +2320,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   );
 }
 
-function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsLoading,homeCity="",segPhases=[]}) {
+function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsLoading,homeCity="",segPhases=[],warningFlags=[],onDismissWarning}) {
   const isMobile=useMobile();
   const [activeSegment,setActiveSegment]=useState(null);
   useEffect(()=>{window.scrollTo(0,0);},[]);
@@ -2358,6 +2356,17 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
         <span style={{fontSize:13,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>🌙{isMobile?`${phase.totalNights}n`:`${phase.totalNights} Nights`}</span>
         {phase.totalDives>0&&<span style={{fontSize:13,color:'#00E5FF',marginLeft:8,fontFamily:"'Space Mono',monospace"}}>🤿{phase.totalDives}</span>}
       </div>
+      {/* Warning flags */}
+      {warningFlags.filter(w=>w.phaseIndex===phase.id-1).map((w,wi)=>(
+        <div key={wi} style={{border:'1.5px solid rgba(255,200,0,0.40)',borderRadius:12,background:'rgba(255,200,0,0.06)',padding:'14px 16px',margin:'8px 16px',animation:'fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) both'}}>
+          <div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,200,0,0.70)',letterSpacing:2,marginBottom:6}}>⚠️ {w.type==='date_conflict'?'DATE CONFLICT':'SEASONAL NOTICE'}</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:'italic',color:'rgba(255,255,255,0.85)',lineHeight:1.6,marginBottom:4}}>{w.message}</div>
+          {w.suggestion&&<div style={{fontSize:12,color:'rgba(255,200,0,0.60)',fontFamily:"'Space Mono',monospace",marginBottom:10}}>{w.suggestion}</div>}
+          <div style={{display:'flex',gap:8}}>
+            {w.dismissible&&<button onClick={()=>onDismissWarning?.(warningFlags.indexOf(w))} style={{padding:'8px 14px',borderRadius:8,border:'1px solid rgba(255,200,0,0.30)',background:'transparent',color:'rgba(255,200,0,0.60)',fontSize:11,fontFamily:"'Space Mono',monospace",cursor:'pointer',fontWeight:600,letterSpacing:1}}>DISMISS</button>}
+          </div>
+        </div>
+      ))}
       {/* Segment list */}
       <div style={{padding:'6px 0 80px'}}>
         <div style={{padding:'8px 16px 4px',fontSize:12,color:'rgba(255,255,255,0.35)',letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
@@ -2494,6 +2503,9 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   const [showCoach,setShowCoach]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadCoach().trip;});
   const [showOnboard,setShowOnboard]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadOnboard().trip;});
   const [phaseDetailView,setPhaseDetailView]=useState(null);
+  const [warningFlags,setWarningFlags]=useState(()=>{try{const s=localStorage.getItem('1bn_warnings_v1');return s?JSON.parse(s):[];}catch(e){return[];}});
+  useEffect(()=>{try{localStorage.setItem('1bn_warnings_v1',JSON.stringify(warningFlags));}catch(e){}},[warningFlags]);
+  const dismissWarning=(idx)=>setWarningFlags(f=>f.filter((_,i)=>i!==idx));
   useEffect(()=>{try{localStorage.setItem("1bn_intel",JSON.stringify(explorerData));}catch(e){};},[explorerData]);
 
   function handleNewTripClick(){if(confirmNewTrip){onNewTrip();}else{setConfirmNewTrip(true);setTimeout(()=>setConfirmNewTrip(false),4000);}}
@@ -2531,7 +2543,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   return(
     <div className="mc-root" style={{animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
       <WorldMapBackground phases={tripData.phases||[]} activeCountry={phaseDetailView?.country}/>
-      {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} homeCity={tripData.departureCity||tripData.city||""} segPhases={segPhases}/>}
+      {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} homeCity={tripData.departureCity||tripData.city||""} segPhases={segPhases} warningFlags={warningFlags} onDismissWarning={dismissWarning}/>}
       {showOnboard&&<OnboardCard storageKey="trip" ctaLabel="✦ ENTER MY EXPEDITION" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,color:"rgba(0,229,255,0.75)",marginBottom:10}}>TRIP CONSOLE</div>
