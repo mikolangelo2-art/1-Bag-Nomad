@@ -135,6 +135,19 @@ const urgencyColor = d => d<0?"#fff":d<30?"#FF6B6B":d<60?"#FFD93D":d<90?"#FF9F43
 const fD  = d => d ? new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"}) : "";
 const fDS = d => d ? new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"2-digit"}) : "";
 
+// ─── City Autocomplete ──────────────────────────────────────────
+const COMMON_CITIES=["Los Angeles, CA","New York, NY","San Francisco, CA","Chicago, IL","Miami, FL","Houston, TX","Dallas, TX","Austin, TX","Seattle, WA","Portland, OR","Denver, CO","Phoenix, AZ","San Diego, CA","Nashville, TN","Atlanta, GA","Boston, MA","Washington, DC","Philadelphia, PA","Minneapolis, MN","Detroit, MI","Las Vegas, NV","New Orleans, LA","Salt Lake City, UT","Charlotte, NC","Tampa, FL","Orlando, FL","Honolulu, HI","London, UK","Toronto, Canada","Vancouver, Canada","Montreal, Canada","Sydney, Australia","Melbourne, Australia","Auckland, New Zealand","Dublin, Ireland","Amsterdam, Netherlands","Berlin, Germany","Paris, France","Barcelona, Spain","Lisbon, Portugal","Rome, Italy","Tokyo, Japan","Singapore","Hong Kong","Dubai, UAE","Bangkok, Thailand","Mexico City, Mexico","São Paulo, Brazil","Buenos Aires, Argentina","Cape Town, South Africa"];
+function CityInput({value,onChange,className,style:inputStyle,placeholder}){
+  const [suggestions,setSuggestions]=useState([]);
+  const [focused,setFocused]=useState(false);
+  const handleChange=(v)=>{onChange(v);if(v.length>=2){const q=v.toLowerCase();setSuggestions(COMMON_CITIES.filter(c=>c.toLowerCase().includes(q)).slice(0,6));}else setSuggestions([]);};
+  return(<div style={{position:'relative'}}><input className={className} style={inputStyle} value={value} onChange={e=>handleChange(e.target.value)} onFocus={()=>setFocused(true)} onBlur={()=>setTimeout(()=>setFocused(false),150)} placeholder={placeholder}/>
+    {focused&&suggestions.length>0&&<div style={{position:'absolute',top:'100%',left:0,right:0,zIndex:50,background:'rgba(0,8,20,0.98)',border:'1px solid rgba(255,159,67,0.25)',borderRadius:8,marginTop:4,overflow:'hidden',boxShadow:'0 8px 24px rgba(0,0,0,0.5)'}}>
+      {suggestions.map(s=><div key={s} onMouseDown={()=>{onChange(s);setSuggestions([]);}} style={{padding:'10px 14px',fontSize:13,color:'rgba(255,255,255,0.85)',fontFamily:"'Space Mono',monospace",cursor:'pointer',borderBottom:'1px solid rgba(255,255,255,0.06)',transition:'background 0.15s'}} onMouseOver={e=>e.currentTarget.style.background='rgba(255,159,67,0.08)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>{s}</div>)}
+    </div>}
+  </div>);
+}
+
 function useMobile() {
   const [m,setM] = useState(window.innerWidth<480);
   useEffect(()=>{ const h=()=>setM(window.innerWidth<480); window.addEventListener("resize",h); return()=>window.removeEventListener("resize",h); },[]);
@@ -279,13 +292,13 @@ EXPEDITION OVERVIEW:
 - Interests: ${interests}
 - Total budget: $${tripData.totalBudget}
 - Departure: ${tripData.startDate}
-- Home city: ${tripData.departureCity || tripData.city || 'Unknown'}
+- Departs from: ${tripData.departureCity || tripData.city || 'Unknown'}
 
 PHASES:
 ${phases.map((p, i) => `Phase ${i+1}: ${p.name || p.destination || p.city}, ${p.country} | ${p.arrival} → ${p.departure} | ${p.nights} nights | Budget: $${p.budget || p.cost} | Type: ${p.type}`).join('\n')}
 
 Generate specific, actionable suggestions for each phase. Include:
-1. Transport: How to get there from the previous destination (or from home for Phase 1). Specific carriers/routes, realistic price estimate.
+1. Transport: How to get there from the previous destination (or from ${tripData.departureCity || tripData.city || 'home'} for Phase 1). Include the actual departure city name in the route, not "Home city". Specific carriers/routes, realistic price estimate.
 2. Stay: Best area to stay, accommodation type matching their style, realistic nightly rate and total cost.
 3. Activities: 2-3 specific recommended activities matching their interests, with realistic costs.
 4. Food: Daily food budget estimate, 2-3 specific local food recommendations.
@@ -1014,9 +1027,12 @@ packProfile must reflect the actual generated itinerary. categories should inclu
         const hasSafari=interests.includes('safari');
         const cats=["clothes","tech","travel","health","docs"];
         const hidden=[];
+        const tripType=phTypes[0]||"culture";
+        const isNonAdventure=["music","culture","nomad","city"].includes(tripType);
         if(hasDive)cats.push("dive");else hidden.push("dive");
         if(hasCreator)cats.push("creator");else hidden.push("creator");
         if(hasMoto){cats.push("moto");} if(hasSafari){cats.push("safari");} if(hasTrek){cats.push("adventure");}
+        if(isNonAdventure&&!hasDive){hidden.push("scuba","skiing","climbing");}
         const tn=(parsed.phases||[]).reduce((s,p)=>s+(p.nights||0),0);
         const dur=tn<14?"short":tn<=30?"medium":"long";
         const tropical=["thailand","indonesia","philippines","maldives","honduras","belize","costa rica","vietnam","malaysia","india","mexico","barbados","tanzania"];
@@ -1101,7 +1117,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
         <div className="sec-label">EXPEDITION DETAILS</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22}}>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onChange={e=>setTripName(e.target.value)} placeholder="My Grand Expedition" style={{borderColor:"rgba(0,229,255,0.72)",boxShadow:"0 0 14px rgba(0,229,255,0.18),0 0 32px rgba(0,229,255,0.07)"}}/></div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><input className="f-input" value={city} onChange={e=>setCity(e.target.value)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><CityInput className="f-input" value={city} onChange={v=>setCity(v)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",color:(!date&&isMobile)?"transparent":undefined,paddingRight:36,borderColor:"rgba(105,240,174,0.72)",boxShadow:"0 0 14px rgba(105,240,174,0.18),0 0 32px rgba(105,240,174,0.07)"}}/>{!date&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={returnDate} min={date||undefined} onChange={e=>setReturnDate(e.target.value)} onFocus={()=>{if(!returnDate&&date)setReturnDate(date);}} style={{colorScheme:"dark",color:(!returnDate&&isMobile)?"transparent":undefined,paddingRight:36,borderColor:"rgba(162,155,254,0.72)",boxShadow:"0 0 14px rgba(162,155,254,0.18),0 0 32px rgba(162,155,254,0.07)"}}/>{!returnDate&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(162,155,254,0.88)",marginTop:3}}>optional · open-ended</div></div>
         </div>
@@ -1327,7 +1343,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   }
   // Architecture #1: each item auto-wraps as 1 segment
   function buildHandoff(){
-    return{tripName:data.tripName||"My Expedition",startDate,vision:data.vision,visionNarrative:visionData.narrative,visionHighlight:visionData.highlight,goalLabel,
+    return{tripName:data.tripName||"My Expedition",startDate,departureCity:data.city||"",vision:data.vision,visionNarrative:visionData.narrative,visionHighlight:visionData.highlight,goalLabel,
       budgetBreakdown:visionData.budgetBreakdown||null,travelerProfile:data.travelerProfile||null,packProfile:visionData.packProfile||null,
       phases:items.map((item,i)=>({id:i+1,name:item.destination,flag:item.flag,color:item.color,budget:item.cost,nights:item.nights,type:item.type,arrival:dates[i]?.arrival.toISOString().split("T")[0]||"",departure:dates[i]?.departure.toISOString().split("T")[0]||"",country:item.country,diveCount:item.type==="Dive"?Math.floor(item.nights*1.5):0,cost:item.cost,note:item.why||visionData.phases?.[i]?.why||""})),
       totalNights,totalBudget:totalCost,totalDives:items.filter(i=>i.type==="Dive").reduce((s,i)=>s+Math.floor(i.nights*1.5),0)};
@@ -1676,7 +1692,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
   const dismissSD=(type)=>{const d={...dismissed,[`${dismissKey}_${type}`]:true};setDismissedSD(d);saveDismissed(d);};
   const acceptTransportSD=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",`${t.route}\n\nEst. ${t.estimatedCost}${t.bestTiming?`\nBest timing: ${t.bestTiming}`:""}${t.notes?`\n${t.notes}`:""}`);dismissSD('transport');};
   const acceptStaySD=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismissSD('stay');};
-  const acceptActivitySD=(a)=>{const sentences=(a.notes||"").split('. ');const brief=(sentences[0]||"")+(sentences[0]&&!sentences[0].endsWith('.')?'.':'');const tip=sentences.slice(1).join('. ');setDet(d=>({...d,activities:[...d.activities,{name:a.name,brief,tip,date:"",cost:(a.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''),notes:`${a.provider||""}${tip?`\n${tip}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()}]}));};
+  const acceptActivitySD=(a)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');setDet(d=>({...d,activities:[...d.activities,{name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''),notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()}]}));};
   async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}
   const CATS=[{id:"transport",icon:"✈️",label:"TRANSPORT",a:"#00E5FF",w:"rgba(0,229,255,0.04)"},{id:"stay",icon:"🏠",label:"STAY",a:"#69F0AE",w:"rgba(105,240,174,0.04)"},{id:"activities",icon:"🎯",label:"ACTIVITIES",a:"#FFD93D",w:"rgba(255,217,61,0.04)"},{id:"food",icon:"🍽️",label:"FOOD",a:"#FF9F43",w:"rgba(255,159,67,0.04)"},{id:"misc",icon:"💸",label:"MISC",a:"#A29BFE",w:"rgba(162,155,254,0.04)"},{id:"intel",icon:"🔭",label:"INTEL",a:"#FF6B6B",w:"rgba(255,107,107,0.04)"}];
   const done={transport:!!(det.transport.mode||det.transport.cost),stay:!!(det.stay.name||det.stay.cost),activities:det.activities.length>0,food:!!(det.food.dailyBudget),misc:det.misc.length>0,intel:!!(intelSnippet?.tagline||det.intel.notes)};
@@ -2068,7 +2084,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}
   const acceptTransport=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("from",prevCity||homeCity||"");uT("to",segment.name||"");uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",`${t.route}\n\nEst. ${t.estimatedCost}${t.bestTiming?`\nBest timing: ${t.bestTiming}`:""}${t.notes?`\n${t.notes}`:""}`);if(segment.arrival){uT("depTime",fD(segment.arrival));uT("arrTime",fD(segment.arrival));}dismiss('transport');};
   const acceptStay=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');};
-  const acceptActivity=(a)=>{const sentences=(a.notes||"").split('. ');const brief=(sentences[0]||"")+(sentences[0]&&!sentences[0].endsWith('.')?'.':'');const tip=sentences.slice(1).join('. ');setDet(d=>({...d,activities:[...d.activities,{name:a.name,brief,tip,date:"",cost:(a.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''),notes:`${a.provider||""}${tip?`\n${tip}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()}]}));};
+  const acceptActivity=(a)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');setDet(d=>({...d,activities:[...d.activities,{name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''),notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()}]}));};
   const hasT=Object.values(det.transport||{}).some(v=>v&&String(v).length>0);
   const hasS=det.stay?.name?.length>0;
   const TABS=[{id:"transport",label:"TRANSPORT",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:"ACTIVITIES",icon:"⚡",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"misc",label:"MISC",icon:"💸",count:det.misc.length},{id:"intel",label:"INTEL",icon:"🔭"}];
@@ -2101,9 +2117,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Space Mono',monospace",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
       </div>
       {/* Tab content */}
-      <div style={{border:'1px solid rgba(255,255,255,0.08)',borderRadius:16,background:'rgba(255,255,255,0.02)',padding:20,margin:'12px 16px',minHeight:200}}>
+      <div style={{border:'1px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(255,255,255,0.03)',padding:20,margin:'12px 16px',minHeight:300}}>
         {/* TRANSPORT */}
-        {tab==="transport"&&<div>
+        {tab==="transport"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
@@ -2143,7 +2159,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <div style={{marginTop:8}}><SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="Flight number, booking ref..." accent="#00E5FF" multiline/></div>
         </div>}
         {/* STAY */}
-        {tab==="stay"&&<div>
+        {tab==="stay"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
@@ -2183,7 +2199,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <div style={{marginTop:8}}><SDF label="NOTES" value={det.stay.notes} onChange={v=>uS("notes",v)} placeholder="Room type, included meals, host contact..." accent="#69F0AE" multiline/></div>
         </div>}
         {/* ACTIVITIES */}
-        {tab==="activities"&&<div>
+        {tab==="activities"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
@@ -2209,7 +2225,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',fontFamily:"'Space Mono',monospace",marginBottom:2}}>{a.name}</div>
                     {a.brief&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:'italic',color:'rgba(255,255,255,0.70)',marginBottom:4,lineHeight:1.5}}>{a.brief}</div>}
-                    {a.tip&&<div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:'rgba(255,255,255,0.50)',marginBottom:4,lineHeight:1.5}}>💡 {a.tip}</div>}
+                    {a.tip&&<div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:'rgba(255,255,255,0.45)',marginBottom:4,lineHeight:1.5}}>💡 {a.tip}</div>}
                     <div style={{fontSize:13,color:'rgba(255,255,255,0.65)',fontFamily:"'Space Mono',monospace",display:'flex',gap:8,flexWrap:'wrap'}}>
                       {a.date?<span>{fD(a.date)}</span>:segment.arrival&&<span style={{fontStyle:'italic',color:'rgba(255,159,67,0.55)',fontSize:11}}>within {fD(segment.arrival)}–{fD(segment.departure)}</span>}{a.cost&&<span style={{color:'#FFD93D'}}>${a.cost}</span>}{a.transit&&<span style={{color:'rgba(255,255,255,0.50)'}}>🚕 {a.transit}</span>}
                     </div>
@@ -2241,7 +2257,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <div style={{marginTop:14}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code..." accent="#FFD93D" multiline/></div>
         </div>}
         {/* FOOD */}
-        {tab==="food"&&<div>
+        {tab==="food"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
@@ -2270,7 +2286,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <SDF label="FOOD NOTES" value={det.food.notes} onChange={v=>uF("notes",v)} placeholder="Must-try dishes, market days, dietary notes..." accent="#FF9F43" multiline/>
         </div>}
         {/* MISC */}
-        {tab==="misc"&&<div>
+        {tab==="misc"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
           {det.misc.length>0&&<div style={{marginBottom:16}}>
             {det.misc.map(m=>(
               <div key={m.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 0',borderBottom:'1px solid rgba(162,155,254,0.08)'}}>
@@ -2291,7 +2307,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>
         </div>}
         {/* INTEL */}
-        {tab==="intel"&&<div>
+        {tab==="intel"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
           {intelSnippet&&!intelSnippet.error&&<div style={{padding:'14px 16px',background:'rgba(255,107,107,0.04)',border:'1px solid rgba(255,107,107,0.14)',borderRadius:10,marginBottom:16}}>
             <div style={{fontSize:12,color:'rgba(255,107,107,0.65)',letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:8}}>DESTINATION INTEL</div>
             {intelSnippet.tagline&&<div style={{fontSize:14,color:'#A29BFE',fontStyle:'italic',marginBottom:10,lineHeight:1.55}}>{intelSnippet.tagline}</div>}
