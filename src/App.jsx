@@ -1571,9 +1571,9 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
               <SDF label="PROPERTY" value={det.stay.name} onChange={v=>uS("name",v)} placeholder="Hotel / hostel / resort..." accent="#69F0AE"/>
               <SDF label="TOTAL COST ($)" type="number" value={det.stay.cost} onChange={v=>uS("cost",v)} placeholder="0" accent="#69F0AE"/>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr",gap:6,marginTop:6}}>
-              <SDF label="CHECK-IN" type="date" value={det.stay.checkin} onChange={v=>uS("checkin",v)} accent="#69F0AE"/>
-              <SDF label="CHECK-OUT" type="date" value={det.stay.checkout} onChange={v=>uS("checkout",v)} accent="#69F0AE"/>
+            <div style={{display:"flex",gap:6,marginTop:6,overflow:"hidden"}}>
+              <div style={{flex:1,minWidth:0}}><SDF label="CHECK-IN" type="date" value={det.stay.checkin} onChange={v=>uS("checkin",v)} accent="#69F0AE"/></div>
+              <div style={{flex:1,minWidth:0}}><SDF label="CHECK-OUT" type="date" value={det.stay.checkout} onChange={v=>uS("checkout",v)} accent="#69F0AE"/></div>
             </div>
             <SDF label="BOOKING LINK" value={det.stay.link} onChange={v=>uS("link",v)} placeholder="https://..." accent="#69F0AE"/>
             <SDF label="NOTES" value={det.stay.notes} onChange={v=>uS("notes",v)} placeholder="Room type, included meals, host contact..." accent="#69F0AE" multiline/>
@@ -1602,9 +1602,11 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
             </div>}
             <div style={{background:"rgba(255,217,61,0.02)",border:"1px dashed rgba(255,217,61,0.12)",borderRadius:8,padding:"9px 10px"}}>
               <div style={{fontSize:11,color:"rgba(255,217,61,0.4)",letterSpacing:1.5,marginBottom:6,fontFamily:"'Space Mono',monospace",fontWeight:500}}>ADD ACTIVITY</div>
+              <div style={{display:"flex",gap:5,marginBottom:5,overflow:"hidden"}}>
+                <div style={{flex:1,minWidth:0}}><SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/></div>
+                <div style={{flex:1,minWidth:0}}><SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#FFD93D"/></div>
+              </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:5,marginBottom:6,overflow:"hidden"}}>
-                <SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/>
-                <SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#FFD93D"/>
                 <SDF label="COST ($)" type="number" value={nAct.cost} onChange={v=>setNAct(a=>({...a,cost:v}))} placeholder="0" accent="#FFD93D"/>
                 <SDF label="TRANSIT" value={nAct.transit} onChange={v=>setNAct(a=>({...a,transit:v}))} placeholder="Taxi from hotel..." accent="#FFD93D"/>
               </div>
@@ -1897,9 +1899,9 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
             <SDF label="PROPERTY" value={det.stay.name} onChange={v=>uS("name",v)} placeholder="Hotel / hostel / resort..." accent="#69F0AE"/>
             <SDF label="TOTAL COST ($)" type="number" value={det.stay.cost} onChange={v=>uS("cost",v)} placeholder="0" accent="#69F0AE"/>
           </div>
-          <div style={{display:'grid',gridTemplateColumns:'1fr',gap:10,marginTop:10}}>
-            <SDF label="CHECK-IN" type="date" value={det.stay.checkin} onChange={v=>uS("checkin",v)} accent="#69F0AE"/>
-            <SDF label="CHECK-OUT" type="date" value={det.stay.checkout} onChange={v=>uS("checkout",v)} accent="#69F0AE"/>
+          <div style={{display:'flex',gap:10,marginTop:10,overflow:'hidden'}}>
+            <div style={{flex:1,minWidth:0}}><SDF label="CHECK-IN" type="date" value={det.stay.checkin} onChange={v=>uS("checkin",v)} accent="#69F0AE"/></div>
+            <div style={{flex:1,minWidth:0}}><SDF label="CHECK-OUT" type="date" value={det.stay.checkout} onChange={v=>uS("checkout",v)} accent="#69F0AE"/></div>
           </div>
           <div style={{marginTop:10}}><SDF label="BOOKING LINK" value={det.stay.link} onChange={v=>uS("link",v)} placeholder="https://..." accent="#69F0AE"/></div>
           <div style={{marginTop:8}}><SDF label="NOTES" value={det.stay.notes} onChange={v=>uS("notes",v)} placeholder="Room type, included meals, host contact..." accent="#69F0AE" multiline/></div>
@@ -1929,9 +1931,11 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
           {det.activities.length===0&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,217,61,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
           <div style={{background:'rgba(255,217,61,0.02)',border:'1px dashed rgba(255,217,61,0.15)',borderRadius:10,padding:'14px 16px'}}>
             <div style={{fontSize:12,color:'rgba(255,217,61,0.50)',letterSpacing:2,marginBottom:10,fontFamily:"'Space Mono',monospace",fontWeight:700}}>+ ADD ACTIVITY</div>
+            <div style={{display:'flex',gap:8,marginBottom:8,overflow:'hidden'}}>
+              <div style={{flex:1,minWidth:0}}><SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/></div>
+              <div style={{flex:1,minWidth:0}}><SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#FFD93D"/></div>
+            </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:8,overflow:'hidden'}}>
-              <SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/>
-              <SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#FFD93D"/>
               <SDF label="COST ($)" type="number" value={nAct.cost} onChange={v=>setNAct(a=>({...a,cost:v}))} placeholder="0" accent="#FFD93D"/>
               <SDF label="TRANSIT" value={nAct.transit} onChange={v=>setNAct(a=>({...a,transit:v}))} placeholder="Taxi from hotel..." accent="#FFD93D"/>
             </div>
