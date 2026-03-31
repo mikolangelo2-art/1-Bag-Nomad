@@ -217,6 +217,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 @keyframes ambientGlow{0%,100%{opacity:0.5}50%{opacity:0.9}}
 @keyframes slideOpen{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
 @keyframes activePulse{0%,100%{r:2.8;opacity:0.9}50%{r:4.5;opacity:1.0}}
 @keyframes logoIdle{0%,100%{transform:translateY(0);filter:drop-shadow(0 0 8px var(--logo-glow,rgba(255,159,67,0.4)))}50%{transform:translateY(-4px);filter:drop-shadow(0 0 14px var(--logo-glow,rgba(255,159,67,0.6)))}}
 @keyframes logoThinking{0%,100%{transform:scale(1);filter:drop-shadow(0 0 12px var(--logo-glow,rgba(255,159,67,0.7)))}50%{transform:scale(1.04);filter:drop-shadow(0 0 22px var(--logo-glow,rgba(255,159,67,0.9)))}}
@@ -1673,7 +1674,7 @@ function ProgDots({phaseId,segment,intelSnippet}) {
 }
 
 // ─── SegmentRow ───────────────────────────────────────────────────
-function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenChange}) {
+function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenChange,onSegmentTap}) {
   const isMobile=useMobile();
   const segKey=`${phaseId}-${segment.id}`;
   const [open,setOpen]=useState(false);
@@ -1735,7 +1736,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
         </div>
       )}
       <div style={{display:"flex",alignItems:"stretch",minHeight:50,borderLeft:`2px solid ${borderColor}${open?"88":"2a"}`,transition:"border-color 0.2s"}}>
-        <div onClick={()=>setOpen(o=>!o)} style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:isMobile?"10px 6px 10px 12px":"12px 10px 12px 20px",cursor:"pointer",background:open?`${tc}04`:"transparent",transition:"background 0.15s",flex:1,minWidth:0}}>
+        <div onClick={()=>{if(onSegmentTap){onSegmentTap(segment);}else{setOpen(o=>!o);}}} style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:isMobile?"10px 6px 10px 12px":"12px 10px 12px 20px",cursor:"pointer",background:open?`${tc}04`:"transparent",transition:"background 0.15s",flex:1,minWidth:0}}>
           {/* Row 1: dot + name + type badge + budget */}
           <div style={{display:"flex",alignItems:"center",gap:6,minWidth:0}}>
             <div style={{width:7,height:7,borderRadius:"50%",background:tc,flexShrink:0,boxShadow:open?`0 0 7px ${tc}`:"none"}}/>
@@ -1755,6 +1756,9 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
             </button>
           </div>
         </div>
+        {onSegmentTap?<div onClick={e=>{e.stopPropagation();onSegmentTap(segment);}} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"0 10px",cursor:"pointer",flexShrink:0}}>
+          <span style={{fontSize:18,color:"rgba(255,255,255,0.30)",fontWeight:300}}>›</span>
+        </div>:<>
         <div onClick={e=>{e.stopPropagation();setOpen(o=>!o);}} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"0 8px",cursor:"pointer",flexShrink:0}}>
           <div style={{width:16,height:16,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.15":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center"}}>
             <span style={{fontSize:11,color:open?"#00E5FF":"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
@@ -1763,7 +1767,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
         <button onClick={e=>{e.stopPropagation();setAskOpen(o=>!o);}} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,padding:"8px 10px",background:askOpen?"rgba(255,217,61,0.1)":"rgba(255,217,61,0.03)",border:"none",borderLeft:`1px solid rgba(255,217,61,${askOpen?"0.45":"0.22"})`,cursor:"pointer",flexShrink:0,height:"100%",minWidth:38,transition:"all 0.15s"}} title="Ask co-architect">
           <span style={{fontSize:11,color:askOpen?"#FFD93D":"rgba(255,217,61,0.55)",lineHeight:1,textShadow:askOpen?"0 0 8px rgba(255,217,61,0.6)":"none",animation:askOpen?"none":"glowPulse 2.5s ease-in-out infinite"}}>✦</span>
           <span style={{fontSize:10,color:askOpen?"#FFD93D":"rgba(255,217,61,0.4)",letterSpacing:1,fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>ASK</span>
-        </button>
+        </button></>}
       </div>
       {!open&&segData&&(hasTransport||hasStay||hasActivities||segData.food?.dailyBudget)&&(
         <div onClick={()=>setOpen(true)} style={{padding:"4px 14px 6px 20px",display:"flex",flexWrap:"wrap",gap:"4px 8px",cursor:"pointer",background:"rgba(0,4,14,0.4)"}}>
@@ -1818,8 +1822,176 @@ const SEG_TYPE_TO_ACT={Dive:'DIVE',Surf:'SAILING',Culture:'CULTURE',Exploration:
 function getPhaseActivityIcon(phase){const t=phase.segments?.[0]?.type;return ACTIVITY_ICONS[SEG_TYPE_TO_ACT[t]||'DEFAULT']||'✦';}
 
 // ─── PhaseDetailPage ──────────────────────────────────────────────
+// ─── SegmentWorkspace (Level 3) ───────────────────────────────────
+function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBack}) {
+  const isMobile=useMobile();
+  const key=`${phaseId}-${segment.id}`;
+  const blank={transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
+  const [det,setDet]=useState(()=>{const a=loadSeg();return a[key]||blank;});
+  const [tab,setTab]=useState("transport");
+  const [nAct,setNAct]=useState({name:"",date:"",cost:"",transit:"",link:""});
+  const [aiLoad,setAiLoad]=useState(false);
+  const [saveFlash,setSaveFlash]=useState(false);
+  const saveFlashRef=useRef(null);
+  const isFirst=useRef(true);
+  const [status,setStatus]=useState(()=>{const d=loadSeg()[key];return d?.status||'planning';});
+  useEffect(()=>{window.scrollTo(0,0);},[]);
+  useEffect(()=>{if(isFirst.current){isFirst.current=false;return;}const a=loadSeg();const ex=a[key]||{};a[key]={...ex,...det,status:ex.status||'planning',statusUpdatedAt:ex.statusUpdatedAt||null,changes:ex.changes||[]};saveSeg(a);setSaveFlash(true);if(saveFlashRef.current)clearTimeout(saveFlashRef.current);saveFlashRef.current=setTimeout(()=>setSaveFlash(false),2000);},[det]);
+  const uT=(f,v)=>setDet(d=>({...d,transport:{...d.transport,[f]:v}}));
+  const uS=(f,v)=>setDet(d=>({...d,stay:{...d.stay,[f]:v}}));
+  const uF=(f,v)=>setDet(d=>({...d,food:{...d.food,[f]:v}}));
+  async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}
+  const hasT=Object.values(det.transport||{}).some(v=>v&&String(v).length>0);
+  const hasS=det.stay?.name?.length>0;
+  const TABS=[{id:"transport",label:"TRANSPORT",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:"ACTIVITIES",icon:"⚡",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"misc",label:"MISC",icon:"💸",count:det.misc.length},{id:"intel",label:"INTEL",icon:"🔭"}];
+  return(
+    <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:300,background:'#03070F',overflowY:'auto',animation:'slideInRight 0.28s cubic-bezier(0.32,0.72,0,1)'}}>
+      {/* Header */}
+      <div style={{display:'flex',alignItems:'center',padding:'12px 16px',gap:10,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(255,159,67,0.15)',position:'sticky',top:0,zIndex:10}}>
+        <button onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center'}}>‹</button>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontSize:11,color:'rgba(255,159,67,0.60)',fontFamily:"'Space Mono',monospace",letterSpacing:2,marginBottom:2}}>{phaseFlag} {phaseName}</div>
+          <div style={{fontSize:17,fontWeight:600,color:'#E8DCC8',fontFamily:"'Fraunces',serif"}}>{segment.name}</div>
+        </div>
+        <div style={{textAlign:'right',flexShrink:0}}>
+          <div style={{fontSize:14,fontWeight:700,color:'#FFD93D',fontFamily:"'Space Mono',monospace"}}>{fmt(segment.budget)}</div>
+          <div style={{fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>{segment.nights}n · {segment.type}</div>
+        </div>
+      </div>
+      {/* Tab bar */}
+      <div style={{display:'flex',background:'rgba(0,4,12,0.95)',borderBottom:'1px solid rgba(255,159,67,0.10)',position:'sticky',top:68,zIndex:9,overflowX:'auto',WebkitOverflowScrolling:'touch',scrollbarWidth:'none'}}>
+        {TABS.map(t=>{const on=tab===t.id;return(
+          <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,minWidth:0,padding:'10px 4px',background:'none',border:'none',borderBottom:on?'2px solid #FF9F43':'2px solid transparent',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',gap:2,transition:'all 0.15s'}}>
+            <span style={{fontSize:14,lineHeight:1}}>{t.icon}</span>
+            <span style={{fontSize:12,fontWeight:700,fontFamily:"'Space Mono',monospace",color:on?'#FF9F43':'rgba(255,255,255,0.45)',whiteSpace:'nowrap'}}>{t.label}{t.count>0?<span style={{color:'#FF9F43',fontSize:11}}> ({t.count})</span>:""}</span>
+          </button>
+        );})}
+        {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Space Mono',monospace",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
+      </div>
+      {/* Tab content */}
+      <div style={{padding:'16px',minHeight:'calc(100vh - 140px)'}}>
+        {/* TRANSPORT */}
+        {tab==="transport"&&<div>
+          {hasT&&<div style={{background:'rgba(0,229,255,0.04)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:12,padding:16,marginBottom:16}}>
+            <div style={{fontSize:15,fontWeight:600,color:'rgba(255,255,255,0.92)',fontFamily:"'Space Mono',monospace",marginBottom:4}}>✈️ {det.transport.mode||"Transport"}{det.transport.from&&det.transport.to?` · ${det.transport.from} → ${det.transport.to}`:""}{det.transport.cost?` · $${det.transport.cost}`:""}</div>
+            {(det.transport.depTime||det.transport.arrTime)&&<div style={{fontSize:13,color:'rgba(255,255,255,0.65)',fontFamily:"'Space Mono',monospace"}}>{det.transport.depTime?`Departs ${det.transport.depTime}`:""}{det.transport.depTime&&det.transport.arrTime?" · ":""}{det.transport.arrTime?`Arrives ${det.transport.arrTime}`:""}</div>}
+          </div>}
+          {!hasT&&<div style={{textAlign:'center',padding:'24px 0 20px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.40)',marginBottom:12}}>No transport planned yet.</div></div>}
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+            <SDF label="MODE" value={det.transport.mode} onChange={v=>uT("mode",v)} placeholder="Flight / Ferry / Car..." accent="#00E5FF"/>
+            <SDF label="COST ($)" type="number" value={det.transport.cost} onChange={v=>uT("cost",v)} placeholder="0" accent="#00E5FF"/>
+            <SDF label="FROM" value={det.transport.from} onChange={v=>uT("from",v)} placeholder="Departure city" accent="#00E5FF"/>
+            <SDF label="TO" value={det.transport.to} onChange={v=>uT("to",v)} placeholder="Arrival city" accent="#00E5FF"/>
+            <SDF label="DEP TIME" value={det.transport.depTime} onChange={v=>uT("depTime",v)} placeholder="08:30 AM" accent="#00E5FF"/>
+            <SDF label="ARR TIME" value={det.transport.arrTime} onChange={v=>uT("arrTime",v)} placeholder="11:45 AM" accent="#00E5FF"/>
+          </div>
+          <div style={{marginTop:10}}><SDF label="BOOKING LINK" value={det.transport.link||""} onChange={v=>uT("link",v)} placeholder="https://..." accent="#00E5FF"/></div>
+          <div style={{marginTop:8}}><SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="Flight number, booking ref..." accent="#00E5FF" multiline/></div>
+        </div>}
+        {/* STAY */}
+        {tab==="stay"&&<div>
+          {hasS&&<div style={{background:'rgba(105,240,174,0.04)',border:'1px solid rgba(105,240,174,0.15)',borderRadius:12,padding:16,marginBottom:16}}>
+            <div style={{fontSize:15,fontWeight:600,color:'rgba(255,255,255,0.92)',fontFamily:"'Space Mono',monospace"}}>🏨 {det.stay.name}</div>
+            {(det.stay.checkin||det.stay.checkout||det.stay.cost)&&<div style={{fontSize:13,color:'rgba(255,255,255,0.65)',fontFamily:"'Space Mono',monospace",marginTop:4}}>{det.stay.checkin?`Check-in ${fD(det.stay.checkin)}`:""}{det.stay.checkin&&det.stay.checkout?" · ":""}{det.stay.checkout?`Check-out ${fD(det.stay.checkout)}`:""}{det.stay.cost?` · $${det.stay.cost}`:""}</div>}
+          </div>}
+          {!hasS&&<div style={{textAlign:'center',padding:'24px 0 20px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.40)',marginBottom:12}}>No accommodation planned yet.</div></div>}
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+            <SDF label="PROPERTY" value={det.stay.name} onChange={v=>uS("name",v)} placeholder="Hotel / hostel / resort..." accent="#69F0AE"/>
+            <SDF label="TOTAL COST ($)" type="number" value={det.stay.cost} onChange={v=>uS("cost",v)} placeholder="0" accent="#69F0AE"/>
+            <SDF label="CHECK-IN" type="date" value={det.stay.checkin} onChange={v=>uS("checkin",v)} accent="#69F0AE"/>
+            <SDF label="CHECK-OUT" type="date" value={det.stay.checkout} onChange={v=>uS("checkout",v)} accent="#69F0AE"/>
+          </div>
+          <div style={{marginTop:10}}><SDF label="BOOKING LINK" value={det.stay.link} onChange={v=>uS("link",v)} placeholder="https://..." accent="#69F0AE"/></div>
+          <div style={{marginTop:8}}><SDF label="NOTES" value={det.stay.notes} onChange={v=>uS("notes",v)} placeholder="Room type, included meals, host contact..." accent="#69F0AE" multiline/></div>
+        </div>}
+        {/* ACTIVITIES */}
+        {tab==="activities"&&<div>
+          {det.activities.length>0&&<div style={{marginBottom:16}}>
+            {det.activities.map(a=>(
+              <div key={a.id} style={{background:'rgba(255,217,61,0.03)',border:'1px solid rgba(255,217,61,0.12)',borderRadius:10,padding:'12px 14px',marginBottom:8}}>
+                <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:15,fontWeight:700,color:'rgba(255,255,255,0.95)',fontFamily:"'Space Mono',monospace",marginBottom:4}}>{a.name}</div>
+                    <div style={{fontSize:13,color:'rgba(255,255,255,0.65)',fontFamily:"'Space Mono',monospace",display:'flex',gap:8,flexWrap:'wrap'}}>
+                      {a.date&&<span>{fD(a.date)}</span>}{a.cost&&<span style={{color:'#FFD93D'}}>${a.cost}</span>}{a.transit&&<span style={{color:'rgba(255,255,255,0.50)'}}>🚕 {a.transit}</span>}
+                    </div>
+                    {a.link&&<a href={a.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:4,maxWidth:'100%',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{a.link.replace(/^https?:\/\//,"").slice(0,45)}</a>}
+                  </div>
+                  <button onClick={()=>setDet(d=>({...d,activities:d.activities.filter(x=>x.id!==a.id)}))} style={{background:'none',border:'none',color:'rgba(255,255,255,0.30)',fontSize:16,cursor:'pointer',lineHeight:1,padding:'2px 4px',flexShrink:0}}>✕</button>
+                </div>
+              </div>
+            ))}
+            <div style={{display:'flex',justifyContent:'space-between',padding:'4px 2px'}}>
+              <span style={{fontSize:12,color:'rgba(255,255,255,0.30)',fontFamily:'monospace',letterSpacing:1}}>TOTAL</span>
+              <span style={{fontSize:14,fontWeight:600,color:'rgba(255,217,61,0.85)',fontFamily:'monospace'}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
+            </div>
+          </div>}
+          {det.activities.length===0&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,217,61,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
+          <div style={{background:'rgba(255,217,61,0.02)',border:'1px dashed rgba(255,217,61,0.15)',borderRadius:10,padding:'14px 16px'}}>
+            <div style={{fontSize:12,color:'rgba(255,217,61,0.50)',letterSpacing:2,marginBottom:10,fontFamily:"'Space Mono',monospace",fontWeight:700}}>+ ADD ACTIVITY</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:8}}>
+              <SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/>
+              <SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#FFD93D"/>
+              <SDF label="COST ($)" type="number" value={nAct.cost} onChange={v=>setNAct(a=>({...a,cost:v}))} placeholder="0" accent="#FFD93D"/>
+              <SDF label="TRANSIT" value={nAct.transit} onChange={v=>setNAct(a=>({...a,transit:v}))} placeholder="Taxi from hotel..." accent="#FFD93D"/>
+            </div>
+            <SDF label="BOOKING LINK" value={nAct.link} onChange={v=>setNAct(a=>({...a,link:v}))} placeholder="https://..." accent="#FFD93D"/>
+            <button onClick={()=>{if(!nAct.name)return;setDet(d=>({...d,activities:[...d.activities,{...nAct,id:Date.now()}]}));setNAct({name:"",date:"",cost:"",transit:"",link:""});}} style={{marginTop:10,padding:'10px 20px',borderRadius:8,border:`1px solid rgba(255,217,61,${nAct.name?"0.45":"0.15"})`,background:nAct.name?'rgba(255,217,61,0.10)':'transparent',color:nAct.name?'#FFD93D':'rgba(255,255,255,0.20)',fontSize:13,cursor:nAct.name?'pointer':'default',fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,width:'100%'}}>ADD TO PLAN</button>
+          </div>
+          <div style={{marginTop:14}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code..." accent="#FFD93D" multiline/></div>
+        </div>}
+        {/* FOOD */}
+        {tab==="food"&&<div>
+          <div style={{display:'flex',gap:10,alignItems:'flex-end',marginBottom:10}}>
+            <div style={{flex:1}}><SDF label="DAILY FOOD BUDGET ($)" type="number" value={det.food.dailyBudget} onChange={v=>uF("dailyBudget",v)} placeholder="e.g. 45" accent="#FF9F43"/></div>
+            <button onClick={aiFood} disabled={aiLoad} style={{padding:'8px 14px',borderRadius:6,border:'1px solid rgba(255,159,67,0.3)',background:'rgba(255,159,67,0.05)',color:'rgba(255,159,67,0.8)',fontSize:12,cursor:aiLoad?'wait':'pointer',fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:600,whiteSpace:'nowrap',height:34,flexShrink:0}}>{aiLoad?"✦...":"✦ CO-ARCH EST"}</button>
+          </div>
+          {det.food.dailyBudget&&<div style={{display:'flex',justifyContent:'space-between',padding:'10px 14px',background:'rgba(255,159,67,0.05)',border:'1px solid rgba(255,159,67,0.16)',borderRadius:8,marginBottom:10}}>
+            <span style={{fontSize:13,color:'rgba(255,255,255,0.45)',fontFamily:'monospace'}}>{segment.nights} nights × ${det.food.dailyBudget}/day</span>
+            <span style={{fontSize:14,fontWeight:600,color:'rgba(255,217,61,0.85)',fontFamily:'monospace'}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
+          </div>}
+          <SDF label="FOOD NOTES" value={det.food.notes} onChange={v=>uF("notes",v)} placeholder="Must-try dishes, market days, dietary notes..." accent="#FF9F43" multiline/>
+        </div>}
+        {/* MISC */}
+        {tab==="misc"&&<div>
+          {det.misc.length>0&&<div style={{marginBottom:16}}>
+            {det.misc.map(m=>(
+              <div key={m.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 0',borderBottom:'1px solid rgba(162,155,254,0.08)'}}>
+                <div style={{flex:1,fontSize:14,color:'#FFF',fontFamily:"'Space Mono',monospace"}}>{m.name}</div>
+                <span style={{fontSize:14,fontWeight:700,color:'#A29BFE',fontFamily:'monospace',flexShrink:0}}>${parseFloat(m.cost||0).toLocaleString()}</span>
+                <button onClick={()=>setDet(d=>({...d,misc:d.misc.filter(x=>x.id!==m.id)}))} style={{background:'none',border:'none',color:'rgba(255,255,255,0.25)',fontSize:16,cursor:'pointer',lineHeight:1,padding:'2px 4px',flexShrink:0}}>✕</button>
+              </div>
+            ))}
+            <div style={{paddingTop:8,display:'flex',justifyContent:'space-between'}}><span style={{fontSize:12,color:'rgba(255,255,255,0.30)',fontFamily:'monospace',letterSpacing:1}}>TOTAL MISC</span><span style={{fontSize:14,fontWeight:600,color:'rgba(162,155,254,0.8)',fontFamily:'monospace'}}>${det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0).toLocaleString()}</span></div>
+          </div>}
+          <div style={{background:'rgba(162,155,254,0.02)',border:'1px dashed rgba(162,155,254,0.18)',borderRadius:10,padding:'14px 16px'}}>
+            <div style={{fontSize:12,color:'rgba(162,155,254,0.50)',letterSpacing:2,marginBottom:10,fontFamily:"'Space Mono',monospace",fontWeight:700}}>+ ADD EXPENSE</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:8}}>
+              <SDF label="ITEM" value={(det._nMiscName||"")} onChange={v=>setDet(d=>({...d,_nMiscName:v}))} placeholder="Visa / permit / rental..." accent="#A29BFE"/>
+              <SDF label="COST ($)" type="number" value={(det._nMiscCost||"")} onChange={v=>setDet(d=>({...d,_nMiscCost:v}))} placeholder="0" accent="#A29BFE"/>
+            </div>
+            <button onClick={()=>{const name=det._nMiscName,cost=det._nMiscCost;if(!name)return;setDet(d=>({...d,misc:[...d.misc,{name,cost,id:Date.now()}],_nMiscName:"",_nMiscCost:""}));}} style={{padding:'10px 20px',borderRadius:8,border:`1px solid rgba(162,155,254,${det._nMiscName?"0.45":"0.15"})`,background:det._nMiscName?'rgba(162,155,254,0.10)':'transparent',color:det._nMiscName?'#A29BFE':'rgba(255,255,255,0.20)',fontSize:13,cursor:det._nMiscName?'pointer':'default',fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:700,width:'100%'}}>ADD EXPENSE</button>
+          </div>
+        </div>}
+        {/* INTEL */}
+        {tab==="intel"&&<div>
+          {intelSnippet&&!intelSnippet.error&&<div style={{padding:'14px 16px',background:'rgba(255,107,107,0.04)',border:'1px solid rgba(255,107,107,0.14)',borderRadius:10,marginBottom:16}}>
+            <div style={{fontSize:12,color:'rgba(255,107,107,0.65)',letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:8}}>DESTINATION INTEL</div>
+            {intelSnippet.tagline&&<div style={{fontSize:14,color:'#A29BFE',fontStyle:'italic',marginBottom:10,lineHeight:1.55}}>{intelSnippet.tagline}</div>}
+            {intelSnippet.mustDo?.slice(0,4).map((item,i)=><div key={i} style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:5,paddingLeft:10}}>• {item}</div>)}
+            {intelSnippet.streetIntel?.[0]&&<div style={{marginTop:10,padding:'8px 10px',background:'rgba(255,107,107,0.07)',border:'1px solid rgba(255,107,107,0.18)',borderRadius:6}}><div style={{fontSize:11,color:'#FF6B6B',fontWeight:700,letterSpacing:1.5,marginBottom:3}}>{intelSnippet.streetIntel[0].type}</div><div style={{fontSize:13,color:'#FFF'}}>{intelSnippet.streetIntel[0].alert}</div></div>}
+          </div>}
+          {(!intelSnippet||intelSnippet.error)&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontSize:18,opacity:0.3,marginBottom:8}}>🔭</div><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.40)'}}>No briefing for {segment.name} yet.</div><div style={{fontSize:12,color:'rgba(0,229,255,0.50)',fontFamily:"'Space Mono',monospace",marginTop:4}}>→ Generate in the INTEL tab</div></div>}
+          <SDF label="YOUR NOTES" value={det.intel.notes} onChange={v=>setDet(d=>({...d,intel:{...d.intel,notes:v}}))} placeholder="Visa requirements, local contacts, personal tips..." accent="#FF6B6B" multiline/>
+        </div>}
+      </div>
+    </div>
+  );
+}
+
 function PhaseDetailPage({phase,intelData,onBack}) {
   const isMobile=useMobile();
+  const [activeSegment,setActiveSegment]=useState(null);
   useEffect(()=>{window.scrollTo(0,0);},[]);
   const [hintVisible,setHintVisible]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;return!localStorage.getItem('1bn_phase_hint_shown');}catch(e){return false;}});
   useEffect(()=>{
@@ -1829,6 +2001,7 @@ function PhaseDetailPage({phase,intelData,onBack}) {
     }
   },[hintVisible]);
   return(
+    <>
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:'#03070F',overflowY:'auto',animation:'slideInRight 0.28s cubic-bezier(0.34,1.56,0.64,1)'}}>
       {/* Header */}
       <div style={{display:'flex',alignItems:'center',padding:'12px 16px',gap:12,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(0,229,255,0.12)',position:'sticky',top:0,zIndex:10}}>
@@ -1838,21 +2011,23 @@ function PhaseDetailPage({phase,intelData,onBack}) {
         <span style={{fontSize:14,fontWeight:700,color:'#FFD93D',fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</span>
       </div>
       {/* First-visit breadcrumb hint */}
-      {hintVisible&&<div style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(0,229,255,0.35)',padding:'6px 16px 0',textAlign:'center',fontFamily:"'Space Mono',monospace"}}>TAP ‹ TO RETURN TO EXPEDITION</div>}
+      {hintVisible&&<div style={{fontSize:11,letterSpacing:'0.12em',color:'rgba(0,229,255,0.35)',padding:'6px 16px 0',textAlign:'center',fontFamily:"'Space Mono',monospace"}}>TAP ‹ TO RETURN TO EXPEDITION</div>}
       {/* Stats bar */}
       <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'10px 16px',flexShrink:0}}>
-        <span style={{flex:1,fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>{fD(phase.arrival)} – {fD(phase.departure)}</span>
-        <span style={{fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>🌙{phase.totalNights}n</span>
-        {phase.totalDives>0&&<span style={{fontSize:11,color:'#00E5FF',marginLeft:8,fontFamily:"'Space Mono',monospace"}}>🤿{phase.totalDives}</span>}
+        <span style={{flex:1,fontSize:13,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>{fD(phase.arrival)} – {fD(phase.departure)}</span>
+        <span style={{fontSize:13,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>🌙{phase.totalNights}n</span>
+        {phase.totalDives>0&&<span style={{fontSize:13,color:'#00E5FF',marginLeft:8,fontFamily:"'Space Mono',monospace"}}>🤿{phase.totalDives}</span>}
       </div>
       {/* Segment list */}
       <div style={{padding:'6px 0 80px'}}>
-        <div style={{padding:'8px 16px 4px',fontSize:11,color:'rgba(255,255,255,0.28)',letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
+        <div style={{padding:'8px 16px 4px',fontSize:12,color:'rgba(255,255,255,0.35)',letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
         {phase.segments.map((seg,i)=>(
-          <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1}/>
+          <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onSegmentTap={s=>setActiveSegment(s)}/>
         ))}
       </div>
     </div>
+    {activeSegment&&<SegmentWorkspace segment={activeSegment} phaseId={phase.id} phaseName={phase.name} phaseFlag={phase.flag} intelSnippet={intelData?.[activeSegment.name]} onBack={()=>setActiveSegment(null)}/>}
+    </>
   );
 }
 
