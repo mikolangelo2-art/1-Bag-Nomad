@@ -287,8 +287,9 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .vision-ta{width:100%;background:rgba(8,6,4,0.85)!important;border:1.5px solid rgba(255,217,61,0.85)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.3s;margin-bottom:6px}
 .vision-ta::placeholder{font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.28);letter-spacing:0.01em}.vision-ta:focus{border:1.5px solid rgba(255,217,61,1)!important;animation:none!important;box-shadow:0 0 24px rgba(255,217,61,0.3),0 0 60px rgba(255,217,61,0.1)}
 .f-label{font-size:13px;color:rgba(255,159,67,0.88);letter-spacing:0.10em}
-.f-input{background:rgba(8,6,4,0.9);border:1px solid rgba(0,150,255,0.7);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Space Mono',monospace;outline:none;width:100%;transition:border-color 0.3s,box-shadow 0.3s;box-shadow:0 0 12px rgba(0,150,255,0.1),0 0 30px rgba(0,150,255,0.04)}
-.f-input:focus{border-color:rgba(0,170,255,1);box-shadow:0 0 20px rgba(0,170,255,0.2),0 0 44px rgba(0,170,255,0.07)}.f-input::placeholder{color:rgba(255,255,255,0.22)}input[type="date"]::-webkit-calendar-picker-indicator{opacity:0;width:28px;cursor:pointer;position:relative;z-index:2}
+.f-input{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.30);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Space Mono',monospace;outline:none;width:100%;transition:border-color 0.2s,box-shadow 0.2s}
+.f-input:focus{border-color:rgba(255,159,67,0.65);box-shadow:0 0 0 2px rgba(255,159,67,0.15),0 0 20px rgba(255,159,67,0.1)}.f-input::placeholder{color:rgba(255,255,255,0.40)}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.40)!important;font-style:italic}input[type="date"]::-webkit-calendar-picker-indicator{opacity:0;width:28px;cursor:pointer;position:relative;z-index:2}
 .launch-btn{width:100%;padding:17px;border-radius:14px;border:none;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:2.5px;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s}
 .launch-btn.off{background:linear-gradient(135deg,#8a3515 0%,#A9461D 40%,#C4571E 70%,#E06830 100%);color:rgba(255,255,255,0.5);cursor:default}
 .launch-btn.on{background:linear-gradient(135deg,#C4571E 0%,#E06830 30%,#FF9F43 60%,#FFD93D 100%);color:#FFF;animation:launchPulse 2.8s ease-in-out infinite;box-shadow:0 0 24px rgba(255,159,67,0.3),0 0 48px rgba(255,217,61,0.15)}
@@ -1104,7 +1105,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
               <div style={{fontSize:15,color:"rgba(255,255,255,0.9)",letterSpacing:2,marginBottom:10}}>💬 REFINE YOUR VISION</div>
               {loading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",marginBottom:8}}>✨ refining...</div>}
               <div style={{display:"flex",gap:7}}>
-                <input style={{flex:1,background:"#080D14",border:"1px solid #1a2535",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:isMobile?"11px":"9px 11px",fontFamily:"'Space Mono',monospace",outline:"none"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Swap a destination, adjust duration..."/>
+                <input style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:isMobile?"11px":"9px 11px",fontFamily:"'Space Mono',monospace",outline:"none",transition:"border-color 0.2s,box-shadow 0.2s"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Swap a destination, adjust duration..." onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
                 <button style={{background:"rgba(169,70,29,0.2)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:8,color:"#FFD93D",fontSize:15,padding:"8px 12px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={refine}>↑</button>
               </div>
             </div>
@@ -1196,7 +1197,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
       </div>
       <div style={{display:"flex",alignItems:"center",gap:12,padding:"8px 14px",background:"rgba(255,255,255,0.02)",borderBottom:"1px solid #111D2A",flexShrink:0}}>
         <span style={{fontSize:15,color:"rgba(255,255,255,0.75)",letterSpacing:1}}>DEPARTURE</span>
-        <input type="date" style={{background:"transparent",border:"1px solid rgba(0,229,255,0.28)",borderRadius:6,color:"#00E5FF",fontSize:15,padding:"3px 8px",fontFamily:"monospace",outline:"none"}} value={startDate} onChange={e=>setStartDate(e.target.value)}/>
+        <input type="date" style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:6,color:"#00E5FF",fontSize:15,padding:"3px 8px",fontFamily:"monospace",outline:"none",transition:"border-color 0.2s,box-shadow 0.2s",colorScheme:"dark"}} value={startDate} onChange={e=>setStartDate(e.target.value)} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
         <span style={{fontSize:15,color:"rgba(255,255,255,0.65)",marginLeft:"auto"}}>{totalNights} nights</span>
       </div>
       {isMobile&&<div style={{display:"flex",borderBottom:"1px solid #1a2535",background:"#080D14",flexShrink:0}}>
@@ -1249,7 +1250,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
               {QUICK_ACTIONS.map(a=><button key={a} onClick={()=>setInput(a)} style={{background:"rgba(169,70,29,0.18)",border:"1px solid rgba(255,217,61,0.35)",borderRadius:20,padding:"7px 14px",fontSize:15,fontWeight:700,color:"#FFD93D",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Space Mono',monospace",minHeight:36}}>{a}</button>)}
             </div>
             <div style={{padding:"8px 10px",borderTop:"1px solid #111D2A",display:"flex",gap:7,flexShrink:0}}>
-              <input style={{flex:1,background:"#080D14",border:"1px solid #1a2535",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",minHeight:44}} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendMsg();}} placeholder="Ask anything, request changes..."/>
+              <input style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",minHeight:44,transition:"border-color 0.2s,box-shadow 0.2s"}} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendMsg();}} placeholder="Ask anything, request changes..." onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
               <button style={{background:"rgba(169,70,29,0.2)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:8,color:"#FFD93D",fontSize:15,padding:"8px 11px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={sendMsg}>↑</button>
             </div>
             {!isMobile&&<button style={{margin:10,padding:12,borderRadius:10,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#060A0F",fontSize:15,fontWeight:900,cursor:"pointer",letterSpacing:2,fontFamily:"'Space Mono',monospace",animation:"consolePulse 2.8s ease-in-out infinite",flexShrink:0}} onClick={()=>onLaunch(buildHandoff())}>{data.isRevision?"✅  UPDATE MY EXPEDITION":"🚀  LAUNCH TRIP CONSOLE"}</button>}
@@ -1398,13 +1399,15 @@ function HomecomingScreen({tripData,onPlanNext}) {
 // ─── SegmentDetailField ───────────────────────────────────────────
 function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00E5FF"}) {
   const mob=useMobile();
-  const s={background:"rgba(0,8,20,0.6)",border:`1px solid ${accent}18`,borderRadius:6,color:"#FFF",fontSize:mob?12:15,padding:multiline?(mob?"5px 7px":"6px 8px"):(mob?"4px 7px":"5px 8px"),fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",lineHeight:1.6,resize:multiline?"none":undefined};
+  const s={background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:6,color:"#FFF",fontSize:mob?12:15,padding:multiline?(mob?"5px 7px":"6px 8px"):(mob?"4px 7px":"5px 8px"),fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",lineHeight:1.6,resize:multiline?"none":undefined,transition:"border-color 0.2s,box-shadow 0.2s"};
+  const onF=e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'center'}),320);};
+  const onB=e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";};
   return(
     <div style={{display:"flex",flexDirection:"column",gap:mob?2:3}}>
       <div style={{fontSize:mob?9:11,color:"rgba(212,180,120,0.7)",letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500}}>{label}</div>
-      {multiline?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={1} style={s} onFocus={e=>{e.target.style.borderColor=`${accent}55`;setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'center'}),320);}} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>
-      :type==="date"?<div style={{position:"relative"}}><input type="date" value={value} onChange={e=>onChange(e.target.value)} style={{...s,colorScheme:"dark",paddingRight:26}} onFocus={e=>{e.target.style.borderColor=`${accent}55`;setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'center'}),320);}} onBlur={e=>e.target.style.borderColor=`${accent}18`}/><div style={{position:"absolute",right:7,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:13,lineHeight:1}}>📅</div></div>
-      :<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={e=>{e.target.style.borderColor=`${accent}55`;setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'center'}),320);}} onBlur={e=>e.target.style.borderColor=`${accent}18`}/>}
+      {multiline?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={1} style={s} onFocus={onF} onBlur={onB}/>
+      :type==="date"?<div style={{position:"relative"}}><input type="date" value={value} onChange={e=>onChange(e.target.value)} style={{...s,colorScheme:"dark",paddingRight:26}} onFocus={onF} onBlur={onB}/><div style={{position:"absolute",right:7,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:13,lineHeight:1}}>📅</div></div>
+      :<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={onF} onBlur={onB}/>}
     </div>
   );
 }
@@ -1792,7 +1795,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
             {["Best dive ops?","Where to stay?","What to skip?","Budget tips?","Local food?"].map(p=><button key={p} onClick={()=>setAskInput(p)} style={{padding:isMobile?"2px 7px":"3px 9px",borderRadius:12,border:"1px solid rgba(255,217,61,0.2)",background:"rgba(255,217,61,0.05)",color:"rgba(255,217,61,0.65)",fontSize:isMobile?10:15,cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,whiteSpace:"nowrap"}}>{p}</button>)}
           </div>
           <div style={{display:"flex",gap:6}}>
-            <input value={askInput} onChange={e=>setAskInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendAsk();}} placeholder={`Ask about ${segment.name}...`} style={{flex:1,background:"rgba(0,8,20,0.8)",border:"1px solid rgba(255,217,61,0.2)",borderRadius:7,color:"#FFF",fontSize:isMobile?12:15,padding:isMobile?"6px 8px":"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",minHeight:isMobile?30:34}}/>
+            <input value={askInput} onChange={e=>setAskInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendAsk();}} placeholder={`Ask about ${segment.name}...`} style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:7,color:"#FFF",fontSize:isMobile?12:15,padding:isMobile?"6px 8px":"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",minHeight:isMobile?30:34,transition:"border-color 0.2s,box-shadow 0.2s"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
             <button onClick={sendAsk} style={{background:"rgba(255,217,61,0.12)",border:"1px solid rgba(255,217,61,0.3)",borderRadius:7,color:"#FFD93D",fontSize:isMobile?13:15,padding:isMobile?"5px 9px":"6px 11px",cursor:"pointer",minWidth:isMobile?30:34,minHeight:isMobile?30:34,fontWeight:700}}>↑</button>
           </div>
         </div>
@@ -2556,14 +2559,14 @@ Return ONLY a JSON array:
         <BottomSheet open={editOpen} onClose={()=>setEditOpen(false)} zIndex={600}>
           <div style={{padding:'16px 16px 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
             <div style={{fontSize:10,color:`${catColor}99`,letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:8}}>EDIT ITEM</div>
-            <input value={item.name} onChange={e=>updateItem(item.id,'name',e.target.value)} style={{width:'100%',background:'rgba(18,11,0,0.9)',border:`1px solid ${catColor}44`,borderRadius:9,color:'#FFF',fontSize:14,padding:'10px 13px',fontFamily:"'Space Mono',monospace",outline:'none'}} placeholder="Item name"/>
+            <input value={item.name} onChange={e=>updateItem(item.id,'name',e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:9,color:'#FFF',fontSize:14,padding:'10px 13px',fontFamily:"'Space Mono',monospace",outline:'none',transition:'border-color 0.2s,box-shadow 0.2s'}} placeholder="Item name" onFocus={e=>{e.target.style.borderColor='rgba(255,159,67,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(255,159,67,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';}}/>
           </div>
           <div style={{padding:'14px 16px',display:'flex',flexDirection:'column',gap:12,textAlign:'left'}}>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
               {[{label:'WT (lbs)',f:'weight'},{label:'COST ($)',f:'cost'},{label:'VOL (L)',f:'volume'}].map(({label,f})=>(
                 <div key={f}>
                   <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:5,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{label}</div>
-                  <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{width:'100%',background:'rgba(18,11,0,0.9)',border:`1px solid ${catColor}72`,borderRadius:7,color:'#FFD93D',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:'monospace'}}/>
+                  <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:7,color:'#FFD93D',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:'monospace',transition:'border-color 0.2s,box-shadow 0.2s'}} onFocus={e=>{e.target.style.borderColor='rgba(255,159,67,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(255,159,67,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';}}/>
                 </div>
               ))}
             </div>
@@ -2609,10 +2612,10 @@ Return ONLY a JSON array:
         </div>
         {open&&(
           <div style={{padding:"12px 16px 16px 44px",background:"rgba(0,0,0,0.25)",borderTop:`1px solid ${catColor}15`,animation:"slideOpen 0.18s ease",display:"flex",flexDirection:"column",gap:10}}>
-            <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:7,color:"#FFF",fontSize:12,padding:"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%"}} placeholder="Item name"/>
+            <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:7,color:"#FFF",fontSize:12,padding:"8px 10px",fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",transition:"border-color 0.2s,box-shadow 0.2s"}} placeholder="Item name" onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
               {[{label:"WT (lbs)",f:"weight"},{label:"COST ($)",f:"cost"},{label:"VOL (L)",f:"volume"}].map(({label,f})=>(
-                <div key={f}><div style={{fontSize:9,color:"rgba(255,159,67,0.65)",letterSpacing:1,marginBottom:3,fontFamily:"monospace"}}>{label}</div><input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(18,11,0,0.9)",border:"1px solid rgba(169,70,29,0.3)",borderRadius:5,color:"#FFD93D",fontSize:12,padding:"6px 8px",outline:"none",fontFamily:"monospace",width:"100%"}}/></div>
+                <div key={f}><div style={{fontSize:9,color:"rgba(255,159,67,0.65)",letterSpacing:1,marginBottom:3,fontFamily:"monospace"}}>{label}</div><input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:5,color:"#FFD93D",fontSize:12,padding:"6px 8px",outline:"none",fontFamily:"monospace",width:"100%",transition:"border-color 0.2s,box-shadow 0.2s"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/></div>
               ))}
             </div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
@@ -2964,7 +2967,7 @@ Return ONLY a JSON array:
               {["Keep me under 15 lbs","I do laundry weekly","Add rain gear","Pack for heat"].map(p=><button key={p} onClick={()=>setChatInput(p)} style={{padding:"6px 12px",borderRadius:14,border:"1px solid rgba(196,87,30,0.35)",background:"rgba(169,70,29,0.12)",color:"rgba(255,159,67,0.9)",fontSize:15,cursor:"pointer",fontFamily:"monospace",whiteSpace:"nowrap",fontWeight:700}}>{p}</button>)}
             </div>
             <div style={{display:"flex",gap:7}}>
-              <input value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendChat();}} placeholder="Ask anything about your pack..." style={{flex:1,background:"rgba(20,8,0,0.85)",border:"1px solid rgba(196,87,30,0.35)",borderRadius:8,color:"#FFF",fontSize:15,padding:"11px 14px",fontFamily:"monospace",outline:"none",minHeight:44}}/>
+              <input value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendChat();}} placeholder="Ask anything about your pack..." style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:8,color:"#FFF",fontSize:15,padding:"11px 14px",fontFamily:"monospace",outline:"none",minHeight:44,transition:"border-color 0.2s,box-shadow 0.2s"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
               <button onClick={sendChat} style={{background:"rgba(169,70,29,0.25)",border:"1px solid rgba(196,87,30,0.45)",borderRadius:8,color:"#FF9F43",fontSize:16,padding:"8px 14px",cursor:"pointer",minWidth:44,minHeight:44,fontWeight:700}}>↑</button>
             </div>
           </div>}
