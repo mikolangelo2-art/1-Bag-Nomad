@@ -1570,6 +1570,8 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
               <SDF label="PROPERTY" value={det.stay.name} onChange={v=>uS("name",v)} placeholder="Hotel / hostel / resort..." accent="#69F0AE"/>
               <SDF label="TOTAL COST ($)" type="number" value={det.stay.cost} onChange={v=>uS("cost",v)} placeholder="0" accent="#69F0AE"/>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr",gap:6,marginTop:6}}>
               <SDF label="CHECK-IN" type="date" value={det.stay.checkin} onChange={v=>uS("checkin",v)} accent="#69F0AE"/>
               <SDF label="CHECK-OUT" type="date" value={det.stay.checkout} onChange={v=>uS("checkout",v)} accent="#69F0AE"/>
             </div>
@@ -1894,6 +1896,8 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
             <SDF label="PROPERTY" value={det.stay.name} onChange={v=>uS("name",v)} placeholder="Hotel / hostel / resort..." accent="#69F0AE"/>
             <SDF label="TOTAL COST ($)" type="number" value={det.stay.cost} onChange={v=>uS("cost",v)} placeholder="0" accent="#69F0AE"/>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr',gap:10,marginTop:10}}>
             <SDF label="CHECK-IN" type="date" value={det.stay.checkin} onChange={v=>uS("checkin",v)} accent="#69F0AE"/>
             <SDF label="CHECK-OUT" type="date" value={det.stay.checkout} onChange={v=>uS("checkout",v)} accent="#69F0AE"/>
           </div>
