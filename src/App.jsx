@@ -1524,19 +1524,19 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
     <div style={{borderTop:"1px solid rgba(0,229,255,0.06)"}}>
       {/* Status banner — lock notice or LOCK BOOKING button */}
       {locked&&<div style={{padding:"7px 14px",background:"rgba(105,240,174,0.06)",borderBottom:"1px solid rgba(105,240,174,0.15)",display:"flex",alignItems:"center",gap:8}}>
-        <span style={{fontSize:10,color:"#69F0AE",fontFamily:"'Space Mono',monospace",letterSpacing:1.5,flex:1}}>🔒 BOOKED — tap badge to unlock for editing</span>
+        <span style={{fontSize:11,color:"#69F0AE",fontFamily:"'Space Mono',monospace",letterSpacing:1.5,flex:1}}>🔒 BOOKED — tap badge to unlock for editing</span>
       </div>}
       {status==='changed'&&<div style={{padding:"7px 14px",background:"rgba(255,107,107,0.06)",borderBottom:"1px solid rgba(255,107,107,0.2)",display:"flex",alignItems:"center",gap:8}}>
-        <span style={{fontSize:10,color:"#FF6B6B",fontFamily:"'Space Mono',monospace",letterSpacing:1,flex:1}}>⚠️ CHANGED — update your details, then lock when done</span>
-        <button onClick={()=>onStatusChange?.('booked')} style={{fontSize:9,padding:"3px 10px",borderRadius:5,border:"1px solid rgba(105,240,174,0.4)",background:"rgba(105,240,174,0.08)",color:"#69F0AE",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,whiteSpace:"nowrap",minHeight:26}}>✓ LOCK BOOKING</button>
+        <span style={{fontSize:11,color:"#FF6B6B",fontFamily:"'Space Mono',monospace",letterSpacing:1,flex:1}}>⚠️ CHANGED — update your details, then lock when done</span>
+        <button onClick={()=>onStatusChange?.('booked')} style={{fontSize:11,padding:"3px 10px",borderRadius:5,border:"1px solid rgba(105,240,174,0.4)",background:"rgba(105,240,174,0.08)",color:"#69F0AE",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,whiteSpace:"nowrap",minHeight:26}}>✓ LOCK BOOKING</button>
       </div>}
       <div style={{pointerEvents:locked?"none":"auto",opacity:locked?0.55:1,transition:"opacity 0.2s"}}>
       <div style={{display:"flex",background:"rgba(0,4,12,0.8)",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",position:"relative"}}>
-        {saveFlash&&<div style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",fontFamily:"'Space Mono',monospace",fontSize:11,color:"#69F0AE",opacity:0.75,letterSpacing:1,transition:"opacity 0.4s ease",zIndex:2,pointerEvents:"none"}}>&#10003; saved</div>}
+        {saveFlash&&<div style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",fontFamily:"'Space Mono',monospace",fontSize:13,color:"#69F0AE",opacity:0.80,letterSpacing:1,transition:"opacity 0.4s ease",zIndex:2,pointerEvents:"none"}}>&#10003; saved</div>}
         {CATS.map(c=>{const on=cat===c.id;return(
           <button key={c.id} onClick={()=>setCat(on?null:c.id)} style={{flexShrink:0,minWidth:52,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"7px 4px",border:"none",cursor:"pointer",background:on?c.w:"transparent",borderBottom:on?`2px solid ${c.a}`:"2px solid transparent",transition:"all 0.15s",position:"relative"}}>
             <span style={{fontSize:isMobile?13:15,lineHeight:1}}>{c.icon}</span>
-            <span style={{fontSize:isMobile?8:11,letterSpacing:0,fontFamily:"'Space Mono',monospace",fontWeight:700,color:on?c.a:"rgba(255,255,255,0.65)",whiteSpace:"nowrap"}}>{c.label}{c.id==="activities"&&det.activities.length>0?<span style={{color:"#FF9F43",fontSize:8}}> ({det.activities.length})</span>:""}{c.id==="misc"&&det.misc.length>0?<span style={{color:"#A29BFE",fontSize:8}}> ({det.misc.length})</span>:""}</span>
+            <span style={{fontSize:isMobile?10:12,letterSpacing:0,fontFamily:"'Space Mono',monospace",fontWeight:700,color:on?c.a:"rgba(255,255,255,0.55)",whiteSpace:"nowrap"}}>{c.label}{c.id==="activities"&&det.activities.length>0?<span style={{color:"#FF9F43",fontSize:isMobile?9:11}}> ({det.activities.length})</span>:""}{c.id==="misc"&&det.misc.length>0?<span style={{color:"#A29BFE",fontSize:isMobile?9:11}}> ({det.misc.length})</span>:""}</span>
             {done[c.id]&&<div style={{position:"absolute",top:4,right:"14%",width:5,height:5,borderRadius:"50%",background:c.a,boxShadow:`0 0 5px ${c.a}`}}/>}
           </button>
         );})}
@@ -1548,8 +1548,8 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
         <div style={{background:ac.w,borderTop:`1px solid ${ac.a}15`,animation:"slideOpen 0.18s ease"}}>
           {cat==="transport"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:7}}>
             {(det.transport.mode||det.transport.from)&&<div style={{background:"rgba(0,229,255,0.04)",border:"1px solid rgba(0,229,255,0.12)",borderRadius:8,padding:"8px 10px",marginBottom:4}}>
-              <div style={{fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.85)",fontFamily:"'Space Mono',monospace"}}>✈️ {det.transport.mode||"Transport"}{det.transport.from&&det.transport.to?` · ${det.transport.from} → ${det.transport.to}`:""}{det.transport.cost?` · $${det.transport.cost}`:""}</div>
-              {(det.transport.depTime||det.transport.arrTime)&&<div style={{fontSize:11,color:"rgba(255,255,255,0.45)",fontFamily:"'Space Mono',monospace",marginTop:2}}>{det.transport.depTime?`Departs ${det.transport.depTime}`:""}{det.transport.depTime&&det.transport.arrTime?" · ":""}{det.transport.arrTime?`Arrives ${det.transport.arrTime}`:""}</div>}
+              <div style={{fontSize:14,fontWeight:600,color:"rgba(255,255,255,0.85)",fontFamily:"'Space Mono',monospace"}}>✈️ {det.transport.mode||"Transport"}{det.transport.from&&det.transport.to?` · ${det.transport.from} → ${det.transport.to}`:""}{det.transport.cost?` · $${det.transport.cost}`:""}</div>
+              {(det.transport.depTime||det.transport.arrTime)&&<div style={{fontSize:13,color:"rgba(255,255,255,0.50)",fontFamily:"'Space Mono',monospace",marginTop:2}}>{det.transport.depTime?`Departs ${det.transport.depTime}`:""}{det.transport.depTime&&det.transport.arrTime?" · ":""}{det.transport.arrTime?`Arrives ${det.transport.arrTime}`:""}</div>}
             </div>}
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
               <SDF label="MODE" value={det.transport.mode} onChange={v=>uT("mode",v)} placeholder="Flight / Ferry / Car..." accent="#00E5FF"/>
@@ -1563,8 +1563,8 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
           </div>}
           {cat==="stay"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:5}}>
             {det.stay.name&&<div style={{background:"rgba(105,240,174,0.04)",border:"1px solid rgba(105,240,174,0.12)",borderRadius:8,padding:"8px 10px",marginBottom:4}}>
-              <div style={{fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.85)",fontFamily:"'Space Mono',monospace"}}>🏨 {det.stay.name}</div>
-              {(det.stay.checkin||det.stay.checkout||det.stay.cost)&&<div style={{fontSize:11,color:"rgba(255,255,255,0.45)",fontFamily:"'Space Mono',monospace",marginTop:2}}>{det.stay.checkin?`Check-in ${fD(det.stay.checkin)}`:""}{det.stay.checkin&&det.stay.checkout?" · ":""}{det.stay.checkout?`Check-out ${fD(det.stay.checkout)}`:""}{det.stay.cost?` · $${det.stay.cost}`:""}</div>}
+              <div style={{fontSize:14,fontWeight:600,color:"rgba(255,255,255,0.85)",fontFamily:"'Space Mono',monospace"}}>🏨 {det.stay.name}</div>
+              {(det.stay.checkin||det.stay.checkout||det.stay.cost)&&<div style={{fontSize:13,color:"rgba(255,255,255,0.50)",fontFamily:"'Space Mono',monospace",marginTop:2}}>{det.stay.checkin?`Check-in ${fD(det.stay.checkin)}`:""}{det.stay.checkin&&det.stay.checkout?" · ":""}{det.stay.checkout?`Check-out ${fD(det.stay.checkout)}`:""}{det.stay.cost?` · $${det.stay.cost}`:""}</div>}
             </div>}
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
               <SDF label="PROPERTY" value={det.stay.name} onChange={v=>uS("name",v)} placeholder="Hotel / hostel / resort..." accent="#69F0AE"/>
@@ -1582,11 +1582,11 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
                 <div key={a.id} style={{background:"rgba(255,217,61,0.03)",border:"1px solid rgba(255,217,61,0.10)",borderRadius:8,padding:"8px 10px",marginBottom:6}}>
                   <div style={{display:"flex",alignItems:"flex-start",gap:8}}>
                     <div style={{flex:1,minWidth:0}}>
-                      <div style={{fontSize:13,fontWeight:600,color:"rgba(255,255,255,0.90)",fontFamily:"'Space Mono',monospace",marginBottom:3}}>{a.name}</div>
-                      <div style={{fontSize:11,color:"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",display:"flex",gap:8,flexWrap:"wrap"}}>
+                      <div style={{fontSize:14,fontWeight:600,color:"rgba(255,255,255,0.90)",fontFamily:"'Space Mono',monospace",marginBottom:3}}>{a.name}</div>
+                      <div style={{fontSize:13,color:"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace",display:"flex",gap:8,flexWrap:"wrap"}}>
                         {a.date&&<span>{fD(a.date)}</span>}{a.cost&&<span style={{color:"#FFD93D"}}>${a.cost}</span>}{a.transit&&<span style={{color:"rgba(255,255,255,0.40)"}}>🚕 {a.transit}</span>}
                       </div>
-                      {a.link&&<a href={a.link} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"#00E5FF",textDecoration:"none",display:"inline-block",marginTop:3,maxWidth:"100%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
+                      {a.link&&<a href={a.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:"#00E5FF",textDecoration:"none",display:"inline-block",marginTop:3,maxWidth:"100%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
                     </div>
                     <button onClick={()=>setDet(d=>({...d,activities:d.activities.filter(x=>x.id!==a.id)}))} style={{background:"none",border:"none",color:"rgba(255,255,255,0.25)",fontSize:14,cursor:"pointer",lineHeight:1,padding:"2px 4px",flexShrink:0}}>✕</button>
                   </div>
@@ -1740,7 +1740,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
           <div style={{display:"flex",alignItems:"center",gap:6,minWidth:0}}>
             <div style={{width:7,height:7,borderRadius:"50%",background:tc,flexShrink:0,boxShadow:open?`0 0 7px ${tc}`:"none"}}/>
             <span style={{fontSize:isMobile?14:15,fontWeight:600,color:isCancelled?"rgba(255,255,255,0.4)":"#E8DCC8",fontFamily:"'Space Mono',monospace",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textDecoration:isCancelled?"line-through":"none"}}>{segment.name}</span>
-            <span style={{fontSize:9,color:`${tc}bb`,background:`${tc}0e`,border:`1px solid ${tc}1e`,borderRadius:6,padding:"1px 5px",letterSpacing:0.5,fontWeight:500,whiteSpace:"nowrap",flexShrink:0}}>{segment.type?.toUpperCase()}</span>
+            <span style={{fontSize:11,color:`${tc}bb`,background:`${tc}0e`,border:`1px solid ${tc}1e`,borderRadius:6,padding:"1px 6px",letterSpacing:0.5,fontWeight:500,whiteSpace:"nowrap",flexShrink:0}}>{segment.type?.toUpperCase()}</span>
             <span style={{fontSize:isMobile?12:14,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",flexShrink:0,textDecoration:isCancelled?"line-through":"none"}}>{fmt(segment.budget)}</span>
           </div>
           {/* Row 2: date + nights + dives + progdots + status badge */}
@@ -1750,14 +1750,14 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
             {segment.diveCount>0&&<span style={{color:"rgba(0,229,255,0.6)",fontSize:11,whiteSpace:"nowrap"}}>· 🤿{segment.diveCount}</span>}
             <div style={{flex:1,minWidth:0}}/>
             <ProgDots phaseId={phaseId} segment={segment} intelSnippet={intelSnippet}/>
-            <button onClick={handleBadgeTap} style={{background:`${(planStatus||sc).color}18`,border:`1px solid ${(planStatus||sc).color}55`,borderRadius:20,padding:"1px 6px",fontSize:8,fontWeight:700,letterSpacing:1.5,color:(planStatus||sc).color,cursor:"pointer",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:2,lineHeight:1.4,minHeight:18,transition:"all 0.2s",animation:status==='planning'&&completedCount===0?'planningPulse 2.2s ease-in-out infinite':'none'}}>
-              <span style={{fontSize:9}}>{planStatus?completedCount>=3?"✓":sc.icon:sc.icon}</span>{planStatus?planStatus.label:sc.label}
+            <button onClick={handleBadgeTap} style={{background:`${(planStatus||sc).color}18`,border:`1px solid ${(planStatus||sc).color}55`,borderRadius:20,padding:"2px 8px",fontSize:11,fontWeight:600,letterSpacing:1,color:(planStatus||sc).color,cursor:"pointer",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:3,lineHeight:1.4,minHeight:22,transition:"all 0.2s",animation:status==='planning'&&completedCount===0?'planningPulse 2.2s ease-in-out infinite':'none'}}>
+              <span style={{fontSize:11}}>{planStatus?completedCount>=3?"✓":sc.icon:sc.icon}</span>{planStatus?planStatus.label:sc.label}
             </button>
           </div>
         </div>
         <div onClick={e=>{e.stopPropagation();setOpen(o=>!o);}} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"0 8px",cursor:"pointer",flexShrink:0}}>
           <div style={{width:16,height:16,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.15":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center"}}>
-            <span style={{fontSize:10,color:open?"#00E5FF":"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
+            <span style={{fontSize:11,color:open?"#00E5FF":"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
           </div>
         </div>
         <button onClick={e=>{e.stopPropagation();setAskOpen(o=>!o);}} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,padding:"8px 10px",background:askOpen?"rgba(255,217,61,0.1)":"rgba(255,217,61,0.03)",border:"none",borderLeft:`1px solid rgba(255,217,61,${askOpen?"0.45":"0.22"})`,cursor:"pointer",flexShrink:0,height:"100%",minWidth:38,transition:"all 0.15s"}} title="Ask co-architect">
@@ -1767,10 +1767,10 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
       </div>
       {!open&&segData&&(hasTransport||hasStay||hasActivities||segData.food?.dailyBudget)&&(
         <div onClick={()=>setOpen(true)} style={{padding:"4px 14px 6px 20px",display:"flex",flexWrap:"wrap",gap:"4px 8px",cursor:"pointer",background:"rgba(0,4,14,0.4)"}}>
-          {hasTransport&&<span style={{fontSize:10,color:"rgba(255,255,255,0.60)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>✈️ {segData.transport.mode||"Transport"}{segData.transport.from&&segData.transport.to?` · ${segData.transport.from} → ${segData.transport.to}`:""}{segData.transport.cost?` · $${segData.transport.cost}`:""}</span>}
-          {hasStay&&<span style={{fontSize:10,color:"rgba(255,255,255,0.60)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>🏨 {segData.stay.name}{segData.stay.cost?` · $${segData.stay.cost}`:""}</span>}
-          {hasActivities&&<span style={{fontSize:10,color:"rgba(255,255,255,0.60)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>⚡ {segData.activities.length} activit{segData.activities.length===1?"y":"ies"}{segData.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0)>0?` · $${segData.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0)}`:""}</span>}
-          {segData.food?.dailyBudget&&<span style={{fontSize:10,color:"rgba(255,255,255,0.60)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>🍜 ${segData.food.dailyBudget}/day</span>}
+          {hasTransport&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.65)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>✈️ {segData.transport.mode||"Transport"}{segData.transport.from&&segData.transport.to?` · ${segData.transport.from} → ${segData.transport.to}`:""}{segData.transport.cost?` · $${segData.transport.cost}`:""}</span>}
+          {hasStay&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.65)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>🏨 {segData.stay.name}{segData.stay.cost?` · $${segData.stay.cost}`:""}</span>}
+          {hasActivities&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.65)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>⚡ {segData.activities.length} activit{segData.activities.length===1?"y":"ies"}{segData.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0)>0?` · $${segData.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0)}`:""}</span>}
+          {segData.food?.dailyBudget&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.65)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>🍜 ${segData.food.dailyBudget}/day</span>}
         </div>
       )}
       {askOpen&&(
@@ -1803,8 +1803,8 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
       {open&&<SegmentDetails phaseId={phaseId} segment={segment} intelSnippet={intelSnippet} status={status} onStatusChange={saveStatus}/>}
       {isCancelled&&!open&&(
         <div style={{padding:"6px 16px 8px 20px",display:"flex",gap:10,alignItems:"center"}}>
-          <span style={{fontSize:10,color:"rgba(136,136,136,0.7)",fontFamily:"'Space Mono',monospace",flex:1,letterSpacing:1}}>✕ CANCELLED</span>
-          <button onClick={e=>{e.stopPropagation();saveStatus('planning');}} style={{fontSize:10,padding:"3px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.3)",background:"rgba(0,229,255,0.06)",color:"#00E5FF",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:28}}>+ REBOOK</button>
+          <span style={{fontSize:11,color:"rgba(136,136,136,0.7)",fontFamily:"'Space Mono',monospace",flex:1,letterSpacing:1}}>✕ CANCELLED</span>
+          <button onClick={e=>{e.stopPropagation();saveStatus('planning');}} style={{fontSize:11,padding:"3px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.3)",background:"rgba(0,229,255,0.06)",color:"#00E5FF",cursor:"pointer",fontFamily:"'Space Mono',monospace",fontWeight:700,letterSpacing:1,minHeight:28}}>+ REBOOK</button>
         </div>
       )}
     </div>
@@ -1889,7 +1889,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null}) {
         <div style={{display:'flex',alignItems:'center',gap:8,width:'100%'}}>
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
             <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:2,flexShrink:0}}>
-              <div style={{width:24,height:24,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace"}}>{phase.id}</div>
+              <div style={{width:24,height:24,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace"}}>{phase.id}</div>
               <span style={{fontSize:12,lineHeight:1,filter:'grayscale(20%)'}}>{getPhaseActivityIcon(phase)}</span>
             </div>
             <span style={{fontSize:20,lineHeight:1}}>{phase.flag}</span>
@@ -1941,13 +1941,13 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null}) {
     <div style={{borderRadius:13,border:open?`1.5px solid ${phase.color}`:"1px solid rgba(0,229,255,0.08)",borderTop:open?`1.5px solid ${phase.color}`:"1px solid rgba(0,229,255,0.20)",boxShadow:open?`0 0 0 1px ${phase.color}22, 0 4px 28px ${phase.color}28, inset 0 1px 0 ${phase.color}18`:"none",background:open?`linear-gradient(145deg,${phase.color}07,rgba(0,4,14,0.98))`:"rgba(0,8,16,0.55)",backdropFilter:open?undefined:'blur(6px)',WebkitBackdropFilter:open?undefined:'blur(6px)',overflow:"hidden",transition:"all 0.25s",animation:`fadeUp 0.3s ease ${idx*.04}s both`}}>
       <div onClick={()=>setOpen(o=>!o)} style={{padding:"14px 16px",cursor:"pointer",minHeight:62,borderLeft:`3px solid ${open?phase.color:phase.color+"50"}`}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
-          <div style={{width:20,height:20,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
+          <div style={{width:22,height:22,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
           <span style={{fontSize:14,flexShrink:0}}>{phase.flag}</span>
           <span style={{flex:1,fontSize:15,fontWeight:600,color:open?phase.color:"#E8DCC8",fontFamily:"'Space Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",transition:"color 0.2s"}}>{phase.name}</span>
           {isNow&&<span style={{fontSize:9,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:20,padding:"2px 8px",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>ACTIVE</span>}
           <span style={{fontSize:15,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",flexShrink:0}}>{fmt(phase.totalBudget)}</span>
           <div style={{width:16,height:16,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.2":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-            <span style={{fontSize:8,color:open?phase.color:"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
+            <span style={{fontSize:11,color:open?phase.color:"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▼</span>
           </div>
         </div>
         {!open&&phase.note&&phase.segments.length>1&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.62)",lineHeight:1.65,paddingLeft:28,marginBottom:6,marginTop:1}}>{phase.note}</div>}
@@ -2786,7 +2786,7 @@ Return ONLY a JSON array:
       })()}
       {/* Tab bar */}
       <div style={{display:"flex",alignItems:"stretch",background:"rgba(12,5,0,0.98)",borderBottom:"1px solid rgba(196,87,30,0.2)",position:"relative"}}>
-        {packSaveFlash&&<div style={{position:"absolute",right:12,top:4,fontFamily:"'Space Mono',monospace",fontSize:11,color:"#69F0AE",opacity:0.75,letterSpacing:1,zIndex:2,pointerEvents:"none",transition:"opacity 0.4s ease"}}>&#10003; saved</div>}
+        {packSaveFlash&&<div style={{position:"absolute",right:12,top:4,fontFamily:"'Space Mono',monospace",fontSize:13,color:"#69F0AE",opacity:0.80,letterSpacing:1,zIndex:2,pointerEvents:"none",transition:"opacity 0.4s ease"}}>&#10003; saved</div>}
         <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(255,159,67,0.15)":"rgba(255,159,67,0.06)",border:"none",borderRight:"1px solid rgba(196,87,30,0.3)",cursor:"pointer",flexShrink:0,color:"#FFD93D"}}>
           <span style={{fontSize:isMobile?13:15,lineHeight:1}}>{isFullscreen?"⊡":"⛶"}</span>
           <span style={{fontSize:isMobile?9:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
