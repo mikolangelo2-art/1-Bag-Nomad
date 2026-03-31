@@ -194,7 +194,20 @@ const SUGGEST_KEY = "1bn_seg_suggestions_v1";
 const DISMISS_KEY = "1bn_dismissed_suggestions";
 const loadDismissed = () => { try { return JSON.parse(localStorage.getItem(DISMISS_KEY) || "{}"); } catch(e) { return {}; } };
 const saveDismissed = d => { try { localStorage.setItem(DISMISS_KEY, JSON.stringify(d)); } catch(e) {} };
-const isDismissed = (phaseIndex, type) => !!loadDismissed()[`${phaseIndex}_${type}`];
+// Find the suggestion matching a segment by name (handles country-grouping index mismatch)
+function findSuggestionForSegment(suggestions, segmentName) {
+  if (!suggestions || !segmentName) return null;
+  const name = segmentName.toLowerCase();
+  // Try exact phaseName match first, then partial match
+  return suggestions.find(s => s?.phaseName?.toLowerCase() === name)
+    || suggestions.find(s => s?.phaseName?.toLowerCase()?.includes(name))
+    || suggestions.find(s => name.includes(s?.phaseName?.toLowerCase()?.split(',')[0]?.trim()))
+    || null;
+}
+// Load suggestions directly from localStorage (fallback when prop chain fails)
+function loadSuggestionsFromStorage() {
+  try { const s=localStorage.getItem(SUGGEST_KEY); return s?JSON.parse(s).suggestions:null; } catch(e) { return null; }
+}
 
 const suggestionCardStyle = {
   border: '1px solid rgba(255,159,67,0.35)',
@@ -1620,7 +1633,7 @@ function OnboardCard({storageKey,ctaLabel,onDismiss,children}) {
 
 // ─── SegmentDetails — reads/writes 1bn_seg_v2 only (arch #3) ─────
 // arch #2: inline intel tab preview preserved
-function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatusChange,suggestion,suggestionsLoading}) {
+function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatusChange,suggestion:suggestionProp,suggestionsLoading}) {
   const isMobile=useMobile();
   const key=`${phaseId}-${segment.id}`;
   const blank={transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
@@ -1638,10 +1651,16 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
   const uT=(f,v)=>setDet(d=>({...d,transport:{...d.transport,[f]:v}}));
   const uS=(f,v)=>setDet(d=>({...d,stay:{...d.stay,[f]:v}}));
   const uF=(f,v)=>setDet(d=>({...d,food:{...d.food,[f]:v}}));
+  // Resolve suggestion: use prop if available, otherwise look up by segment name from localStorage
+  const suggestion = (()=>{
+    if(suggestionProp) return suggestionProp;
+    const all = loadSuggestionsFromStorage();
+    return findSuggestionForSegment(all, segment.name);
+  })();
+  const dismissKey = segment.name || `${phaseId}`;
   const [dismissed,setDismissedSD]=useState(()=>loadDismissed());
-  const phaseIndex=phaseId-1;
-  const isDismSD=(type)=>!!dismissed[`${phaseIndex}_${type}`];
-  const dismissSD=(type)=>{const d={...dismissed,[`${phaseIndex}_${type}`]:true};setDismissedSD(d);saveDismissed(d);};
+  const isDismSD=(type)=>!!dismissed[`${dismissKey}_${type}`];
+  const dismissSD=(type)=>{const d={...dismissed,[`${dismissKey}_${type}`]:true};setDismissedSD(d);saveDismissed(d);};
   const acceptTransportSD=(t)=>{uT("notes",`${t.route}\n\nEst. cost: ${t.estimatedCost}\n\n${t.notes||""}`);uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));dismissSD('transport');};
   const acceptStaySD=(s)=>{uS("notes",`Recommended: ${(s.suggestions||[]).join(', ')}\n\n${s.notes||""}`);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));dismissSD('stay');};
   const acceptActivitySD=(a)=>{setDet(d=>({...d,activities:[...d.activities,{name:a.name,date:"",cost:(a.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''),notes:`${a.provider||""}\n${a.notes||""}`,id:Date.now()+Math.random()}]}));};
@@ -2006,7 +2025,7 @@ function getPhaseActivityIcon(phase){const t=phase.segments?.[0]?.type;return AC
 
 // ─── PhaseDetailPage ──────────────────────────────────────────────
 // ─── SegmentWorkspace (Level 3) ───────────────────────────────────
-function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBack,suggestion,suggestionsLoading}) {
+function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,intelSnippet,onBack,suggestion:suggestionProp,suggestionsLoading}) {
   const isMobile=useMobile();
   const key=`${phaseId}-${segment.id}`;
   const blank={transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
@@ -2018,10 +2037,16 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
   const saveFlashRef=useRef(null);
   const isFirst=useRef(true);
   const [status,setStatus]=useState(()=>{const d=loadSeg()[key];return d?.status||'planning';});
+  // Resolve suggestion: use prop if available, otherwise look up by segment name from localStorage
+  const suggestion = (()=>{
+    if(suggestionProp) return suggestionProp;
+    const all = loadSuggestionsFromStorage();
+    return findSuggestionForSegment(all, segment.name);
+  })();
+  const dismissKey = segment.name || `${phaseId}`;
   const [dismissed,setDismissed]=useState(()=>loadDismissed());
-  const phaseIndex=phaseId-1;
-  const isDism=(type)=>!!dismissed[`${phaseIndex}_${type}`];
-  const dismiss=(type)=>{const d={...dismissed,[`${phaseIndex}_${type}`]:true};setDismissed(d);saveDismissed(d);};
+  const isDism=(type)=>!!dismissed[`${dismissKey}_${type}`];
+  const dismiss=(type)=>{const d={...dismissed,[`${dismissKey}_${type}`]:true};setDismissed(d);saveDismissed(d);};
   useEffect(()=>{window.scrollTo(0,0);},[]);
   useEffect(()=>{if(isFirst.current){isFirst.current=false;return;}const a=loadSeg();const ex=a[key]||{};a[key]={...ex,...det,status:ex.status||'planning',statusUpdatedAt:ex.statusUpdatedAt||null,changes:ex.changes||[]};saveSeg(a);setSaveFlash(true);if(saveFlashRef.current)clearTimeout(saveFlashRef.current);saveFlashRef.current=setTimeout(()=>setSaveFlash(false),2000);},[det]);
   const uT=(f,v)=>setDet(d=>({...d,transport:{...d.transport,[f]:v}}));
@@ -2285,12 +2310,12 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
         ))}
       </div>
     </div>
-    {activeSegment&&<SegmentWorkspace segment={activeSegment} phaseId={phase.id} phaseName={phase.name} phaseFlag={phase.flag} intelSnippet={intelData?.[activeSegment.name]} onBack={()=>setActiveSegment(null)} suggestion={segmentSuggestions?.[phase.id-1]} suggestionsLoading={suggestionsLoading}/>}
+    {activeSegment&&<SegmentWorkspace segment={activeSegment} phaseId={phase.id} phaseName={phase.name} phaseFlag={phase.flag} intelSnippet={intelData?.[activeSegment.name]} onBack={()=>setActiveSegment(null)} suggestion={findSuggestionForSegment(segmentSuggestions, activeSegment.name)} suggestionsLoading={suggestionsLoading}/>}
     </>
   );
 }
 
-function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,suggestion,suggestionsLoading}) {
+function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions,suggestionsLoading}) {
   const isMobile=useMobile();
   const [open,setOpen]=useState(autoOpen);
   const [sheetOpen,setSheetOpen]=useState(false);
@@ -2359,7 +2384,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,suggestion,sug
         <div style={{paddingTop:4,paddingBottom:20}}>
           <div style={{padding:'10px 16px 6px',fontSize:11,color:'rgba(255,255,255,0.3)',letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
           {phase.segments.map((seg,i)=>(
-            <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onAskOpenChange={setAnyAskOpen} suggestion={suggestion} suggestionsLoading={suggestionsLoading}/>
+            <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onAskOpenChange={setAnyAskOpen} suggestion={findSuggestionForSegment(allSuggestions, seg.name)} suggestionsLoading={suggestionsLoading}/>
           ))}
         </div>
       </BottomSheet>}
@@ -2395,7 +2420,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,suggestion,sug
             <div style={{width:4,height:4,borderRadius:"50%",background:phase.color,flexShrink:0}}/>
             <span style={{fontSize:11,color:`${phase.color}cc`,letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:600,whiteSpace:"nowrap"}}>{phase.segments.length} SEGMENT{phase.segments.length>1?"S":""} · TAP TO EXPAND PLANNING TABS</span>
           </div>
-          {phase.segments.map((seg,i)=><SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1}/>)}
+          {phase.segments.map((seg,i)=><SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} suggestion={findSuggestionForSegment(allSuggestions, seg.name)} suggestionsLoading={suggestionsLoading}/>)}
         </div>
       )}
     </div>
@@ -2587,7 +2612,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
             {tripData.visionNarrative&&(()=>{const _vn=tripData.visionNarrative;const _lim=160;const _trunc=_vn.length>_lim?_vn.slice(0,_lim).slice(0,_vn.slice(0,_lim).lastIndexOf(' '))+'...':_vn;return(<div style={{marginBottom:8}}><div style={{fontSize:10,color:"rgba(232,220,200,0.35)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.75,borderLeft:"2px solid rgba(232,220,200,0.12)",paddingLeft:12,textAlign:"left"}}>"{_trunc}"</div></div>);})()}
             <div style={{fontSize:isMobile?12:14,color:"#E8DCC8",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Space Mono',monospace",whiteSpace:isMobile?"normal":"nowrap"}}>{isMobile?`YOUR EXPEDITION · ${segPhases.length} PHASES`:`YOUR EXPEDITION · ${segPhases.length} PHASES · TAP PHASE TO EXPAND`}</div>
             {isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>TAP PHASE TO EXPAND</div>}
-            {segPhases.map((phase,i)=>i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} autoOpen={segPhases.length===1} onTap={isMobile?p=>setPhaseDetailView(p):null} suggestion={segmentSuggestions?.[i]} suggestionsLoading={suggestionsLoading}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={isMobile?p=>setPhaseDetailView(p):null} suggestion={segmentSuggestions?.[i]} suggestionsLoading={suggestionsLoading}/>)}
+            {segPhases.map((phase,i)=>i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} autoOpen={segPhases.length===1} onTap={isMobile?p=>setPhaseDetailView(p):null} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={isMobile?p=>setPhaseDetailView(p):null} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading}/>)}
           </div>
         )}
         {tab==="budget"&&(
