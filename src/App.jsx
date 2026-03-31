@@ -1857,7 +1857,7 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
         </div>
       </div>
       {/* Tab bar */}
-      <div style={{display:'flex',background:'rgba(0,4,12,0.95)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:68,zIndex:9,position:'relative'}}>
+      <div style={{display:'flex',background:'rgba(0,4,12,0.95)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:68,zIndex:9}}>
         {TABS.map(t=>{const on=tab===t.id;return(
           <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,minWidth:0,padding:isMobile?'10px 2px':'10px 8px',background:'none',border:'none',borderBottom:on?'2px solid #FF9F43':'2px solid transparent',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:2,transition:'all 0.15s',overflow:'hidden'}}>
             <span style={{fontSize:isMobile?15:14,lineHeight:1}}>{t.icon}</span>
@@ -1867,7 +1867,7 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
         {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Space Mono',monospace",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
       </div>
       {/* Tab content */}
-      <div style={{padding:'16px',minHeight:'calc(100vh - 140px)'}}>
+      <div style={{padding:'10px 16px 16px',minHeight:'calc(100vh - 140px)'}}>
         {/* TRANSPORT */}
         {tab==="transport"&&<div>
           {hasT&&<div style={{background:'rgba(0,229,255,0.04)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:12,padding:16,marginBottom:16}}>
