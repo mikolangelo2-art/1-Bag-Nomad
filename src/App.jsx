@@ -1855,11 +1855,11 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
         </div>
       </div>
       {/* Tab bar */}
-      <div style={{display:'flex',background:'rgba(0,4,12,0.95)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:68,zIndex:9,overflowX:'auto',WebkitOverflowScrolling:'touch',scrollbarWidth:'none',padding:'0 8px',position:'relative'}}>
+      <div style={{display:'flex',background:'rgba(0,4,12,0.95)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:68,zIndex:9,position:'relative'}}>
         {TABS.map(t=>{const on=tab===t.id;return(
-          <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,minWidth:0,padding:'12px 12px',background:'none',border:'none',borderBottom:on?'2px solid #FF9F43':'2px solid transparent',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:4,transition:'all 0.15s'}}>
-            <span style={{fontSize:13,lineHeight:1}}>{t.icon}</span>
-            <span style={{fontSize:12,fontWeight:600,fontFamily:"'Space Mono',monospace",color:on?'#FF9F43':'rgba(255,255,255,0.45)',whiteSpace:'nowrap',letterSpacing:0.5}}>{t.label}{t.count>0?<span style={{color:'#FF9F43',fontSize:11}}> ({t.count})</span>:""}</span>
+          <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,minWidth:0,padding:isMobile?'10px 2px':'10px 8px',background:'none',border:'none',borderBottom:on?'2px solid #FF9F43':'2px solid transparent',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:2,transition:'all 0.15s',overflow:'hidden'}}>
+            <span style={{fontSize:isMobile?15:14,lineHeight:1}}>{t.icon}</span>
+            <span style={{fontSize:isMobile?9:11,fontWeight:600,fontFamily:"'Space Mono',monospace",color:on?'#FF9F43':'rgba(255,255,255,0.45)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'100%'}}>{t.label}{t.count>0?` (${t.count})`:""}</span>
           </button>
         );})}
         {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Space Mono',monospace",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
@@ -2057,21 +2057,17 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null}) {
         onMouseOut={e=>{e.currentTarget.style.background='rgba(255,255,255,0.012)';e.currentTarget.style.border='1.5px solid rgba(0,229,255,0.22)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(0,229,255,0.30),inset 1px 0 0 rgba(0,229,255,0.12),inset -1px 0 0 rgba(0,229,255,0.12),inset 0 -1px 0 rgba(0,229,255,0.06)';}}
         style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(255,255,255,0.012)',border:'1.5px solid rgba(0,229,255,0.22)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(0,229,255,0.22),inset 1px 0 0 rgba(0,229,255,0.08),inset -1px 0 0 rgba(0,229,255,0.08),inset 0 -1px 0 rgba(0,229,255,0.04)',animation:`fadeUp 0.35s ease ${idx*0.07}s both`}}>
         {/* Row 1: badge + flag + name + budget */}
-        <div style={{display:'flex',alignItems:'center',gap:8,width:'100%'}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,width:'100%',overflow:'hidden'}}>
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
-            <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:2,flexShrink:0}}>
-              <div style={{width:24,height:24,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace"}}>{phase.id}</div>
-              <span style={{fontSize:12,lineHeight:1,filter:'grayscale(20%)'}}>{getPhaseActivityIcon(phase)}</span>
-            </div>
+            <div style={{width:24,height:24,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}45`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
             <span style={{fontSize:20,lineHeight:1}}>{phase.flag}</span>
           </div>
-          <div style={{flex:1,fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:500,color:'#E8DCC8',lineHeight:1.1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{phase.name}</div>
+          <div style={{flex:1,fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:500,color:'#E8DCC8',lineHeight:1.1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',minWidth:0}}>{phase.name}</div>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:15,fontWeight:700,color:'#FFD93D',whiteSpace:'nowrap',flexShrink:0}}>{fmt(phase.totalBudget)}</div>
         </div>
         {/* Row 2: date + nights/dives */}
-        <div style={{display:'flex',alignItems:'center',gap:10,marginTop:5,paddingLeft:46}}>
-          <span style={{fontFamily:"'Space Mono',monospace",fontSize:14,fontWeight:500,color:'rgba(255,255,255,0.80)',whiteSpace:'nowrap'}}>{fD(phase.arrival)} – {fD(phase.departure)}</span>
-          <span style={{fontFamily:"'Space Mono',monospace",fontSize:14,fontWeight:600,color:'rgba(255,255,255,0.80)',whiteSpace:'nowrap',marginLeft:6}}>· {phase.totalNights}n{phase.totalDives>0?` · 🤿${phase.totalDives}`:''}</span>
+        <div style={{display:'flex',alignItems:'center',gap:6,marginTop:5,paddingLeft:38,overflow:'hidden',width:'100%'}}>
+          <span style={{fontFamily:"'Space Mono',monospace",fontSize:13,fontWeight:500,color:'rgba(255,255,255,0.75)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',flex:1,minWidth:0}}>{fD(phase.arrival)} – {fD(phase.departure)} · {phase.totalNights}n{phase.totalDives>0?` · 🤿${phase.totalDives}`:''}</span>
         </div>
       </div>
       {!onTap&&<BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500} hideClose={anyAskOpen}>
