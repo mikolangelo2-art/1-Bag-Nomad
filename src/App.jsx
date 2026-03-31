@@ -189,6 +189,126 @@ function parseJSON(raw) {
   return null;
 }
 
+// ─── Segment Suggestions ────────────────────────────────────────
+const SUGGEST_KEY = "1bn_seg_suggestions_v1";
+const DISMISS_KEY = "1bn_dismissed_suggestions";
+const loadDismissed = () => { try { return JSON.parse(localStorage.getItem(DISMISS_KEY) || "{}"); } catch(e) { return {}; } };
+const saveDismissed = d => { try { localStorage.setItem(DISMISS_KEY, JSON.stringify(d)); } catch(e) {} };
+const isDismissed = (phaseIndex, type) => !!loadDismissed()[`${phaseIndex}_${type}`];
+
+const suggestionCardStyle = {
+  border: '1px solid rgba(255,159,67,0.35)',
+  borderRadius: '12px',
+  background: 'rgba(255,159,67,0.05)',
+  padding: '16px',
+  marginBottom: '16px'
+};
+const suggestionHeaderStyle = {
+  fontSize: '10px',
+  fontFamily: "'Space Mono',monospace",
+  color: '#FF9F43',
+  letterSpacing: '2px',
+  marginBottom: '12px',
+  opacity: 0.85
+};
+const disclaimerStyle = {
+  fontSize: '10px',
+  fontFamily: "'Space Mono',monospace",
+  color: 'rgba(255,255,255,0.30)',
+  fontStyle: 'italic',
+  marginBottom: '12px',
+  lineHeight: 1.5
+};
+const acceptBtnStyle = {
+  flex: 1, padding: '10px',
+  background: 'rgba(255,159,67,0.20)',
+  border: '1px solid rgba(255,159,67,0.50)',
+  borderRadius: '8px',
+  color: '#FF9F43',
+  fontSize: '11px',
+  fontFamily: "'Space Mono',monospace",
+  fontWeight: 600,
+  cursor: 'pointer'
+};
+const dismissBtnStyle = {
+  padding: '10px 14px',
+  background: 'transparent',
+  border: '1px solid rgba(255,255,255,0.12)',
+  borderRadius: '8px',
+  color: 'rgba(255,255,255,0.45)',
+  fontSize: '11px',
+  fontFamily: "'Space Mono',monospace",
+  cursor: 'pointer'
+};
+
+function buildSegmentSuggestionsPrompt(tripData, travelerProfile) {
+  const phases = tripData.phases || [];
+  const style = travelerProfile?.style || 'Independent Explorer';
+  const group = travelerProfile?.group || 'Solo';
+  const interests = [...(travelerProfile?.interests||[]), ...(travelerProfile?.specialtyInterests||[])].join(', ');
+  return `You are a world-class travel advisor and co-architect for a ${style} traveler.
+
+EXPEDITION OVERVIEW:
+- Traveler: ${group}
+- Style: ${style}
+- Interests: ${interests}
+- Total budget: $${tripData.totalBudget}
+- Departure: ${tripData.startDate}
+- Home city: ${tripData.departureCity || tripData.city || 'Unknown'}
+
+PHASES:
+${phases.map((p, i) => `Phase ${i+1}: ${p.name || p.destination || p.city}, ${p.country} | ${p.arrival} → ${p.departure} | ${p.nights} nights | Budget: $${p.budget || p.cost} | Type: ${p.type}`).join('\n')}
+
+Generate specific, actionable suggestions for each phase. Include:
+1. Transport: How to get there from the previous destination (or from home for Phase 1). Specific carriers/routes, realistic price estimate.
+2. Stay: Best area to stay, accommodation type matching their style, realistic nightly rate and total cost.
+3. Activities: 2-3 specific recommended activities matching their interests, with realistic costs.
+4. Food: Daily food budget estimate, 2-3 specific local food recommendations.
+
+IMPORTANT: All prices are ESTIMATES based on current market rates. Actual prices will vary when booked.
+
+Return ONLY a JSON object:
+{
+  "phases": [
+    {
+      "phaseIndex": 0,
+      "phaseName": "Destination Name",
+      "transport": {
+        "route": "Origin → Destination via carrier/method",
+        "duration": "Approx travel time",
+        "estimatedCost": "$XXX-XXX",
+        "bestTiming": "Booking advice",
+        "notes": "Practical travel notes"
+      },
+      "stay": {
+        "recommendation": "Area and style recommendation",
+        "type": "Accommodation type",
+        "suggestions": ["Property 1", "Property 2", "Property 3"],
+        "estimatedNightly": "$XX-XX/night",
+        "estimatedTotal": "$XXX-XXX for N nights",
+        "notes": "Booking tips"
+      },
+      "activities": [
+        {
+          "name": "Activity name",
+          "provider": "Operator or venue",
+          "estimatedCost": "$XX-XX",
+          "notes": "Tips"
+        }
+      ],
+      "food": {
+        "dailyBudget": "$XX-XX/day",
+        "totalEstimate": "$XXX-XXX for N nights",
+        "recommendations": ["Restaurant — description", "Restaurant — description"],
+        "notes": "Local food tips"
+      }
+    }
+  ]
+}
+
+Return JSON only. No preamble. No markdown.`;
+}
+
 // ─── CSS ─────────────────────────────────────────────────────────
 const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,100;0,300;0,700;0,900;1,100;1,300;1,700;1,900&family=Space+Mono:wght@400;700&display=swap');
 :root{--cream:#E8DCC8}*{box-sizing:border-box;margin:0;padding:0}body{background:#150F0A}
@@ -197,6 +317,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes coachFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:0.6}50%{opacity:1}}
 @keyframes consoleSlideOutLeft{from{transform:translateX(0);opacity:1}to{transform:translateX(-100%);opacity:0}}
 @keyframes consoleSlideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
 @keyframes consoleSlideInLeft{from{transform:translateX(-100%);opacity:0}to{transform:translateX(0);opacity:1}}
@@ -1499,7 +1620,7 @@ function OnboardCard({storageKey,ctaLabel,onDismiss,children}) {
 
 // ─── SegmentDetails — reads/writes 1bn_seg_v2 only (arch #3) ─────
 // arch #2: inline intel tab preview preserved
-function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatusChange}) {
+function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatusChange,suggestion,suggestionsLoading}) {
   const isMobile=useMobile();
   const key=`${phaseId}-${segment.id}`;
   const blank={transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
@@ -1517,6 +1638,13 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
   const uT=(f,v)=>setDet(d=>({...d,transport:{...d.transport,[f]:v}}));
   const uS=(f,v)=>setDet(d=>({...d,stay:{...d.stay,[f]:v}}));
   const uF=(f,v)=>setDet(d=>({...d,food:{...d.food,[f]:v}}));
+  const [dismissed,setDismissedSD]=useState(()=>loadDismissed());
+  const phaseIndex=phaseId-1;
+  const isDismSD=(type)=>!!dismissed[`${phaseIndex}_${type}`];
+  const dismissSD=(type)=>{const d={...dismissed,[`${phaseIndex}_${type}`]:true};setDismissedSD(d);saveDismissed(d);};
+  const acceptTransportSD=(t)=>{uT("notes",`${t.route}\n\nEst. cost: ${t.estimatedCost}\n\n${t.notes||""}`);uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));dismissSD('transport');};
+  const acceptStaySD=(s)=>{uS("notes",`Recommended: ${(s.suggestions||[]).join(', ')}\n\n${s.notes||""}`);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));dismissSD('stay');};
+  const acceptActivitySD=(a)=>{setDet(d=>({...d,activities:[...d.activities,{name:a.name,date:"",cost:(a.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''),notes:`${a.provider||""}\n${a.notes||""}`,id:Date.now()+Math.random()}]}));};
   async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}
   const CATS=[{id:"transport",icon:"✈️",label:"TRANSPORT",a:"#00E5FF",w:"rgba(0,229,255,0.04)"},{id:"stay",icon:"🏠",label:"STAY",a:"#69F0AE",w:"rgba(105,240,174,0.04)"},{id:"activities",icon:"🎯",label:"ACTIVITIES",a:"#FFD93D",w:"rgba(255,217,61,0.04)"},{id:"food",icon:"🍽️",label:"FOOD",a:"#FF9F43",w:"rgba(255,159,67,0.04)"},{id:"misc",icon:"💸",label:"MISC",a:"#A29BFE",w:"rgba(162,155,254,0.04)"},{id:"intel",icon:"🔭",label:"INTEL",a:"#FF6B6B",w:"rgba(255,107,107,0.04)"}];
   const done={transport:!!(det.transport.mode||det.transport.cost),stay:!!(det.stay.name||det.stay.cost),activities:det.activities.length>0,food:!!(det.food.dailyBudget),misc:det.misc.length>0,intel:!!(intelSnippet?.tagline||det.intel.notes)};
@@ -1548,6 +1676,18 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
       {cat&&ac&&(
         <div style={{background:ac.w,borderTop:`1px solid ${ac.a}15`,animation:"slideOpen 0.18s ease"}}>
           {cat==="transport"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:7}}>
+            {suggestion?.transport&&!isDismSD('transport')&&!det.transport.mode&&!det.transport.from&&<div style={suggestionCardStyle}>
+              <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
+              <div style={{fontSize:13,fontWeight:600,color:'#FFF',marginBottom:4}}>{suggestion.transport.route}</div>
+              <div style={{fontSize:12,color:'rgba(255,255,255,0.70)',marginBottom:3}}>{suggestion.transport.duration}</div>
+              <div style={{fontSize:12,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {suggestion.transport.estimatedCost}</div>
+              {suggestion.transport.notes&&<div style={{fontSize:11,color:'rgba(255,255,255,0.50)',fontStyle:'italic',marginBottom:8}}>{suggestion.transport.notes}</div>}
+              <div style={disclaimerStyle}>⚡ Estimates — actual prices vary when booked</div>
+              <div style={{display:'flex',gap:6}}>
+                <button onClick={()=>acceptTransportSD(suggestion.transport)} style={acceptBtnStyle}>USE THIS ROUTE</button>
+                <button onClick={()=>dismissSD('transport')} style={dismissBtnStyle}>PLAN MY OWN</button>
+              </div>
+            </div>}
             {(det.transport.mode||det.transport.from)&&<div style={{background:"rgba(0,229,255,0.04)",border:"1px solid rgba(0,229,255,0.12)",borderRadius:8,padding:"8px 10px",marginBottom:4}}>
               <div style={{fontSize:15,fontWeight:600,color:"rgba(255,255,255,0.92)",fontFamily:"'Space Mono',monospace"}}>✈️ {det.transport.mode||"Transport"}{det.transport.from&&det.transport.to?` · ${det.transport.from} → ${det.transport.to}`:""}{det.transport.cost?` · $${det.transport.cost}`:""}</div>
               {(det.transport.depTime||det.transport.arrTime)&&<div style={{fontSize:13,color:"rgba(255,255,255,0.65)",fontFamily:"'Space Mono',monospace",marginTop:2}}>{det.transport.depTime?`Departs ${det.transport.depTime}`:""}{det.transport.depTime&&det.transport.arrTime?" · ":""}{det.transport.arrTime?`Arrives ${det.transport.arrTime}`:""}</div>}
@@ -1563,6 +1703,18 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
             <SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="Flight number, booking ref..." accent="#00E5FF" multiline/>
           </div>}
           {cat==="stay"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:5}}>
+            {suggestion?.stay&&!isDismSD('stay')&&!det.stay.name&&<div style={suggestionCardStyle}>
+              <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
+              <div style={{fontSize:13,fontWeight:600,color:'#FFF',marginBottom:4}}>{suggestion.stay.recommendation}</div>
+              <div style={{fontSize:12,color:'rgba(255,255,255,0.70)',marginBottom:3}}>{suggestion.stay.type}</div>
+              {suggestion.stay.suggestions?.length>0&&<div style={{fontSize:11,color:'rgba(255,255,255,0.55)',marginBottom:3}}>Options: {suggestion.stay.suggestions.join(' · ')}</div>}
+              <div style={{fontSize:12,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
+              <div style={disclaimerStyle}>⚡ Estimates — actual prices vary when booked</div>
+              <div style={{display:'flex',gap:6}}>
+                <button onClick={()=>acceptStaySD(suggestion.stay)} style={acceptBtnStyle}>ADD TO STAY NOTES</button>
+                <button onClick={()=>dismissSD('stay')} style={dismissBtnStyle}>PLAN MY OWN</button>
+              </div>
+            </div>}
             {det.stay.name&&<div style={{background:"rgba(105,240,174,0.04)",border:"1px solid rgba(105,240,174,0.12)",borderRadius:8,padding:"8px 10px",marginBottom:4}}>
               <div style={{fontSize:15,fontWeight:600,color:"rgba(255,255,255,0.92)",fontFamily:"'Space Mono',monospace"}}>🏨 {det.stay.name}</div>
               {(det.stay.checkin||det.stay.checkout||det.stay.cost)&&<div style={{fontSize:13,color:"rgba(255,255,255,0.65)",fontFamily:"'Space Mono',monospace",marginTop:2}}>{det.stay.checkin?`Check-in ${fD(det.stay.checkin)}`:""}{det.stay.checkin&&det.stay.checkout?" · ":""}{det.stay.checkout?`Check-out ${fD(det.stay.checkout)}`:""}{det.stay.cost?` · $${det.stay.cost}`:""}</div>}
@@ -1579,7 +1731,21 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
             <SDF label="NOTES" value={det.stay.notes} onChange={v=>uS("notes",v)} placeholder="Room type, included meals, host contact..." accent="#69F0AE" multiline/>
           </div>}
           {cat==="activities"&&<div style={{padding:"10px 12px"}}>
-            {det.activities.length===0&&<div style={{textAlign:"center",padding:"6px 0 10px",animation:"fadeIn 0.5s ease"}}><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?11:13,fontStyle:"italic",color:"rgba(255,217,61,0.35)",lineHeight:1.5}}>Add your first activity — dives, tours, day trips</div></div>}
+            {suggestion?.activities?.map((activity,idx)=>(
+              !isDismSD(`activity_${idx}`)&&<div key={idx} style={{...suggestionCardStyle,marginBottom:8}}>
+                <div style={suggestionHeaderStyle}>✦ SUGGESTED ACTIVITY</div>
+                <div style={{fontSize:13,fontWeight:700,color:'#FFF',marginBottom:4}}>{activity.name}</div>
+                {activity.provider&&<div style={{fontSize:11,color:'rgba(255,255,255,0.65)',marginBottom:3}}>{activity.provider}</div>}
+                <div style={{fontSize:12,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {activity.estimatedCost}</div>
+                {activity.notes&&<div style={{fontSize:11,color:'rgba(255,255,255,0.50)',fontStyle:'italic',marginBottom:8}}>{activity.notes}</div>}
+                <div style={disclaimerStyle}>⚡ Estimates only — prices vary when booked</div>
+                <div style={{display:'flex',gap:6}}>
+                  <button onClick={()=>{acceptActivitySD(activity);dismissSD(`activity_${idx}`);}} style={acceptBtnStyle}>+ ADD TO PLAN</button>
+                  <button onClick={()=>dismissSD(`activity_${idx}`)} style={dismissBtnStyle}>SKIP</button>
+                </div>
+              </div>
+            ))}
+            {det.activities.length===0&&!(suggestion?.activities?.some((_,i)=>!isDismSD(`activity_${i}`)))&&<div style={{textAlign:"center",padding:"6px 0 10px",animation:"fadeIn 0.5s ease"}}><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?11:13,fontStyle:"italic",color:"rgba(255,217,61,0.35)",lineHeight:1.5}}>Add your first activity — dives, tours, day trips</div></div>}
             {det.activities.length>0&&<div style={{marginBottom:12}}>
               {det.activities.map(a=>(
                 <div key={a.id} style={{background:"rgba(255,217,61,0.03)",border:"1px solid rgba(255,217,61,0.10)",borderRadius:8,padding:"12px 14px",marginBottom:8}}>
@@ -1616,6 +1782,19 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
             <div style={{marginTop:12}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code, best time..." accent="#FFD93D" multiline/></div>
           </div>}
           {cat==="food"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:5}}>
+            {suggestion?.food&&!isDismSD('food')&&<div style={suggestionCardStyle}>
+              <div style={suggestionHeaderStyle}>✦ FOOD & DINING</div>
+              <div style={{fontSize:13,fontWeight:600,color:'#FFD93D',marginBottom:6}}>Est. {suggestion.food.dailyBudget}/day · ~{suggestion.food.totalEstimate} total</div>
+              {suggestion.food.recommendations?.map((rec,i)=>(
+                <div key={i} style={{fontSize:12,color:'rgba(255,255,255,0.75)',marginBottom:4,paddingLeft:8,borderLeft:'2px solid rgba(255,159,67,0.30)'}}>{rec}</div>
+              ))}
+              {suggestion.food.notes&&<div style={{fontSize:11,color:'rgba(255,255,255,0.45)',fontStyle:'italic',marginTop:6}}>{suggestion.food.notes}</div>}
+              <div style={{...disclaimerStyle,marginTop:8}}>⚡ Suggestions based on current market knowledge — always verify locally</div>
+              <div style={{display:'flex',gap:6}}>
+                <button onClick={()=>{const bud=(suggestion.food.dailyBudget||"").replace(/[^0-9]/g,'');if(bud)uF("dailyBudget",bud);uF("notes",suggestion.food.recommendations?.join('\n')||"");dismissSD('food');}} style={acceptBtnStyle}>USE ESTIMATES</button>
+                <button onClick={()=>dismissSD('food')} style={dismissBtnStyle}>PLAN MY OWN</button>
+              </div>
+            </div>}
             <div style={{display:"flex",gap:8,alignItems:"flex-end"}}>
               <div style={{flex:1}}><SDF label="DAILY FOOD BUDGET ($)" type="number" value={det.food.dailyBudget} onChange={v=>uF("dailyBudget",v)} placeholder="e.g. 45" accent="#FF9F43"/></div>
               <button onClick={aiFood} disabled={aiLoad} style={{padding:"5px 10px",borderRadius:5,border:"1px solid rgba(255,159,67,0.3)",background:"rgba(255,159,67,0.05)",color:"rgba(255,159,67,0.8)",fontSize:11,cursor:aiLoad?"wait":"pointer",fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:600,whiteSpace:"nowrap",height:28,flexShrink:0}}>{aiLoad?"✦...":"✦ CO-ARCH EST"}</button>
@@ -1678,7 +1857,7 @@ function ProgDots({phaseId,segment,intelSnippet}) {
 }
 
 // ─── SegmentRow ───────────────────────────────────────────────────
-function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenChange,onSegmentTap}) {
+function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenChange,onSegmentTap,suggestion,suggestionsLoading}) {
   const isMobile=useMobile();
   const segKey=`${phaseId}-${segment.id}`;
   const [open,setOpen]=useState(false);
@@ -1808,7 +1987,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
           </div>
         </div>
       )}
-      {open&&<SegmentDetails phaseId={phaseId} segment={segment} intelSnippet={intelSnippet} status={status} onStatusChange={saveStatus}/>}
+      {open&&<SegmentDetails phaseId={phaseId} segment={segment} intelSnippet={intelSnippet} status={status} onStatusChange={saveStatus} suggestion={suggestion} suggestionsLoading={suggestionsLoading}/>}
       {isCancelled&&!open&&(
         <div style={{padding:"6px 16px 8px 20px",display:"flex",gap:10,alignItems:"center"}}>
           <span style={{fontSize:11,color:"rgba(136,136,136,0.7)",fontFamily:"'Space Mono',monospace",flex:1,letterSpacing:1}}>✕ CANCELLED</span>
@@ -1827,7 +2006,7 @@ function getPhaseActivityIcon(phase){const t=phase.segments?.[0]?.type;return AC
 
 // ─── PhaseDetailPage ──────────────────────────────────────────────
 // ─── SegmentWorkspace (Level 3) ───────────────────────────────────
-function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBack}) {
+function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBack,suggestion,suggestionsLoading}) {
   const isMobile=useMobile();
   const key=`${phaseId}-${segment.id}`;
   const blank={transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
@@ -1839,12 +2018,19 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
   const saveFlashRef=useRef(null);
   const isFirst=useRef(true);
   const [status,setStatus]=useState(()=>{const d=loadSeg()[key];return d?.status||'planning';});
+  const [dismissed,setDismissed]=useState(()=>loadDismissed());
+  const phaseIndex=phaseId-1;
+  const isDism=(type)=>!!dismissed[`${phaseIndex}_${type}`];
+  const dismiss=(type)=>{const d={...dismissed,[`${phaseIndex}_${type}`]:true};setDismissed(d);saveDismissed(d);};
   useEffect(()=>{window.scrollTo(0,0);},[]);
   useEffect(()=>{if(isFirst.current){isFirst.current=false;return;}const a=loadSeg();const ex=a[key]||{};a[key]={...ex,...det,status:ex.status||'planning',statusUpdatedAt:ex.statusUpdatedAt||null,changes:ex.changes||[]};saveSeg(a);setSaveFlash(true);if(saveFlashRef.current)clearTimeout(saveFlashRef.current);saveFlashRef.current=setTimeout(()=>setSaveFlash(false),2000);},[det]);
   const uT=(f,v)=>setDet(d=>({...d,transport:{...d.transport,[f]:v}}));
   const uS=(f,v)=>setDet(d=>({...d,stay:{...d.stay,[f]:v}}));
   const uF=(f,v)=>setDet(d=>({...d,food:{...d.food,[f]:v}}));
   async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}
+  const acceptTransport=(t)=>{uT("notes",`${t.route}\n\nEst. cost: ${t.estimatedCost}\n\n${t.notes||""}`);uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));dismiss('transport');};
+  const acceptStay=(s)=>{uS("notes",`Recommended: ${(s.suggestions||[]).join(', ')}\n\n${s.notes||""}`);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));dismiss('stay');};
+  const acceptActivity=(a)=>{setDet(d=>({...d,activities:[...d.activities,{name:a.name,date:"",cost:(a.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''),notes:`${a.provider||""}\n${a.notes||""}`,id:Date.now()+Math.random()}]}));};
   const hasT=Object.values(det.transport||{}).some(v=>v&&String(v).length>0);
   const hasS=det.stay?.name?.length>0;
   const TABS=[{id:"transport",label:"TRANSPORT",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:"ACTIVITIES",icon:"⚡",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"misc",label:"MISC",icon:"💸",count:det.misc.length},{id:"intel",label:"INTEL",icon:"🔭"}];
@@ -1872,11 +2058,28 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
       <div style={{padding:'10px 16px 16px',minHeight:'calc(100vh - 140px)'}}>
         {/* TRANSPORT */}
         {tab==="transport"&&<div>
+          {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
+            <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
+            <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
+          </div>}
+          {suggestion?.transport&&!isDism('transport')&&!hasT&&<div style={suggestionCardStyle}>
+            <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
+            <div style={{fontSize:14,fontWeight:600,color:'#FFFFFF',marginBottom:6}}>{suggestion.transport.route}</div>
+            <div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:4}}>{suggestion.transport.duration}</div>
+            <div style={{fontSize:13,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {suggestion.transport.estimatedCost}</div>
+            {suggestion.transport.bestTiming&&<div style={{fontSize:12,color:'rgba(255,255,255,0.55)',marginBottom:4}}>{suggestion.transport.bestTiming}</div>}
+            {suggestion.transport.notes&&<div style={{fontSize:12,color:'rgba(255,255,255,0.50)',fontStyle:'italic',marginBottom:12}}>{suggestion.transport.notes}</div>}
+            <div style={disclaimerStyle}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
+            <div style={{display:'flex',gap:8}}>
+              <button onClick={()=>acceptTransport(suggestion.transport)} style={acceptBtnStyle}>USE THIS ROUTE</button>
+              <button onClick={()=>dismiss('transport')} style={dismissBtnStyle}>PLAN MY OWN</button>
+            </div>
+          </div>}
           {hasT&&<div style={{background:'rgba(0,229,255,0.04)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:12,padding:16,marginBottom:16}}>
             <div style={{fontSize:15,fontWeight:600,color:'#FFFFFF',fontFamily:"'Space Mono',monospace",marginBottom:4}}>✈️ {det.transport.mode||"Transport"}{det.transport.from&&det.transport.to?` · ${det.transport.from} → ${det.transport.to}`:""}{det.transport.cost?` · $${det.transport.cost}`:""}</div>
             {(det.transport.depTime||det.transport.arrTime)&&<div style={{fontSize:13,color:'rgba(255,255,255,0.75)',fontFamily:"'Space Mono',monospace"}}>{det.transport.depTime?`Departs ${det.transport.depTime}`:""}{det.transport.depTime&&det.transport.arrTime?" · ":""}{det.transport.arrTime?`Arrives ${det.transport.arrTime}`:""}</div>}
           </div>}
-          {!hasT&&<div style={{textAlign:'center',padding:'24px 0 20px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.40)',marginBottom:12}}>No transport planned yet.</div></div>}
+          {!hasT&&!(suggestion?.transport&&!isDism('transport'))&&!suggestionsLoading&&<div style={{textAlign:'center',padding:'24px 0 20px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.40)',marginBottom:12}}>No transport planned yet.</div></div>}
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
             <SDF label="MODE" value={det.transport.mode} onChange={v=>uT("mode",v)} placeholder="Flight / Ferry / Car..." accent="#00E5FF"/>
             <SDF label="COST ($)" type="number" value={det.transport.cost} onChange={v=>uT("cost",v)} placeholder="0" accent="#00E5FF"/>
@@ -1890,11 +2093,28 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
         </div>}
         {/* STAY */}
         {tab==="stay"&&<div>
+          {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
+            <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
+            <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
+          </div>}
+          {suggestion?.stay&&!isDism('stay')&&!hasS&&<div style={suggestionCardStyle}>
+            <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
+            <div style={{fontSize:14,fontWeight:600,color:'#FFF',marginBottom:6}}>{suggestion.stay.recommendation}</div>
+            <div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:4}}>{suggestion.stay.type}</div>
+            {suggestion.stay.suggestions?.length>0&&<div style={{fontSize:12,color:'rgba(255,255,255,0.55)',marginBottom:4}}>Options: {suggestion.stay.suggestions.join(' · ')}</div>}
+            <div style={{fontSize:13,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
+            {suggestion.stay.notes&&<div style={{fontSize:12,color:'rgba(255,255,255,0.50)',fontStyle:'italic',marginBottom:12}}>{suggestion.stay.notes}</div>}
+            <div style={disclaimerStyle}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
+            <div style={{display:'flex',gap:8}}>
+              <button onClick={()=>acceptStay(suggestion.stay)} style={acceptBtnStyle}>ADD TO STAY NOTES</button>
+              <button onClick={()=>dismiss('stay')} style={dismissBtnStyle}>PLAN MY OWN</button>
+            </div>
+          </div>}
           {hasS&&<div style={{background:'rgba(105,240,174,0.04)',border:'1px solid rgba(105,240,174,0.15)',borderRadius:12,padding:16,marginBottom:16}}>
             <div style={{fontSize:15,fontWeight:600,color:'#FFFFFF',fontFamily:"'Space Mono',monospace"}}>🏨 {det.stay.name}</div>
             {(det.stay.checkin||det.stay.checkout||det.stay.cost)&&<div style={{fontSize:13,color:'rgba(255,255,255,0.75)',fontFamily:"'Space Mono',monospace",marginTop:4}}>{det.stay.checkin?`Check-in ${fD(det.stay.checkin)}`:""}{det.stay.checkin&&det.stay.checkout?" · ":""}{det.stay.checkout?`Check-out ${fD(det.stay.checkout)}`:""}{det.stay.cost?` · $${det.stay.cost}`:""}</div>}
           </div>}
-          {!hasS&&<div style={{textAlign:'center',padding:'24px 0 20px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.40)',marginBottom:12}}>No accommodation planned yet.</div></div>}
+          {!hasS&&!(suggestion?.stay&&!isDism('stay'))&&!suggestionsLoading&&<div style={{textAlign:'center',padding:'24px 0 20px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.40)',marginBottom:12}}>No accommodation planned yet.</div></div>}
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
             <SDF label="PROPERTY" value={det.stay.name} onChange={v=>uS("name",v)} placeholder="Hotel / hostel / resort..." accent="#69F0AE"/>
             <SDF label="TOTAL COST ($)" type="number" value={det.stay.cost} onChange={v=>uS("cost",v)} placeholder="0" accent="#69F0AE"/>
@@ -1908,6 +2128,24 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
         </div>}
         {/* ACTIVITIES */}
         {tab==="activities"&&<div>
+          {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
+            <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
+            <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
+          </div>}
+          {suggestion?.activities?.map((activity,idx)=>(
+            !isDism(`activity_${idx}`)&&<div key={idx} style={{...suggestionCardStyle,marginBottom:10}}>
+              <div style={suggestionHeaderStyle}>✦ SUGGESTED ACTIVITY</div>
+              <div style={{fontSize:15,fontWeight:700,color:'#FFF',marginBottom:6}}>{activity.name}</div>
+              {activity.provider&&<div style={{fontSize:13,color:'rgba(255,255,255,0.65)',marginBottom:4}}>{activity.provider}</div>}
+              <div style={{fontSize:13,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {activity.estimatedCost}</div>
+              {activity.notes&&<div style={{fontSize:12,color:'rgba(255,255,255,0.50)',fontStyle:'italic',marginBottom:12}}>{activity.notes}</div>}
+              <div style={disclaimerStyle}>⚡ Estimates only — prices vary when booked</div>
+              <div style={{display:'flex',gap:8}}>
+                <button onClick={()=>{acceptActivity(activity);dismiss(`activity_${idx}`);}} style={acceptBtnStyle}>+ ADD TO PLAN</button>
+                <button onClick={()=>dismiss(`activity_${idx}`)} style={dismissBtnStyle}>SKIP</button>
+              </div>
+            </div>
+          ))}
           {det.activities.length>0&&<div style={{marginBottom:16}}>
             {det.activities.map(a=>(
               <div key={a.id} style={{background:'rgba(255,217,61,0.03)',border:'1px solid rgba(255,217,61,0.12)',borderRadius:10,padding:'12px 14px',marginBottom:8}}>
@@ -1928,7 +2166,7 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
               <span style={{fontSize:14,fontWeight:600,color:'rgba(255,217,61,0.85)',fontFamily:'monospace'}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
             </div>
           </div>}
-          {det.activities.length===0&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,217,61,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
+          {det.activities.length===0&&!(suggestion?.activities?.some((_,i)=>!isDism(`activity_${i}`)))&&!suggestionsLoading&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,217,61,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
           <div style={{padding:'0px 0px 4px'}}>
             <div style={{fontSize:12,color:'rgba(255,217,61,0.50)',letterSpacing:2,marginBottom:10,fontFamily:"'Space Mono',monospace",fontWeight:700}}>+ ADD ACTIVITY</div>
             <div style={{display:'flex',gap:8,marginBottom:8,overflow:'hidden'}}>
@@ -1946,6 +2184,23 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
         </div>}
         {/* FOOD */}
         {tab==="food"&&<div>
+          {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
+            <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
+            <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
+          </div>}
+          {suggestion?.food&&!isDism('food')&&<div style={suggestionCardStyle}>
+            <div style={suggestionHeaderStyle}>✦ FOOD & DINING</div>
+            <div style={{fontSize:14,fontWeight:600,color:'#FFD93D',marginBottom:8}}>Est. {suggestion.food.dailyBudget}/day · ~{suggestion.food.totalEstimate} total</div>
+            {suggestion.food.recommendations?.map((rec,i)=>(
+              <div key={i} style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:6,paddingLeft:8,borderLeft:'2px solid rgba(255,159,67,0.30)'}}>{rec}</div>
+            ))}
+            {suggestion.food.notes&&<div style={{fontSize:12,color:'rgba(255,255,255,0.45)',fontStyle:'italic',marginTop:8}}>{suggestion.food.notes}</div>}
+            <div style={{...disclaimerStyle,marginTop:12}}>⚡ Suggestions based on current market knowledge — always verify locally</div>
+            <div style={{display:'flex',gap:8}}>
+              <button onClick={()=>{const bud=(suggestion.food.dailyBudget||"").replace(/[^0-9]/g,'');if(bud)uF("dailyBudget",bud);uF("notes",suggestion.food.recommendations?.join('\n')||"");dismiss('food');}} style={acceptBtnStyle}>USE ESTIMATES</button>
+              <button onClick={()=>dismiss('food')} style={dismissBtnStyle}>PLAN MY OWN</button>
+            </div>
+          </div>}
           <div style={{display:'flex',gap:10,alignItems:'flex-end',marginBottom:10}}>
             <div style={{flex:1}}><SDF label="DAILY FOOD BUDGET ($)" type="number" value={det.food.dailyBudget} onChange={v=>uF("dailyBudget",v)} placeholder="e.g. 45" accent="#FF9F43"/></div>
             <button onClick={aiFood} disabled={aiLoad} style={{padding:'8px 14px',borderRadius:6,border:'1px solid rgba(255,159,67,0.3)',background:'rgba(255,159,67,0.05)',color:'rgba(255,159,67,0.8)',fontSize:12,cursor:aiLoad?'wait':'pointer',fontFamily:"'Space Mono',monospace",letterSpacing:1,fontWeight:600,whiteSpace:'nowrap',height:34,flexShrink:0}}>{aiLoad?"✦...":"✦ CO-ARCH EST"}</button>
@@ -1993,7 +2248,7 @@ function SegmentWorkspace({segment,phaseId,phaseName,phaseFlag,intelSnippet,onBa
   );
 }
 
-function PhaseDetailPage({phase,intelData,onBack}) {
+function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsLoading}) {
   const isMobile=useMobile();
   const [activeSegment,setActiveSegment]=useState(null);
   useEffect(()=>{window.scrollTo(0,0);},[]);
@@ -2030,12 +2285,12 @@ function PhaseDetailPage({phase,intelData,onBack}) {
         ))}
       </div>
     </div>
-    {activeSegment&&<SegmentWorkspace segment={activeSegment} phaseId={phase.id} phaseName={phase.name} phaseFlag={phase.flag} intelSnippet={intelData?.[activeSegment.name]} onBack={()=>setActiveSegment(null)}/>}
+    {activeSegment&&<SegmentWorkspace segment={activeSegment} phaseId={phase.id} phaseName={phase.name} phaseFlag={phase.flag} intelSnippet={intelData?.[activeSegment.name]} onBack={()=>setActiveSegment(null)} suggestion={segmentSuggestions?.[phase.id-1]} suggestionsLoading={suggestionsLoading}/>}
     </>
   );
 }
 
-function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null}) {
+function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,suggestion,suggestionsLoading}) {
   const isMobile=useMobile();
   const [open,setOpen]=useState(autoOpen);
   const [sheetOpen,setSheetOpen]=useState(false);
@@ -2104,7 +2359,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null}) {
         <div style={{paddingTop:4,paddingBottom:20}}>
           <div style={{padding:'10px 16px 6px',fontSize:11,color:'rgba(255,255,255,0.3)',letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
           {phase.segments.map((seg,i)=>(
-            <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onAskOpenChange={setAnyAskOpen}/>
+            <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onAskOpenChange={setAnyAskOpen} suggestion={suggestion} suggestionsLoading={suggestionsLoading}/>
           ))}
         </div>
       </BottomSheet>}
@@ -2148,7 +2403,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null}) {
 }
 
 // ─── MissionConsole ───────────────────────────────────────────────
-function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next"}) {
+function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading}) {
   const isMobile=useMobile();
   const [tab,setTab]=useState(initialTab);
   useEffect(()=>{requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:"instant"});});posthog.capture("$pageview",{$current_url:"/trip-console"});},[]);
@@ -2197,7 +2452,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   return(
     <div className="mc-root" style={{animation:"consoleIn 0.38s cubic-bezier(0.34,1.56,0.64,1) both"}}>
       <WorldMapBackground phases={tripData.phases||[]} activeCountry={phaseDetailView?.country}/>
-      {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)}/>}
+      {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading}/>}
       {showOnboard&&<OnboardCard storageKey="trip" ctaLabel="✦ ENTER MY EXPEDITION" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,color:"rgba(0,229,255,0.75)",marginBottom:10}}>TRIP CONSOLE</div>
@@ -2332,7 +2587,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
             {tripData.visionNarrative&&(()=>{const _vn=tripData.visionNarrative;const _lim=160;const _trunc=_vn.length>_lim?_vn.slice(0,_lim).slice(0,_vn.slice(0,_lim).lastIndexOf(' '))+'...':_vn;return(<div style={{marginBottom:8}}><div style={{fontSize:10,color:"rgba(232,220,200,0.35)",letterSpacing:3,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.75,borderLeft:"2px solid rgba(232,220,200,0.12)",paddingLeft:12,textAlign:"left"}}>"{_trunc}"</div></div>);})()}
             <div style={{fontSize:isMobile?12:14,color:"#E8DCC8",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Space Mono',monospace",whiteSpace:isMobile?"normal":"nowrap"}}>{isMobile?`YOUR EXPEDITION · ${segPhases.length} PHASES`:`YOUR EXPEDITION · ${segPhases.length} PHASES · TAP PHASE TO EXPAND`}</div>
             {isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Space Mono',monospace"}}>TAP PHASE TO EXPAND</div>}
-            {segPhases.map((phase,i)=>i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} autoOpen={segPhases.length===1} onTap={isMobile?p=>setPhaseDetailView(p):null}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={isMobile?p=>setPhaseDetailView(p):null}/>)}
+            {segPhases.map((phase,i)=>i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} autoOpen={segPhases.length===1} onTap={isMobile?p=>setPhaseDetailView(p):null} suggestion={segmentSuggestions?.[i]} suggestionsLoading={suggestionsLoading}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={isMobile?p=>setPhaseDetailView(p):null} suggestion={segmentSuggestions?.[i]} suggestionsLoading={suggestionsLoading}/>)}
           </div>
         )}
         {tab==="budget"&&(
@@ -3198,6 +3453,8 @@ export default function App() {
   const [fullscreen,setFullscreen]=useState(false);
   const [prefilledVision,setPrefilledVision]=useState("");
   const [pendingTab,setPendingTab]=useState("next");
+  const [segmentSuggestions,setSegmentSuggestions]=useState(null);
+  const [suggestionsLoading,setSuggestionsLoading]=useState(false);
   const [slideDir,setSlideDir]=useState(null);
   const [prevScreen,setPrevScreen]=useState(null);
   const slideTimerRef=useRef(null);
@@ -3244,10 +3501,39 @@ export default function App() {
   });
   useEffect(()=>{try{if(tripData)localStorage.setItem("1bn_tripData_v5",JSON.stringify(tripData));}catch(e){};},[tripData]);
 
+  // Load saved segment suggestions on mount
+  useEffect(()=>{
+    try{
+      const saved=localStorage.getItem(SUGGEST_KEY);
+      if(saved){
+        const parsed=JSON.parse(saved);
+        if(parsed.tripId===tripData?.tripName){
+          setSegmentSuggestions(parsed.suggestions);
+        }
+      }
+    }catch(e){}
+  },[tripData?.tripName]);
+
+  async function generateSegmentSuggestions(td){
+    setSuggestionsLoading(true);
+    try{
+      const prompt=buildSegmentSuggestionsPrompt(td,td.travelerProfile);
+      const raw=await askAI(prompt,4000);
+      const m=raw.match(/\{[\s\S]*\}/);
+      if(!m)throw new Error("No JSON");
+      const parsed=JSON.parse(m[0]);
+      localStorage.setItem(SUGGEST_KEY,JSON.stringify({tripId:td.tripName,generated:Date.now(),suggestions:parsed.phases}));
+      setSegmentSuggestions(parsed.phases);
+    }catch(e){
+      console.warn('[1BN] Segment suggestions failed silently:',e);
+    }
+    setSuggestionsLoading(false);
+  }
+
   function handleLoadDemo(){try{const preserve=["1bn_coach_v1","1bn_onboard_v1","1bn_pack_explainer_v1","1bn_phase_hint_shown","1bn_hide_all_tips"];const saved={};preserve.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)saved[k]=v;});localStorage.clear();Object.entries(saved).forEach(([k,v])=>localStorage.setItem(k,v));}catch(e){}setTripData(MICHAEL_EXPEDITION);setScreen("console");}
   function handleGoGen(data,vd){setAppData({...data,visionData:vd});setScreen("gen");}
   function handleGenComplete(){setScreen("coarchitect");}
-  function handleLaunch(hd){posthog.capture("trip_console_launched",{total_budget:hd?.totalBudget,nights:hd?.totalNights,phases:hd?.phases?.length});try{localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");}catch(e){}setTripData(hd);setScreen("handoff");}
+  function handleLaunch(hd){posthog.capture("trip_console_launched",{total_budget:hd?.totalBudget,nights:hd?.totalNights,phases:hd?.phases?.length});try{localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");}catch(e){}setTripData(hd);setScreen("handoff");generateSegmentSuggestions(hd);}
   function handleReviseLaunch(hd){setTripData(hd);setScreen("handoff");}
   function handleHandoffComplete(){setScreen("console");}
   function handleRevise(){
@@ -3256,8 +3542,8 @@ export default function App() {
     setAppData({...revData,isRevision:true});setScreen("coarchitect");
   }
   function handleNewTrip(){
-    setScreen("dream");setAppData(null);
-    try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");}catch(e){}
+    setScreen("dream");setAppData(null);setSegmentSuggestions(null);
+    try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem(SUGGEST_KEY);localStorage.removeItem(DISMISS_KEY);}catch(e){}
   }
   function handleHomecoming(){setScreen("homecoming");}
   function handlePlanNext(){
@@ -3275,7 +3561,7 @@ export default function App() {
       {screen==="coarchitect" && appData && <CoArchitect data={appData} visionData={appData.visionData} onLaunch={appData.isRevision?handleReviseLaunch:handleLaunch} onBack={()=>setScreen(appData.isRevision?"console":"dream")}/>}
       {screen==="handoff"     && tripData && <HandoffScreen tripData={tripData} onComplete={handleHandoffComplete}/>}
       {screen==="homecoming"  && tripData && <HomecomingScreen tripData={tripData} onPlanNext={handlePlanNext}/>}
-      {(screen==="console"||prevScreen==="console") && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab}/></div>}
+      {(screen==="console"||prevScreen==="console") && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading}/></div>}
       {(screen==="pack"||prevScreen==="pack") && <div style={{position:prevScreen==="pack"||slideDir?"fixed":"relative",inset:prevScreen==="pack"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="pack"?0:1,animation:prevScreen==="pack"?(slideDir==="right"?"consoleSlideOutRight 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutLeft 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="pack"&&slideDir?(slideDir==="left"?"consoleSlideInRight 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInLeft 350ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><PackConsole tripData={tripData} onExpedition={()=>slideScreen("console")} onGoToTab={t=>{setPendingTab(t||"next");slideScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen}/></div>}
     </>
   );
