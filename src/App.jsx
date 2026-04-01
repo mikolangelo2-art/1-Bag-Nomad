@@ -1030,7 +1030,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
           {!canLaunch&&!vision&&<div style={{textAlign:'center',marginTop:8,fontFamily:"'Fraunces',serif",fontSize:11,fontStyle:'italic',color:'rgba(255,159,67,0.45)',lineHeight:1.5}}>✦ The more emotion you bring, the better your expedition becomes</div>}
           {canLaunch&&<div style={{marginTop:8,fontFamily:"'Fraunces',serif",fontSize:isMobile?13:14,fontStyle:"italic",color:"rgba(105,240,174,0.75)",animation:"fadeUp 0.4s ease",textShadow:"0 0 20px rgba(105,240,174,0.2)"}}>✦ Your co-architect is ready to build this.</div>}
         </div>
-        <div style={{marginBottom:28,borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:24,padding:isMobile?"24px 12px 0":"24px 0 0"}}>
+        <div style={{marginBottom:28,borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:24,padding:"24px 0 0"}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:3,textTransform:"uppercase",marginBottom:16}}>TRAVELER BRIEF</div>
           <div style={{marginBottom:12,border:travelerGroup?"1px solid rgba(255,159,67,0.20)":"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:isMobile?"12px 8px":"14px 16px",background:"rgba(255,255,255,0.02)",transition:"border 0.3s ease",width:"100%",boxSizing:"border-box"}}>
             <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>WHO'S GOING</div>
