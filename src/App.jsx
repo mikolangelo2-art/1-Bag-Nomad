@@ -3671,15 +3671,12 @@ export default function App() {
   async function fetchSuggestionsChunk(td, phasesSlice, startIndex){
     try{
       const prompt=buildSegmentSuggestionsPrompt(td,td.travelerProfile,phasesSlice,startIndex);
-      console.log(`[1BN] Chunk ${startIndex}: prompt length ${prompt.length} chars`);
       const raw=await askAI(prompt,4000);
-      console.log(`[1BN] Chunk ${startIndex}: response length ${raw?.length||0} chars`);
       if(!raw||raw.length<10){console.warn(`[1BN] Chunk ${startIndex}: empty or tiny response`);return {};}
       const m=raw.match(/\{[\s\S]*\}/);
       if(!m){console.warn(`[1BN] Chunk ${startIndex}: no JSON found`);return {};}
       const parsed=JSON.parse(m[0]);
       const phases=parsed.phases||[];
-      console.log(`[1BN] Chunk ${startIndex} raw phases:`, JSON.stringify(phases.map(p => p.phaseName)));
       const result={};
       phases.forEach((phase,localIdx)=>{result[startIndex+localIdx]=phase;});
       return result;
