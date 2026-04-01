@@ -1073,7 +1073,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onChange={e=>setTripName(e.target.value)} placeholder="MY GRAND EXPEDITION" style={{textTransform:"uppercase",borderColor:"rgba(0,229,255,0.72)",boxShadow:"0 0 14px rgba(0,229,255,0.18),0 0 32px rgba(0,229,255,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><CityInput className="f-input" value={city} onChange={v=>setCity(v)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",color:(!date&&isMobile)?"transparent":undefined,paddingRight:36,borderColor:"rgba(105,240,174,0.72)",boxShadow:"0 0 14px rgba(105,240,174,0.18),0 0 32px rgba(105,240,174,0.07)"}}/>{!date&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div></div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={returnDate} min={date||undefined} onChange={e=>setReturnDate(e.target.value)} onFocus={()=>{if(!returnDate&&date)setReturnDate(date);}} style={{colorScheme:"dark",color:(!returnDate&&isMobile)?"transparent":undefined,paddingRight:36,borderColor:"rgba(162,155,254,0.72)",boxShadow:"0 0 14px rgba(162,155,254,0.18),0 0 32px rgba(162,155,254,0.07)"}}/>{!returnDate&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(162,155,254,0.88)",marginTop:3}}>optional · open-ended</div></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div style={{position:"relative"}}><input type="date" className="f-input" value={returnDate} min={date||undefined} onChange={e=>setReturnDate(e.target.value)} onFocus={()=>{if(!returnDate&&date)setReturnDate(date);}} style={{colorScheme:"dark",color:(!returnDate&&isMobile)?"transparent":undefined,paddingRight:36,borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/>{!returnDate&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.65)",marginTop:3}}>optional · open-ended</div></div>
         </div>
 
         <div style={{marginBottom:22}}>
@@ -1096,7 +1096,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
         </button>
         {loadError&&<div style={{marginTop:12,padding:"10px 14px",borderRadius:8,background:"rgba(255,107,107,0.1)",border:"1px solid rgba(255,107,107,0.3)",textAlign:"center",fontSize:15,color:"#FF6B6B",letterSpacing:1}}>Connection issue — tap to try again</div>}
         <div style={{textAlign:"center",marginTop:30,paddingTop:20,borderTop:"1px solid rgba(0,229,255,0.1)"}}>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"rgba(162,155,254,0.4)",letterSpacing:2}}>Dream Big. Travel Light.</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,217,61,0.4)",letterSpacing:2}}>Dream Big. Travel Light.</div>
           <div style={{fontSize:15,color:"rgba(255,255,255,0.15)",letterSpacing:3,marginTop:5}}>A SHAREGOOD COMPANY</div>
           <button onClick={onLoadDemo} style={{marginTop:16,background:"none",border:"1px solid rgba(0,229,255,0.2)",borderRadius:8,color:"rgba(0,229,255,0.5)",fontSize:15,padding:"10px 16px",cursor:"pointer",letterSpacing:2,fontFamily:"'Space Mono',monospace",width:"100%",minHeight:44,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
             🌍 LOAD MY EXPEDITION · Michael's 2026/27 Global Dive
@@ -1786,7 +1786,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
           {cat==="food"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:5}}>
             {suggestion?.food&&!isDismSD('food')&&<div style={suggestionCardStyle}>
               <div style={suggestionHeaderStyle}>✦ FOOD & DINING</div>
-              <div style={{fontSize:14,fontWeight:600,color:'#FFD93D',marginBottom:6}}>Est. {(suggestion.food.dailyBudget||"").replace(/\/day$/i,"")}/day · ~{suggestion.food.totalEstimate} total</div>
+              <div style={{fontSize:14,fontWeight:600,color:'#FFD93D',marginBottom:6}}>Est. {(suggestion.food.dailyBudget||"").replace(/\/day$/i,"")}/day{suggestion.food.totalEstimate?` · ~${suggestion.food.totalEstimate} total`:""}</div>
               {suggestion.food.recommendations?.map((rec,i)=>(
                 <div key={i} style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:4,paddingLeft:8,borderLeft:'2px solid rgba(255,159,67,0.30)'}}>{rec}</div>
               ))}
@@ -2098,9 +2098,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Space Mono',monospace",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
       </div>
       {/* Tab content */}
-      <div key={tab} style={{border:'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(255,255,255,0.025)',padding:20,margin:'12px 16px',minHeight:300,animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+      <div key={tab} style={{border:'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(255,255,255,0.025)',padding:'16px 14px',margin:'12px 12px',minHeight:300,animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
         {/* TRANSPORT */}
-        {tab==="transport"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
+        {tab==="transport"&&<div style={{padding:0}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
@@ -2167,7 +2167,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
         </div>}
         {/* STAY */}
-        {tab==="stay"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
+        {tab==="stay"&&<div style={{padding:0}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
@@ -2241,7 +2241,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
         </div>}
         {/* ACTIVITIES */}
-        {tab==="activities"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
+        {tab==="activities"&&<div style={{padding:0}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
@@ -2298,14 +2298,14 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <div style={{marginTop:14}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code..." accent="#FFD93D" multiline/></div>
         </div>}
         {/* FOOD */}
-        {tab==="food"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
+        {tab==="food"&&<div style={{padding:0}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,255,255,0.40)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
           {suggestion?.food&&!isDism('food')&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
             <div style={suggestionHeaderStyle}>✦ FOOD & DINING</div>
-            <div style={{fontSize:14,fontWeight:600,color:'#FFD93D',marginBottom:8}}>Est. {(suggestion.food.dailyBudget||"").replace(/\/day$/i,"")}/day · ~{suggestion.food.totalEstimate} total</div>
+            <div style={{fontSize:14,fontWeight:600,color:'#FFD93D',marginBottom:8}}>Est. {(suggestion.food.dailyBudget||"").replace(/\/day$/i,"")}/day{suggestion.food.totalEstimate?` · ~${suggestion.food.totalEstimate} total`:""}</div>
             {suggestion.food.recommendations?.map((rec,i)=>(
               <div key={i} style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:6,paddingLeft:8,borderLeft:'2px solid rgba(255,159,67,0.30)'}}>{rec}</div>
             ))}
@@ -2328,7 +2328,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         </div>}
         {/* BUDGET */}
         {tab==="budget"&&(()=>{const tCost=parseFloat(det.transport?.cost)||0;const sCost=parseFloat(det.stay?.cost)||0;const aCost=det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0);const fCost=(parseFloat(det.food?.dailyBudget)||0)*segment.nights;const mCost=det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0);const total=tCost+sCost+aCost+fCost+mCost;const budget=segment.budget||0;const pct=budget>0?Math.round((total/budget)*100):0;const barColor=pct>=100?'#FF6B6B':pct>=80?'#FFD93D':'#00E5FF';return(
-          <div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
+          <div style={{padding:0}}>
             <div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12}}>PHASE BUDGET</div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{segment.name}</div>
             <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Space Mono',monospace",marginBottom:16}}>{segment.nights} Nights · Budget: {fmt(budget)}</div>
@@ -2355,7 +2355,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {pct>=100&&<div style={{marginTop:10,padding:'10px 14px',border:'1.5px solid rgba(255,107,107,0.40)',borderRadius:8,background:'rgba(255,107,107,0.06)',fontSize:12,color:'#FF6B6B',fontFamily:"'Space Mono',monospace"}}>⚠️ Over budget by {fmt(total-budget)}</div>}
           </div>);})()}
         {/* DOCS & VISA */}
-        {tab==="docs"&&<div style={{border:'1px solid rgba(255,255,255,0.06)',borderRadius:12,padding:16}}>
+        {tab==="docs"&&<div style={{padding:0}}>
           <div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12}}>DOCS & VISA</div>
           <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{segment.name}, {segment.country}</div>
           <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Space Mono',monospace",marginBottom:16}}>{segment.nights} Nights</div>
@@ -2487,7 +2487,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
             <div style={{width:32,height:32,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}50`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
             <span style={{fontSize:28,lineHeight:1}}>{phase.flag}</span>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontFamily:"'Fraunces',serif",fontSize:24,fontWeight:300,color:'#E8DCC8',lineHeight:1.1}}>{phase.name}</div>
+              <div style={{fontFamily:"'Fraunces',serif",fontSize:24,fontWeight:300,color:'#E8DCC8',lineHeight:1.1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{phase.name}</div>
               <div style={{fontFamily:"'Space Mono',monospace",fontSize:12,color:'rgba(255,255,255,0.42)',marginTop:3}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
             </div>
           </div>
