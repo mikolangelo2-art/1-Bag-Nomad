@@ -26,3 +26,9 @@ dist-ssr
 Vercel recovery-codes.txt
 github-recovery-codes.txt
 *.txt
+
+# Design source files
+1BN official logo/
+*.ai
+*.eps
+*.zip
