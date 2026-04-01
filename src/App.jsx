@@ -3695,19 +3695,26 @@ export default function App() {
   });
   useEffect(()=>{try{if(tripData)localStorage.setItem("1bn_tripData_v5",JSON.stringify(tripData));}catch(e){};},[tripData]);
 
-  // Load saved segment suggestions on mount
+  // Load or generate segment suggestions when tripData changes
   useEffect(()=>{
+    if(!tripData?.tripName||!tripData?.phases?.length)return;
+    // Check for existing suggestions
     try{
       const saved=localStorage.getItem(SUGGEST_KEY);
       if(saved){
         const parsed=JSON.parse(saved);
-        // Clear stale entries with undefined/null tripId
-        if(!parsed.tripId||parsed.tripId==="undefined"||parsed.tripId==="null"){localStorage.removeItem(SUGGEST_KEY);return;}
-        if(parsed.suggestions?.length){
+        if(parsed.tripId&&parsed.tripId!=="undefined"&&parsed.tripId===tripData.tripName&&parsed.suggestions?.length){
+          console.log('[1BN] Loaded existing suggestions for:',tripData.tripName);
           setSegmentSuggestions(parsed.suggestions);
+          return;
         }
+        // Clear stale/mismatched entries
+        localStorage.removeItem(SUGGEST_KEY);
       }
-    }catch(e){}
+    }catch(e){localStorage.removeItem(SUGGEST_KEY);}
+    // Generate fresh suggestions
+    console.log('[1BN] Triggering suggestion generation for:',tripData.tripName,'phases:',tripData.phases.length);
+    generateSegmentSuggestions(tripData);
   },[tripData?.tripName]);
 
   async function generateSegmentSuggestions(td){
@@ -3732,7 +3739,7 @@ export default function App() {
   function handleLoadDemo(){try{const preserve=["1bn_coach_v1","1bn_onboard_v1","1bn_pack_explainer_v1","1bn_phase_hint_shown","1bn_hide_all_tips"];const saved={};preserve.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)saved[k]=v;});localStorage.clear();Object.entries(saved).forEach(([k,v])=>localStorage.setItem(k,v));}catch(e){}setTripData(MICHAEL_EXPEDITION);setScreen("console");}
   function handleGoGen(data,vd){setAppData({...data,visionData:vd});setScreen("gen");}
   function handleGenComplete(){setScreen("coarchitect");}
-  function handleLaunch(hd){posthog.capture("trip_console_launched",{total_budget:hd?.totalBudget,nights:hd?.totalNights,phases:hd?.phases?.length});try{localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem(SUGGEST_KEY);}catch(e){}console.log('[1BN] handleLaunch tripName:',hd?.tripName,'phases:',hd?.phases?.length);setTripData(hd);setScreen("handoff");generateSegmentSuggestions(hd);}
+  function handleLaunch(hd){posthog.capture("trip_console_launched",{total_budget:hd?.totalBudget,nights:hd?.totalNights,phases:hd?.phases?.length});try{localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem(SUGGEST_KEY);}catch(e){}console.log('[1BN] handleLaunch tripName:',hd?.tripName,'phases:',hd?.phases?.length);setTripData(hd);setScreen("handoff");}
   function handleReviseLaunch(hd){setTripData(hd);setScreen("handoff");}
   function handleHandoffComplete(){setScreen("console");}
   function handleRevise(){
