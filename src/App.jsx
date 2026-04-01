@@ -295,7 +295,7 @@ EXPEDITION OVERVIEW:
 - Departs from: ${tripData.departureCity || tripData.city || 'Unknown'}
 
 PHASES:
-${phases.map((p, i) => `Phase ${i+1}: ${p.name || p.destination || p.city}, ${p.country} | ${p.arrival} → ${p.departure} | ${p.nights} nights | Budget: $${p.budget || p.cost} | Type: ${p.type}`).join('\n')}
+${phases.map((p, i) => {const fromCity=i===0?(tripData.departureCity||tripData.city||'Home'):(phases[i-1].name||phases[i-1].destination||phases[i-1].city||'Previous');return `Phase ${i+1}: FROM ${fromCity} → TO ${p.name || p.destination || p.city}, ${p.country} | ${p.arrival} → ${p.departure} | ${p.nights} nights | Budget: $${p.budget || p.cost} | Type: ${p.type}`;}).join('\n')}
 
 Generate specific, actionable suggestions for each phase. Include:
 1. Transport: How to get there from the previous destination (or from ${tripData.departureCity || tripData.city || 'home'} for Phase 1). Include the actual departure city name in the route, not "Home city". Specific carriers/routes, realistic price estimate.
@@ -1020,7 +1020,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
       if(parsed&&!parsed.packProfile){
         console.log('[1BN] packProfile missing from AI — synthesizing from trip data');
         const phTypes=(parsed.phases||[]).map(p=>(p.type||'').toLowerCase());
-        const hasDive=phTypes.includes('dive')||interests.includes('diving');
+        const hasDive=phTypes.includes('dive')||interests.includes('diving')||data.selectedGoal==='diver';
         const hasTrek=phTypes.includes('trek')||interests.includes('adventure');
         const hasCreator=interests.includes('vlog');
         const hasMoto=interests.includes('moto');
@@ -1032,7 +1032,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
         if(hasDive)cats.push("dive");else hidden.push("dive");
         if(hasCreator)cats.push("creator");else hidden.push("creator");
         if(hasMoto){cats.push("moto");} if(hasSafari){cats.push("safari");} if(hasTrek){cats.push("adventure");}
-        if(isNonAdventure&&!hasDive){hidden.push("scuba","skiing","climbing");}
+        if(isNonAdventure){if(!hasDive)hidden.push("scuba");hidden.push("skiing","climbing");}
         const tn=(parsed.phases||[]).reduce((s,p)=>s+(p.nights||0),0);
         const dur=tn<14?"short":tn<=30?"medium":"long";
         const tropical=["thailand","indonesia","philippines","maldives","honduras","belize","costa rica","vietnam","malaysia","india","mexico","barbados","tanzania"];
@@ -1692,7 +1692,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
   const dismissSD=(type)=>{const d={...dismissed,[`${dismissKey}_${type}`]:true};setDismissedSD(d);saveDismissed(d);};
   const acceptTransportSD=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",`${t.route}\n\nEst. ${t.estimatedCost}${t.bestTiming?`\nBest timing: ${t.bestTiming}`:""}${t.notes?`\n${t.notes}`:""}`);dismissSD('transport');};
   const acceptStaySD=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismissSD('stay');};
-  const acceptActivitySD=(a)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');setDet(d=>({...d,activities:[...d.activities,{name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''),notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()}]}));};
+  const acceptActivitySD=(a)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');setDet(d=>({...d,activities:[...d.activities,{name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()}]}));};
   async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}
   const CATS=[{id:"transport",icon:"✈️",label:"TRANSPORT",a:"#00E5FF",w:"rgba(0,229,255,0.04)"},{id:"stay",icon:"🏠",label:"STAY",a:"#69F0AE",w:"rgba(105,240,174,0.04)"},{id:"activities",icon:"🎯",label:"ACTIVITIES",a:"#FFD93D",w:"rgba(255,217,61,0.04)"},{id:"food",icon:"🍽️",label:"FOOD",a:"#FF9F43",w:"rgba(255,159,67,0.04)"},{id:"misc",icon:"💸",label:"MISC",a:"#A29BFE",w:"rgba(162,155,254,0.04)"},{id:"intel",icon:"🔭",label:"INTEL",a:"#FF6B6B",w:"rgba(255,107,107,0.04)"}];
   const done={transport:!!(det.transport.mode||det.transport.cost),stay:!!(det.stay.name||det.stay.cost),activities:det.activities.length>0,food:!!(det.food.dailyBudget),misc:det.misc.length>0,intel:!!(intelSnippet?.tagline||det.intel.notes)};
@@ -2004,7 +2004,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
         <div onClick={()=>setOpen(true)} style={{padding:"4px 14px 6px 20px",display:"flex",flexWrap:"wrap",gap:"4px 8px",cursor:"pointer",background:"rgba(0,4,14,0.4)"}}>
           {hasTransport&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.75)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",lineHeight:1.5}}>✈️ {segData.transport.mode||"Transport"}{segData.transport.from&&segData.transport.to?` · ${segData.transport.from} → ${segData.transport.to}`:""}{segData.transport.cost?` · $${segData.transport.cost}`:""}</span>}
           {hasStay&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.75)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",lineHeight:1.5}}>🏨 {segData.stay.name}{segData.stay.cost?` · $${segData.stay.cost}`:""}</span>}
-          {hasActivities&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.75)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",lineHeight:1.5}}>⚡ {segData.activities.length} activit{segData.activities.length===1?"y":"ies"}{segData.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0)>0?` · $${segData.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0)}`:""}</span>}
+          {hasActivities&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.75)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",lineHeight:1.5}}>⚡ {segData.activities.length} activit{segData.activities.length===1?"y":"ies"}{segData.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0)>0?` · $${segData.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}`:""}</span>}
           {segData.food?.dailyBudget&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.75)",fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",lineHeight:1.5}}>🍜 ${segData.food.dailyBudget}/day</span>}
         </div>
       )}
@@ -2110,7 +2110,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}
   const acceptTransport=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("from",prevCity||homeCity||"");uT("to",segment.name||"");uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",`${t.route}\n\nEst. ${t.estimatedCost}${t.bestTiming?`\nBest timing: ${t.bestTiming}`:""}${t.notes?`\n${t.notes}`:""}`);if(segment.arrival){uT("depTime",fD(segment.arrival));uT("arrTime",fD(segment.arrival));}dismiss('transport');};
   const acceptStay=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');};
-  const acceptActivity=(a)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');setDet(d=>({...d,activities:[...d.activities,{name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''),notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()}]}));};
+  const acceptActivity=(a)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');setDet(d=>({...d,activities:[...d.activities,{name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()}]}));};
   const hasT=Object.values(det.transport||{}).some(v=>v&&String(v).length>0);
   const hasS=det.stay?.name?.length>0;
   const TABS=[{id:"transport",label:"TRANSPORT",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:"ACTIVITIES",icon:"⚡",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"budget",label:"BUDGET",icon:"💰"},{id:"docs",label:"DOCS",icon:"📋"}];
@@ -2477,7 +2477,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
         ))}
       </div>
     </div>
-    {activeSegment&&(()=>{const prevPhase=segPhases.find((_,i)=>segPhases[i+1]?.id===phase.id);return <SegmentWorkspace segment={activeSegment} phaseId={phase.id} phaseName={phase.name} phaseFlag={phase.flag} intelSnippet={intelData?.[activeSegment.name]} onBack={()=>setActiveSegment(null)} onBackToExpedition={()=>{setActiveSegment(null);onBack();}} suggestion={findSuggestionForSegment(segmentSuggestions, activeSegment.name)} suggestionsLoading={suggestionsLoading} homeCity={homeCity} prevCity={prevPhase?.name||""}/>;})()}
+    {activeSegment&&(()=>{const allSegs=segPhases.flatMap(p=>p.segments);const segIdx=allSegs.findIndex(s=>s.id===activeSegment.id);const prev=segIdx>0?allSegs[segIdx-1]:null;return <SegmentWorkspace segment={activeSegment} phaseId={phase.id} phaseName={phase.name} phaseFlag={phase.flag} intelSnippet={intelData?.[activeSegment.name]} onBack={()=>setActiveSegment(null)} onBackToExpedition={()=>{setActiveSegment(null);onBack();}} suggestion={findSuggestionForSegment(segmentSuggestions, activeSegment.name)} suggestionsLoading={suggestionsLoading} homeCity={homeCity} prevCity={prev?.name||""}/>;})()}
     </>
   );
 }
