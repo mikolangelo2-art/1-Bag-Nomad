@@ -1073,8 +1073,8 @@ packProfile must reflect the actual generated itinerary. categories should inclu
         <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22,padding:isMobile?"0 14px":0}}>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onChange={e=>setTripName(e.target.value)} placeholder="MY GRAND EXPEDITION" style={{textTransform:"uppercase",borderColor:"rgba(0,229,255,0.72)",boxShadow:"0 0 14px rgba(0,229,255,0.18),0 0 32px rgba(0,229,255,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><CityInput className="f-input" value={city} onChange={v=>setCity(v)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/></div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{position:"relative",width:"100%",overflow:"hidden",boxSizing:"border-box"}}><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",color:(!date&&isMobile)?"transparent":undefined,paddingRight:40,width:"100%",maxWidth:"100%",boxSizing:"border-box",borderColor:"rgba(105,240,174,0.72)",boxShadow:"0 0 14px rgba(105,240,174,0.18),0 0 32px rgba(105,240,174,0.07)"}}/>{!date&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div></div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div style={{position:"relative",width:"100%",overflow:"hidden",boxSizing:"border-box"}}><input type="date" className="f-input" value={returnDate} min={date||undefined} onChange={e=>setReturnDate(e.target.value)} onFocus={()=>{if(!returnDate&&date)setReturnDate(date);}} style={{colorScheme:"dark",color:(!returnDate&&isMobile)?"transparent":undefined,paddingRight:40,width:"100%",maxWidth:"100%",boxSizing:"border-box",borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/>{!returnDate&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.65)",marginTop:3}}>optional · open-ended</div></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><DateInput value={date} onChange={v=>setDate(v)} accentColor="#69F0AE"/></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><DateInput value={returnDate} onChange={v=>setReturnDate(v)} accentColor="#FFD93D" onMmFocus={()=>{if(!returnDate&&date)setReturnDate(date);}}/><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.65)",marginTop:3}}>optional · open-ended</div></div>
         </div>
 
         <div style={{marginBottom:22,padding:isMobile?"0 14px":0}}>
@@ -1511,6 +1511,32 @@ function HomecomingScreen({tripData,onPlanNext}) {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ─── DateInput (MM/DD/YYYY three-field) ──────────────────────────
+function DateInput({value,onChange,accentColor="#69F0AE",onMmFocus}) {
+  const parse=v=>{if(!v)return{m:"",d:"",y:""};const p=v.split("-");return p.length===3?{m:p[1]||"",d:p[2]||"",y:p[0]||""}:{m:"",d:"",y:""};};
+  const [mm,setMm]=useState(()=>parse(value).m);
+  const [dd,setDd]=useState(()=>parse(value).d);
+  const [yyyy,setYyyy]=useState(()=>parse(value).y);
+  const mmRef=useRef();const ddRef=useRef();const yyyyRef=useRef();
+  useEffect(()=>{const p=parse(value);setMm(p.m);setDd(p.d);setYyyy(p.y);},[value]);
+  const emit=(m,d,y)=>{if(m&&d&&y.length===4){const iso=`${y}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;onChange(iso);}};
+  const handleMm=e=>{const v=e.target.value.replace(/\D/g,"").slice(0,2);setMm(v);if(v.length===2)ddRef.current?.focus();emit(v,dd,yyyy);};
+  const handleDd=e=>{const v=e.target.value.replace(/\D/g,"").slice(0,2);setDd(v);if(v.length===2)yyyyRef.current?.focus();emit(mm,v,yyyy);};
+  const handleYyyy=e=>{const v=e.target.value.replace(/\D/g,"").slice(0,4);setYyyy(v);emit(mm,dd,v);};
+  const fs={background:"rgba(255,255,255,0.04)",border:`1px solid ${accentColor}55`,borderRadius:9,color:"#FFF",fontFamily:"'Space Mono',monospace",fontSize:15,padding:"12px 8px",textAlign:"center",width:"100%",boxSizing:"border-box",outline:"none",transition:"border-color 0.2s,box-shadow 0.2s"};
+  const onF=e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";};
+  const onB=e=>{e.target.style.borderColor=`${accentColor}55`;e.target.style.boxShadow="none";};
+  return(
+    <div style={{display:"flex",gap:8,alignItems:"center",width:"100%"}}>
+      <input ref={mmRef} type="text" inputMode="numeric" placeholder="MM" maxLength={2} value={mm} onChange={handleMm} onFocus={e=>{onF(e);if(onMmFocus)onMmFocus();}} onBlur={onB} style={{...fs,flex:1}}/>
+      <span style={{color:"rgba(255,159,67,0.5)",fontSize:18,flexShrink:0}}>/</span>
+      <input ref={ddRef} type="text" inputMode="numeric" placeholder="DD" maxLength={2} value={dd} onChange={handleDd} onFocus={onF} onBlur={onB} style={{...fs,flex:1}}/>
+      <span style={{color:"rgba(255,159,67,0.5)",fontSize:18,flexShrink:0}}>/</span>
+      <input ref={yyyyRef} type="text" inputMode="numeric" placeholder="YYYY" maxLength={4} value={yyyy} onChange={handleYyyy} onFocus={onF} onBlur={onB} style={{...fs,flex:2}}/>
     </div>
   );
 }
