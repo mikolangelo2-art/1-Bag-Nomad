@@ -280,71 +280,22 @@ const dismissBtnStyle = {
 };
 
 function buildSegmentSuggestionsPrompt(tripData, travelerProfile) {
-  const phases = tripData.phases || [];
-  const style = travelerProfile?.style || 'Independent Explorer';
+  const allPhases = tripData.phases || [];
+  const phases = allPhases.slice(0, 5);
+  const home = tripData.departureCity || tripData.city || 'Home';
+  const style = travelerProfile?.style || 'Independent';
   const group = travelerProfile?.group || 'Solo';
-  const interests = [...(travelerProfile?.interests||[]), ...(travelerProfile?.specialtyInterests||[])].join(', ');
-  return `You are a world-class travel advisor and co-architect for a ${style} traveler.
-
-EXPEDITION OVERVIEW:
-- Traveler: ${group}
-- Style: ${style}
-- Interests: ${interests}
-- Total budget: $${tripData.totalBudget}
-- Departure: ${tripData.startDate}
-- Departs from: ${tripData.departureCity || tripData.city || 'Unknown'}
+  return `Travel advisor. ${group} ${style} traveler from ${home}. Budget: $${tripData.totalBudget||'flexible'}.
 
 PHASES:
-${phases.map((p, i) => {const fromCity=i===0?(tripData.departureCity||tripData.city||'Home'):(phases[i-1].name||phases[i-1].destination||phases[i-1].city||'Previous');return `Phase ${i+1}: FROM ${fromCity} → TO ${p.name || p.destination || p.city}, ${p.country} | ${p.arrival} → ${p.departure} | ${p.nights} nights | Budget: $${p.budget || p.cost} | Type: ${p.type}`;}).join('\n')}
+${phases.map((p, i) => {const from=i===0?home:(phases[i-1].name||phases[i-1].destination||'Previous');return `${i+1}. FROM ${from} → ${p.name||p.destination||p.city}, ${p.country} | ${p.arrival}→${p.departure} | ${p.nights}n | $${p.budget||p.cost}`;}).join('\n')}
 
-Generate specific, actionable suggestions for each phase. Include:
-1. Transport: How to get there from the previous destination (or from ${tripData.departureCity || tripData.city || 'home'} for Phase 1). Include the actual departure city name in the route, not "Home city". Specific carriers/routes, realistic price estimate.
-2. Stay: Best area to stay, accommodation type matching their style, realistic nightly rate and total cost.
-3. Activities: 2-3 specific recommended activities matching their interests, with realistic costs.
-4. Food: Daily food budget estimate, 2-3 specific local food recommendations.
+For each phase: transport route+cost, stay name+cost, 2 activities+costs, food budget.
 
-IMPORTANT: All prices are ESTIMATES based on current market rates. Actual prices will vary when booked.
+Return ONLY JSON:
+{"phases":[{"phaseIndex":0,"phaseName":"...","transport":{"route":"...","estimatedCost":"$X-X","notes":"..."},"stay":{"recommendation":"...","suggestions":["Name1","Name2"],"estimatedNightly":"$X/night","estimatedTotal":"$X-X","notes":"..."},"activities":[{"name":"...","provider":"...","estimatedCost":"$X","notes":"..."}],"food":{"dailyBudget":"$X-X/day","recommendations":["..."],"notes":"..."}}]}
 
-Return ONLY a JSON object:
-{
-  "phases": [
-    {
-      "phaseIndex": 0,
-      "phaseName": "Destination Name",
-      "transport": {
-        "route": "Origin → Destination via carrier/method",
-        "duration": "Approx travel time",
-        "estimatedCost": "$XXX-XXX",
-        "bestTiming": "Booking advice",
-        "notes": "Practical travel notes"
-      },
-      "stay": {
-        "recommendation": "Area and style recommendation",
-        "type": "Accommodation type",
-        "suggestions": ["Property 1", "Property 2", "Property 3"],
-        "estimatedNightly": "$XX-XX/night",
-        "estimatedTotal": "$XXX-XXX for N nights",
-        "notes": "Booking tips"
-      },
-      "activities": [
-        {
-          "name": "Activity name",
-          "provider": "Operator or venue",
-          "estimatedCost": "$XX-XX",
-          "notes": "Tips"
-        }
-      ],
-      "food": {
-        "dailyBudget": "$XX-XX/day",
-        "totalEstimate": "$XXX-XXX for N nights",
-        "recommendations": ["Restaurant — description", "Restaurant — description"],
-        "notes": "Local food tips"
-      }
-    }
-  ]
-}
-
-Return JSON only. No preamble. No markdown.`;
+JSON only. No markdown. No preamble.`;
 }
 
 // ─── CSS ─────────────────────────────────────────────────────────
@@ -3718,20 +3669,31 @@ export default function App() {
   },[tripData?.tripName]);
 
   async function generateSegmentSuggestions(td){
-    if(!td||!td.phases?.length){console.warn('[1BN] Cannot generate suggestions — no trip data or phases');return;}
+    if(!td||!td.phases?.length){console.warn('[1BN] Suggestions skipped — no phases');return;}
     const tripId=String(td.tripName||td.vision||"expedition").slice(0,60);
-    console.log('[1BN] Generating suggestions for:',tripId,'phases:',td.phases.length,'traveler:',td.travelerProfile?.style);
+    console.log('[1BN] === GENERATING SUGGESTIONS ===');
+    console.log('[1BN] tripId:',tripId,'phases:',td.phases.length);
     setSuggestionsLoading(true);
     try{
       const prompt=buildSegmentSuggestionsPrompt(td,td.travelerProfile);
+      console.log('[1BN] Prompt length:',prompt.length,'chars');
       const raw=await askAI(prompt,4000);
+      console.log('[1BN] API response length:',raw?.length||0,'chars');
+      console.log('[1BN] API response preview:',String(raw).substring(0,200));
+      if(!raw||raw.length<10){console.warn('[1BN] Empty or tiny API response');setSuggestionsLoading(false);return;}
       const m=raw.match(/\{[\s\S]*\}/);
-      if(!m)throw new Error("No JSON");
+      if(!m){console.warn('[1BN] No JSON found in response');setSuggestionsLoading(false);return;}
       const parsed=JSON.parse(m[0]);
-      localStorage.setItem(SUGGEST_KEY,JSON.stringify({tripId,generated:Date.now(),suggestions:parsed.phases}));
-      setSegmentSuggestions(parsed.phases);
+      console.log('[1BN] Parsed phases:',parsed.phases?.length||0);
+      if(parsed.phases?.length){
+        localStorage.setItem(SUGGEST_KEY,JSON.stringify({tripId,generated:Date.now(),suggestions:parsed.phases}));
+        setSegmentSuggestions(parsed.phases);
+        console.log('[1BN] Suggestions saved with tripId:',tripId);
+      }else{
+        console.warn('[1BN] Parsed JSON has no phases array');
+      }
     }catch(e){
-      console.warn('[1BN] Segment suggestions failed silently:',e);
+      console.warn('[1BN] Suggestions failed:',e.message||e);
     }
     setSuggestionsLoading(false);
   }
