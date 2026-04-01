@@ -2949,10 +2949,10 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
         )}
         {tab==="blueprint"&&(
           <div>
-            {tripData.budgetBreakdown?(
+            {(tripData.budgetBreakdown||tripData.phases?.length>0)?(
               <div>
-                {tripData.visionNarrative&&<div style={{borderLeft:"2px solid rgba(255,159,67,0.4)",paddingLeft:12,marginBottom:18}}><div style={{fontSize:11,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:4}}>✦ ORIGINAL VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.7}}>"{tripData.visionNarrative}"</div></div>}
-                {(()=>{const bd=tripData.budgetBreakdown;const cats=[{key:"flights",icon:"✈️",label:"Flights",note:bd.flightsNote},{key:"accommodation",icon:"🏨",label:"Accommodation",note:bd.accommodationNote},{key:"food",icon:"🍜",label:"Food",note:bd.foodNote},{key:"transport",icon:"🚌",label:"Transport",note:null},{key:"activities",icon:"🎯",label:"Activities",note:null},{key:"buffer",icon:"🎒",label:"Buffer",note:null}].filter(c=>bd[c.key]>0);const total=cats.reduce((s,c)=>s+(bd[c.key]||0),0);return(
+                {(tripData.visionNarrative||tripData.vision)&&<div style={{borderLeft:"2px solid rgba(255,159,67,0.4)",paddingLeft:12,marginBottom:18}}><div style={{fontSize:11,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:4}}>✦ ORIGINAL VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.7}}>"{tripData.visionNarrative||tripData.vision}"</div></div>}
+                {(()=>{const bd=tripData.budgetBreakdown;if(!bd)return <div style={{padding:"12px 14px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:11,marginBottom:16}}><div style={{fontSize:11,color:"rgba(255,159,67,0.65)",letterSpacing:2,fontFamily:"'Space Mono',monospace",marginBottom:6}}>✦ BUDGET OVERVIEW</div><div style={{fontSize:14,fontWeight:700,color:"#FFD93D",fontFamily:"'Space Mono',monospace"}}>Total: {fmt(tripData.totalBudget||0)}</div><div style={{fontSize:12,color:"rgba(255,255,255,0.50)",fontFamily:"'Space Mono',monospace",marginTop:4}}>{tripData.phases?.length||0} phases · {segPhases.reduce((s,p)=>s+p.totalNights,0)} nights</div></div>;const cats=[{key:"flights",icon:"✈️",label:"Flights",note:bd.flightsNote},{key:"accommodation",icon:"🏨",label:"Accommodation",note:bd.accommodationNote},{key:"food",icon:"🍜",label:"Food",note:bd.foodNote},{key:"transport",icon:"🚌",label:"Transport",note:null},{key:"activities",icon:"🎯",label:"Activities",note:null},{key:"buffer",icon:"🎒",label:"Buffer",note:null}].filter(c=>bd[c.key]>0);const total=cats.reduce((s,c)=>s+(bd[c.key]||0),0);return(
                   <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.08),rgba(0,8,20,0.6))",border:"1px solid rgba(169,70,29,0.3)",borderRadius:11,padding:"12px 14px",marginBottom:16}}>
                     <div style={{fontSize:11,color:"rgba(255,159,67,0.85)",letterSpacing:2,fontFamily:"'Space Mono',monospace",fontWeight:700,marginBottom:10}}>✦ BUDGET BLUEPRINT</div>
                     {cats.map(c=>{const val=bd[c.key]||0;return(
@@ -3701,7 +3701,8 @@ export default function App() {
       const saved=localStorage.getItem(SUGGEST_KEY);
       if(saved){
         const parsed=JSON.parse(saved);
-        if(parsed.tripId===tripData?.tripName){
+        const currentId=tripData?.tripName||tripData?.vision?.slice(0,30)||"expedition";
+        if(parsed.tripId&&(parsed.tripId===currentId||parsed.tripId===tripData?.tripName)&&parsed.suggestions?.length){
           setSegmentSuggestions(parsed.suggestions);
         }
       }
@@ -3709,6 +3710,9 @@ export default function App() {
   },[tripData?.tripName]);
 
   async function generateSegmentSuggestions(td){
+    const tripId=td?.tripName||td?.vision?.slice(0,30)||"expedition";
+    if(!td?.phases?.length){console.warn('[1BN] Cannot generate suggestions — tripData incomplete');return;}
+    console.log('[1BN] Generating suggestions for:',tripId,'phases:',td.phases.length);
     setSuggestionsLoading(true);
     try{
       const prompt=buildSegmentSuggestionsPrompt(td,td.travelerProfile);
@@ -3716,7 +3720,7 @@ export default function App() {
       const m=raw.match(/\{[\s\S]*\}/);
       if(!m)throw new Error("No JSON");
       const parsed=JSON.parse(m[0]);
-      localStorage.setItem(SUGGEST_KEY,JSON.stringify({tripId:td.tripName,generated:Date.now(),suggestions:parsed.phases}));
+      localStorage.setItem(SUGGEST_KEY,JSON.stringify({tripId,generated:Date.now(),suggestions:parsed.phases}));
       setSegmentSuggestions(parsed.phases);
     }catch(e){
       console.warn('[1BN] Segment suggestions failed silently:',e);
