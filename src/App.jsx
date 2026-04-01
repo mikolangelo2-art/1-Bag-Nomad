@@ -1074,7 +1074,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onChange={e=>setTripName(e.target.value)} placeholder="MY GRAND EXPEDITION" style={{textTransform:"uppercase",borderColor:"rgba(0,229,255,0.72)",boxShadow:"0 0 14px rgba(0,229,255,0.18),0 0 32px rgba(0,229,255,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><CityInput className="f-input" value={city} onChange={v=>setCity(v)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><DateInput value={date} onChange={v=>setDate(v)} accentColor="#69F0AE"/></div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><DateInput value={returnDate} onChange={v=>setReturnDate(v)} accentColor="#FFD93D" onMmFocus={()=>{if(!returnDate&&date)setReturnDate(date);}}/><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.65)",marginTop:3}}>optional · open-ended</div></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><DateInput value={returnDate} onChange={v=>setReturnDate(v)} accentColor="#FFD93D" yearHint={date?date.split("-")[0]:""}/><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.65)",marginTop:3}}>optional · open-ended</div></div>
         </div>
 
         <div style={{marginBottom:22,padding:isMobile?"0 14px":0}}>
@@ -1516,7 +1516,7 @@ function HomecomingScreen({tripData,onPlanNext}) {
 }
 
 // ─── DateInput (MM/DD/YYYY three-field) ──────────────────────────
-function DateInput({value,onChange,accentColor="#69F0AE",onMmFocus}) {
+function DateInput({value,onChange,accentColor="#69F0AE",yearHint}) {
   const parse=v=>{if(!v)return{m:"",d:"",y:""};const p=v.split("-");return p.length===3?{m:p[1]||"",d:p[2]||"",y:p[0]||""}:{m:"",d:"",y:""};};
   const [mm,setMm]=useState(()=>parse(value).m);
   const [dd,setDd]=useState(()=>parse(value).d);
@@ -1532,7 +1532,7 @@ function DateInput({value,onChange,accentColor="#69F0AE",onMmFocus}) {
   const onB=e=>{e.target.style.borderColor=`${accentColor}55`;e.target.style.boxShadow="none";};
   return(
     <div style={{display:"flex",gap:8,alignItems:"center",width:"100%"}}>
-      <input ref={mmRef} type="text" inputMode="numeric" placeholder="MM" maxLength={2} value={mm} onChange={handleMm} onFocus={e=>{onF(e);if(onMmFocus)onMmFocus();}} onBlur={onB} style={{...fs,flex:1}}/>
+      <input ref={mmRef} type="text" inputMode="numeric" placeholder="MM" maxLength={2} value={mm} onChange={handleMm} onFocus={e=>{onF(e);if(yearHint&&!mm&&!dd&&!yyyy){setYyyy(yearHint);}}} onBlur={onB} style={{...fs,flex:1}}/>
       <span style={{color:"rgba(255,159,67,0.5)",fontSize:18,flexShrink:0}}>/</span>
       <input ref={ddRef} type="text" inputMode="numeric" placeholder="DD" maxLength={2} value={dd} onChange={handleDd} onFocus={onF} onBlur={onB} style={{...fs,flex:1}}/>
       <span style={{color:"rgba(255,159,67,0.5)",fontSize:18,flexShrink:0}}>/</span>
@@ -1545,7 +1545,7 @@ function DateInput({value,onChange,accentColor="#69F0AE",onMmFocus}) {
 function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00E5FF"}) {
   const mob=useMobile();
   const s={background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:6,color:"#FFF",fontSize:mob?12:15,padding:multiline?(mob?"5px 7px":"6px 8px"):(mob?"4px 7px":"5px 8px"),fontFamily:"'Space Mono',monospace",outline:"none",width:"100%",maxWidth:"100%",boxSizing:"border-box",lineHeight:1.6,resize:multiline?"none":undefined,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"};
-  const onF=e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'center'}),320);};
+  const onF=e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'nearest'}),500);};
   const onB=e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";};
   return(
     <div style={{display:"flex",flexDirection:"column",gap:mob?2:3}}>
