@@ -279,21 +279,21 @@ const dismissBtnStyle = {
   cursor: 'pointer'
 };
 
-function buildSegmentSuggestionsPrompt(tripData, travelerProfile) {
-  const allPhases = tripData.phases || [];
-  const phases = allPhases.slice(0, 5);
+function buildSegmentSuggestionsPrompt(tripData, travelerProfile, phasesSlice, startIndex) {
+  const phases = phasesSlice || (tripData.phases || []).slice(0, 5);
+  const offset = startIndex || 0;
   const home = tripData.departureCity || tripData.city || 'Home';
   const style = travelerProfile?.style || 'Independent';
   const group = travelerProfile?.group || 'Solo';
   return `Travel advisor. ${group} ${style} traveler from ${home}. Budget: $${tripData.totalBudget||'flexible'}.
 
 PHASES:
-${phases.map((p, i) => {const from=i===0?home:(phases[i-1].name||phases[i-1].destination||'Previous');return `${i+1}. FROM ${from} → ${p.name||p.destination||p.city}, ${p.country} | ${p.arrival}→${p.departure} | ${p.nights}n | $${p.budget||p.cost}`;}).join('\n')}
+${phases.map((p, i) => {const globalIdx=offset+i;const from=globalIdx===0?home:(i===0?(tripData.phases[offset-1]?.name||tripData.phases[offset-1]?.destination||'Previous'):(phases[i-1].name||phases[i-1].destination||'Previous'));return `${globalIdx+1}. FROM ${from} → ${p.name||p.destination||p.city}, ${p.country} | ${p.arrival}→${p.departure} | ${p.nights}n | $${p.budget||p.cost}`;}).join('\n')}
 
 For each phase: transport route+cost, stay name+cost, 2 activities+costs, food budget.
 
 Return ONLY JSON:
-{"phases":[{"phaseIndex":0,"phaseName":"...","transport":{"route":"...","estimatedCost":"$X-X","notes":"..."},"stay":{"recommendation":"...","suggestions":["Name1","Name2"],"estimatedNightly":"$X/night","estimatedTotal":"$X-X","notes":"..."},"activities":[{"name":"...","provider":"...","estimatedCost":"$X","notes":"..."}],"food":{"dailyBudget":"$X-X/day","recommendations":["..."],"notes":"..."}}]}
+{"phases":[{"phaseIndex":${offset},"phaseName":"...","transport":{"route":"...","estimatedCost":"$X-X","notes":"..."},"stay":{"recommendation":"...","suggestions":["Name1","Name2"],"estimatedNightly":"$X/night","estimatedTotal":"$X-X","notes":"..."},"activities":[{"name":"...","provider":"...","estimatedCost":"$X","notes":"..."}],"food":{"dailyBudget":"$X-X/day","recommendations":["..."],"notes":"..."}}]}
 
 JSON only. No markdown. No preamble.`;
 }
@@ -3668,34 +3668,60 @@ export default function App() {
     generateSegmentSuggestions(tripData);
   },[tripData?.tripName]);
 
+  async function fetchSuggestionsChunk(td, phasesSlice, startIndex){
+    try{
+      const prompt=buildSegmentSuggestionsPrompt(td,td.travelerProfile,phasesSlice,startIndex);
+      console.log(`[1BN] Chunk ${startIndex}: prompt length ${prompt.length} chars`);
+      const raw=await askAI(prompt,4000);
+      console.log(`[1BN] Chunk ${startIndex}: response length ${raw?.length||0} chars`);
+      if(!raw||raw.length<10){console.warn(`[1BN] Chunk ${startIndex}: empty or tiny response`);return {};}
+      const m=raw.match(/\{[\s\S]*\}/);
+      if(!m){console.warn(`[1BN] Chunk ${startIndex}: no JSON found`);return {};}
+      const parsed=JSON.parse(m[0]);
+      const phases=parsed.phases||[];
+      console.log(`[1BN] Chunk ${startIndex} raw phases:`, JSON.stringify(phases.map(p => p.phaseName)));
+      const result={};
+      phases.forEach((phase,localIdx)=>{result[startIndex+localIdx]=phase;});
+      return result;
+    }catch(err){
+      console.warn(`[1BN] Suggestions chunk failed for phases starting at ${startIndex}:`,err);
+      return {};
+    }
+  }
+
   async function generateSegmentSuggestions(td){
     if(!td||!td.phases?.length){console.warn('[1BN] Suggestions skipped — no phases');return;}
     const tripId=String(td.tripName||td.vision||"expedition").slice(0,60);
+    const phases=td.phases||[];
+    const count=phases.length;
     console.log('[1BN] === GENERATING SUGGESTIONS ===');
-    console.log('[1BN] tripId:',tripId,'phases:',td.phases.length);
+    console.log('[1BN] tripId:',tripId,'phases:',count);
+    console.log(`[1BN] Suggestions strategy: ${count<=5?'single':'parallel'} | phases covered: ${count}`);
     setSuggestionsLoading(true);
     try{
-      const prompt=buildSegmentSuggestionsPrompt(td,td.travelerProfile);
-      console.log('[1BN] Prompt length:',prompt.length,'chars');
-      const raw=await askAI(prompt,4000);
-      console.log('[1BN] API response length:',raw?.length||0,'chars');
-      console.log('[1BN] API response preview:',String(raw).substring(0,200));
-      if(!raw||raw.length<10){console.warn('[1BN] Empty or tiny API response');setSuggestionsLoading(false);return;}
-      const m=raw.match(/\{[\s\S]*\}/);
-      if(!m){console.warn('[1BN] No JSON found in response');setSuggestionsLoading(false);return;}
-      const parsed=JSON.parse(m[0]);
-      console.log('[1BN] Parsed phases:',parsed.phases?.length||0);
-      if(parsed.phases?.length){
-        localStorage.setItem(SUGGEST_KEY,JSON.stringify({tripId,generated:Date.now(),suggestions:parsed.phases}));
-        setSegmentSuggestions(parsed.phases);
-        console.log('[1BN] Suggestions saved with tripId:',tripId);
+      let merged={};
+      if(count<=5){
+        merged=await fetchSuggestionsChunk(td,phases.slice(0,5),0);
       }else{
-        console.warn('[1BN] Parsed JSON has no phases array');
+        const [chunkA,chunkB]=await Promise.all([
+          fetchSuggestionsChunk(td,phases.slice(0,5),0),
+          fetchSuggestionsChunk(td,phases.slice(5),5)
+        ]);
+        merged={...chunkA,...chunkB};
+      }
+      const allSuggestions=Object.keys(merged).sort((a,b)=>a-b).map(k=>merged[k]);
+      if(allSuggestions.length){
+        localStorage.setItem(SUGGEST_KEY,JSON.stringify({tripId,generated:Date.now(),suggestions:allSuggestions}));
+        setSegmentSuggestions(allSuggestions);
+        console.log('[1BN] Suggestions saved with tripId:',tripId,'phases:',allSuggestions.length);
+      }else{
+        console.warn('[1BN] No suggestion phases returned from any chunk');
       }
     }catch(e){
-      console.warn('[1BN] Suggestions failed:',e.message||e);
+      console.error('[1BN] Suggestions fetch failed:',e);
+    }finally{
+      setSuggestionsLoading(false);
     }
-    setSuggestionsLoading(false);
   }
 
   function handleLoadDemo(){try{const preserve=["1bn_coach_v1","1bn_onboard_v1","1bn_pack_explainer_v1","1bn_phase_hint_shown","1bn_hide_all_tips"];const saved={};preserve.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)saved[k]=v;});localStorage.clear();Object.entries(saved).forEach(([k,v])=>localStorage.setItem(k,v));}catch(e){}setTripData(MICHAEL_EXPEDITION);setScreen("console");}
