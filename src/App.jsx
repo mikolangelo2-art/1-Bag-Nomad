@@ -1032,7 +1032,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
         </div>
         <div style={{marginBottom:28,borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:24,padding:"24px 0 0"}}>
           <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:3,textTransform:"uppercase",marginBottom:16}}>TRAVELER BRIEF</div>
-          <div style={{marginBottom:12,border:travelerGroup?"1px solid rgba(255,159,67,0.20)":"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:isMobile?"12px 8px":"14px 16px",background:"rgba(255,255,255,0.02)",transition:"border 0.3s ease",width:"100%",boxSizing:"border-box"}}>
+          <div style={{marginBottom:12,border:travelerGroup?"1px solid rgba(255,159,67,0.20)":"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:isMobile?"12px 0":"14px 16px",background:"rgba(255,255,255,0.02)",transition:"border 0.3s ease",width:"100%",boxSizing:"border-box"}}>
             <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>WHO'S GOING</div>
             <div style={{display:"flex",flexDirection:isMobile?"column":"row",flexWrap:"wrap",gap:8}}>
               {[{id:"solo",label:"Solo"},{id:"couple",label:"Couple / 2 Friends"}].map(g=>(
@@ -1040,7 +1040,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
               ))}
             </div>
           </div>
-          <div style={{marginBottom:12,border:travelStyle?"1px solid rgba(255,159,67,0.20)":"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:isMobile?"12px 8px":"14px 16px",background:"rgba(255,255,255,0.02)",transition:"border 0.3s ease",width:"100%",boxSizing:"border-box"}}>
+          <div style={{marginBottom:12,border:travelStyle?"1px solid rgba(255,159,67,0.20)":"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:isMobile?"12px 0":"14px 16px",background:"rgba(255,255,255,0.02)",transition:"border 0.3s ease",width:"100%",boxSizing:"border-box"}}>
             <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>YOUR TRAVEL STYLE</div>
             <div style={{display:"flex",flexDirection:isMobile?"column":"row",flexWrap:"wrap",gap:8,width:"100%"}}>
               {["First Timer","Independent Explorer","Comfort & Quality","Adventure First","Luxury"].map(s=>(
@@ -1048,7 +1048,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
               ))}
             </div>
           </div>
-          <div style={{marginBottom:12,border:"1px solid rgba(255,255,255,0.05)",borderRadius:12,padding:isMobile?"12px 8px":"12px 16px",background:"transparent",transition:"border 0.3s ease",width:"100%",boxSizing:"border-box"}}>
+          <div style={{marginBottom:12,border:"1px solid rgba(255,255,255,0.05)",borderRadius:12,padding:isMobile?"12px 0":"12px 16px",background:"transparent",transition:"border 0.3s ease",width:"100%",boxSizing:"border-box"}}>
             <div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>INTERESTS <span style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:300,color:"rgba(255,159,67,0.50)",fontSize:13,textTransform:"none"}}>· optional</span></div>
             <div style={{display:"flex",flexDirection:isMobile?"column":"row",flexWrap:"wrap",gap:isMobile?8:7,width:"100%"}}>
               {(()=>{const allI=[{id:"diving",icon:"🤿",label:"Diving"},{id:"culture",icon:"🌍",label:"Culture"},{id:"vlog",icon:"🎥",label:"Vlog"},{id:"food",icon:"🍜",label:"Food & Wine"},{id:"adventure",icon:"🥾",label:"Adventure"},{id:"golf",icon:"⛳",label:"Golf"},{id:"wellness",icon:"🧘",label:"Wellness"},{id:"remote",icon:"💻",label:"Remote Work"},{id:"safari",icon:"🦁",label:"Safari"},{id:"moto",icon:"🏍️",label:"Moto"}];const visible=showAllInterests?allI:allI.filter((c,i)=>i<4||interests.includes(c.id));const hidden=allI.length-visible.length;return(<>{visible.map(c=>{const on=interests.includes(c.id);return(
@@ -1068,8 +1068,8 @@ packProfile must reflect the actual generated itinerary. categories should inclu
             </div>
           </div>
         </div>
-        <div className="sec-label" style={{padding:isMobile?"0 12px":0}}>EXPEDITION DETAILS</div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22,padding:isMobile?"0 12px":0}}>
+        <div className="sec-label" style={{padding:0}}>EXPEDITION DETAILS</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22,padding:0}}>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onChange={e=>setTripName(e.target.value)} placeholder="MY GRAND EXPEDITION" style={{textTransform:"uppercase",borderColor:"rgba(0,229,255,0.72)",boxShadow:"0 0 14px rgba(0,229,255,0.18),0 0 32px rgba(0,229,255,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><CityInput className="f-input" value={city} onChange={v=>setCity(v)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{position:"relative",width:"100%"}}><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",color:(!date&&isMobile)?"transparent":undefined,paddingRight:36,width:"100%",boxSizing:"border-box",borderColor:"rgba(105,240,174,0.72)",boxShadow:"0 0 14px rgba(105,240,174,0.18),0 0 32px rgba(105,240,174,0.07)"}}/>{!date&&isMobile&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 13px",fontFamily:"'Space Mono',monospace",fontSize:12,color:"rgba(255,255,255,0.22)",pointerEvents:"none",letterSpacing:1}}>mm / dd / yyyy<span>📅</span></div>}<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div></div></div>
