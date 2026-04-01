@@ -369,7 +369,8 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .chat-bubble{font-size:12px}}
 
 .dream-root,.mc-root,.build-root{max-width:900px!important;margin:0 auto!important}
-.dream-content{padding:40px 52px 70px!important}
+@media(max-width:599px){.dream-root,.mc-root,.build-root{max-width:100%!important;margin:0!important;padding:0!important;width:100%!important}.dream-content{max-width:100%!important;margin:0!important;padding:14px 0 80px!important;width:100%!important}}
+.dream-content{padding:40px 0 70px!important}
 .mc-content{padding:22px 36px!important}
 .g-label{font-size:16px!important}
 .g-desc{font-size:11px!important}
