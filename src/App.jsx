@@ -527,7 +527,7 @@ function SharegoodLogo({size=40,opacity=1,glowColor="rgba(169,70,29,0.5)",animat
   const finalAnim=animate?anim:"none";
   return (
     <div style={{position:"relative",width:size,height:size,flexShrink:0,animation:finalAnim,filter:`drop-shadow(0 0 ${size*.25}px ${glowColor})`,opacity,"--logo-glow":glowColor}}>
-      <img src="/sharegood-logo.svg" width={size} height={size} alt="Sharegood" style={{display:"block",borderRadius:"50%"}}/>
+      <img src="/1bn-logo.png" width={size} height={size} alt="1 Bag Nomad" style={{display:"block",borderRadius:"50%"}}/>
     </div>
   );
 }
