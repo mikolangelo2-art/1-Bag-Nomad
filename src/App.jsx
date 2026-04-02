@@ -1017,7 +1017,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
       <div className="dream-content">
         <div style={{textAlign:"center",marginBottom:isMobile?20:28,animation:"fadeUp 0.6s ease",padding:isMobile?"0 12px":0}}>
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:14}}>
-            <SharegoodLogo size={isMobile?100:128} animate={true} logoState={logoState} glowColor={loading?"rgba(0,229,255,0.7)":"rgba(0,229,255,0.3)"} opacity={loading?1:0.92}/>
+            <SharegoodLogo size={isMobile?148:168} animate={true} logoState={logoState} glowColor={loading?"rgba(0,229,255,0.7)":"rgba(0,229,255,0.3)"} opacity={loading?1:0.92}/>
             {loading&&<div key={hintIdx} style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,159,67,0.65)",marginTop:10,animation:"hintFade 2.5s ease forwards",textAlign:"center",letterSpacing:0.5}}>{GENERATION_HINTS[hintIdx]}</div>}
           </div>
           <div style={{minHeight:isMobile?80:110}}>
