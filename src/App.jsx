@@ -3670,10 +3670,10 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
   if(scr==="dream")return null;
   return(<>
     {!open&&<div style={{position:"fixed",bottom:isMobile?80:24,right:12,display:"flex",flexDirection:"column",alignItems:"center",gap:4,zIndex:1000}}>
-      <button onClick={()=>setOpen(true)} style={{width:64,height:64,borderRadius:"50%",background:"rgba(169,70,29,0.9)",border:"1px solid rgba(255,217,61,0.4)",boxShadow:"0 0 20px rgba(255,217,61,0.3)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",animation:"caFabPulse 3s ease-in-out infinite",padding:0,opacity:0.85}}>
-        <img src="/1bn-logo.png" width={44} height={44} alt="CA" style={{borderRadius:"50%"}}/>
+      <button onClick={()=>setOpen(true)} style={{width:isMobile?48:64,height:isMobile?48:64,borderRadius:"50%",background:"rgba(169,70,29,0.9)",border:"1px solid rgba(255,217,61,0.4)",boxShadow:"0 0 20px rgba(255,217,61,0.3)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",animation:"caFabPulse 3s ease-in-out infinite",padding:0,opacity:0.85}}>
+        <img src="/1bn-logo.png" width={isMobile?32:44} height={isMobile?32:44} alt="CA" style={{borderRadius:"50%"}}/>
       </button>
-      <span style={{fontFamily:"'Space Mono',monospace",fontSize:9,letterSpacing:2,color:"rgba(255,159,67,0.7)",textTransform:"uppercase",whiteSpace:"nowrap"}}>CO-ARCHITECT</span>
+      <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?8:9,letterSpacing:2,color:"rgba(255,159,67,0.7)",textTransform:"uppercase",whiteSpace:"nowrap"}}>CO-ARCHITECT</span>
     </div>}
     {open&&<>
       <div onClick={()=>setOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.4)",zIndex:1000}}/>
