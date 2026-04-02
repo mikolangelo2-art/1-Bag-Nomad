@@ -921,7 +921,7 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
   const [specialtyInterests,setSpecialtyInterests]=useState([]);
   const [specialtyOpen,setSpecialtyOpen]=useState(false);
   const [showAllInterests,setShowAllInterests]=useState(false);
-  useEffect(()=>{if(date&&!returnDate)setReturnDate(date);},[date]);
+  useEffect(()=>{if(date&&(returnDate===undefined||returnDate===""))setReturnDate(date);},[date,returnDate]);
   useEffect(()=>{
     const ts=[setTimeout(()=>setHeroPhase(1),400),setTimeout(()=>setHeroPhase(2),1200),setTimeout(()=>setHeroPhase(3),2100),setTimeout(()=>setHeroPhase(4),3000)];
     return()=>ts.forEach(clearTimeout);
@@ -1074,14 +1074,14 @@ packProfile must reflect the actual generated itinerary. categories should inclu
         <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22,padding:isMobile?"0 14px":0}}>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onChange={e=>setTripName(e.target.value)} placeholder="MY GRAND EXPEDITION" style={{textTransform:"uppercase",borderColor:"rgba(0,229,255,0.72)",boxShadow:"0 0 14px rgba(0,229,255,0.18),0 0 32px rgba(0,229,255,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><CityInput className="f-input" value={city} onChange={v=>setCity(v)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/></div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{position:"relative",width:"100%",overflow:"hidden",boxSizing:"border-box"}}><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",width:"100%",boxSizing:"border-box",fontSize:16,display:"block",borderColor:"rgba(105,240,174,0.72)",boxShadow:"0 0 14px rgba(105,240,174,0.18),0 0 32px rgba(105,240,174,0.07)"}}/>{!isMobile&&<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div>}</div></div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div style={{position:"relative",width:"100%",overflow:"hidden",boxSizing:"border-box"}}><input type="date" className="f-input" value={returnDate} min={date||undefined} onChange={e=>setReturnDate(e.target.value)} onFocus={()=>{if(!returnDate&&date)setReturnDate(date);}} onClick={()=>{if(!returnDate&&date)setReturnDate(date);}} style={{colorScheme:"dark",width:"100%",boxSizing:"border-box",fontSize:16,display:"block",borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/>{!isMobile&&<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div>}</div><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.65)",marginTop:3}}>optional · open-ended</div></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{position:"relative",width:"100%",overflow:"clip",boxSizing:"border-box"}}><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",width:"100%",boxSizing:"border-box",fontSize:16,display:"block",borderColor:"rgba(105,240,174,0.72)",boxShadow:"0 0 14px rgba(105,240,174,0.18),0 0 32px rgba(105,240,174,0.07)"}}/>{!isMobile&&<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div>}</div></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div style={{position:"relative",width:"100%",overflow:"clip",boxSizing:"border-box"}}><input type="date" className="f-input" value={returnDate} min={date||undefined} onChange={e=>setReturnDate(e.target.value)} onFocus={()=>{if(!returnDate&&date)setReturnDate(date);}} onClick={()=>{if(!returnDate&&date)setReturnDate(date);}} style={{colorScheme:"dark",width:"100%",boxSizing:"border-box",fontSize:16,display:"block",borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/>{!isMobile&&<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div>}</div><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.65)",marginTop:3}}>optional · open-ended</div></div>
         </div>
 
         <div style={{marginBottom:22,padding:isMobile?"0 14px":0}}>
           <div className="f-label" style={{marginBottom:10}}>BUDGET APPROACH</div>
           <div style={{display:"flex",flexDirection:"column",gap:7}}>
-            {[{id:"dream",icon:"💭",label:"Build the dream",sub:"We'll figure budget later",accent:"#69F0AE"},{id:"rough",icon:"💰",label:"I have a rough number",sub:"Give me a ballpark",accent:"#FFD93D"},{id:"strict",icon:"🎯",label:"Keep it under...",sub:"I have a firm limit",accent:"#A29BFE"}].map(b=>(
+            {[{id:"dream",icon:"💭",label:"Build the dream",sub:"We'll figure budget later",accent:"#FF9F43"},{id:"rough",icon:"💰",label:"I have a rough number",sub:"Give me a ballpark",accent:"#FFD93D"},{id:"strict",icon:"🎯",label:"Keep it under...",sub:"I have a firm limit",accent:"#A29BFE"}].map(b=>(
               <button key={b.id} onClick={()=>setBudgetMode(b.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 13px",borderRadius:9,border:"1px solid "+(budgetMode===b.id?b.accent+"80":"rgba(255,255,255,0.08)"),background:budgetMode===b.id?b.accent+"0D":"rgba(255,255,255,0.06)",cursor:"pointer",textAlign:"left",transition:"all 0.35s cubic-bezier(0.25,0.46,0.45,0.94)",minHeight:44,width:"100%",boxSizing:"border-box",boxShadow:budgetMode===b.id?`0 0 16px ${b.accent}15`:'inset 0 1px 0 rgba(255,180,80,0.22),inset 1px 0 0 rgba(255,140,40,0.08),inset -1px 0 0 rgba(255,140,40,0.08),inset 0 -1px 0 rgba(255,100,20,0.06)'}}>
                 <span style={{fontSize:16}}>{b.icon}</span>
                 <div><div style={{fontSize:isMobile?13:14,fontWeight:700,color:budgetMode===b.id?b.accent:"#FFF"}}>{b.label}</div><div style={{fontSize:isMobile?12:13,color:"rgba(255,255,255,0.5)",marginTop:2}}>{b.sub}</div></div>
@@ -1152,12 +1152,12 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
         <div className="narrative-card">
           <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"90%",height:"130%",background:"radial-gradient(ellipse,rgba(169,70,29,0.22) 0%,transparent 68%)",pointerEvents:"none"}}/>
           <div style={{fontSize:15,color:"#C4571E",letterSpacing:3,marginBottom:12,position:"relative"}}>✦ YOUR EXPEDITION VISION</div>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?15:17,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.85,position:"relative",minHeight:80}}>"{narrative}{!narrativeDone&&<span className="hero-cursor">|</span>}"</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?17:21,fontWeight:400,fontStyle:"italic",color:"rgba(255,245,220,0.96)",lineHeight:1.9,position:"relative",minHeight:80,letterSpacing:"0.01em",textShadow:"0 1px 12px rgba(0,0,0,0.4)"}}>"{narrative}{!narrativeDone&&<span className="hero-cursor">|</span>}"</div>
           {narrativeDone&&<div style={{display:"flex",gap:7,flexWrap:"wrap",marginTop:14,position:"relative"}}>{(vd.vibe||"").split(" · ").filter(Boolean).map((w,i)=><span key={i} className="vibe-tag">{w}</span>)}</div>}
         </div>
         {showStats&&(
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:isMobile?6:8,marginBottom:16,animation:"fadeUp 0.5s ease"}}>
-            {[{label:"COUNTRIES",value:vd.countries,color:"#00E5FF"},{label:"PHASES",value:vd.phases?.length,color:"#FFD93D"},{label:"NIGHTS",value:vd.totalNights,color:"#A29BFE"},{label:"BUDGET",value:fmt(vd.totalBudget||0),color:"#FF9F43"}].map(s=>(
+            {[{label:"COUNTRIES",value:vd.countries,color:"#FFD93D"},{label:"PHASES",value:vd.phases?.length,color:"#FFD93D"},{label:"NIGHTS",value:vd.totalNights,color:"#FFD93D"},{label:"BUDGET",value:fmt(vd.totalBudget||0),color:"#FFD93D"}].map(s=>(
               <div key={s.label} className="stat-card" style={{overflow:"hidden"}}><div style={{fontSize:isMobile?9:11,color:"rgba(255,255,255,0.45)",letterSpacing:isMobile?1:1.5,marginBottom:4,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>{s.label}</div><div style={{fontSize:isMobile?16:22,fontWeight:700,color:s.color,whiteSpace:"nowrap"}}>{s.value}</div></div>
             ))}
           </div>
@@ -1221,7 +1221,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
                 </div>
               );
             })()}
-            <div style={{background:"#0C1520",border:"1px solid #1a2535",borderRadius:13,padding:14,marginBottom:18,overflow:"hidden",maxWidth:"100%",boxSizing:"border-box"}}>
+            <div style={{background:"#0C1520",border:"1px solid #1a2535",borderRadius:13,padding:14,marginBottom:18,overflow:"hidden",maxWidth:"100%",boxSizing:"border-box",marginLeft:0,marginRight:0}}>
               <div style={{fontSize:15,color:"rgba(255,255,255,0.9)",letterSpacing:2,marginBottom:10}}>💬 REFINE YOUR VISION</div>
               {loading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",marginBottom:8}}>✨ refining...</div>}
               <div style={{display:"flex",gap:7}}>
@@ -1306,7 +1306,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   }
   return(
     <div className="build-root" style={{opacity:mounted?1:0,transform:mounted?"translateY(0)":"translateY(32px)",transition:"opacity 0.55s ease,transform 0.55s cubic-bezier(0.22,1,0.36,1)"}}>
-      <ConsoleHeader console="dream" isMobile={isMobile} screenLabel="CO-ARCHITECT" rightSlot={<div style={{display:"flex",gap:5,alignItems:"center"}}>{[1,2,3,4].map(n=><div key={n} style={{width:n<3?18:n===3?28:18,height:6,borderRadius:3,background:n<3?"rgba(169,70,29,0.55)":n===3?"#FFD93D":"rgba(255,255,255,0.1)",boxShadow:n===3?"0 0 8px rgba(255,217,61,0.6)":"none"}}/>)}</div>}/>
+      <ConsoleHeader console="dream" isMobile={isMobile} screenLabel="CO-ARCHITECT" rightSlot={<div style={{display:"flex",gap:5,alignItems:"center"}}>{[1,2,3,4].map(n=><div key={n} style={{width:n<3?22:n===3?28:18,height:6,borderRadius:3,background:n===1?"rgba(255,159,67,0.85)":n===2?"rgba(255,159,67,0.55)":n===3?"#FFD93D":"rgba(0,229,255,0.15)",boxShadow:n===1?"0 0 8px rgba(255,159,67,0.5)":n===3?"0 0 10px rgba(255,217,61,0.7)":"none",transition:"all 0.3s ease"}}/>)}</div>}/>
       <div style={{display:"flex",border:"none",background:"#080D14",flexShrink:0,paddingRight:4}}>
         {[{label:"STOPS",val:items.length,c:"#00E5FF"},{label:"COUNTRIES",val:countries.length,c:"#69F0AE"},{label:"NIGHTS",val:totalNights,c:"#A29BFE"},{label:"BUDGET",val:fmt(totalCost),c:"#FFD93D"}].map((s,i)=>(
           <div key={s.label} style={{flex:1,padding:"8px 6px",textAlign:"center",borderRight:i<3?"1px solid #111D2A":"none"}}>
@@ -1334,7 +1334,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
                   <div onClick={()=>setEditingId(isEd?null:item.id)} style={{padding:"10px 12px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,minHeight:44}}>
                     <div style={{width:18,height:18,borderRadius:"50%",background:`${c}18`,border:`1px solid ${c}44`,color:c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,flexShrink:0}}>{i+1}</div>
                     <div style={{flex:1}}><div style={{fontSize:15,fontWeight:700,color:"#FFF"}}>{item.flag} {item.destination}</div><div style={{fontSize:15,color:"rgba(255,255,255,0.75)"}}><span style={{color:"#FFD93D",fontWeight:700}}>{item.country}</span> · {TI[item.type]} {item.type} · {fmtD(dates[i]?.arrival)}→{fmtD(dates[i]?.departure)}</div></div>
-                    <div style={{textAlign:"right",flexShrink:0,paddingRight:4}}><div style={{fontSize:15,fontWeight:900,color:"#A29BFE"}}>{item.nights}n</div><div style={{fontSize:15,color:"#FFD93D"}}>{fmt(item.cost)}</div></div>
+                    <div style={{textAlign:"right",flexShrink:0,paddingRight:4}}><div style={{fontSize:15,fontWeight:900,color:"#A29BFE",paddingRight:2}}>{item.nights}n</div><div style={{fontSize:15,color:"#FFD93D"}}>{fmt(item.cost)}</div></div>
                     <span style={{fontSize:15,color:"rgba(255,255,255,0.25)",marginLeft:6}}>{isEd?"▲":"▼"}</span>
                   </div>
                   {isEd&&<div style={{padding:"10px 12px 12px",borderTop:"1px solid rgba(255,255,255,0.05)",background:"rgba(0,0,0,0.2)",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
@@ -1933,7 +1933,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
     setAskChat(p=>[...p,{role:"ai",text:res}]);setAskLoading(false);
   }
   return(
-    <div style={{border:'1px solid rgba(255,255,255,0.12)',borderRadius:12,background:'rgba(255,255,255,0.03)',padding:'2px 0',marginBottom:8,opacity:isCancelled?0.65:1,transition:"opacity 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
+    <div style={{border:'1px rgba(255,255,255,0.10)',borderTop:'1px solid rgba(255,255,255,0.18)',borderRadius:12,background:'rgba(255,255,255,0.025)',padding:'2px 0',marginBottom:8,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.3)',opacity:isCancelled?0.65:1,transition:"opacity 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
       {/* Change Flow Modal */}
       {showChangeModal&&(
         <div onClick={()=>setShowChangeModal(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,4,14,0.88)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
@@ -1968,6 +1968,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
               <span style={{fontSize:11}}>{planStatus?completedCount>=3?"✓":sc.icon:sc.icon}</span>{planStatus?planStatus.label:sc.label}
             </button>
           </div>
+{segment.note&&<div style={{fontFamily:"'Fraunces',serif",fontSize:12,fontStyle:"italic",color:"rgba(255,255,255,0.55)",lineHeight:1.5,marginTop:3,paddingLeft:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"90%"}}>{segment.note}</div>}
         </div>
         {onSegmentTap?<div onClick={e=>{e.stopPropagation();onSegmentTap(segment);}} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"0 10px",cursor:"pointer",flexShrink:0}}>
           <span style={{fontSize:18,color:"rgba(255,255,255,0.30)",fontWeight:300}}>›</span>
@@ -3380,16 +3381,16 @@ Return ONLY a JSON array:
           {/* LBS/KG toggle pill above weight ring */}
           <div style={{position:'absolute',top:10,left:'25%',transform:'translateX(-50%)',zIndex:1}}>
             <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{display:'flex',borderRadius:20,border:'1px solid rgba(77,159,255,0.35)',overflow:'hidden',cursor:'pointer',background:'rgba(0,8,20,0.8)'}}>
-              {["lbs","kg"].map(u=><div key={u} style={{padding:'3px 10px',fontSize:10,fontWeight:700,background:unit===u?'rgba(77,159,255,0.25)':'transparent',color:unit===u?'#4D9FFF':'rgba(77,159,255,0.35)',fontFamily:"'Space Mono',monospace",letterSpacing:1,borderLeft:u==="kg"?'1px solid rgba(77,159,255,0.2)':'none'}}>{u.toUpperCase()}</div>)}
+              {["lbs","kg"].map(u=><div key={u} style={{padding:'3px 10px',fontSize:10,fontWeight:700,background:unit===u?'rgba(0,229,255,0.18)':'transparent',color:unit===u?'#00E5FF':'rgba(0,229,255,0.35)',fontFamily:"'Space Mono',monospace",letterSpacing:1,borderLeft:u==="kg"?'1px solid rgba(77,159,255,0.2)':'none'}}>{u.toUpperCase()}</div>)}
             </div>
           </div>
-          <CircularRing value={parseFloat((bpW*wM).toFixed(1))} max={wLim} label="MAIN BAG" sublabel="carry-on limit" color="#4D9FFF" unit={unit}/>
+          <CircularRing value={parseFloat((bpW*wM).toFixed(1))} max={wLim} label="MAIN BAG" sublabel="carry-on limit" color="#00E5FF" unit={unit}/>
           <div style={{width:'1px',background:'rgba(255,255,255,0.06)',flexShrink:0}}/>
           <CircularRing value={parseFloat(bpV.toFixed(1))} max={VL} label="MAIN BAG" sublabel="volume limit" color="#FF9F43" unit="L"/>
         </div>
         {/* 4 mini stats */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%",padding:'10px 12px'}}>
-          {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#64B4FF"},{label:"GEAR READY",value:gearPct+"%",color:"#A29BFE"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
+          {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#00E5FF"},{label:"GEAR READY",value:gearPct+"%",color:"#FF9F43"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(0,0,0,0.25)",border:`1.5px solid ${s.color}55`,borderTop:`1.5px solid ${s.color}99`,borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:`0 0 12px ${s.color}30, inset 0 1px 0 ${s.color}55`}}>
               <div style={{fontSize:10,fontWeight:500,color:"rgba(255,255,255,0.4)",letterSpacing:0,marginBottom:2,fontFamily:"'Space Mono',monospace",lineHeight:1.2}}>{s.label}</div>
               <div style={{fontSize:isMobile?12:18,fontWeight:600,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
