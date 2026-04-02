@@ -685,7 +685,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
         {/* Left slot */}
         <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"flex-start",justifyContent:"center",gap:2}}>
           {(!isMobile&&(isTrip||isPack)) ? <TripBtn active={isTrip}/> : null}
-          {screenLabel&&<div style={{fontFamily:"'Space Mono',monospace",fontSize:9,color:"rgba(255,255,255,0.45)",letterSpacing:2,textTransform:"uppercase",paddingLeft:2}}>{screenLabel}</div>}
+          {screenLabel&&<div style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"#FFD93D",letterSpacing:2,textTransform:"uppercase",paddingLeft:2}}>{screenLabel}</div>}
         </div>
         {/* Center: logo + wordmark */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
