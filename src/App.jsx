@@ -1027,7 +1027,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
           </div>
           {heroPhase>=4&&<p style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:16,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.75)",lineHeight:1.6,marginTop:12,animation:"fadeUp 0.8s ease both"}}>Every expedition starts with a feeling — tell me what's driving yours.</p>}
         </div>
-        <div style={{marginBottom:28,padding:isMobile?"0 12px":0}}>
+        <div style={{marginBottom:13,padding:isMobile?"0 12px":0}}>
           <div className="sec-label">WHAT'S <span style={{color:"#FFD93D",fontWeight:900}}>YOUR</span> VISION?</div>
           <textarea className="vision-ta" style={{animation:focused?"none":"visionGlow 3.5s ease-in-out infinite"}} value={vision} onChange={e=>{if(vision.length===0&&e.target.value.length>0)posthog.capture("vision_started");setVision(e.target.value);}} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder={"Speak from the heart. Don\u2019t say where you want to go \u2014 say how you want to FEEL. The reefs you need to dive. The city you need to disappear into. The road that\u2019s been calling you. The version of yourself you\u2019re chasing. The more passion you pour in, the more magic your co-architect returns."} rows={isMobile?8:9}/>
           {canLaunch&&<div style={{marginTop:8,fontFamily:"'Fraunces',serif",fontSize:isMobile?13:14,fontStyle:"italic",color:"rgba(105,240,174,0.75)",animation:"fadeUp 0.4s ease",textShadow:"0 0 20px rgba(105,240,174,0.2)"}}>✦ Your co-architect is ready to build this.</div>}
