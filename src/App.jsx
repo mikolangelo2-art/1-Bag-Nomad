@@ -3682,7 +3682,7 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
           <div><div style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:"rgba(255,159,67,0.85)",letterSpacing:3}}>✦ CO-ARCHITECT</div>{subtitle&&<div style={{fontSize:11,color:"rgba(255,255,255,0.3)",fontFamily:"'Space Mono',monospace",letterSpacing:1,marginTop:3}}>{subtitle}</div>}</div>
           <button onClick={()=>setOpen(false)} style={{color:"rgba(255,255,255,0.4)",background:"none",border:"none",fontSize:20,cursor:"pointer",minWidth:44,minHeight:44,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
         </div>
-        <div style={{flex:1,overflowY:"auto",padding:"16px 20px",display:"flex",flexDirection:"column",gap:12,minHeight:0}}>
+        <div style={{flex:1,overflowY:"auto",padding:"16px 20px",display:"flex",flexDirection:"column",gap:12,minHeight:0,background:"rgba(255,255,255,0.06)"}}>
           {msgs.length===0&&<div style={{position:"relative",flex:1,display:"flex",alignItems:"center",justifyContent:"center",minHeight:200}}>
             <img src="/1bn-logo.png" style={{position:"absolute",width:"60%",maxWidth:200,opacity:0.06,pointerEvents:"none"}} alt=""/>
             <div style={{position:"relative",zIndex:1,textAlign:"center",padding:"0 24px",fontFamily:"'Fraunces',serif",fontStyle:"italic",color:"rgba(255,255,255,0.4)",fontSize:15,lineHeight:1.6}}>{openLine}</div>
