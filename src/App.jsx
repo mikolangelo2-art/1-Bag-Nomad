@@ -398,7 +398,7 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .g-card.off .g-label{color:#FFF}.g-card.on .g-label{color:#FFD93D}
 .g-desc{font-size:12px;line-height:1.5}
 .g-card.off .g-desc{color:rgba(255,255,255,0.78)}.g-card.on .g-desc{color:rgba(255,217,61,0.7)}
-.vision-ta{width:100%;background:rgba(8,6,4,0.85)!important;border:1.5px solid rgba(255,217,61,0.85)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.3s;margin-bottom:6px}
+.vision-ta{width:100%;max-width:100%;box-sizing:border-box;display:block;background:rgba(8,6,4,0.85)!important;border:1.5px solid rgba(255,217,61,0.85)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.3s;margin-bottom:6px}
 .vision-ta::placeholder{font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.28);letter-spacing:0.01em}.vision-ta:focus{border:1.5px solid rgba(255,217,61,1)!important;animation:none!important;box-shadow:0 0 24px rgba(255,217,61,0.3),0 0 60px rgba(255,217,61,0.1)}
 .f-label{font-size:13px;color:rgba(255,159,67,0.88);letter-spacing:0.10em}
 .f-input{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.30);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Space Mono',monospace;outline:none;width:100%;transition:border-color 0.2s,box-shadow 0.2s}
@@ -1073,8 +1073,8 @@ packProfile must reflect the actual generated itinerary. categories should inclu
         <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22,padding:isMobile?"0 14px":0}}>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onChange={e=>setTripName(e.target.value)} placeholder="MY GRAND EXPEDITION" style={{textTransform:"uppercase",borderColor:"rgba(0,229,255,0.72)",boxShadow:"0 0 14px rgba(0,229,255,0.18),0 0 32px rgba(0,229,255,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><CityInput className="f-input" value={city} onChange={v=>setCity(v)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/></div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div>{isMobile?<input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",width:"100%",boxSizing:"border-box",fontSize:16,WebkitAppearance:"none",borderColor:"rgba(105,240,174,0.72)",boxShadow:"0 0 14px rgba(105,240,174,0.18),0 0 32px rgba(105,240,174,0.07)"}}/>:<DateInput value={date} onChange={v=>setDate(v)} accentColor="#69F0AE"/>}</div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div>{isMobile?<input type="date" className="f-input" value={returnDate} min={date||undefined} onChange={e=>setReturnDate(e.target.value)} onFocus={()=>{if(!returnDate&&date)setReturnDate(date);}} style={{colorScheme:"dark",width:"100%",boxSizing:"border-box",fontSize:16,WebkitAppearance:"none",borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/>:<DateInput value={returnDate} onChange={v=>setReturnDate(v)} accentColor="#FFD93D" yearHint={date?date.split("-")[0]:""}/>}<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.65)",marginTop:3}}>optional · open-ended</div></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{position:"relative",width:"100%"}}><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",width:"100%",boxSizing:"border-box",fontSize:16,paddingRight:isMobile?13:36,borderColor:"rgba(105,240,174,0.72)",boxShadow:"0 0 14px rgba(105,240,174,0.18),0 0 32px rgba(105,240,174,0.07)"}}/>{!isMobile&&<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div>}</div></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div style={{position:"relative",width:"100%"}}><input type="date" className="f-input" value={returnDate} min={date||undefined} onChange={e=>setReturnDate(e.target.value)} onFocus={()=>{if(!returnDate&&date)setReturnDate(date);}} style={{colorScheme:"dark",width:"100%",boxSizing:"border-box",fontSize:16,paddingRight:isMobile?13:36,borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/>{!isMobile&&<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div>}</div><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.65)",marginTop:3}}>optional · open-ended</div></div>
         </div>
 
         <div style={{marginBottom:22,padding:isMobile?"0 14px":0}}>
@@ -2399,13 +2399,28 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
           <div style={{marginTop:16}}><SDF label="PERSONAL NOTES" value={docsNote} onChange={v=>{setDocsNote(v);setDet(d=>({...d,intel:{...d.intel,notes:v}}));}} placeholder="Visa application status, insurance details, personal contacts..." accent="#FF9F43" multiline/></div>
         </div>}
-        {tab==="calendar"&&<div style={{padding:0}}>
-          <div style={{textAlign:"center",padding:"40px 20px"}}>
-            <div style={{fontSize:32,marginBottom:12}}>📅</div>
-            <div style={{color:"rgba(255,255,255,0.5)",fontFamily:"'Fraunces',serif",fontStyle:"italic",fontSize:15,lineHeight:1.6}}>Your calendar fills as you plan.</div>
-            <div style={{color:"rgba(255,159,67,0.6)",fontSize:11,letterSpacing:2,marginTop:8,fontFamily:"'Space Mono',monospace"}}>ADD TRANSPORT · STAY · ACTIVITIES TO SEE YOUR DAYS</div>
+        {tab==="calendar"&&(()=>{const items=[];if(det.transport.depTime)items.push({type:"transport",icon:"✈️",label:det.transport.mode||"Transport",sub:`${det.transport.from||""}→${det.transport.to||""}`,color:"#00E5FF",date:det.transport.depTime});if(det.stay.name)items.push({type:"stay",icon:"🏨",label:det.stay.name,sub:det.stay.checkin&&det.stay.checkout?`${fD(det.stay.checkin)} – ${fD(det.stay.checkout)}`:`${segment.nights} nights`,color:"#69F0AE",date:det.stay.checkin||segment.arrival});det.activities.forEach(a=>items.push({type:"activity",icon:"🎯",label:a.name,sub:a.cost?`$${a.cost}`:"",color:"#FFD93D",date:a.date}));if(det.food.dailyBudget)items.push({type:"food",icon:"🍜",label:`Food · $${det.food.dailyBudget}/day`,sub:`${segment.nights} days`,color:"#FF9F43"});const hasItems=items.length>0;return(
+          <div style={{padding:0}}>
+            {!hasItems&&<div style={{textAlign:"center",padding:"40px 20px"}}>
+              <div style={{fontSize:32,marginBottom:12}}>📅</div>
+              <div style={{color:"rgba(255,255,255,0.5)",fontFamily:"'Fraunces',serif",fontStyle:"italic",fontSize:15,lineHeight:1.6}}>Your calendar fills as you plan.</div>
+              <div style={{color:"rgba(255,159,67,0.6)",fontSize:11,letterSpacing:2,marginTop:8,fontFamily:"'Space Mono',monospace"}}>ADD TRANSPORT · STAY · ACTIVITIES TO SEE YOUR DAYS</div>
+            </div>}
+            {hasItems&&<div>
+              <div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:"rgba(255,159,67,0.65)",letterSpacing:2,marginBottom:12}}>PLANNED ITEMS</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {items.map((it,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",background:`${it.color}08`,border:`1px solid ${it.color}30`,borderRadius:10}}>
+                  <span style={{fontSize:18,flexShrink:0}}>{it.icon}</span>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:14,fontWeight:600,color:"#FFF",fontFamily:"'Space Mono',monospace"}}>{it.label}</div>
+                    {it.sub&&<div style={{fontSize:12,color:"rgba(255,255,255,0.55)",fontFamily:"'Space Mono',monospace"}}>{it.sub}</div>}
+                  </div>
+                  {it.date&&<div style={{fontSize:11,color:it.color,fontFamily:"'Space Mono',monospace",flexShrink:0,whiteSpace:"nowrap"}}>{fD(it.date)}</div>}
+                </div>)}
+              </div>
+            </div>}
           </div>
-        </div>}
+        );})()}
       </div>
     </div>
   );
