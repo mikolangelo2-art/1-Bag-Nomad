@@ -336,6 +336,8 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 @keyframes logoError{0%,100%{transform:translateX(0);opacity:0.4}20%{transform:translateX(-2px)}40%{transform:translateX(2px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
 @keyframes hintFade{0%{opacity:0}10%{opacity:0.65}70%{opacity:0.65}100%{opacity:0}}
 @keyframes tabFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes drawerSlideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes caFabPulse{0%,100%{box-shadow:0 0 12px rgba(255,217,61,0.25)}50%{box-shadow:0 0 24px rgba(255,217,61,0.45)}}
 @media(max-width:768px){.sg-suggestion-card{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;padding:16px!important;box-sizing:border-box!important}}
 
   .dream-root,.mc-root,.build-root{font-size:18px}
@@ -3643,6 +3645,56 @@ Return ONLY a JSON array:
 }
 
 
+// ─── AmbientChat (Floating CA) ───────────────────────────────────
+function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab}) {
+  const isMobile=useMobile();
+  const [open,setOpen]=useState(false);
+  const [msgs,setMsgs]=useState([]);
+  const [input,setInput]=useState("");
+  const [loading,setLoading]=useState(false);
+  const endRef=useRef();
+  useEffect(()=>{if(endRef.current)endRef.current.scrollIntoView({behavior:"smooth"});},[msgs,loading]);
+  const ctx=scr==="trip-console"?`You are the Co-Architect for ${tripData?.tripName||"this expedition"}. The user is viewing their full expedition: ${tripData?.phases?.length||0} phases, ${tripData?.totalNights||0} nights. Help them refine, expand, or think through their expedition. Be concise and warm.`
+    :scr==="phase-detail"?`You are the Co-Architect. The user is planning ${currentPhase?.name||"a phase"} — ${currentPhase?.totalNights||currentPhase?.nights||0} nights in ${currentPhase?.country||""}. Help them plan this specific phase — transport, stays, activities, local tips. Be concise.`
+    :scr==="segment-workspace"?`You are the Co-Architect. The user is planning ${currentSegment?.name||"a segment"} — ${currentSegment?.nights||0} nights. Current tab: ${currentTab||"overview"}. Help them fill in the details for this specific segment. Be concise.`
+    :scr==="pack-console"?`You are the Co-Architect and packing strategist. The user is packing for ${tripData?.tripName||"their expedition"} — ${tripData?.totalNights||0} nights across multiple countries. Help them pack light and smart. Be concise.`
+    :`You are the Co-Architect travel assistant for 1 Bag Nomad. Help the user with their expedition planning. Be concise and warm.`;
+  const openLine=scr==="trip-console"?"Your expedition is taking shape. What would you like to refine?"
+    :scr==="phase-detail"?`${currentPhase?.name||"This phase"} — what would you like to know?`
+    :scr==="segment-workspace"?`Planning ${currentSegment?.name||"this segment"}. How can I help?`
+    :scr==="pack-console"?"Let's make sure you're packing light. What do you need?"
+    :"Your Co-Architect is here. What's on your mind?";
+  const send=async()=>{if(!input.trim()||loading)return;const userMsg=input;setInput("");const newMsgs=[...msgs,{role:"user",text:userMsg}];setMsgs(newMsgs);setLoading(true);try{const history=newMsgs.map(m=>`${m.role==="user"?"User":"Co-Architect"}: ${m.text}`).join("\n");const response=await askAI(`${ctx}\n\nConversation:\n${history}\n\nCo-Architect:`,800);setMsgs([...newMsgs,{role:"ai",text:response}]);}catch(e){setMsgs([...newMsgs,{role:"ai",text:"I'm having trouble connecting. Try again in a moment."}]);}setLoading(false);};
+  if(scr==="dream")return null;
+  return(<>
+    {!open&&<button onClick={()=>setOpen(true)} style={{position:"fixed",bottom:isMobile?80:24,right:16,width:52,height:52,borderRadius:"50%",background:"rgba(169,70,29,0.9)",border:"1px solid rgba(255,217,61,0.4)",boxShadow:"0 0 20px rgba(255,217,61,0.3)",zIndex:1000,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",animation:"caFabPulse 3s ease-in-out infinite",padding:0}}>
+      <img src="/1bn-logo.png" width={36} height={36} alt="CA" style={{borderRadius:"50%"}}/>
+    </button>}
+    {open&&<>
+      <div onClick={()=>setOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:1000}}/>
+      <div style={{position:"fixed",bottom:0,left:0,right:0,height:"65vh",background:"#150F0A",borderTop:"1px solid rgba(255,217,61,0.3)",borderRadius:"20px 20px 0 0",zIndex:1001,display:"flex",flexDirection:"column",animation:"drawerSlideUp 400ms cubic-bezier(0.25,0.46,0.45,0.94)"}}>
+        <div style={{padding:"16px 20px 12px",borderBottom:"1px solid rgba(255,255,255,0.08)",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
+          <span style={{fontFamily:"'Space Mono',monospace",fontSize:11,color:"rgba(255,159,67,0.85)",letterSpacing:3}}>✦ CO-ARCHITECT</span>
+          <button onClick={()=>setOpen(false)} style={{color:"rgba(255,255,255,0.4)",background:"none",border:"none",fontSize:20,cursor:"pointer",minWidth:44,minHeight:44,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"16px 20px",display:"flex",flexDirection:"column",gap:12,minHeight:0}}>
+          {msgs.length===0&&<div style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",color:"rgba(255,255,255,0.4)",fontSize:15,textAlign:"center",marginTop:40,lineHeight:1.6}}>{openLine}</div>}
+          {msgs.map((m,i)=><div key={i} style={{display:"flex",gap:8,flexDirection:m.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>
+            <div style={{width:22,height:22,borderRadius:"50%",background:m.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{m.role==="ai"?"✦":"·"}</div>
+            <div style={{borderRadius:12,padding:m.role==="ai"?"14px 16px":"10px 14px",fontSize:m.role==="ai"?14:13,fontFamily:m.role==="ai"?"'Fraunces',serif":"'Space Mono',monospace",fontStyle:m.role==="ai"?"italic":"normal",color:"#FFF",lineHeight:1.7,maxWidth:"85%",background:m.role==="ai"?"rgba(255,159,67,0.06)":"rgba(255,255,255,0.06)",border:m.role==="ai"?"1px solid rgba(255,159,67,0.25)":"1px solid rgba(255,255,255,0.08)"}}>{m.text}</div>
+          </div>)}
+          {loading&&<div style={{display:"flex",gap:6,animation:"msgIn 0.25s ease"}}><div style={{width:22,height:22,borderRadius:"50%",background:"#A9461D",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>✦</div><div style={{fontSize:13,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",padding:"4px 0"}}>thinking...</div></div>}
+          <div ref={endRef}/>
+        </div>
+        <div style={{padding:"12px 16px",borderTop:"1px solid rgba(255,255,255,0.08)",display:"flex",gap:8,flexShrink:0,paddingBottom:`calc(12px + env(safe-area-inset-bottom))`}}>
+          <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")send();}} placeholder="Ask your Co-Architect..." style={{flex:1,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,159,67,0.3)",borderRadius:10,padding:"10px 14px",color:"white",fontFamily:"'Space Mono',monospace",fontSize:16,outline:"none",boxSizing:"border-box"}}/>
+          <button onClick={send} disabled={loading} style={{background:"rgba(255,159,67,0.2)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:10,padding:"10px 16px",color:"rgba(255,159,67,0.9)",fontFamily:"'Space Mono',monospace",fontSize:12,fontWeight:700,letterSpacing:1,cursor:loading?"wait":"pointer",minWidth:44,minHeight:44}}>↑</button>
+        </div>
+      </div>
+    </>}
+  </>);
+}
+
 // ─── Root App ─────────────────────────────────────────────────────
 export default function App() {
   const isNewFromLanding=(()=>{try{return new URLSearchParams(window.location.search).get("new")==="true";}catch(e){return false;}})();
@@ -3807,6 +3859,7 @@ export default function App() {
       {screen==="homecoming"  && tripData && <HomecomingScreen tripData={tripData} onPlanNext={handlePlanNext}/>}
       {(screen==="console"||prevScreen==="console") && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading}/></div>}
       {(screen==="pack"||prevScreen==="pack") && <div style={{position:prevScreen==="pack"||slideDir?"fixed":"relative",inset:prevScreen==="pack"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="pack"?0:1,animation:prevScreen==="pack"?(slideDir==="right"?"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="pack"&&slideDir?(slideDir==="left"?"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><PackConsole tripData={tripData} onExpedition={()=>slideScreen("console")} onGoToTab={t=>{setPendingTab(t||"next");slideScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen}/></div>}
+      <AmbientChat screen={screen==="console"?"trip-console":screen==="pack"?"pack-console":screen} tripData={tripData}/>
     </>
   );
 }
