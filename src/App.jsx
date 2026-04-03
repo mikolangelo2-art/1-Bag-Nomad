@@ -1148,7 +1148,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
     <div className="dream-root" style={{opacity:mounted?1:0,transition:"opacity 0.5s ease"}}>
       <div className="dream-glow"/>
       <DreamHeader step={2} screenLabel="VISION REVEAL"/>
-      <div style={{padding:"22px 24px 44px",maxWidth:820,margin:"0 auto",position:"relative",zIndex:10}}>
+      <div className="dream-content" style={{position:"relative",zIndex:10}}>
         <div className="narrative-card">
           <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"90%",height:"130%",background:"radial-gradient(ellipse,rgba(169,70,29,0.22) 0%,transparent 68%)",pointerEvents:"none"}}/>
           <div style={{fontSize:15,color:"#C4571E",letterSpacing:3,marginBottom:12,position:"relative"}}>✦ YOUR EXPEDITION VISION</div>
@@ -2127,7 +2127,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Space Mono',monospace",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
       </div>
       {/* Tab content */}
-      <div className="mc-content" key={tab} style={{border:'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(255,255,255,0.025)',minHeight:300,animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+      <div className="mc-content" key={tab} style={{maxWidth:'none',margin:'12px 0',border:'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(255,255,255,0.025)',minHeight:300,animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
         {/* TRANSPORT */}
         {tab==="transport"&&<div style={{padding:0}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
