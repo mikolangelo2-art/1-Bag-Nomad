@@ -400,7 +400,8 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .g-card.off .g-label{color:#FFF}.g-card.on .g-label{color:#FFD93D}
 .g-desc{font-size:12px;line-height:1.5}
 .g-card.off .g-desc{color:rgba(255,255,255,0.78)}.g-card.on .g-desc{color:rgba(255,217,61,0.7)}
-.vision-ta{width:100%;max-width:100%;box-sizing:border-box;display:block;background:rgba(255,255,255,0.06)!important;border:1.5px solid rgba(255,217,61,0.85)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.3s;margin-bottom:6px}
+.vision-textarea-wrap{width:100%;min-width:0;display:block;box-sizing:border-box}
+.vision-ta{width:100%;max-width:100%;min-width:0;box-sizing:border-box;display:block;background:rgba(255,255,255,0.06)!important;border:1.5px solid rgba(255,217,61,0.85)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Space Mono',monospace;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.3s;margin-bottom:6px}
 .vision-ta::placeholder{font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.28);letter-spacing:0.01em}.vision-ta:focus{border:1.5px solid rgba(255,217,61,1)!important;animation:none!important;box-shadow:0 0 24px rgba(255,217,61,0.3),0 0 60px rgba(255,217,61,0.1)}
 .f-label{font-size:13px;color:rgba(255,159,67,0.88);letter-spacing:0.10em}
 .f-input{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.30);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Space Mono',monospace;outline:none;width:100%;box-sizing:border-box;transition:border-color 0.2s,box-shadow 0.2s}
@@ -475,8 +476,8 @@ const MICHAEL_EXPEDITION = {
 function getDefaultPack() {
   const t = Date.now();
   return [
-    {id:t+1, name:"45L Travel Backpack",           cat:"travel", cost:299,weight:4.5, volume:0,   bag:"Backpack",         owned:true},
-    {id:t+2, name:"Travel Laptop Briefcase",       cat:"travel", cost:150,weight:2.2, volume:0,   bag:"Global Briefcase", owned:false},
+    {id:t+1, name:"45L Travel Backpack",           cat:"travel", cost:299,weight:4.5, volume:2.2, bag:"Backpack",         owned:true},
+    {id:t+2, name:"Travel Laptop Briefcase",       cat:"travel", cost:150,weight:2.2, volume:1.8, bag:"Global Briefcase", owned:false},
     {id:t+3, name:"Packable Day Bag",              cat:"travel", cost:65, weight:0.4, volume:0.6, bag:"Backpack",         owned:true},
     {id:t+4, name:"Camera Organizer Cube",         cat:"travel", cost:60, weight:0.7, volume:3,   bag:"Backpack",         owned:false},
     {id:t+5, name:"Tech Organizer Pouch",          cat:"tech",   cost:60, weight:0.5, volume:1.5, bag:"Global Briefcase", owned:true},
@@ -518,9 +519,46 @@ function getDefaultPack() {
     {id:t+70,name:"Motion Sickness Pills",         cat:"health", cost:0,  weight:0.05,volume:0.05,bag:"Backpack",         owned:true},
     {id:t+80,name:"Passport",                      cat:"docs",   cost:200,weight:0.1, volume:0.1, bag:"Worn",             owned:true},
     {id:t+81,name:"Debit and Credit Cards",        cat:"docs",   cost:0,  weight:0.01,volume:0.01,bag:"Worn",             owned:true},
-    {id:t+82,name:"Travel Insurance Docs",         cat:"docs",   cost:0,  weight:0,   volume:0,   bag:"Digital",          owned:false},
+    {id:t+82,name:"Travel Insurance Docs",         cat:"docs",   cost:0,  weight:0,   volume:0.12,bag:"Digital",          owned:false},
     {id:t+83,name:"International Drivers Permit",  cat:"docs",   cost:0,  weight:0.01,volume:0.01,bag:"Global Briefcase", owned:true},
   ].map(i=>({...i,status:i.owned?"owned":"needed"}));
+}
+
+/** Replace volume 0 / missing with realistic liters (weight unchanged). */
+function fixPackItemVolume(item) {
+  const v = parseFloat(item.volume);
+  if (Number.isFinite(v) && v > 0) return item;
+  const n = (item.name || "").toLowerCase();
+  let vol = 0.25;
+  if (/backpack|duffel|rucksack/.test(n)) vol = 2.2;
+  else if (/briefcase/.test(n)) vol = 1.8;
+  else if (/insurance|travel insurance/.test(n)) vol = 0.12;
+  else if (/passport|permit|debit|credit card/.test(n)) vol = 0.08;
+  else if (/charging cable|cable|adapter|dongle|usb/.test(n)) vol = 0.28;
+  else if (/power bank/.test(n)) vol = 0.42;
+  else if (/laptop|macbook/.test(n)) vol = 1;
+  else if (/compact travel drone|drone/.test(n)) vol = 1.8;
+  else if (/tripod/.test(n)) vol = 0.35;
+  else if (/ssd|samsung t7|lav|lavalier|mic/.test(n)) vol = 0.12;
+  else if (/action camera|gopro|smartphone/.test(n)) vol = 0.35;
+  else if (/t-shirt|hoodie|button shirt|shirt|pants|shorts|merino|bundle/.test(n)) vol = 0.65;
+  else if (/underwear|socks/.test(n)) vol = 0.15;
+  else if (/flip flop/.test(n)) vol = 1.2;
+  else if (/\bhat\b|2 hats/.test(n)) vol = 0.8;
+  else if (/mask defog|zip tie|o-ring/.test(n)) vol = 0.05;
+  else if (/dive mask/.test(n)) vol = 0.85;
+  else if (/dive computer/.test(n)) vol = 0.12;
+  else if (/surface marker|buoy/.test(n)) vol = 0.45;
+  else if (/reef hook|mesh dive/.test(n)) vol = 0.35;
+  else if (/anti-diarrheal|motion sickness/.test(n)) vol = 0.05;
+  else if (/toothbrush|razor|wash pouch|electric razor/.test(n)) vol = 0.22;
+  else if (/first aid/.test(n)) vol = 2.5;
+  return { ...item, volume: vol };
+}
+
+function mapPackItemsWithVolumes(items) {
+  if (!Array.isArray(items)) return items;
+  return items.map(fixPackItemVolume);
 }
 
 // ─── SharegoodLogo ────────────────────────────────────────────────
@@ -679,7 +717,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
 
   return (
     <>
-    <div style={{background:bg,borderBottom:`1px solid ${bc}`,backdropFilter:"blur(10px)",flexShrink:0}}>
+    <div style={{background:bg,borderBottom:`1px solid ${bc}`,backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",flexShrink:0}}>
       {/* Top row: [left slot] [center: logo+wordmark] [right slot] */}
       <div style={{display:"flex",alignItems:"center",padding:isMobile?"5px 8px":"7px 14px",gap:6}}>
         {/* Left slot */}
@@ -1027,9 +1065,11 @@ packProfile must reflect the actual generated itinerary. categories should inclu
           </div>
           {heroPhase>=4&&<p style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:16,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.75)",lineHeight:1.6,marginTop:12,animation:"fadeUp 0.8s ease both"}}>Every expedition starts with a feeling — tell me what's driving yours.</p>}
         </div>
-        <div style={{marginBottom:13,padding:isMobile?"0 12px":0}}>
+        <div style={{marginBottom:13,padding:isMobile?"0 12px":0,width:"100%",minWidth:0,boxSizing:"border-box"}}>
           <div className="sec-label">WHAT'S <span style={{color:"#FFD93D",fontWeight:900}}>YOUR</span> VISION?</div>
+          <div className="vision-textarea-wrap">
           <textarea className="vision-ta" style={{animation:focused?"none":"visionGlow 3.5s ease-in-out infinite"}} value={vision} onChange={e=>{if(vision.length===0&&e.target.value.length>0)posthog.capture("vision_started");setVision(e.target.value);}} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder={"Speak from the heart. Don\u2019t say where you want to go \u2014 say how you want to FEEL. The reefs you need to dive. The city you need to disappear into. The road that\u2019s been calling you. The version of yourself you\u2019re chasing. The more passion you pour in, the more magic your co-architect returns."} rows={isMobile?8:9}/>
+          </div>
           {canLaunch&&<div style={{marginTop:8,fontFamily:"'Fraunces',serif",fontSize:isMobile?13:14,fontStyle:"italic",color:"rgba(105,240,174,0.75)",animation:"fadeUp 0.4s ease",textShadow:"0 0 20px rgba(105,240,174,0.2)"}}>✦ Your co-architect is ready to build this.</div>}
         </div>
         <div style={{marginBottom:28,borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:24,padding:"24px 0 0"}}>
@@ -1359,7 +1399,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
                 <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",flexDirection:msg.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>
                   <div style={{width:22,height:22,borderRadius:"50%",background:msg.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{msg.role==="ai"?"✨":"👤"}</div>
                   {msg.isWelcome
-                    ?<div style={{position:"relative",background:"linear-gradient(135deg,rgba(169,70,29,0.2),rgba(255,217,61,0.07))",border:"2px solid rgba(255,159,67,0.30)",borderRadius:12,padding:"12px 16px",fontSize:18,fontWeight:400,color:"rgba(255,255,255,0.88)",lineHeight:1.7,maxWidth:"92%",whiteSpace:"pre-line",fontFamily:"'Fraunces',serif",animation:"fadeUp 0.6s ease",boxShadow:"inset 0 0 24px rgba(255,159,67,0.04)",overflow:"hidden"}}><img src="/1bn-logo.png" style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:"100%",height:"100%",objectFit:"cover",objectPosition:"center",opacity:0.06,pointerEvents:"none",borderRadius:12}}/>{msg.text}</div>
+                    ?<div style={{position:"relative",background:"linear-gradient(135deg,rgba(169,70,29,0.2),rgba(255,217,61,0.07))",border:"2px solid rgba(255,159,67,0.30)",borderRadius:12,padding:"12px 16px",fontSize:18,fontWeight:400,color:"rgba(255,255,255,0.88)",lineHeight:1.7,maxWidth:"92%",whiteSpace:"pre-line",fontFamily:"'Fraunces',serif",animation:"fadeUp 0.6s ease",boxShadow:"inset 0 0 24px rgba(255,159,67,0.04)",overflow:"hidden"}}><img src="/1bn-logo.png" alt="" aria-hidden style={{position:"absolute",right:-10,bottom:-14,width:92,height:92,objectFit:"contain",opacity:0.07,pointerEvents:"none",filter:"brightness(1.15) sepia(0.2) saturate(0.85)"}}/>{msg.text}</div>
                     :<div style={{background:msg.role==="ai"?"rgba(255,159,67,0.04)":"rgba(255,255,255,0.05)",border:msg.role==="ai"?"2px solid rgba(255,159,67,0.30)":`1px solid rgba(255,255,255,0.08)`,borderRadius:12,padding:msg.role==="ai"?"18px 20px":"10px 14px",fontSize:msg.role==="ai"?16:13,fontFamily:msg.role==="ai"?"'Fraunces',serif":"'Space Mono',monospace",fontStyle:msg.role==="ai"?"italic":"normal",color:"#FFF",lineHeight:msg.role==="ai"?1.7:1.5,maxWidth:"92%",boxShadow:msg.role==="ai"?"inset 0 0 24px rgba(255,159,67,0.04)":"none"}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>}
                 </div>
               ))}
@@ -2518,9 +2558,9 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
   if(isMobile) return(
     <>
       <div className="tap-scale" onClick={()=>onTap?onTap(phase):setSheetOpen(true)}
-        onMouseOver={e=>{e.currentTarget.style.background='rgba(255,255,255,0.028)';e.currentTarget.style.border='1.5px solid rgba(0,229,255,0.40)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.5),inset 0 1px 0 rgba(0,229,255,0.35),inset 1px 0 0 rgba(0,229,255,0.15),inset -1px 0 0 rgba(0,229,255,0.15),inset 0 -1px 0 rgba(0,229,255,0.08)';}}
-        onMouseOut={e=>{e.currentTarget.style.background='rgba(255,255,255,0.012)';e.currentTarget.style.border='1.5px solid rgba(0,229,255,0.22)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(0,229,255,0.30),inset 1px 0 0 rgba(0,229,255,0.12),inset -1px 0 0 rgba(0,229,255,0.12),inset 0 -1px 0 rgba(0,229,255,0.06)';}}
-        style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(255,255,255,0.012)',border:'1.5px solid rgba(0,229,255,0.22)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(0,229,255,0.22),inset 1px 0 0 rgba(0,229,255,0.08),inset -1px 0 0 rgba(0,229,255,0.08),inset 0 -1px 0 rgba(0,229,255,0.04)',animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*0.07}s both`}}>
+        onMouseOver={e=>{e.currentTarget.style.background='rgba(10,7,5,0.62)';e.currentTarget.style.border='1.5px solid rgba(0,229,255,0.40)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.5),inset 0 1px 0 rgba(0,229,255,0.35),inset 1px 0 0 rgba(0,229,255,0.15),inset -1px 0 0 rgba(0,229,255,0.15),inset 0 -1px 0 rgba(0,229,255,0.08)';}}
+        onMouseOut={e=>{e.currentTarget.style.background='rgba(10,7,5,0.50)';e.currentTarget.style.border='1.5px solid rgba(0,229,255,0.22)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(0,229,255,0.30),inset 1px 0 0 rgba(0,229,255,0.12),inset -1px 0 0 rgba(0,229,255,0.12),inset 0 -1px 0 rgba(0,229,255,0.06)';}}
+        style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(10,7,5,0.50)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',border:'1.5px solid rgba(0,229,255,0.22)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(0,229,255,0.22),inset 1px 0 0 rgba(0,229,255,0.08),inset -1px 0 0 rgba(0,229,255,0.08),inset 0 -1px 0 rgba(0,229,255,0.04)',animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*0.07}s both`}}>
         {/* Row 1: badge + flag + name + budget */}
         <div style={{display:'flex',alignItems:'center',gap:8,width:'100%',overflow:'hidden'}}>
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
@@ -2570,7 +2610,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
 
   // ── Desktop: phase card (always slides to detail page when onTap provided) ──
   return(
-    <div style={{borderRadius:13,border:"1px solid rgba(0,229,255,0.08)",borderTop:"1px solid rgba(0,229,255,0.20)",background:"linear-gradient(135deg,rgba(28,18,8,0.72),rgba(14,9,4,0.55))",backdropFilter:'blur(6px)',WebkitBackdropFilter:'blur(6px)',overflow:"hidden",transition:"all 0.35s cubic-bezier(0.25,0.46,0.45,0.94)",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`}}>
+    <div style={{borderRadius:13,border:"1px solid rgba(0,229,255,0.08)",borderTop:"1px solid rgba(0,229,255,0.20)",background:"rgba(10,7,5,0.50)",backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',overflow:"hidden",transition:"all 0.35s cubic-bezier(0.25,0.46,0.45,0.94)",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`}}>
       <div onClick={()=>onTap?onTap(phase):setOpen(o=>!o)} style={{padding:"14px 16px",cursor:"pointer",minHeight:62,borderLeft:`3px solid ${phase.color}50`}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
           <div style={{width:22,height:22,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
@@ -2704,7 +2744,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           segPhases.forEach(p=>p.segments.forEach(s=>{totalSegs++;const d=allSegD[`${p.id}-${s.id}`]||{};if(d.transport?.mode||d.transport?.cost||d.stay?.name||d.stay?.cost||(d.activities?.length||0)>0)filledSegs++;}));
           const readPct=totalSegs>0?Math.round((filledSegs/totalSegs)*100):0;
           return(
-            <div data-coach="trip-stats" style={{background:'rgba(0,8,16,0.38)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',borderRadius:14,border:'1.5px solid rgba(0,229,255,0.35)',borderTop:'1.5px solid rgba(0,229,255,0.65)',boxShadow:'inset 0 1px 0 rgba(0,229,255,0.30), 0 4px 24px rgba(0,0,0,0.35)',overflow:'hidden'}}>
+            <div data-coach="trip-stats" style={{background:'rgba(10,7,5,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',borderRadius:14,border:'1.5px solid rgba(0,229,255,0.35)',borderTop:'1.5px solid rgba(0,229,255,0.65)',boxShadow:'inset 0 1px 0 rgba(0,229,255,0.30), 0 4px 24px rgba(0,0,0,0.35)',overflow:'hidden'}}>
               <div style={{padding:'10px 16px 9px'}}>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:7}}>
                   <span style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(0,229,255,0.55)',fontFamily:"'Space Mono',monospace",fontWeight:700}}>EXPEDITION READINESS</span>
@@ -2728,7 +2768,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
             </div>
           );
         })():(
-          <div data-coach="trip-stats" style={{background:'rgba(0,10,24,0.85)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1.5px solid rgba(0,229,255,0.35)',borderTop:'2px solid rgba(0,229,255,0.75)',borderRadius:12,padding:'4px 0',overflow:'hidden'}}>
+          <div data-coach="trip-stats" style={{background:'rgba(10,7,5,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1.5px solid rgba(0,229,255,0.35)',borderTop:'2px solid rgba(0,229,255,0.75)',borderRadius:12,padding:'4px 0',overflow:'hidden'}}>
             <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
               {heroStats.map((s,i)=>(
                 <div key={s.label} style={{textAlign:"center",padding:"4px 6px",borderLeft:i>0?"1px solid rgba(255,255,255,0.10)":"none"}}>
@@ -2741,7 +2781,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           </div>
         )}
       </div>}
-      {!isFullscreen&&!isMobile&&<div style={{display:"flex",borderBottom:"1px solid rgba(0,229,255,0.1)",border:"1px solid rgba(255,255,255,0.10)",borderTop:"1px solid rgba(255,255,255,0.18)",background:"rgba(255,255,255,0.03)",flexShrink:0,position:"relative",zIndex:1}}>
+      {!isFullscreen&&!isMobile&&<div style={{display:"flex",borderBottom:"1px solid rgba(0,229,255,0.1)",border:"1px solid rgba(255,255,255,0.10)",borderTop:"1px solid rgba(255,255,255,0.18)",background:"rgba(10,7,5,0.45)",backdropFilter:"blur(14px)",WebkitBackdropFilter:"blur(14px)",flexShrink:0,position:"relative",zIndex:1}}>
         <div style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,borderRight:"1px solid rgba(0,229,255,0.1)",borderBottom:"2px solid #00E5FF",background:"rgba(0,229,255,0.04)"}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"#00E5FF",boxShadow:"0 0 6px #00E5FF",animation:"consolePulse 2.5s ease-in-out infinite"}}/>
           <span style={{fontSize:13,fontWeight:700,color:"#00E5FF",letterSpacing:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
@@ -3069,7 +3109,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const [packTab,setPackTab]=useState("pack");
   const [packView,setPackView]=useState("dashboard");
   const [activeCategory,setActiveCategory]=useState(null);
-  const [items,setItems]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_v5");if(s){const p=JSON.parse(s);if(p?.length>0)return p;}}catch(e){}const base=getDefaultPack();if(!pp)return base;const visCats=pp.categories||[];const ess=(pp.essentialItems||[]).map(n=>n.toLowerCase());const opt=(pp.optionalItems||[]).map(n=>n.toLowerCase());return base.filter(i=>visCats.includes(i.cat)||i.cat==="docs").map(i=>({...i,essential:ess.some(e=>i.name.toLowerCase().includes(e)),optional:opt.some(o=>i.name.toLowerCase().includes(o))})).sort((a,b)=>(b.essential?1:0)-(a.essential?1:0)||(a.optional?1:0)-(b.optional?1:0));});
+  const [items,setItems]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_v5");if(s){const p=JSON.parse(s);if(p?.length>0)return mapPackItemsWithVolumes(p);}}catch(e){}const base=getDefaultPack();if(!pp)return mapPackItemsWithVolumes(base);const visCats=pp.categories||[];const ess=(pp.essentialItems||[]).map(n=>n.toLowerCase());const opt=(pp.optionalItems||[]).map(n=>n.toLowerCase());return mapPackItemsWithVolumes(base.filter(i=>visCats.includes(i.cat)||i.cat==="docs").map(i=>({...i,essential:ess.some(e=>i.name.toLowerCase().includes(e)),optional:opt.some(o=>i.name.toLowerCase().includes(o))})).sort((a,b)=>(b.essential?1:0)-(a.essential?1:0)||(a.optional?1:0)-(b.optional?1:0)));});
   const [filterCat,setFilterCat]=useState("all");
   const [openCats,setOpenCats]=useState({});
   const [unit,setUnit]=useState("lbs");
@@ -3369,7 +3409,7 @@ Return ONLY a JSON array:
       {/* Header */}
       {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} onTripConsole={onExpedition} onPackConsole={()=>{}}/>}
       {/* Console switcher */}
-      {!isFullscreen&&!isMobile&&<div style={{display:"flex",border:"1px solid rgba(255,255,255,0.10)",borderTop:"1px solid rgba(255,255,255,0.18)",background:"rgba(255,255,255,0.03)",flexShrink:0}}>
+      {!isFullscreen&&!isMobile&&<div style={{display:"flex",border:"1px solid rgba(255,255,255,0.10)",borderTop:"1px solid rgba(255,255,255,0.18)",background:"rgba(10,7,5,0.45)",backdropFilter:"blur(14px)",WebkitBackdropFilter:"blur(14px)",flexShrink:0}}>
         <div onClick={onExpedition} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",borderRight:"1px solid rgba(196,87,30,0.2)",opacity:0.55}} onMouseOver={e=>{e.currentTarget.style.background="rgba(0,229,255,0.06)";e.currentTarget.style.opacity="1";}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.opacity="0.55";}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(0,229,255,0.4)"}}/>
           <span style={{fontSize:isMobile?11:13,fontWeight:700,color:"rgba(0,229,255,0.6)",letterSpacing:isMobile?0:1,fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
@@ -3380,7 +3420,7 @@ Return ONLY a JSON array:
         </div>
       </div>}
       {/* Hero rings */}
-      {!isFullscreen&&<div data-coach="pack-stats">
+      {!isFullscreen&&<div data-coach="pack-stats" style={{background:'rgba(10,7,5,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)'}}>
         <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',position:'relative',boxShadow:'inset 0 1px 0 rgba(255,159,67,0.40),inset 1px 0 0 rgba(255,159,67,0.12),inset -1px 0 0 rgba(255,159,67,0.12),inset 0 -1px 0 rgba(255,159,67,0.06)'}}>
           {/* LBS/KG toggle pill above weight ring */}
           <div style={{position:'absolute',top:10,left:'25%',transform:'translateX(-50%)',zIndex:1}}>
