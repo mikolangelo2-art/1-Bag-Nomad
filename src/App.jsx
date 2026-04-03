@@ -1148,7 +1148,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
     <div className="dream-root" style={{opacity:mounted?1:0,transition:"opacity 0.5s ease"}}>
       <div className="dream-glow"/>
       <DreamHeader step={2} screenLabel="VISION REVEAL"/>
-      <div style={{padding:"22px 18px 44px",maxWidth:640,margin:"0 auto",position:"relative",zIndex:10}}>
+      <div style={{padding:"22px 24px 44px",maxWidth:820,margin:"0 auto",position:"relative",zIndex:10}}>
         <div className="narrative-card">
           <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"90%",height:"130%",background:"radial-gradient(ellipse,rgba(169,70,29,0.22) 0%,transparent 68%)",pointerEvents:"none"}}/>
           <div style={{fontSize:15,color:"#C4571E",letterSpacing:3,marginBottom:12,position:"relative"}}>✦ YOUR EXPEDITION VISION</div>
@@ -1359,7 +1359,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
                 <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",flexDirection:msg.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>
                   <div style={{width:22,height:22,borderRadius:"50%",background:msg.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{msg.role==="ai"?"✨":"👤"}</div>
                   {msg.isWelcome
-                    ?<div style={{position:"relative",background:"linear-gradient(135deg,rgba(169,70,29,0.2),rgba(255,217,61,0.07))",border:"2px solid rgba(255,159,67,0.30)",borderRadius:12,padding:"12px 16px",fontSize:18,fontWeight:400,color:"rgba(255,255,255,0.88)",lineHeight:1.7,maxWidth:"92%",whiteSpace:"pre-line",fontFamily:"'Fraunces',serif",animation:"fadeUp 0.6s ease",boxShadow:"inset 0 0 24px rgba(255,159,67,0.04)",overflow:"hidden"}}><img src="/1bn-logo.png" style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:"100%",height:"100%",objectFit:"cover",objectPosition:"center",opacity:0,pointerEvents:"none",borderRadius:12}}/>{msg.text}</div>
+                    ?<div style={{position:"relative",background:"linear-gradient(135deg,rgba(169,70,29,0.2),rgba(255,217,61,0.07))",border:"2px solid rgba(255,159,67,0.30)",borderRadius:12,padding:"12px 16px",fontSize:18,fontWeight:400,color:"rgba(255,255,255,0.88)",lineHeight:1.7,maxWidth:"92%",whiteSpace:"pre-line",fontFamily:"'Fraunces',serif",animation:"fadeUp 0.6s ease",boxShadow:"inset 0 0 24px rgba(255,159,67,0.04)",overflow:"hidden"}}><img src="/1bn-logo.png" style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:"100%",height:"100%",objectFit:"cover",objectPosition:"center",opacity:0.06,pointerEvents:"none",borderRadius:12}}/>{msg.text}</div>
                     :<div style={{background:msg.role==="ai"?"rgba(255,159,67,0.04)":"rgba(255,255,255,0.05)",border:msg.role==="ai"?"2px solid rgba(255,159,67,0.30)":`1px solid rgba(255,255,255,0.08)`,borderRadius:12,padding:msg.role==="ai"?"18px 20px":"10px 14px",fontSize:msg.role==="ai"?16:13,fontFamily:msg.role==="ai"?"'Fraunces',serif":"'Space Mono',monospace",fontStyle:msg.role==="ai"?"italic":"normal",color:"#FFF",lineHeight:msg.role==="ai"?1.7:1.5,maxWidth:"92%",boxShadow:msg.role==="ai"?"inset 0 0 24px rgba(255,159,67,0.04)":"none"}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>}
                 </div>
               ))}
@@ -1503,10 +1503,10 @@ function HomecomingScreen({tripData,onPlanNext}) {
           </div>
           {/* Buttons */}
           <div style={{...fade3(0.15),display:"flex",flexDirection:isMobile?"column":"row",gap:10,width:"100%",maxWidth:400}}>
-            <button onClick={handleShare} style={{flex:1,padding:"14px 18px",borderRadius:12,border:"1px solid rgba(255,159,67,0.45)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:isMobile?10:11,fontWeight:700,letterSpacing:2,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:48,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onMouseOver={e=>e.currentTarget.style.background="rgba(255,159,67,0.2)"} onMouseOut={e=>e.currentTarget.style.background="rgba(255,159,67,0.1)"}>
+            <button onClick={handleShare} style={{flex:1,padding:"14px 18px",borderRadius:12,border:"1px solid rgba(255,159,67,0.45)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:isMobile?11:13,fontWeight:700,letterSpacing:2,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:48,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onMouseOver={e=>e.currentTarget.style.background="rgba(255,159,67,0.2)"} onMouseOut={e=>e.currentTarget.style.background="rgba(255,159,67,0.1)"}>
               {copied?"✓ COPIED!":"✦ SHARE MY EXPEDITION"}
             </button>
-            <button onClick={onPlanNext} style={{flex:1,padding:"14px 18px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#C4571E,#FF9F43,#FFD93D)",color:"#060A0F",fontSize:isMobile?10:11,fontWeight:900,letterSpacing:2,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:48,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onMouseOver={e=>e.currentTarget.style.transform="translateY(-1px)"} onMouseOut={e=>e.currentTarget.style.transform="none"}>
+            <button onClick={onPlanNext} style={{flex:1,padding:"14px 18px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#C4571E,#FF9F43,#FFD93D)",color:"#060A0F",fontSize:isMobile?11:13,fontWeight:900,letterSpacing:2,cursor:"pointer",fontFamily:"'Space Mono',monospace",minHeight:48,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onMouseOver={e=>e.currentTarget.style.transform="translateY(-1px)"} onMouseOut={e=>e.currentTarget.style.transform="none"}>
               PLAN MY NEXT ONE →
             </button>
           </div>
@@ -1550,7 +1550,7 @@ function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00
   const onB=e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";};
   return(
     <div style={{display:"flex",flexDirection:"column",gap:mob?2:3}}>
-      <div style={{fontSize:mob?9:11,color:"rgba(212,180,120,0.7)",letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500}}>{label}</div>
+      <div style={{fontSize:mob?11:13,color:"rgba(212,180,120,0.85)",letterSpacing:1.5,fontFamily:"'Space Mono',monospace",fontWeight:500}}>{label}</div>
       {multiline?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={1} style={s} onFocus={onF} onBlur={onB}/>
       :type==="date"?<div style={{width:"100%"}}><input type="date" value={value} onChange={e=>onChange(e.target.value)} style={{...s,colorScheme:"dark"}} onFocus={onF} onBlur={onB}/></div>
       :<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={onF} onBlur={onB}/>}
@@ -2119,8 +2119,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
       <div style={{display:'flex',justifyContent:'center',background:'rgba(0,4,12,0.95)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:isMobile?68:56,zIndex:9}}>
         {TABS.map(t=>{const on=tab===t.id;return(
           <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:isMobile?1:undefined,minWidth:isMobile?0:undefined,padding:isMobile?'10px 2px':'10px 16px',background:'none',border:'none',borderBottom:on?'2px solid #FF9F43':'2px solid transparent',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:3,transition:'all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)',overflow:'hidden',opacity:on?1:0.75,transform:on?'scale(1.05)':'scale(1)'}}>
-            <span style={{fontSize:isMobile?20:18,lineHeight:1}}>{t.icon}</span>
-            {!isMobile&&<span style={{fontSize:11,fontWeight:600,fontFamily:"'Space Mono',monospace",color:on?'#FF9F43':'rgba(255,255,255,0.45)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'100%'}}>{t.label}{t.count>0?` (${t.count})`:""}</span>}
+            <span style={{fontSize:isMobile?20:20,lineHeight:1}}>{t.icon}</span>
+            {!isMobile&&<span style={{fontSize:13,fontWeight:600,fontFamily:"'Space Mono',monospace",color:on?'#FF9F43':'rgba(255,255,255,0.45)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'100%'}}>{t.label}{t.count>0?` (${t.count})`:""}</span>}
             {isMobile&&t.count>0&&<span style={{fontSize:9,fontWeight:600,fontFamily:"'Space Mono',monospace",color:on?'#FF9F43':'rgba(255,255,255,0.45)'}}>{t.count}</span>}
           </button>
         );})}
@@ -2668,8 +2668,8 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
             <div key={t.label} style={{display:"flex",gap:8,alignItems:"flex-start",padding:isMobile?"6px 8px":"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.04)",border:`1px solid ${t.color}44`}}>
               <span style={{fontSize:isMobile?13:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
               <div style={{minWidth:0}}>
-                <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?10:11,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
-                <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?10:11,color:"rgba(255,255,255,0.65)",marginLeft:5}}>{t.desc}</span>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?11:13,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?11:13,color:"rgba(255,255,255,0.65)",marginLeft:5}}>{t.desc}</span>
               </div>
             </div>
           ))}
@@ -3345,8 +3345,8 @@ Return ONLY a JSON array:
             <div key={t.label} style={{display:"flex",gap:8,alignItems:"flex-start",padding:isMobile?"6px 8px":"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.04)",border:`1px solid ${t.color}44`}}>
               <span style={{fontSize:isMobile?13:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
               <div style={{minWidth:0}}>
-                <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?10:11,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
-                <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?10:11,color:"rgba(255,255,255,0.65)",marginLeft:5}}>{t.desc}</span>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?11:13,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
+                <span style={{fontFamily:"'Space Mono',monospace",fontSize:isMobile?11:13,color:"rgba(255,255,255,0.65)",marginLeft:5}}>{t.desc}</span>
               </div>
             </div>
           ))}
