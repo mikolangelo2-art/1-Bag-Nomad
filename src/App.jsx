@@ -383,11 +383,11 @@ const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,w
 .launch-btn{font-size:15px!important;padding:20px!important}
 .mc-tab{font-size:11px!important;padding:12px 16px!important}
 .chat-bubble{font-size:12px!important}}
-@media(min-width:900px){html,body{font-size:18px}.dream-content{max-width:860px;margin:0 auto;padding:40px 40px 70px}.mc-content{max-width:1100px;margin:0 auto;padding:24px 48px}.g-label{font-size:18px}.g-desc{font-size:12px}.sec-label{font-size:13px;letter-spacing:5px}.f-label{font-size:12px}.f-input{font-size:16px;padding:13px 18px}.vision-ta{font-size:16px;padding:18px 22px}.launch-btn{font-size:16px;padding:22px}.mc-tab{font-size:12px;padding:14px 18px}.chat-bubble{font-size:12px}}
+@media(min-width:900px){html,body{font-size:18px}.dream-content{max-width:860px;margin:0 auto;padding:40px 40px 70px}.mc-content{max-width:1100px;margin:0 auto;padding:24px 48px}.overlay-pad{padding-left:48px;padding-right:48px}.g-label{font-size:18px}.g-desc{font-size:12px}.sec-label{font-size:13px;letter-spacing:5px}.f-label{font-size:12px}.f-input{font-size:16px;padding:13px 18px}.vision-ta{font-size:16px;padding:18px 22px}.launch-btn{font-size:16px;padding:22px}.mc-tab{font-size:12px;padding:14px 18px}.chat-bubble{font-size:12px}}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#150F0A}::-webkit-scrollbar-thumb{background:rgba(232,220,200,0.12);border-radius:2px}
 .dream-root{font-family:'Space Mono',monospace;background:radial-gradient(ellipse at 50% 0%,rgba(169,70,29,0.15) 0%,transparent 60%) no-repeat fixed,#150F0A;min-height:100vh;color:#FFF;position:relative}
 .dream-glow{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:280px;background:radial-gradient(ellipse,rgba(169,70,29,0.3) 0%,rgba(0,120,255,0.06) 40%,rgba(255,217,61,0.05) 55%,transparent 70%);pointer-events:none;z-index:0;animation:glowPulse 7s ease-in-out infinite}.dream-glow::after{content:"";position:absolute;top:60px;left:-120px;width:280px;height:180px;background:radial-gradient(ellipse,rgba(0,120,255,0.14) 0%,transparent 70%);pointer-events:none}.dream-glow::before{content:"";position:absolute;top:80px;right:-100px;width:240px;height:160px;background:radial-gradient(ellipse,rgba(162,155,254,0.14) 0%,rgba(0,120,255,0.06) 50%,transparent 70%);pointer-events:none}
-.dream-content{position:relative;z-index:1;padding:26px 0 44px;max-width:720px;margin:0 auto}.mc-content{padding:20px 32px}.build-root,.mc-root{font-size:15px}.g-label{font-size:15px}.g-desc{font-size:10px}.launch-btn{font-size:15px}.sec-label{font-size:10px;letter-spacing:0.08em}.f-input{font-size:14px}.f-label{font-size:10px}}
+.dream-content{position:relative;z-index:1;padding:26px 0 44px;max-width:720px;margin:0 auto}.mc-content{padding:20px 32px}.overlay-pad{padding-left:32px;padding-right:32px}.build-root,.mc-root{font-size:15px}.g-label{font-size:15px}.g-desc{font-size:10px}.launch-btn{font-size:15px}.sec-label{font-size:10px;letter-spacing:0.08em}.f-input{font-size:14px}.f-label{font-size:10px}}
 .hero-cursor{color:#FFD93D;animation:blink 0.9s infinite}
 .sec-label{font-size:12px;color:rgba(0,229,255,0.85);letter-spacing:4px;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid rgba(0,229,255,0.15);white-space:nowrap}.dream-root .sec-label{color:rgba(255,159,67,0.85);border-image:linear-gradient(90deg,rgba(255,159,67,0.3),rgba(255,217,61,0.2),transparent) 1}
 .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:28px}
@@ -1148,7 +1148,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
     <div className="dream-root" style={{opacity:mounted?1:0,transition:"opacity 0.5s ease"}}>
       <div className="dream-glow"/>
       <DreamHeader step={2} screenLabel="VISION REVEAL"/>
-      <div className="dream-content" style={{position:"relative",zIndex:10}}>
+      <div className="dream-content" style={{maxWidth:1100,position:"relative",zIndex:10}}>
         <div className="narrative-card">
           <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"90%",height:"130%",background:"radial-gradient(ellipse,rgba(169,70,29,0.22) 0%,transparent 68%)",pointerEvents:"none"}}/>
           <div style={{fontSize:15,color:"#C4571E",letterSpacing:3,marginBottom:12,position:"relative"}}>✦ YOUR EXPEDITION VISION</div>
@@ -2099,8 +2099,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const TABS=[{id:"transport",label:"TRAVEL",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:isMobile?"ACTS":"ACTIVITIES",icon:"🎯",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"budget",label:"BUDGET",icon:"💰"},{id:"docs",label:"DOCS",icon:"📋"},{id:"calendar",label:isMobile?"CAL":"CALENDAR",icon:"📅"}];
   return(
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:300,background:'#03070F',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+      <div className="mc-content" style={{maxWidth:900,margin:'0 auto',overflow:'visible',flex:'none',minHeight:'auto'}}>
       {/* Header */}
-      <div style={{display:'flex',alignItems:'center',padding:'12px 16px',gap:10,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(255,159,67,0.15)',position:'sticky',top:0,zIndex:10}}>
+      <div style={{display:'flex',alignItems:'center',padding:'12px 0',gap:10,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(255,159,67,0.15)',position:'sticky',top:0,zIndex:10}}>
         {isMobile?<button onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6}}>‹ <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",letterSpacing:2,opacity:0.60}}>{phaseLabelName.toUpperCase()}</span></button>
         :<div style={{display:'flex',alignItems:'center',gap:8,fontSize:11,fontFamily:"'Space Mono',monospace"}}>
           <span onClick={onBackToExpedition||onBack} style={{color:'#FF9F43',cursor:'pointer'}}>←</span>
@@ -2127,7 +2128,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Space Mono',monospace",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
       </div>
       {/* Tab content */}
-      <div className="mc-content" key={tab} style={{maxWidth:'none',margin:'12px 0',border:'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(255,255,255,0.025)',minHeight:300,animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+      <div key={tab} style={{border:'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(255,255,255,0.025)',padding:'16px 14px',margin:'12px 0',minHeight:300,animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
         {/* TRANSPORT */}
         {tab==="transport"&&<div style={{padding:0}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
@@ -2424,6 +2425,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>
         );})()}
       </div>
+      </div>
     </div>
   );
 }
@@ -2442,8 +2444,9 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
   return(
     <>
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:'#03070F',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+      <div className="mc-content" style={{maxWidth:900,margin:'0 auto',overflow:'visible',flex:'none',minHeight:'auto'}}>
       {/* Header */}
-      <div style={{display:'flex',alignItems:'center',padding:'12px 16px',gap:12,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(0,229,255,0.12)',position:'sticky',top:0,zIndex:10}}>
+      <div style={{display:'flex',alignItems:'center',padding:'12px 0',gap:12,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(0,229,255,0.12)',position:'sticky',top:0,zIndex:10}}>
         {isMobile?<button onClick={onBack} style={{background:'none',border:'none',color:'#00E5FF',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6}}>‹ <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",letterSpacing:2,opacity:0.60}}>EXPEDITION</span></button>
         :<div style={{display:'flex',alignItems:'center',gap:8,fontSize:12,fontFamily:"'Space Mono',monospace"}}>
           <span onClick={onBack} style={{color:'#FF9F43',cursor:'pointer'}}>←</span>
@@ -2457,16 +2460,16 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
         <span style={{fontSize:14,fontWeight:700,color:'#FFD93D',fontFamily:"'Space Mono',monospace"}}>{fmt(phase.totalBudget)}</span>
       </div>
       {/* First-visit breadcrumb hint */}
-      {hintVisible&&<div style={{fontSize:11,letterSpacing:'0.12em',color:'rgba(0,229,255,0.35)',padding:'6px 16px 0',textAlign:'center',fontFamily:"'Space Mono',monospace"}}>TAP ‹ TO RETURN TO EXPEDITION</div>}
+      {hintVisible&&<div style={{fontSize:11,letterSpacing:'0.12em',color:'rgba(0,229,255,0.35)',padding:'6px 0 0',textAlign:'center',fontFamily:"'Space Mono',monospace"}}>TAP ‹ TO RETURN TO EXPEDITION</div>}
       {/* Stats bar */}
-      <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'10px 16px',flexShrink:0}}>
+      <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'10px 0',flexShrink:0}}>
         <span style={{flex:1,fontSize:13,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>{fD(phase.arrival)} – {fD(phase.departure)}</span>
         <span style={{fontSize:13,color:'rgba(255,255,255,0.45)',fontFamily:"'Space Mono',monospace"}}>🌙{isMobile?`${phase.totalNights}n`:`${phase.totalNights} Nights`}</span>
         {phase.totalDives>0&&<span style={{fontSize:13,color:'#00E5FF',marginLeft:8,fontFamily:"'Space Mono',monospace"}}>🤿{phase.totalDives}</span>}
       </div>
       {/* Warning flags */}
       {warningFlags.filter(w=>w.phaseIndex===phase.id-1).map((w,wi)=>(
-        <div key={wi} style={{border:'1.5px solid rgba(255,200,0,0.40)',borderRadius:12,background:'rgba(255,200,0,0.06)',padding:'14px 16px',margin:'8px 16px',animation:'fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) both'}}>
+        <div key={wi} style={{border:'1.5px solid rgba(255,200,0,0.40)',borderRadius:12,background:'rgba(255,200,0,0.06)',padding:'14px 16px',margin:'8px 0',animation:'fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) both'}}>
           <div style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:'rgba(255,200,0,0.70)',letterSpacing:2,marginBottom:6}}>⚠️ {w.type==='date_conflict'?'DATE CONFLICT':'SEASONAL NOTICE'}</div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:'italic',color:'rgba(255,255,255,0.85)',lineHeight:1.6,marginBottom:4}}>{w.message}</div>
           {w.suggestion&&<div style={{fontSize:12,color:'rgba(255,200,0,0.60)',fontFamily:"'Space Mono',monospace",marginBottom:10}}>{w.suggestion}</div>}
@@ -2477,10 +2480,11 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       ))}
       {/* Segment list */}
       <div style={{padding:'6px 0 80px'}}>
-        <div style={{padding:'8px 16px 4px',fontSize:12,color:'rgba(255,255,255,0.50)',letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
+        <div style={{padding:'8px 0 4px',fontSize:12,color:'rgba(255,255,255,0.50)',letterSpacing:3,fontFamily:"'Space Mono',monospace",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
         {phase.segments.map((seg,i)=>(
           <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onSegmentTap={s=>setActiveSegment(s)}/>
         ))}
+      </div>
       </div>
     </div>
     {activeSegment&&(()=>{const allSegs=segPhases.flatMap(p=>p.segments);const segIdx=allSegs.findIndex(s=>s.id===activeSegment.id);const prev=segIdx>0?allSegs[segIdx-1]:null;return <SegmentWorkspace segment={activeSegment} phaseId={phase.id} phaseName={phase.name} phaseFlag={phase.flag} intelSnippet={intelData?.[activeSegment.name]} onBack={()=>setActiveSegment(null)} onBackToExpedition={()=>{setActiveSegment(null);onBack();}} suggestion={findSuggestionForSegment(segmentSuggestions, activeSegment.name)} suggestionsLoading={suggestionsLoading} homeCity={homeCity} prevCity={prev?.name||""}/>;})()}
