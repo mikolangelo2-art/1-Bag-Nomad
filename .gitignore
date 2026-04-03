@@ -32,3 +32,11 @@ github-recovery-codes.txt
 *.ai
 *.eps
 *.zip
+
+# Local folders
+.claude/skills/
+Landing Page folder/
+Logos/
+Vercel/
+air labs api/
+sessions/
