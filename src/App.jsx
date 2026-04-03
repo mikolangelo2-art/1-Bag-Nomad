@@ -135,15 +135,52 @@ const urgencyColor = d => d<0?"#fff":d<30?"#FF6B6B":d<60?"#FFD93D":d<90?"#FF9F43
 const fD  = d => d ? new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"}) : "";
 const fDS = d => d ? new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"2-digit"}) : "";
 
-// ─── City Autocomplete ──────────────────────────────────────────
-const COMMON_CITIES=["Los Angeles, CA","New York, NY","San Francisco, CA","Chicago, IL","Miami, FL","Houston, TX","Dallas, TX","Austin, TX","Seattle, WA","Portland, OR","Denver, CO","Phoenix, AZ","San Diego, CA","Nashville, TN","Atlanta, GA","Boston, MA","Washington, DC","Philadelphia, PA","Minneapolis, MN","Detroit, MI","Las Vegas, NV","New Orleans, LA","Salt Lake City, UT","Charlotte, NC","Tampa, FL","Orlando, FL","Honolulu, HI","London, UK","Toronto, Canada","Vancouver, Canada","Montreal, Canada","Sydney, Australia","Melbourne, Australia","Auckland, New Zealand","Dublin, Ireland","Amsterdam, Netherlands","Berlin, Germany","Paris, France","Barcelona, Spain","Lisbon, Portugal","Rome, Italy","Tokyo, Japan","Singapore","Hong Kong","Dubai, UAE","Bangkok, Thailand","Mexico City, Mexico","São Paulo, Brazil","Buenos Aires, Argentina","Cape Town, South Africa"];
+// ─── City / Airport Autocomplete (AirLabs API) ─────────────────
 function CityInput({value,onChange,className,style:inputStyle,placeholder}){
   const [suggestions,setSuggestions]=useState([]);
   const [focused,setFocused]=useState(false);
-  const handleChange=(v)=>{onChange(v);if(v.length>=2){const q=v.toLowerCase();setSuggestions(COMMON_CITIES.filter(c=>c.toLowerCase().includes(q)).slice(0,6));}else setSuggestions([]);};
-  return(<div style={{position:'relative'}}><input className={className} style={inputStyle} value={value} onChange={e=>handleChange(e.target.value)} onFocus={()=>setFocused(true)} onBlur={()=>setTimeout(()=>setFocused(false),150)} placeholder={placeholder}/>
-    {focused&&suggestions.length>0&&<div style={{position:'absolute',top:'100%',left:0,right:0,zIndex:50,background:'rgba(0,8,20,0.98)',border:'1px solid rgba(255,159,67,0.25)',borderRadius:8,marginTop:4,overflow:'hidden',boxShadow:'0 8px 24px rgba(0,0,0,0.5)'}}>
-      {suggestions.map(s=><div key={s} onMouseDown={()=>{onChange(s);setSuggestions([]);}} style={{padding:'10px 14px',fontSize:13,color:'rgba(255,255,255,0.85)',fontFamily:"'Space Mono',monospace",cursor:'pointer',borderBottom:'1px solid rgba(255,255,255,0.06)',transition:'background 0.15s'}} onMouseOver={e=>e.currentTarget.style.background='rgba(255,159,67,0.08)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>{s}</div>)}
+  const [highlight,setHighlight]=useState(-1);
+  const timerRef=useRef(null);
+  const abortRef=useRef(null);
+  const handleChange=(v)=>{
+    onChange(v);
+    setHighlight(-1);
+    if(timerRef.current)clearTimeout(timerRef.current);
+    if(abortRef.current)abortRef.current.abort();
+    if(v.length<2){setSuggestions([]);return;}
+    timerRef.current=setTimeout(async()=>{
+      const ctrl=new AbortController();
+      abortRef.current=ctrl;
+      try{
+        const res=await fetch(`/api/airports?q=${encodeURIComponent(v)}`,{signal:ctrl.signal});
+        const data=await res.json();
+        const items=[];
+        (data.airports||[]).forEach(a=>{
+          const label=`${a.city||a.name}${a.city&&a.name&&a.city!==a.name?' · '+a.name:''}`;
+          items.push({label,code:a.iata,display:`${a.city||a.name}, ${a.country}`});
+        });
+        (data.cities||[]).forEach(c=>{
+          if(!items.some(i=>i.label.toLowerCase().includes(c.name.toLowerCase())))
+            items.push({label:c.name,code:'',display:`${c.name}, ${c.country}`});
+        });
+        setSuggestions(items.slice(0,8));
+      }catch(e){if(e.name!=='AbortError')setSuggestions([]);}
+    },300);
+  };
+  const select=(s)=>{onChange(s.display);setSuggestions([]);setHighlight(-1);};
+  const handleKey=(e)=>{
+    if(!suggestions.length)return;
+    if(e.key==='ArrowDown'){e.preventDefault();setHighlight(h=>(h+1)%suggestions.length);}
+    else if(e.key==='ArrowUp'){e.preventDefault();setHighlight(h=>h<=0?suggestions.length-1:h-1);}
+    else if(e.key==='Enter'&&highlight>=0){e.preventDefault();select(suggestions[highlight]);}
+    else if(e.key==='Escape'){setSuggestions([]);}
+  };
+  return(<div style={{position:'relative'}}><input className={className} style={inputStyle} value={value} onChange={e=>handleChange(e.target.value)} onKeyDown={handleKey} onFocus={()=>setFocused(true)} onBlur={()=>setTimeout(()=>setFocused(false),180)} placeholder={placeholder}/>
+    {focused&&suggestions.length>0&&<div style={{position:'absolute',top:'100%',left:0,right:0,zIndex:50,background:'rgba(21,15,10,0.97)',border:'1.5px solid rgba(255,217,61,0.30)',borderRadius:10,marginTop:4,overflow:'hidden',boxShadow:'0 8px 32px rgba(0,0,0,0.6),0 0 20px rgba(255,159,67,0.08)'}}>
+      {suggestions.map((s,i)=><div key={s.label+s.code} onMouseDown={()=>select(s)} style={{padding:'10px 14px',fontSize:13,color:highlight===i?'#FFD93D':'rgba(255,255,255,0.85)',fontFamily:"'Space Mono',monospace",cursor:'pointer',borderBottom:'1px solid rgba(255,255,255,0.06)',background:highlight===i?'rgba(255,159,67,0.12)':'transparent',transition:'background 0.15s',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}} onMouseOver={e=>{e.currentTarget.style.background='rgba(255,159,67,0.10)';setHighlight(i);}} onMouseOut={e=>{e.currentTarget.style.background='transparent';}}>
+        <span style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{s.label}</span>
+        {s.code&&<span style={{fontSize:12,fontWeight:700,color:'rgba(255,217,61,0.75)',letterSpacing:1,flexShrink:0}}>{s.code}</span>}
+      </div>)}
     </div>}
   </div>);
 }
@@ -2138,7 +2175,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const hasS=det.stay?.name?.length>0;
   const TABS=[{id:"transport",label:"TRAVEL",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:isMobile?"ACTS":"ACTIVITIES",icon:"🎯",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"budget",label:"BUDGET",icon:"💰"},{id:"docs",label:"DOCS",icon:"📋"},{id:"calendar",label:isMobile?"CAL":"CALENDAR",icon:"📅"}];
   return(
-    <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:300,background:'#03070F',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+    <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:300,background:'transparent',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
       <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box'}}>
       {/* Header */}
       <div style={{display:'flex',alignItems:'center',padding:'12px 0',gap:10,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(255,159,67,0.15)',position:'sticky',top:0,zIndex:10}}>
@@ -2483,7 +2520,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
   },[hintVisible]);
   return(
     <>
-    <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:'#03070F',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+    <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:'transparent',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
       <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box'}}>
       {/* Header */}
       <div style={{display:'flex',alignItems:'center',padding:'12px 0',gap:12,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(0,229,255,0.12)',position:'sticky',top:0,zIndex:10}}>
@@ -2610,7 +2647,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
 
   // ── Desktop: phase card (always slides to detail page when onTap provided) ──
   return(
-    <div style={{borderRadius:13,border:"1px solid rgba(0,229,255,0.08)",borderTop:"1px solid rgba(0,229,255,0.20)",background:"rgba(10,7,5,0.50)",backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',overflow:"hidden",transition:"all 0.35s cubic-bezier(0.25,0.46,0.45,0.94)",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`}}>
+    <div style={{borderRadius:13,border:"1px solid rgba(0,229,255,0.08)",borderTop:"1px solid rgba(0,229,255,0.20)",background:"rgba(0,15,35,0.75)",backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',overflow:"hidden",transition:"all 0.35s cubic-bezier(0.25,0.46,0.45,0.94)",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`}}>
       <div onClick={()=>onTap?onTap(phase):setOpen(o=>!o)} style={{padding:"14px 16px",cursor:"pointer",minHeight:62,borderLeft:`3px solid ${phase.color}50`}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
           <div style={{width:22,height:22,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Space Mono',monospace",flexShrink:0}}>{phase.id}</div>
@@ -2793,7 +2830,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
       </div>}
       {/* Tab bar */}
       {!isMobile&&(
-        <div style={{display:"flex",borderBottom:"1px solid rgba(232,220,200,0.06)",background:"#150F0A",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch",position:"relative",zIndex:1}}>
+        <div style={{display:"flex",borderBottom:"1px solid rgba(232,220,200,0.06)",background:"rgba(0,15,35,0.95)",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch",position:"relative",zIndex:1}}>
           <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)",border:"none",borderRight:"1px solid rgba(0,229,255,0.2)",cursor:"pointer",flexShrink:0,color:"#00E5FF"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.22)"} onMouseOut={e=>e.currentTarget.style.background=isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)"}>
             <span style={{fontSize:15,lineHeight:1,textShadow:"0 0 10px rgba(0,229,255,0.9)"}}>{isFullscreen?"⊡":"⛶"}</span>
             <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
