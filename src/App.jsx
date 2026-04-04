@@ -7,6 +7,7 @@ import { fmt, daysBetween, fD, fDS } from './utils/dateHelpers';
 import { estCost } from './utils/priceHelpers';
 import { TI, SEG_KEY, loadSeg, saveSeg, COACH_KEY, loadCoach, saveCoach, ONBOARD_KEY, loadOnboard, saveOnboard, RETURN_KEY, BLANK_RETURN, loadReturn, saveReturn } from './utils/storageHelpers';
 import { askAI, parseJSON } from './utils/aiHelpers';
+import { GOAL_PRESETS, QUICK_ACTIONS } from './constants/dreamData';
 import { useMobile } from './hooks/useMobile';
 import SharegoodLogo from './components/SharegoodLogo';
 import BottomSheet from './components/BottomSheet';
@@ -37,19 +38,9 @@ if (typeof window !== "undefined") {
 // ╚══════════════════════════════════════════════════════════════╝
 
 // ─── Constants ───────────────────────────────────────────────────
-const GOAL_PRESETS = [
-  {id:"diver",icon:"🤿",label:"Scuba Dive",desc:"Reefs, liveaboards, dive certs worldwide"},
-  {id:"nomad",icon:"🌍",label:"Cultural Nomad",desc:"History, food, local life & hidden gems"},
-  {id:"surfer",icon:"🏄",label:"Chase Waves",desc:"Follow the swell, surf the world's best breaks"},
-  {id:"creator",icon:"🎥",label:"Document the Journey",desc:"Vlog, photograph, tell the story"},
-  {id:"adventurer",icon:"🥾",label:"Wild & Off-Grid",desc:"Trek, climb, explore the unknown"},
-  {id:"moto",icon:"🏍️",label:"Moto Explorer",desc:"Two wheels, open roads, borderless freedom"},
-  {id:"golfer",icon:"⛳",label:"Golf Traveler",desc:"World-class courses, exclusive destinations"},
-  {id:"custom",icon:"✨",label:"My Own Vision",desc:"I know what I want — let me describe it"},
-];
+// GOAL_PRESETS, QUICK_ACTIONS — imported from constants/dreamData.js
 const TC = TRIP_CATEGORY_COLORS;
 // TI — imported from storageHelpers.js
-const QUICK_ACTIONS = ["Optimize routing","Check seasons","Reduce budget","Add a stop","Reorder stops","Am I on budget?"];
 const STATUS_CFG={
   planning:  {label:"PLANNING",  icon:"✏️", color:"#FF9F43"},
   confirmed: {label:"CONFIRMED", icon:"✓",  color:"#E8DCC8"},
