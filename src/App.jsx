@@ -4,6 +4,7 @@ import posthog from "posthog-js";
 import { DIVE_CYAN, SURF_GREEN, CULTURE_GOLD, EXPLORATION_ORANGE, NATURE_PURPLE, MOTO_RED, TREK_TEAL, LIGHT_BLUE, TECH_BLUE, PARCHMENT, LIGHT_GRAY, WHITE, BG_PAGE, BG_DARK, BG_DARK_TRIP, BG_PAGE_LEGACY, BLACK_OVERLAY, BG_DREAM_GRADIENT, BG_TRIP_GRADIENT, BG_PACK_GRADIENT, PARCHMENT_08, PARCHMENT_06, PARCHMENT_55, PARCHMENT_20, BURNT_ORANGE_35, BURNT_ORANGE_50, DARK_BURNT_52, CYAN_10, CYAN_25, CYAN_30, CYAN_35, CYAN_40, CYAN_60, CYAN_90, ORANGE_15, ORANGE_25, ORANGE_40, ORANGE_65, ORANGE_90, GOLD_04, GOLD_20, GOLD_35, GOLD_50, GOLD_60, GOLD_65, RED_04, RED_10, RED_40, WHITE_04, WHITE_08, WHITE_15, WHITE_22, WHITE_50, WHITE_60, GREEN_WASH, PURPLE_WASH, CYAN_WASH, ORANGE_WASH, TRIP_CATEGORY_COLORS, CAT_DOT_COLORS, PILL_COLORS, PALETTE_8, BAG_COLORS, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS, EXPENSE_CAT_COLORS, urgencyColor } from './constants/colors';
 import { getDefaultPack, fixPackItemVolume, mapPackItemsWithVolumes } from './utils/packHelpers';
 import { fmt, daysBetween, fD, fDS } from './utils/dateHelpers';
+import { estCost } from './utils/priceHelpers';
 
 // Initialize PostHog — only in production
 if (typeof window !== "undefined") {
@@ -1243,17 +1244,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   useEffect(()=>{const t=setTimeout(()=>setMounted(true),60);return()=>clearTimeout(t);},[]);
   useEffect(()=>{requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:"instant"});});posthog.capture("co_architect_opened");posthog.capture("$pageview",{$current_url:"/co-architect"});},[]);
   useEffect(()=>{window.scrollTo(0,0);},[]);
-  function estCost(dest,country,type,nights){
-    const d=(dest||"").toLowerCase(),c=(country||"").toLowerCase();
-    if(["maldives","norway","switzerland","iceland","japan","australia"].some(r=>d.includes(r)||c.includes(r)))return Math.round(nights*220);
-    if(["europe","portugal","spain","france","italy","greece","barbados","caribbean"].some(r=>d.includes(r)||c.includes(r)))return Math.round(nights*190);
-    if(type==="Dive"&&["red sea","komodo","galapagos","liveaboard"].some(r=>d.includes(r)))return Math.round(nights*230);
-    if(["mexico","colombia","south africa","egypt","brazil"].some(r=>d.includes(r)||c.includes(r)))return Math.round(nights*165);
-    if(["thailand","vietnam","indonesia","bali","philippines"].some(r=>d.includes(r)||c.includes(r)))return Math.round(nights*145);
-    if(["honduras","belize","guatemala","nicaragua"].some(r=>d.includes(r)||c.includes(r)))return Math.round(nights*155);
-    if(["india","nepal","sri lanka"].some(r=>d.includes(r)||c.includes(r)))return Math.round(nights*130);
-    return Math.round(nights*170);
-  }
+  // estCost — imported from priceHelpers.js
   const colors=PALETTE_8;
   const [items,setItems]=useState(()=>(visionData.phases||[]).map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:p.budget||estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8],why:p.why||""})));
   const [startDate,setStartDate]=useState(data.date||"2026-09-16");
