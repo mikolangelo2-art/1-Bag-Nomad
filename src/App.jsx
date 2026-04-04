@@ -18,6 +18,7 @@ import OnboardCard from './components/OnboardCard';
 import PackConsole from './components/PackConsole';
 import GenerationScreen from './components/GenerationScreen';
 import CityInput from './components/CityInput';
+import DreamHeader from './components/DreamHeader';
 
 // Initialize PostHog — only in production
 if (typeof window !== "undefined") {
@@ -474,12 +475,7 @@ function AntiqueGlobe({size=120, glowColor="rgba(0,180,255,0.45)", animate=true}
 
 // GenerationScreen — imported from components/GenerationScreen.jsx
 
-// ─── DreamScreen ──────────────────────────────────────────────────
-function DreamHeader({step,screenLabel}) {
-  const isMobile=useMobile();
-  const pillColors=PILL_COLORS;const pills=<div style={{display:"flex",gap:5,alignItems:"center"}}>{[1,2,3,4].map(n=><div key={n} style={{width:n===step?28:18,height:6,borderRadius:3,background:n<step?pillColors[n-1]+"88":n===step?pillColors[n-1]:"rgba(255,255,255,0.08)",boxShadow:n===step?`0 0 10px ${pillColors[n-1]}66`:"none",transition:"all 0.3s ease"}}/>)}</div>;
-  return <ConsoleHeader console="dream" isMobile={isMobile} rightSlot={pills} screenLabel={screenLabel}/>;
-}
+// DreamHeader — imported from components/DreamHeader.jsx
 
 function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
   const isMobile=useMobile();
