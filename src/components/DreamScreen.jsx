@@ -1,0 +1,224 @@
+import { useState, useEffect } from "react";
+import posthog from "posthog-js";
+import { useMobile } from '../hooks/useMobile';
+import { askAI, parseJSON } from '../utils/aiHelpers';
+import SharegoodLogo from './SharegoodLogo';
+import WorldMapBackground from './WorldMapBackground';
+import DreamHeader from './DreamHeader';
+import VisionReveal from './VisionReveal';
+import CityInput from './CityInput';
+
+function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
+  const isMobile=useMobile();
+  const [vision,setVision]=useState(prefilledVision);
+  const [tripName,setTripName]=useState("");
+  const [city,setCity]=useState("");
+  const [date,setDate]=useState("");
+  const [returnDate,setReturnDate]=useState("");
+  const [heroPhase,setHeroPhase]=useState(0);
+  const [loading,setLoading]=useState(false);
+  const [budgetMode,setBudgetMode]=useState("dream");
+  const [budgetAmount,setBudgetAmount]=useState("");
+  const [loadError,setLoadError]=useState(false);
+  const [visionData,setVisionData]=useState(null);
+  const [focused,setFocused]=useState(false);
+  const [logoState,setLogoState]=useState("idle");
+  const [hintIdx,setHintIdx]=useState(0);
+  const [travelerGroup,setTravelerGroup]=useState("solo");
+  const [travelStyle,setTravelStyle]=useState("");
+  const [interests,setInterests]=useState([]);
+  const [specialtyInterests,setSpecialtyInterests]=useState([]);
+  const [specialtyOpen,setSpecialtyOpen]=useState(false);
+  const [showAllInterests,setShowAllInterests]=useState(false);
+  useEffect(()=>{if(date&&(returnDate===undefined||returnDate===""))setReturnDate(date);},[date,returnDate]);
+  useEffect(()=>{
+    const ts=[setTimeout(()=>setHeroPhase(1),400),setTimeout(()=>setHeroPhase(2),1200),setTimeout(()=>setHeroPhase(3),2100),setTimeout(()=>setHeroPhase(4),3000)];
+    return()=>ts.forEach(clearTimeout);
+  },[]);
+  const GENERATION_HINTS=["Reading your vision...","Mapping your expedition...","Building your blueprint...","Calculating your budget...","Crafting your narrative...","Selecting your destinations..."];
+  useEffect(()=>{if(!loading)return;setHintIdx(0);const iv=setInterval(()=>setHintIdx(p=>(p+1)%6),2500);return()=>clearInterval(iv);},[loading]);
+  const canLaunch=vision.trim().length>20;
+  async function handleReveal() {
+    if(!canLaunch||loading)return;
+    posthog.capture("expedition_built",{budget_mode:budgetMode,has_budget:Number(budgetAmount)>0,traveler_group:travelerGroup,travel_style:travelStyle,interests,specialty_interests:specialtyInterests});
+    setLoading(true);setLoadError(false);setLogoState("thinking");
+    const hasBudget=budgetMode!=="dream"&&budgetAmount&&Number(budgetAmount)>0;
+    const nightCount=(date&&returnDate)?Math.round((new Date(returnDate)-new Date(date))/(1000*60*60*24)):null;
+    const nightsDirective=nightCount?`CRITICAL: trip is exactly ${nightCount} nights — phases must sum to exactly ${nightCount} totalNights.`:"Infer duration from vision.";
+    const bAmt=Number(budgetAmount)||0;
+    const budgetConstraint=hasBudget?`⚠️ BUDGET ALLOCATION DIRECTIVE:\nThe traveler's total budget is $${budgetAmount}. This is a SPEND TARGET, not a ceiling to stay under.\nYour job is to ALLOCATE this $${budgetAmount} across the phases — not to estimate what the trip "might" cost.\n- Divide $${budgetAmount} proportionally across phases based on nights and destination cost-of-living\n- A ${bAmt>=25000?"LUXURY":""}${bAmt>=10000&&bAmt<25000?"HIGH-END":""}${bAmt>=3000&&bAmt<10000?"MID-RANGE":""}${bAmt<3000?"BUDGET":""} trip: choose accommodations and experiences that would realistically spend this amount\n- The sum of all phase "budget" fields MUST equal approximately $${budgetAmount}\n- "totalBudget" in your JSON MUST be set to ${budgetAmount}\n`:"NO BUDGET SET — set totalBudget to 0.";
+    const allInterests=[...interests,...specialtyInterests];
+    const specialtyRules=specialtyInterests.length>0?`\n${specialtyInterests.includes('fishing')?'- If "Fishing": prioritize coastal/offshore destinations, weight activities toward charters and water time, suggest fishing lodge accommodation\n':''}${specialtyInterests.includes('nightlife')?'- If "Nightlife": prioritize cities with strong nightlife scenes, suggest late-morning starts, accommodation near action\n':''}${specialtyInterests.includes('music')?'- If "Music/Festivals": build itinerary around festival dates, suggest shoulder accommodation strategy\n':''}${specialtyInterests.includes('wine')?'- If "Wine Tourism": weight vineyard regions, include cellar door experiences, suggest harvest season timing\n':''}${specialtyInterests.includes('skiing')?'- If "Skiing/Snow": weight mountain resort destinations, check snow season dates\n':''}${specialtyInterests.includes('fishing')||specialtyInterests.includes('camping')?'- If "Camping/Fishing": suggest dawn departures, remote accommodation options\n':''}${specialtyInterests.includes('yoga')?'- If "Yoga Retreat": include wellness centers, suggest peaceful accommodation\n':''}`:'';
+    const travelerConstraints=`TRAVELER PROFILE — HARD CONSTRAINTS:\n- Traveling party: ${travelerGroup==='couple'?'Couple or 2 friends traveling together — budget covers both people, activities and accommodation for 2':'Solo traveler'}\n- Travel style: ${travelStyle||'Independent explorer'}${hasBudget?`\n- Budget: $${budgetAmount} FIRM — reflects total spend for the traveling party`:''}\n${nightCount?`- Nights: ${nightCount} — do not deviate`:''}\n${allInterests.length>0?`- Interests: ${allInterests.join(', ')} — weight destinations and activities toward these\n`:''}- If "First Timer": 1-2 countries max, beginner-friendly destinations, simple logistics, reassuring tone\n- If "Luxury": 5-star properties, premium experiences, business class\n- If "Couple/2 friends": romantic or buddy-trip framing as appropriate, experiences that work for two${specialtyRules}`;
+    try {
+      const breakdownSchema=hasBudget?`,"budgetBreakdown":{"flights":NUMBER,"accommodation":NUMBER,"food":NUMBER,"transport":NUMBER,"activities":NUMBER,"buffer":NUMBER,"flightsNote":"flight routing e.g. LAX → Lisbon return","accommodationNote":"e.g. Guesthouses and boutique hotels","foodNote":"e.g. Local restaurants and cafes","routingNote":"one sentence explaining WHY this route was chosen — the key routing decision in plain English, why these destinations in this order"}`:'';
+      const packSchema=`,"packProfile":{"categories":["clothes","tech","documents","travel","health"],"hiddenCategories":["dive","creator"],"tripType":"culture","climate":"mediterranean","season":"dry","tempRange":"18-28C","activities":["city-walking","fine-dining"],"duration":"medium","essentialItems":["walking shoes","universal adapter"],"optionalItems":["wetsuit","down jacket"]}`;
+      const basePrompt=`${travelerConstraints}\n\n${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"${breakdownSchema}${packSchema}}${hasBudget?`\n\nREMINDER: "totalBudget" MUST be ${budgetAmount}. Each phase "budget" is that phase's share of $${budgetAmount}. The budgetBreakdown fields (flights, accommodation, food, transport, activities, buffer) must sum to approximately $${budgetAmount}. Distribute realistically based on destination costs, trip length, and accommodation tier. Do NOT estimate from scratch — ALLOCATE the stated budget.`:''}
+packProfile must reflect the actual generated itinerary. categories should include only what this specific traveler needs. essentialItems should name specific gear critical for the trip (e.g. "BCD", "wetsuit", "hiking boots", "down jacket"). optionalItems should name items unnecessary for this trip.`;
+      let raw=await askAI(basePrompt,2800);
+      let parsed=parseJSON(raw);
+      console.log('[1BN] AI budgetBreakdown returned:',parsed?.budgetBreakdown||'MISSING');
+      if(parsed&&hasBudget&&parsed.phases?.length){
+        // Pure math: scale AI's proportional split to match stated budget
+        const phaseSum=parsed.phases.reduce((s,p)=>s+(p.budget||p.cost||0),0)||1;
+        const ratio=bAmt/phaseSum;
+        console.log(`[1BN] Budget scaling: AI total $${phaseSum} x ${ratio.toFixed(2)} -> target $${bAmt}`);
+        parsed.phases.forEach(p=>{p.budget=Math.round((p.budget||p.cost||0)*ratio/10)*10;});
+        parsed.totalBudget=bAmt;
+        // Scale or synthesize breakdown categories to match stated budget
+        if(!parsed.budgetBreakdown){
+          console.log('[1BN] budgetBreakdown missing from AI — synthesizing from budget');
+          const tn=parsed.phases.reduce((s,p)=>s+(p.nights||0),0)||1;
+          parsed.budgetBreakdown={flights:Math.round(bAmt*0.2),accommodation:Math.round(bAmt*0.3),food:Math.round(bAmt*0.18),transport:Math.round(bAmt*0.08),activities:Math.round(bAmt*0.16),buffer:Math.round(bAmt*0.08),flightsNote:(city||"Home")+" → "+parsed.phases[0]?.destination+" return",accommodationNote:bAmt>=25000?"Luxury resorts & 5-star hotels":bAmt>=10000?"4-star hotels & boutique stays":bAmt>=3000?"Mid-range hotels & guesthouses":"Hostels & guesthouses",foodNote:bAmt>=10000?"Quality restaurants & local dining":"Local restaurants & street food",routingNote:parsed.phases.length>1?`${parsed.phases.map(p=>p.destination).join(" → ")} — following the most efficient routing between destinations.`:""};
+        }
+        const bd=parsed.budgetBreakdown;
+        const catSum=(bd.flights||0)+(bd.accommodation||0)+(bd.food||0)+(bd.transport||0)+(bd.activities||0)+(bd.buffer||0)||1;
+        const bRatio=bAmt/catSum;
+        bd.flights=Math.round((bd.flights||0)*bRatio/10)*10;
+        bd.accommodation=Math.round((bd.accommodation||0)*bRatio/10)*10;
+        bd.food=Math.round((bd.food||0)*bRatio/10)*10;
+        bd.transport=Math.round((bd.transport||0)*bRatio/10)*10;
+        bd.activities=Math.round((bd.activities||0)*bRatio/10)*10;
+        bd.buffer=Math.round((bd.buffer||0)*bRatio/10)*10;
+        console.log('[1BN] Final budgetBreakdown:',bd);
+      }
+      // Synthesize packProfile if AI omitted it
+      if(parsed&&!parsed.packProfile){
+        console.log('[1BN] packProfile missing from AI — synthesizing from trip data');
+        const phTypes=(parsed.phases||[]).map(p=>(p.type||'').toLowerCase());
+        const hasDive=phTypes.includes('dive')||interests.includes('diving')||data.selectedGoal==='diver';
+        const hasTrek=phTypes.includes('trek')||interests.includes('adventure');
+        const hasCreator=interests.includes('vlog');
+        const hasMoto=interests.includes('moto');
+        const hasSafari=interests.includes('safari');
+        const cats=["clothes","tech","travel","health","docs"];
+        const hidden=[];
+        const tripType=phTypes[0]||"culture";
+        const isNonAdventure=["music","culture","nomad","city"].includes(tripType);
+        if(hasDive)cats.push("dive");else hidden.push("dive");
+        if(hasCreator)cats.push("creator");else hidden.push("creator");
+        if(hasMoto){cats.push("moto");} if(hasSafari){cats.push("safari");} if(hasTrek){cats.push("adventure");}
+        if(isNonAdventure){if(!hasDive)hidden.push("scuba");hidden.push("skiing","climbing");}
+        const tn=(parsed.phases||[]).reduce((s,p)=>s+(p.nights||0),0);
+        const dur=tn<14?"short":tn<=30?"medium":"long";
+        const tropical=["thailand","indonesia","philippines","maldives","honduras","belize","costa rica","vietnam","malaysia","india","mexico","barbados","tanzania"];
+        const cold=["iceland","norway","switzerland","japan","nepal"];
+        const dests=(parsed.phases||[]).map(p=>(p.country||'').toLowerCase());
+        const climate=dests.some(d=>tropical.some(t=>d.includes(t)))?"tropical-hot":dests.some(d=>cold.some(c=>d.includes(c)))?"temperate-cool":"mediterranean";
+        const acts=[];
+        if(hasDive){acts.push("diving","snorkeling");} if(hasTrek)acts.push("trekking"); acts.push("city-walking");
+        if(travelStyle==="Luxury")acts.push("fine-dining"); if(interests.includes('food'))acts.push("fine-dining");
+        if(interests.includes('wellness'))acts.push("yoga");
+        const essential=["passport","universal adapter"];
+        if(hasDive){essential.push("mask","dive computer","reef-safe sunscreen");} if(hasTrek)essential.push("hiking boots","rain jacket"); if(climate==="tropical-hot")essential.push("sunscreen","insect repellent");
+        parsed.packProfile={categories:cats,hiddenCategories:hidden,tripType:phTypes[0]||"culture",climate,season:"dry",tempRange:climate==="tropical-hot"?"28-35C":climate==="temperate-cool"?"10-18C":"18-28C",activities:[...new Set(acts)],duration:dur,essentialItems:essential,optionalItems:hasDive?[]:["wetsuit","dive computer","BCD"]};
+      }
+      console.log('[1BN] packProfile:',parsed?.packProfile);
+      if(parsed){setLogoState("done");setTimeout(()=>setLogoState("idle"),600);setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount,travelerProfile:{group:travelerGroup,style:travelStyle,interests,specialtyInterests}});}
+      else{setLogoState("error");setTimeout(()=>setLogoState("idle"),2000);setLoadError(true);setLoading(false);}
+    } catch(e){setLogoState("error");setTimeout(()=>setLogoState("idle"),2000);setLoadError(true);setLoading(false);}
+  }
+  if(visionData) return <VisionReveal data={visionData} onBuild={vd=>onGoGen(visionData,vd)} onBack={()=>{setVisionData(null);setLoading(false);}} freshMount={true}/>;
+  return (
+    <div className="dream-root">
+      <WorldMapBackground dream/>
+      <div className="dream-glow"/>
+      <DreamHeader step={1}/>
+      <div className="dream-content">
+        <div style={{textAlign:"center",marginBottom:isMobile?20:28,animation:"fadeUp 0.6s ease",padding:isMobile?"0 12px":0}}>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:14}}>
+            <SharegoodLogo size={isMobile?148:168} animate={true} logoState={logoState} glowColor={loading?"rgba(0,229,255,0.7)":"rgba(0,229,255,0.3)"} opacity={loading?1:0.92}/>
+            {loading&&<div key={hintIdx} style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,159,67,0.65)",marginTop:10,animation:"hintFade 2.5s ease forwards",textAlign:"center",letterSpacing:0.5}}>{GENERATION_HINTS[hintIdx]}</div>}
+          </div>
+          <div style={{minHeight:isMobile?80:110}}>
+            {heroPhase>=1&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?28:38,fontWeight:100,color:"rgba(255,255,255,0.88)",lineHeight:1.15,letterSpacing:2,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>Your expedition</div>}
+            {heroPhase>=2&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?28:38,fontWeight:300,color:"#FFF",lineHeight:1.15,letterSpacing:1,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>starts now.</div>}
+            {heroPhase>=3&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?30:44,fontWeight:300,fontStyle:"italic",color:"#FFD93D",lineHeight:1.2,marginTop:10,letterSpacing:3,animation:"slideUp 0.8s cubic-bezier(0.22,1,0.36,1) both",textShadow:"0 0 24px rgba(0,120,255,0.25)"}}>Let's go.</div>}
+          </div>
+          {heroPhase>=4&&<p style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:16,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.75)",lineHeight:1.6,marginTop:12,animation:"fadeUp 0.8s ease both"}}>Every expedition starts with a feeling — tell me what's driving yours.</p>}
+        </div>
+        <div style={{marginBottom:13,padding:0,width:"100%",minWidth:0,boxSizing:"border-box"}}>
+          <div className="sec-label">WHAT'S <span style={{color:"#FFD93D",fontWeight:900}}>YOUR</span> VISION?</div>
+          <div className="vision-textarea-wrap">
+          <textarea className="vision-ta" style={{animation:focused?"none":"visionGlow 3.5s ease-in-out infinite"}} value={vision} onChange={e=>{if(vision.length===0&&e.target.value.length>0)posthog.capture("vision_started");setVision(e.target.value);}} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder={"Speak from the heart. Don\u2019t say where you want to go \u2014 say how you want to FEEL. The reefs you need to dive. The city you need to disappear into. The road that\u2019s been calling you. The version of yourself you\u2019re chasing. The more passion you pour in, the more magic your co-architect returns."} rows={isMobile?8:9}/>
+          </div>
+          {canLaunch&&<div style={{marginTop:8,fontFamily:"'Fraunces',serif",fontSize:isMobile?13:14,fontStyle:"italic",color:"rgba(105,240,174,0.75)",animation:"fadeUp 0.4s ease",textShadow:"0 0 20px rgba(105,240,174,0.2)"}}>✦ Your co-architect is ready to build this.</div>}
+        </div>
+        <div style={{marginBottom:28,borderTop:"1px solid rgba(255,255,255,0.07)",paddingTop:24,padding:"24px 0 0"}}>
+          <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:3,textTransform:"uppercase",marginBottom:16}}>TRAVELER BRIEF</div>
+          <div style={{marginBottom:12,border:travelerGroup?"1px solid rgba(255,159,67,0.20)":"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:isMobile?"12px 14px":"14px 16px",background:"rgba(255,255,255,0.02)",transition:"border 0.3s ease",width:"100%",boxSizing:"border-box"}}>
+            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>WHO'S GOING</div>
+            <div style={{display:"flex",flexDirection:isMobile?"column":"row",flexWrap:"wrap",gap:8}}>
+              {[{id:"solo",label:"Solo"},{id:"couple",label:"Couple / 2 Friends"}].map(g=>(
+                <button key={g.id} onClick={()=>setTravelerGroup(g.id)} style={{padding:"9px 18px",borderRadius:24,border:travelerGroup===g.id?"1.5px solid rgba(255,159,67,0.90)":"1px solid rgba(255,255,255,0.32)",background:travelerGroup===g.id?"rgba(255,159,67,0.10)":"rgba(255,255,255,0.06)",color:travelerGroup===g.id?"#FFD93D":"rgba(255,255,255,0.75)",fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:travelerGroup===g.id?600:400,cursor:"pointer",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",minHeight:40,userSelect:"none",boxShadow:travelerGroup===g.id?"0 0 10px rgba(255,159,67,0.25)":"0 0 6px rgba(255,255,255,0.06)",width:isMobile?"100%":undefined,boxSizing:"border-box",textAlign:"center"}}>{g.label}</button>
+              ))}
+            </div>
+          </div>
+          <div style={{marginBottom:12,border:travelStyle?"1px solid rgba(255,159,67,0.20)":"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:isMobile?"12px 14px":"14px 16px",background:"rgba(255,255,255,0.02)",transition:"border 0.3s ease",width:"100%",boxSizing:"border-box"}}>
+            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>YOUR TRAVEL STYLE</div>
+            <div style={{display:"flex",flexDirection:isMobile?"column":"row",flexWrap:"wrap",gap:8,width:"100%"}}>
+              {["First Timer","Independent Explorer","Comfort & Quality","Adventure First","Luxury"].map(s=>(
+                <button key={s} onClick={()=>setTravelStyle(v=>v===s?"":s)} style={{padding:isMobile?"6px 14px":"9px 18px",borderRadius:24,border:travelStyle===s?"1.5px solid rgba(255,159,67,0.90)":"1px solid rgba(255,255,255,0.32)",background:travelStyle===s?"rgba(255,159,67,0.10)":"rgba(255,255,255,0.06)",color:travelStyle===s?"#FFD93D":"rgba(255,255,255,0.70)",fontSize:isMobile?12:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:travelStyle===s?600:400,cursor:"pointer",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",minHeight:isMobile?36:40,userSelect:"none",boxShadow:travelStyle===s?"0 0 10px rgba(255,159,67,0.25)":"0 0 6px rgba(255,255,255,0.06)",width:isMobile?"100%":undefined,boxSizing:"border-box",textAlign:"center"}}>{s}</button>
+              ))}
+            </div>
+          </div>
+          <div style={{marginBottom:12,border:"1px solid rgba(255,255,255,0.05)",borderRadius:12,padding:isMobile?"12px 14px":"12px 16px",background:"transparent",transition:"border 0.3s ease",width:"100%",boxSizing:"border-box"}}>
+            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>INTERESTS <span style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:300,color:"rgba(255,159,67,0.50)",fontSize:13,textTransform:"none"}}>· optional</span></div>
+            <div style={{display:"flex",flexDirection:isMobile?"column":"row",flexWrap:"wrap",gap:isMobile?8:7,width:"100%"}}>
+              {(()=>{const allI=[{id:"diving",icon:"🤿",label:"Diving"},{id:"culture",icon:"🌍",label:"Culture"},{id:"vlog",icon:"🎥",label:"Vlog"},{id:"food",icon:"🍜",label:"Food & Wine"},{id:"adventure",icon:"🥾",label:"Adventure"},{id:"golf",icon:"⛳",label:"Golf"},{id:"wellness",icon:"🧘",label:"Wellness"},{id:"remote",icon:"💻",label:"Remote Work"},{id:"safari",icon:"🦁",label:"Safari"},{id:"moto",icon:"🏍️",label:"Moto"}];const visible=showAllInterests?allI:allI.filter((c,i)=>i<4||interests.includes(c.id));const hidden=allI.length-visible.length;return(<>{visible.map(c=>{const on=interests.includes(c.id);return(
+                <button key={c.id} onClick={()=>setInterests(p=>on?p.filter(x=>x!==c.id):[...p,c.id])} style={{padding:isMobile?"5px 11px":"6px 14px",borderRadius:20,border:on?"1.5px solid rgba(255,159,67,0.80)":"1px solid rgba(255,255,255,0.30)",background:on?"rgba(255,159,67,0.08)":"rgba(255,255,255,0.06)",color:on?"#FF9F43":"rgba(255,255,255,0.70)",fontSize:isMobile?12:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:on?600:400,cursor:"pointer",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",minHeight:isMobile?36:40,userSelect:"none",boxShadow:on?"0 0 10px rgba(255,159,67,0.22)":"0 0 6px rgba(255,255,255,0.05)",width:isMobile?"100%":undefined,boxSizing:"border-box",textAlign:"center"}}>{c.icon} {c.label}</button>
+              );})}{!showAllInterests&&hidden>0&&<button onClick={()=>setShowAllInterests(true)} style={{padding:isMobile?"5px 11px":"6px 14px",borderRadius:20,border:"1px solid rgba(255,159,67,0.50)",background:"transparent",color:"rgba(255,159,67,0.85)",fontSize:isMobile?12:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",cursor:"pointer",minHeight:isMobile?36:40,userSelect:"none",width:isMobile?"100%":undefined,boxSizing:"border-box",textAlign:"center"}}>+ {hidden} more</button>}{showAllInterests&&<button onClick={()=>setShowAllInterests(false)} style={{padding:isMobile?"5px 11px":"6px 14px",borderRadius:20,border:"1px solid rgba(255,159,67,0.50)",background:"transparent",color:"rgba(255,159,67,0.85)",fontSize:isMobile?12:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",cursor:"pointer",minHeight:isMobile?36:40,userSelect:"none",width:isMobile?"100%":undefined,boxSizing:"border-box",textAlign:"center"}}>− less</button>}</>);})()}
+              <button onClick={()=>setSpecialtyOpen(o=>!o)} style={{padding:isMobile?"5px 11px":"6px 14px",borderRadius:20,border:specialtyInterests.length>0?"1.5px solid rgba(255,217,61,0.90)":specialtyOpen?"1.5px solid rgba(255,217,61,0.55)":"1px solid rgba(255,217,61,0.40)",background:specialtyInterests.length>0?"rgba(255,217,61,0.08)":"transparent",color:specialtyInterests.length>0?"#FFD93D":specialtyOpen?"rgba(255,217,61,0.75)":"rgba(255,217,61,0.60)",fontSize:isMobile?12:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:specialtyInterests.length>0?600:400,cursor:"pointer",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",minHeight:isMobile?36:40,userSelect:"none",boxShadow:specialtyInterests.length>0?"0 0 10px rgba(255,217,61,0.25)":"0 0 6px rgba(255,217,61,0.10)",width:isMobile?"100%":undefined,boxSizing:"border-box",textAlign:"center"}}>✦ Specialty{specialtyInterests.length>0?` (${specialtyInterests.length})`:"..."}</button>
+            </div>
+            <div style={{maxHeight:specialtyOpen?300:0,overflow:specialtyOpen?"visible":"hidden",transition:"max-height 0.28s ease-out"}}>
+              <div style={{marginTop:8,border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:"12px 14px",background:"rgba(255,255,255,0.015)",maxHeight:240,overflowY:"auto",WebkitOverflowScrolling:"touch"}}>
+                <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"rgba(255,159,67,0.85)",letterSpacing:2,marginBottom:8}}>SPECIALTY INTERESTS <span style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:300,color:"rgba(255,159,67,0.50)",fontSize:13}}>· optional</span></div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                  {[{id:"fishing",icon:"🎣",label:"Fishing"},{id:"climbing",icon:"🧗",label:"Climbing"},{id:"skiing",icon:"🎿",label:"Skiing/Snow"},{id:"nightlife",icon:"🎉",label:"Nightlife"},{id:"music",icon:"🎵",label:"Music/Festivals"},{id:"shopping",icon:"🛍️",label:"Shopping"},{id:"wine",icon:"🍷",label:"Wine Tourism"},{id:"eco",icon:"🌿",label:"Eco Travel"},{id:"photography",icon:"🎨",label:"Photography"},{id:"camping",icon:"🏕️",label:"Camping"},{id:"yoga",icon:"🤸",label:"Yoga Retreat"},{id:"watersports",icon:"🏄",label:"Water Sports"}].map(c=>{const on=specialtyInterests.includes(c.id);return(
+                    <button key={c.id} onClick={()=>setSpecialtyInterests(p=>on?p.filter(x=>x!==c.id):[...p,c.id])} style={{padding:"5px 12px",borderRadius:20,border:on?"1.5px solid rgba(255,159,67,0.80)":"1px solid rgba(255,255,255,0.30)",background:on?"rgba(255,159,67,0.08)":"rgba(255,255,255,0.06)",color:on?"#FF9F43":"rgba(255,255,255,0.68)",fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:on?600:400,cursor:"pointer",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",minHeight:40,userSelect:"none",boxShadow:on?"0 0 10px rgba(255,159,67,0.22)":"0 0 5px rgba(255,255,255,0.05)"}}>{c.icon} {c.label}</button>
+                  );})}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="sec-label" style={{padding:isMobile?"0 14px":0}}>EXPEDITION DETAILS</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22,padding:isMobile?"0 14px":0}}>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onChange={e=>setTripName(e.target.value)} placeholder="MY GRAND EXPEDITION" style={{textTransform:"uppercase",borderColor:"rgba(0,229,255,0.72)",boxShadow:"0 0 14px rgba(0,229,255,0.18),0 0 32px rgba(0,229,255,0.07)"}}/></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><CityInput className="f-input" value={city} onChange={v=>setCity(v)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{position:"relative",width:"100%",overflow:"clip",boxSizing:"border-box"}}><input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} style={{colorScheme:"dark",width:"100%",boxSizing:"border-box",fontSize:16,display:"block",borderColor:"rgba(105,240,174,0.72)",boxShadow:"0 0 14px rgba(105,240,174,0.18),0 0 32px rgba(105,240,174,0.07)"}}/>{!isMobile&&<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div>}</div></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div style={{position:"relative",width:"100%",overflow:"clip",boxSizing:"border-box"}}><input type="date" className="f-input" value={returnDate} min={date||undefined} onChange={e=>setReturnDate(e.target.value)} onFocus={()=>{if(!returnDate&&date)setReturnDate(date);}} onClick={()=>{if(!returnDate&&date)setReturnDate(date);}} style={{colorScheme:"dark",width:"100%",boxSizing:"border-box",fontSize:16,display:"block",borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/>{!isMobile&&<div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",fontSize:16,lineHeight:1}}>📅</div>}</div><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.65)",marginTop:3}}>optional · open-ended</div>{date&&returnDate&&(()=>{const d0=new Date(date+"T12:00:00"),d1=new Date(returnDate+"T12:00:00");const n=Math.round((d1-d0)/86400000);return n>0?<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,255,255,0.55)",marginTop:4}}>{n} nights</div>:null;})()}</div>
+        </div>
+
+        <div style={{marginBottom:22,padding:isMobile?"0 14px":0}}>
+          <div className="f-label" style={{marginBottom:10}}>BUDGET APPROACH</div>
+          <div style={{display:"flex",flexDirection:"column",gap:7}}>
+            {[{id:"dream",icon:"💭",label:"Build the dream",sub:"We'll figure budget later",accent:"#FF9F43"},{id:"rough",icon:"💰",label:"I have a rough number",sub:"Give me a ballpark",accent:"#FFD93D"},{id:"strict",icon:"🎯",label:"Keep it under...",sub:"I have a firm limit",accent:"#A29BFE"}].map(b=>(
+              <button key={b.id} onClick={()=>setBudgetMode(b.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 13px",borderRadius:9,border:"1px solid "+(budgetMode===b.id?b.accent+"80":"rgba(255,255,255,0.08)"),background:budgetMode===b.id?b.accent+"0D":"rgba(255,255,255,0.06)",cursor:"pointer",textAlign:"left",transition:"all 0.35s cubic-bezier(0.25,0.46,0.45,0.94)",minHeight:44,width:"100%",boxSizing:"border-box",boxShadow:budgetMode===b.id?`0 0 16px ${b.accent}15`:'inset 0 1px 0 rgba(255,180,80,0.22),inset 1px 0 0 rgba(255,140,40,0.08),inset -1px 0 0 rgba(255,140,40,0.08),inset 0 -1px 0 rgba(255,100,20,0.06)'}}>
+                <span style={{fontSize:16}}>{b.icon}</span>
+                <div><div style={{fontSize:isMobile?13:14,fontWeight:700,color:budgetMode===b.id?b.accent:"#FFF"}}>{b.label}</div><div style={{fontSize:isMobile?12:13,color:"rgba(255,255,255,0.5)",marginTop:2}}>{b.sub}</div></div>
+                <div style={{marginLeft:"auto",width:14,height:14,borderRadius:"50%",border:"1.5px solid "+(budgetMode===b.id?b.accent:"rgba(255,255,255,0.15)"),background:budgetMode===b.id?b.accent+"22":"transparent",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {budgetMode===b.id&&<div style={{width:6,height:6,borderRadius:"50%",background:b.accent}}/>}
+                </div>
+              </button>
+            ))}
+          </div>
+          {(budgetMode==="rough"||budgetMode==="strict")&&<div style={{marginTop:10,display:"flex",flexDirection:"column",gap:5}}><div className="f-label">{budgetMode==="strict"?"MAX BUDGET ($)":"ROUGH BUDGET ($)"}</div><input className="f-input" type="number" value={budgetAmount} onChange={e=>setBudgetAmount(e.target.value)} placeholder={budgetMode==="strict"?"e.g. 15000":"e.g. 20000"}/></div>}
+        </div>
+        <button className={"launch-btn "+(loading?"loading":canLaunch?"on":"off")} onClick={handleReveal} style={{minHeight:54,cursor:loading?"wait":canLaunch?"pointer":"default",margin:isMobile?"0 12px":0,width:isMobile?"calc(100% - 24px)":undefined}}>
+          {loading?"✨  BUILDING YOUR EXPEDITION...":"🚀  BUILD MY EXPEDITION"}
+        </button>
+        {loadError&&<div style={{marginTop:12,padding:"10px 14px",borderRadius:8,background:"rgba(255,107,107,0.1)",border:"1px solid rgba(255,107,107,0.3)",textAlign:"center",fontSize:15,color:"#FF6B6B",letterSpacing:1}}>Connection issue — tap to try again</div>}
+        <div style={{textAlign:"center",marginTop:30,paddingTop:20,borderTop:"1px solid rgba(0,229,255,0.1)",padding:isMobile?"20px 12px 0":"20px 0 0"}}>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,217,61,0.4)",letterSpacing:2}}>Dream Big. Travel Light.</div>
+          <div style={{fontSize:15,color:"rgba(255,255,255,0.15)",letterSpacing:3,marginTop:5}}>A SHAREGOOD COMPANY</div>
+          <button onClick={onLoadDemo} style={{marginTop:16,background:"none",border:"1px solid rgba(0,229,255,0.2)",borderRadius:8,color:"rgba(0,229,255,0.5)",fontSize:15,padding:"10px 16px",cursor:"pointer",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",width:"100%",minHeight:44,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
+            🌍 LOAD MY EXPEDITION · Michael's 2026/27 Global Dive
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default DreamScreen;
