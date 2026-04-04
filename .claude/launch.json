@@ -4,7 +4,7 @@
     {
       "name": "dev",
       "runtimeExecutable": "/usr/local/bin/node",
-      "runtimeArgs": ["/Users/admin/1bag-nomad/node_modules/.bin/vite"],
+      "runtimeArgs": ["node_modules/.bin/vite"],
       "port": 5173
     }
   ]
