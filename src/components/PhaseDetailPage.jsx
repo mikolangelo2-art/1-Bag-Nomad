@@ -18,7 +18,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
   },[hintVisible]);
   return(
     <>
-    <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:'#3C2418',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+    <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:'#120A04',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
       <WorldMapBackground phases={allPhases} activeCountry={phase.country}/>
       <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box',position:'relative',zIndex:1}}>
       {/* Header */}

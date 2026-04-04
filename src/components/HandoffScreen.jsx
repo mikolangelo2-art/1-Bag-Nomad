@@ -13,7 +13,7 @@ function HandoffScreen({tripData,onComplete}) {
   const countries=[...new Set((tripData.phases||[]).map(p=>p.country))].length;
   return(
     <div style={{position:"fixed",inset:0,zIndex:9999,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",animation:"fadeIn 0.40s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
-      <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 0%,#2d1200 0%,#1a0900 25%,#0d0500 55%,#060200 100%)",zIndex:1}}/>
+      <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 0%,#120A04 0%,#120A04 25%,#120A04 55%,#120A04 100%)",zIndex:1}}/>
       <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 0%,#001830 0%,#000d1a 30%,#000810 60%,#030810 100%)",opacity:ph>=1?1:0,transition:"opacity 1.4s ease",zIndex:2}}/>
       <div style={{position:"absolute",inset:0,zIndex:3,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:40,paddingBottom:"calc(40px + env(safe-area-inset-bottom))",overflowY:"auto"}}>
         <div style={{opacity:ph<1?1:0,transition:"opacity 0.9s ease",position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",pointerEvents:"none"}}>
