@@ -9,6 +9,7 @@ import { TI, SEG_KEY, loadSeg, saveSeg, COACH_KEY, loadCoach, saveCoach, ONBOARD
 import { askAI, parseJSON } from './utils/aiHelpers';
 import { GOAL_PRESETS, QUICK_ACTIONS } from './constants/dreamData';
 import { COUNTRY_FLAGS, toSegPhases } from './utils/tripHelpers';
+import { STATUS_CFG, STATUS_NEXT, SUGGEST_KEY, DISMISS_KEY, ACTIVITY_ICONS, SEG_TYPE_TO_ACT, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, loadDismissed, saveDismissed, findSuggestionForSegment, loadSuggestionsFromStorage, detectMode, buildSegmentSuggestionsPrompt, getPhaseActivityIcon } from './utils/tripConsoleHelpers';
 import { useMobile } from './hooks/useMobile';
 import SharegoodLogo from './components/SharegoodLogo';
 import BottomSheet from './components/BottomSheet';
@@ -50,15 +51,7 @@ if (typeof window !== "undefined") {
 // GOAL_PRESETS, QUICK_ACTIONS — imported from constants/dreamData.js
 const TC = TRIP_CATEGORY_COLORS;
 // TI — imported from storageHelpers.js
-const STATUS_CFG={
-  planning:  {label:"PLANNING",  icon:"✏️", color:"#FF9F43"},
-  confirmed: {label:"CONFIRMED", icon:"✓",  color:"#E8DCC8"},
-  booked:    {label:"BOOKED",    icon:"🔒", color:"#69F0AE"},
-  changed:   {label:"CHANGED",   icon:"⚠️",color:"#FF6B6B"},
-  cancelled: {label:"CANCELLED", icon:"✕",  color:"#888888"},
-};
-// Tap cycles forward; booked tapped = show modal instead
-const STATUS_NEXT={planning:"confirmed",confirmed:"booked",changed:"booked",cancelled:"planning"};
+// STATUS_CFG, STATUS_NEXT — imported from utils/tripConsoleHelpers.js
 // CAT_DOT_COLORS — imported from colors.js
 
 // WorldMapBackground — imported from components/WorldMapBackground.jsx
@@ -78,101 +71,7 @@ const STATUS_NEXT={planning:"confirmed",confirmed:"booked",changed:"booked",canc
 
 // askAI, parseJSON — imported from utils/aiHelpers.js
 
-// ─── Segment Suggestions ────────────────────────────────────────
-const SUGGEST_KEY = "1bn_seg_suggestions_v1";
-const DISMISS_KEY = "1bn_dismissed_suggestions";
-const loadDismissed = () => { try { return JSON.parse(localStorage.getItem(DISMISS_KEY) || "{}"); } catch(e) { return {}; } };
-const saveDismissed = d => { try { localStorage.setItem(DISMISS_KEY, JSON.stringify(d)); } catch(e) {} };
-// Find the suggestion matching a segment by name (handles country-grouping index mismatch)
-function findSuggestionForSegment(suggestions, segmentName) {
-  if (!suggestions || !segmentName) return null;
-  const name = segmentName.toLowerCase();
-  // Try exact phaseName match first, then partial match
-  return suggestions.find(s => s?.phaseName?.toLowerCase() === name)
-    || suggestions.find(s => s?.phaseName?.toLowerCase()?.includes(name))
-    || suggestions.find(s => name.includes(s?.phaseName?.toLowerCase()?.split(',')[0]?.trim()))
-    || null;
-}
-// Load suggestions directly from localStorage (fallback when prop chain fails)
-function loadSuggestionsFromStorage() {
-  try { const s=localStorage.getItem(SUGGEST_KEY); return s?JSON.parse(s).suggestions:null; } catch(e) { return null; }
-}
-
-function detectMode(route) {
-  if (!route) return '';
-  const r = route.toLowerCase();
-  if (r.includes('flight') || r.includes('airline') || r.includes('airport') || r.includes('→') && (r.includes('air') || r.includes('united') || r.includes('american') || r.includes('delta') || r.includes('jetblue'))) return 'Flight';
-  if (r.includes('ferry') || r.includes('boat')) return 'Boat/Ferry';
-  if (r.includes('bus') || r.includes('shuttle') || r.includes('coach')) return 'Bus/Shuttle';
-  if (r.includes('train') || r.includes('rail')) return 'Train';
-  if (r.includes('drive') || r.includes('car') || r.includes('rental')) return 'Car/Drive';
-  return '';
-}
-
-const suggestionCardStyle = {
-  border: '1.5px solid rgba(255,255,255,0.14)',
-  borderRadius: '14px',
-  background: 'rgba(255,159,67,0.09)',
-  padding: '18px',
-  marginBottom: '14px',
-  animation: 'suggestIn 0.40s cubic-bezier(0.25,0.46,0.45,0.94) both'
-};
-const suggestionHeaderStyle = {
-  fontSize: '11px',
-  fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-  color: '#FF9F43',
-  letterSpacing: '2px',
-  marginBottom: '12px',
-  opacity: 0.85
-};
-const disclaimerStyle = {
-  fontSize: '11px',
-  fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-  color: 'rgba(255,255,255,0.30)',
-  fontStyle: 'italic',
-  marginBottom: '12px',
-  lineHeight: 1.5
-};
-const acceptBtnStyle = {
-  flex: 1, padding: '10px',
-  background: 'rgba(255,159,67,0.20)',
-  border: '1px solid rgba(255,159,67,0.50)',
-  borderRadius: '8px',
-  color: '#FF9F43',
-  fontSize: '12px',
-  fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-  fontWeight: 600,
-  cursor: 'pointer'
-};
-const dismissBtnStyle = {
-  padding: '10px 14px',
-  background: 'transparent',
-  border: '1px solid rgba(255,255,255,0.12)',
-  borderRadius: '8px',
-  color: 'rgba(255,255,255,0.45)',
-  fontSize: '12px',
-  fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-  cursor: 'pointer'
-};
-
-function buildSegmentSuggestionsPrompt(tripData, travelerProfile, phasesSlice, startIndex) {
-  const phases = phasesSlice || (tripData.phases || []).slice(0, 5);
-  const offset = startIndex || 0;
-  const home = tripData.departureCity || tripData.city || 'Home';
-  const style = travelerProfile?.style || 'Independent';
-  const group = travelerProfile?.group || 'Solo';
-  return `Travel advisor. ${group} ${style} traveler from ${home}. Budget: $${tripData.totalBudget||'flexible'}.
-
-PHASES:
-${phases.map((p, i) => {const globalIdx=offset+i;const from=globalIdx===0?home:(i===0?(tripData.phases[offset-1]?.name||tripData.phases[offset-1]?.destination||'Previous'):(phases[i-1].name||phases[i-1].destination||'Previous'));return `${globalIdx+1}. FROM ${from} → ${p.name||p.destination||p.city}, ${p.country} | ${p.arrival}→${p.departure} | ${p.nights}n | $${p.budget||p.cost}`;}).join('\n')}
-
-For each phase: transport route+cost, stay name+cost, 2 activities+costs, food budget.
-
-Return ONLY JSON:
-{"phases":[{"phaseIndex":${offset},"phaseName":"...","transport":{"route":"...","estimatedCost":"$X-X","notes":"..."},"stay":{"recommendation":"...","suggestions":["Name1","Name2"],"estimatedNightly":"$X/night","estimatedTotal":"$X-X","notes":"..."},"activities":[{"name":"...","provider":"...","estimatedCost":"$X","notes":"..."}],"food":{"dailyBudget":"$X-X/day","recommendations":["..."],"notes":"..."}}]}
-
-JSON only. No markdown. No preamble.`;
-}
+// Segment suggestions, detectMode, styles, buildSegmentSuggestionsPrompt — imported from utils/tripConsoleHelpers.js
 
 // ─── CSS ─────────────────────────────────────────────────────────
 const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,100;0,300;0,700;0,900;1,100;1,300;1,700;1,900&family=Space+Mono:wght@400;700&display=swap');
@@ -894,10 +793,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
 }
 
 // ─── PhaseCard ────────────────────────────────────────────────────
-// ─── Activity Icons ───────────────────────────────────────────────
-const ACTIVITY_ICONS={'DIVE':'🤿','CULTURE':'🏛️','HIKING':'🥾','SAILING':'⛵','CITY':'🏙️','FOOD':'🍜','BEACH':'🏖️','SAFARI':'🦁','WELLNESS':'🧘','ADVENTURE':'🏔️','DEFAULT':'✦'};
-const SEG_TYPE_TO_ACT={Dive:'DIVE',Surf:'SAILING',Culture:'CULTURE',Exploration:'ADVENTURE',Nature:'SAFARI',Moto:'ADVENTURE',Trek:'HIKING',Relax:'WELLNESS',Transit:'DEFAULT',City:'CITY'};
-function getPhaseActivityIcon(phase){const t=phase.segments?.[0]?.type;return ACTIVITY_ICONS[SEG_TYPE_TO_ACT[t]||'DEFAULT']||'✦';}
+// ACTIVITY_ICONS, SEG_TYPE_TO_ACT, getPhaseActivityIcon — imported from utils/tripConsoleHelpers.js
 
 // ─── PhaseDetailPage ──────────────────────────────────────────────
 // ─── SegmentWorkspace (Level 3) ───────────────────────────────────
