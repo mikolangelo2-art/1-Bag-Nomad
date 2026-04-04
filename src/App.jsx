@@ -6,6 +6,7 @@ import { getDefaultPack, fixPackItemVolume, mapPackItemsWithVolumes } from './ut
 import { fmt, daysBetween, fD, fDS } from './utils/dateHelpers';
 import { estCost } from './utils/priceHelpers';
 import { TI, SEG_KEY, loadSeg, saveSeg, COACH_KEY, loadCoach, saveCoach, ONBOARD_KEY, loadOnboard, saveOnboard, RETURN_KEY, BLANK_RETURN, loadReturn, saveReturn } from './utils/storageHelpers';
+import { askAI, parseJSON } from './utils/aiHelpers';
 import { useMobile } from './hooks/useMobile';
 import SharegoodLogo from './components/SharegoodLogo';
 import BottomSheet from './components/BottomSheet';
@@ -151,18 +152,7 @@ function toSegPhases(phases=[]) {
   });
 }
 
-async function askAI(prompt,max=900) {
-  const r = await fetch("/api/ask",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:max,messages:[{role:"user",content:prompt}]})});
-  const d = await r.json();
-  return d.content?.find(c=>c.type==="text")?.text||"";
-}
-function parseJSON(raw) {
-  if(!raw)return null;
-  for(const fn of [s=>JSON.parse(s), s=>JSON.parse(s.replace(/`json\s*/gi,"").replace(/`\s*/gi,"").trim()), s=>{const m=s.match(/{[\s\S]*}/);if(m)return JSON.parse(m[0]);throw 0;}, s=>{const a=s.indexOf("{"),b=s.lastIndexOf("}");if(a!==-1&&b>a)return JSON.parse(s.slice(a,b+1));throw 0;}]) {
-    try{return fn(raw);}catch(e){}
-  }
-  return null;
-}
+// askAI, parseJSON — imported from utils/aiHelpers.js
 
 // ─── Segment Suggestions ────────────────────────────────────────
 const SUGGEST_KEY = "1bn_seg_suggestions_v1";
