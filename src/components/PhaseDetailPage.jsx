@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { fmt, fD } from '../utils/dateHelpers';
 import { findSuggestionForSegment } from '../utils/tripConsoleHelpers';
