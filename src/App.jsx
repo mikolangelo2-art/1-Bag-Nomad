@@ -5,6 +5,7 @@ import { DIVE_CYAN, SURF_GREEN, CULTURE_GOLD, EXPLORATION_ORANGE, NATURE_PURPLE,
 import { getDefaultPack, fixPackItemVolume, mapPackItemsWithVolumes } from './utils/packHelpers';
 import { fmt, daysBetween, fD, fDS } from './utils/dateHelpers';
 import { estCost } from './utils/priceHelpers';
+import { TI, SEG_KEY, loadSeg, saveSeg, COACH_KEY, loadCoach, saveCoach, ONBOARD_KEY, loadOnboard, saveOnboard, RETURN_KEY, BLANK_RETURN, loadReturn, saveReturn } from './utils/storageHelpers';
 import { useMobile } from './hooks/useMobile';
 import SharegoodLogo from './components/SharegoodLogo';
 import BottomSheet from './components/BottomSheet';
@@ -43,7 +44,7 @@ const GOAL_PRESETS = [
   {id:"custom",icon:"✨",label:"My Own Vision",desc:"I know what I want — let me describe it"},
 ];
 const TC = TRIP_CATEGORY_COLORS;
-const TI = {Dive:"🤿",Surf:"🏄",Culture:"🏛️",Exploration:"🔭",Nature:"🦎",Moto:"🏍️",Trek:"🥾",Relax:"🌴",Transit:"✈️"};
+// TI — imported from storageHelpers.js
 const QUICK_ACTIONS = ["Optimize routing","Check seasons","Reduce budget","Add a stop","Reorder stops","Am I on budget?"];
 const STATUS_CFG={
   planning:  {label:"PLANNING",  icon:"✏️", color:"#FF9F43"},
@@ -58,20 +59,7 @@ const STATUS_NEXT={planning:"confirmed",confirmed:"booked",changed:"booked",canc
 
 // WorldMapBackground — imported from components/WorldMapBackground.jsx
 
-// ─── Storage: 1bn_seg_v2 only ────────────────────────────────────
-const SEG_KEY = "1bn_seg_v2";
-const loadSeg = () => { try { const s=localStorage.getItem(SEG_KEY); return s?JSON.parse(s):{}; } catch(e) { return {}; } };
-const saveSeg = d => { try { localStorage.setItem(SEG_KEY,JSON.stringify(d)); } catch(e) {} };
-const COACH_KEY = "1bn_coach_v1";
-const loadCoach = () => { try { const s=localStorage.getItem(COACH_KEY); return s?JSON.parse(s):{}; } catch(e) { return {}; } };
-const saveCoach = d => { try { localStorage.setItem(COACH_KEY,JSON.stringify(d)); } catch(e) {} };
-const ONBOARD_KEY = "1bn_onboard_v1";
-const loadOnboard = () => { try { const s=localStorage.getItem(ONBOARD_KEY); return s?JSON.parse(s):{}; } catch(e) { return {}; } };
-const saveOnboard = d => { try { localStorage.setItem(ONBOARD_KEY,JSON.stringify(d)); } catch(e) {} };
-const RETURN_KEY = "1bn_return_v1";
-const BLANK_RETURN = {flight:{date:"",from:"",to:"",cost:"",status:"planning"}};
-const loadReturn = () => { try { const s=localStorage.getItem(RETURN_KEY); return s?JSON.parse(s):BLANK_RETURN; } catch(e) { return BLANK_RETURN; } };
-const saveReturn = d => { try { localStorage.setItem(RETURN_KEY,JSON.stringify(d)); } catch(e) {} };
+// Storage helpers — imported from utils/storageHelpers.js
 
 // ─── Utils ───────────────────────────────────────────────────────
 // fmt, daysBetween, urgencyColor, fD, fDS — imported from dateHelpers.js / colors.js
