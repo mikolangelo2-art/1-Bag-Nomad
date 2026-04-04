@@ -26,6 +26,10 @@ import DreamScreen from './components/DreamScreen';
 import HandoffScreen from './components/HandoffScreen';
 import HomecomingScreen from './components/HomecomingScreen';
 import CoArchitect from './components/CoArchitect';
+import AntiqueGlobe from './components/AntiqueGlobe';
+import DateInput from './components/DateInput';
+import SDF from './components/SDF';
+import ProgDots from './components/ProgDots';
 
 // Initialize PostHog — only in production
 if (typeof window !== "undefined") {
@@ -253,96 +257,6 @@ const MICHAEL_EXPEDITION = {
 // SharegoodLogo — imported from components/SharegoodLogo.jsx
 
 
-// ─── AntiqueGlobe (Spinning Earth) ───────────────────────────────
-function AntiqueGlobe({size=120, glowColor="rgba(0,180,255,0.45)", animate=true}) {
-  const r = size / 2;
-  const sc = size / 200; // scale: designed at 200x200
-
-  return (
-    <div style={{
-      position:"relative", width:size, height:size, flexShrink:0,
-      filter:`drop-shadow(0 0 ${size*.18}px ${glowColor})`,
-      animation: animate ? "spinGlobe 20s linear infinite" : "none",
-    }}>
-      <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} xmlns="http://www.w3.org/2000/svg">
-        {/* Ocean base */}
-        <circle cx={r} cy={r} r={r-1} fill="#0a2744" stroke="#1a5276" strokeWidth="1.5"/>
-        {/* Ocean highlight */}
-        <circle cx={r} cy={r} r={r-1} fill="url(#oceanGrad)" opacity="0.6"/>
-        <defs>
-          <radialGradient id="oceanGrad" cx="35%" cy="30%" r="60%">
-            <stop offset="0%" stopColor="#1a6b96" stopOpacity="0.8"/>
-            <stop offset="100%" stopColor="#051428" stopOpacity="0.3"/>
-          </radialGradient>
-          <radialGradient id="landGrad" cx="40%" cy="35%" r="60%">
-            <stop offset="0%" stopColor="#3d7a45" stopOpacity="1"/>
-            <stop offset="100%" stopColor="#1a4a1e" stopOpacity="1"/>
-          </radialGradient>
-          <clipPath id="globeClip">
-            <circle cx={r} cy={r} r={r-2}/>
-          </clipPath>
-        </defs>
-
-        {/* Land masses — simplified but recognizable */}
-        <g clipPath="url(#globeClip)" fill="url(#landGrad)" stroke="#2d6e35" strokeWidth="0.5">
-          {/* North America */}
-          <path d={`M${55*sc},${48*sc} C${60*sc},${38*sc} ${75*sc},${35*sc} ${88*sc},${40*sc} C${98*sc},${44*sc} ${100*sc},${55*sc} ${95*sc},${65*sc} C${90*sc},${75*sc} ${82*sc},${82*sc} ${74*sc},${84*sc} C${66*sc},${82*sc} ${60*sc},${74*sc} ${56*sc},${66*sc} C${52*sc},${58*sc} ${53*sc},${52*sc} ${55*sc},${48*sc} Z`}/>
-          {/* Greenland */}
-          <path d={`M${74*sc},${22*sc} C${80*sc},${17*sc} ${90*sc},${20*sc} ${92*sc},${30*sc} C${90*sc},${38*sc} ${80*sc},${38*sc} ${73*sc},${33*sc} Z`}/>
-          {/* South America */}
-          <path d={`M${72*sc},${93*sc} C${78*sc},${88*sc} ${90*sc},${91*sc} C${94*sc},${100*sc} ${93*sc},${118*sc} ${87*sc},${130*sc} C${82*sc},${140*sc} ${73*sc},${143*sc} ${67*sc},${133*sc} C${63*sc},${122*sc} ${65*sc},${108*sc} ${68*sc},${98*sc} Z`}/>
-          {/* Europe */}
-          <path d={`M${98*sc},${38*sc} C${105*sc},${32*sc} ${118*sc},${34*sc} ${120*sc},${44*sc} C${118*sc},${53*sc} ${108*sc},${56*sc} ${100*sc},${52*sc} Z`}/>
-          {/* Africa */}
-          <path d={`M${100*sc},${60*sc} C${108*sc},${57*sc} ${118*sc},${60*sc} C${124*sc},${70*sc} ${122*sc},${90*sc} ${116*sc},${108*sc} C${110*sc},${118*sc} ${100*sc},${120*sc} ${95*sc},${110*sc} C${92*sc},${98*sc} ${94*sc},${78*sc} ${97*sc},${68*sc} Z`}/>
-          {/* Asia mainland */}
-          <path d={`M${120*sc},${30*sc} C${138*sc},${25*sc} ${160*sc},${28*sc} ${170*sc},${40*sc} C${175*sc},${52*sc} ${165*sc},${65*sc} ${150*sc},${68*sc} C${135*sc},${70*sc} ${122*sc},${62*sc} ${115*sc},${52*sc} C${112*sc},${42*sc} ${115*sc},${33*sc} ${120*sc},${30*sc} Z`}/>
-          {/* India */}
-          <path d={`M${130*sc},${70*sc} C${136*sc},${68*sc} ${142*sc},${72*sc} ${140*sc},${86*sc} C${137*sc},${96*sc} ${130*sc},${98*sc} ${125*sc},${90*sc} C${122*sc},${80*sc} ${125*sc},${72*sc} ${130*sc},${70*sc} Z`}/>
-          {/* Southeast Asia */}
-          <path d={`M${150*sc},${72*sc} C${160*sc},${70*sc} ${166*sc},${76*sc} ${162*sc},${86*sc} C${156*sc},${90*sc} ${148*sc},${86*sc} ${147*sc},${78*sc} Z`}/>
-          {/* Australia */}
-          <path d={`M${148*sc},${108*sc} C${158*sc},${104*sc} ${170*sc},${108*sc} C${174*sc},${120*sc} ${168*sc},${132*sc} ${155*sc},${134*sc} C${143*sc},${132*sc} ${138*sc},${122*sc} ${142*sc},${112*sc} Z`}/>
-          {/* Antarctica (bottom) */}
-          <path d={`M${40*sc},${168*sc} C${70*sc},${162*sc} ${130*sc},${162*sc} ${162*sc},${168*sc} C${165*sc},${175*sc} ${140*sc},${182*sc} ${100*sc},${182*sc} C${60*sc},${182*sc} ${35*sc},${175*sc} ${40*sc},${168*sc} Z`} opacity="0.7" fill="#e8f4f8" stroke="#c0d8e0" strokeWidth="0.5"/>
-        </g>
-
-        {/* Latitude grid lines */}
-        {[-0.35, -0.18, 0, 0.18, 0.35].map((lat, i) => {
-          const cy = r + lat * size;
-          const rx2 = Math.sqrt(Math.max(0, Math.pow(r-2, 2) - Math.pow(lat*size, 2)));
-          const ry = Math.max(1, rx2 * 0.14);
-          return rx2 > 3 ? (
-            <ellipse key={i} cx={r} cy={cy} rx={rx2} ry={ry}
-              fill="none" stroke={i===2?"rgba(100,200,255,0.5)":"rgba(100,180,255,0.2)"}
-              strokeWidth={i===2?"0.8":"0.4"}/>
-          ) : null;
-        })}
-        {/* Longitude grid */}
-        {[0, 60, 120].map((angle, i) => (
-          <ellipse key={i} cx={r} cy={r} rx={r-2} ry={r-2}
-            fill="none" stroke="rgba(100,180,255,0.15)" strokeWidth="0.4"
-            transform={`rotate(${angle} ${r} ${r})`}/>
-        ))}
-
-        {/* Atmosphere glow rim */}
-        <circle cx={r} cy={r} r={r-1} fill="none"
-          stroke="rgba(100,200,255,0.35)" strokeWidth="3"/>
-        <circle cx={r} cy={r} r={r-1} fill="none"
-          stroke="rgba(150,220,255,0.15)" strokeWidth="6"/>
-
-        {/* Specular highlight */}
-        <ellipse cx={r*0.65} cy={r*0.55} rx={r*0.28} ry={r*0.18}
-          fill="rgba(255,255,255,0.07)" transform={`rotate(-30 ${r*0.65} ${r*0.55})`}/>
-      </svg>
-    </div>
-  );
-}
-
-// ConsoleHeader — imported from components/ConsoleHeader.jsx
-
-// BottomNav — imported from components/BottomNav.jsx
-
 // ─── BottomSheet ──────────────────────────────────────────────────
 // BottomSheet — imported from components/BottomSheet.jsx
 
@@ -358,48 +272,6 @@ function AntiqueGlobe({size=120, glowColor="rgba(0,180,255,0.45)", animate=true}
 // HandoffScreen — imported from components/HandoffScreen.jsx
 
 // HomecomingScreen — imported from components/HomecomingScreen.jsx
-
-// ─── DateInput (MM/DD/YYYY three-field) ──────────────────────────
-function DateInput({value,onChange,accentColor="#69F0AE",yearHint}) {
-  const parse=v=>{if(!v)return{m:"",d:"",y:""};const p=v.split("-");return p.length===3?{m:p[1]||"",d:p[2]||"",y:p[0]||""}:{m:"",d:"",y:""};};
-  const [mm,setMm]=useState(()=>parse(value).m);
-  const [dd,setDd]=useState(()=>parse(value).d);
-  const [yyyy,setYyyy]=useState(()=>parse(value).y);
-  const mmRef=useRef();const ddRef=useRef();const yyyyRef=useRef();
-  useEffect(()=>{const p=parse(value);setMm(p.m);setDd(p.d);setYyyy(p.y);},[value]);
-  const emit=(m,d,y)=>{if(m&&d&&y.length===4){const iso=`${y}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;onChange(iso);}};
-  const handleMm=e=>{const v=e.target.value.replace(/\D/g,"").slice(0,2);setMm(v);if(v.length===2)ddRef.current?.focus();emit(v,dd,yyyy);};
-  const handleDd=e=>{const v=e.target.value.replace(/\D/g,"").slice(0,2);setDd(v);if(v.length===2)yyyyRef.current?.focus();emit(mm,v,yyyy);};
-  const handleYyyy=e=>{const v=e.target.value.replace(/\D/g,"").slice(0,4);setYyyy(v);emit(mm,dd,v);};
-  const fs={background:"rgba(255,255,255,0.04)",border:`1px solid ${accentColor}55`,borderRadius:9,color:"#FFF",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,padding:"12px 8px",textAlign:"center",width:"100%",boxSizing:"border-box",outline:"none",transition:"border-color 0.2s,box-shadow 0.2s"};
-  const onF=e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";};
-  const onB=e=>{e.target.style.borderColor=`${accentColor}55`;e.target.style.boxShadow="none";};
-  return(
-    <div style={{display:"flex",gap:8,alignItems:"center",width:"100%"}}>
-      <input ref={mmRef} type="text" inputMode="numeric" placeholder="MM" maxLength={2} value={mm} onChange={handleMm} onFocus={e=>{onF(e);if(yearHint&&!mm&&!dd&&!yyyy){setYyyy(yearHint);}}} onBlur={onB} style={{...fs,flex:1}}/>
-      <span style={{color:"rgba(255,159,67,0.5)",fontSize:18,flexShrink:0}}>/</span>
-      <input ref={ddRef} type="text" inputMode="numeric" placeholder="DD" maxLength={2} value={dd} onChange={handleDd} onFocus={onF} onBlur={onB} style={{...fs,flex:1}}/>
-      <span style={{color:"rgba(255,159,67,0.5)",fontSize:18,flexShrink:0}}>/</span>
-      <input ref={yyyyRef} type="text" inputMode="numeric" placeholder="YYYY" maxLength={4} value={yyyy} onChange={handleYyyy} onFocus={onF} onBlur={onB} style={{...fs,flex:2}}/>
-    </div>
-  );
-}
-
-// ─── SegmentDetailField ───────────────────────────────────────────
-function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00E5FF"}) {
-  const mob=useMobile();
-  const s={background:"rgba(0,0,0,0.55)",border:"1px solid rgba(255,255,255,0.22)",borderRadius:6,color:"#FFF",fontSize:mob?12:15,padding:multiline?(mob?"5px 7px":"6px 8px"):(mob?"4px 7px":"5px 8px"),fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",maxWidth:"100%",boxSizing:"border-box",lineHeight:1.6,resize:multiline?"none":undefined,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"};
-  const onF=e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";setTimeout(()=>e.target.scrollIntoView({behavior:'smooth',block:'nearest'}),500);};
-  const onB=e=>{e.target.style.borderColor="rgba(255,255,255,0.22)";e.target.style.boxShadow="none";};
-  return(
-    <div style={{display:"flex",flexDirection:"column",gap:mob?2:3}}>
-      <div style={{fontSize:mob?11:13,color:"rgba(212,180,120,0.92)",letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,opacity:0.92}}>{label}</div>
-      {multiline?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={1} style={s} onFocus={onF} onBlur={onB}/>
-      :type==="date"?<div style={{width:"100%"}}><input type="date" value={value} onChange={e=>onChange(e.target.value)} style={{...s,colorScheme:"dark"}} onFocus={onF} onBlur={onB}/></div>
-      :<input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={onF} onBlur={onB}/>}
-    </div>
-  );
-}
 
 // ─── CoachOverlay ─────────────────────────────────────────────────
 // CoachOverlay — imported from components/CoachOverlay.jsx
@@ -640,13 +512,6 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
       </div>{/* end pointerEvents wrapper */}
     </div>
   );
-}
-
-// ─── ProgDots ─────────────────────────────────────────────────────
-function ProgDots({phaseId,segment,intelSnippet}) {
-  const d=loadSeg()[`${phaseId}-${segment.id}`]||{};
-  const dots=[!!(d.transport?.mode||d.transport?.cost),!!(d.stay?.name||d.stay?.cost),(d.activities?.length||0)>0,!!(d.food?.dailyBudget),(d.misc?.length||0)>0,!!(intelSnippet?.tagline||d.intel?.notes)];
-  return(<div style={{display:"flex",gap:3,alignItems:"center",flexShrink:0}}>{dots.map((on,i)=><div key={i} style={{width:5,height:5,borderRadius:"50%",background:on?CAT_DOT_COLORS[i]:"rgba(255,255,255,0.1)",boxShadow:on?`0 0 4px ${CAT_DOT_COLORS[i]}`:"none",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",flexShrink:0}}/>)}</div>);
 }
 
 // ─── SegmentRow ───────────────────────────────────────────────────
