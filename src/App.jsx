@@ -72,17 +72,17 @@ const EXPEDITION_COORDS = {
   'Jordan':      [36.2,  30.6],
   'Tanzania':    [34.9,  -6.4],
 };
-const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp}) => {
+const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, dream}) => {
   try {
     const isPack = consoleProp === 'pack';
     const phaseList = phases||[];
     const coords = phaseList.map(p=>EXPEDITION_COORDS[p.country]).filter(Boolean);
     const activeCoord = activeCountry ? EXPEDITION_COORDS[activeCountry] : null;
     const isMobileMap = typeof window!=='undefined' && window.innerWidth < 480;
-    const geoFill = isPack ? '#FF9F43' : '#E8DCC8';
-    const geoFillOp = isPack ? 0.035 : (isMobileMap ? 0.08 : 0.06);
-    const geoStroke = isPack ? '#FF9F43' : '#00E5FF';
-    const geoStrokeOp = isPack ? 0.08 : (isMobileMap ? 0.22 : 0.18);
+    const geoFill = dream ? '#E8DCC8' : isPack ? '#FF9F43' : '#E8DCC8';
+    const geoFillOp = dream ? 0.04 : isPack ? 0.035 : (isMobileMap ? 0.08 : 0.06);
+    const geoStroke = dream ? '#E8DCC8' : isPack ? '#FF9F43' : '#00E5FF';
+    const geoStrokeOp = dream ? 0.03 : isPack ? 0.08 : (isMobileMap ? 0.22 : 0.18);
     return (
       <div style={{position:'fixed',top:0,left:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:0,overflow:'hidden'}}>
         <style>{`@keyframes dashMove{to{stroke-dashoffset:-50}}.route-line{animation:dashMove 6s linear infinite}@keyframes activePulseR{0%,100%{r:2.8}50%{r:5}}.active-dot{animation:activePulseR 1.4s ease-in-out infinite}`}</style>
@@ -1087,6 +1087,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
   if(visionData) return <VisionReveal data={visionData} onBuild={vd=>onGoGen(visionData,vd)} onBack={()=>{setVisionData(null);setLoading(false);}} freshMount={true}/>;
   return (
     <div className="dream-root">
+      <WorldMapBackground dream/>
       <div className="dream-glow"/>
       <DreamHeader step={1}/>
       <div className="dream-content">
