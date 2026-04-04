@@ -5,6 +5,7 @@ import { DIVE_CYAN, SURF_GREEN, CULTURE_GOLD, EXPLORATION_ORANGE, NATURE_PURPLE,
 import { getDefaultPack, fixPackItemVolume, mapPackItemsWithVolumes } from './utils/packHelpers';
 import { fmt, daysBetween, fD, fDS } from './utils/dateHelpers';
 import { estCost } from './utils/priceHelpers';
+import { useMobile } from './hooks/useMobile';
 
 // Initialize PostHog — only in production
 if (typeof window !== "undefined") {
@@ -121,11 +122,7 @@ function CityInput({value,onChange,className,style:inputStyle,placeholder}){
   </div>);
 }
 
-function useMobile() {
-  const [m,setM] = useState(window.innerWidth<480);
-  useEffect(()=>{ const h=()=>setM(window.innerWidth<480); window.addEventListener("resize",h); return()=>window.removeEventListener("resize",h); },[]);
-  return m;
-}
+// useMobile — imported from hooks/useMobile.js
 
 // Architecture #1: group flat phases by country → each country = 1 PhaseCard with segments
 const COUNTRY_FLAGS={"Honduras":"🇭🇳","Belize":"🇧🇿","Barbados":"🇧🇧","Egypt":"🇪🇬","India":"🇮🇳","Indonesia":"🇮🇩","Malaysia":"🇲🇾","Thailand":"🇹🇭"};
