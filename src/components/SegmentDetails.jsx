@@ -154,8 +154,8 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
                 </div>
               ))}
               <div style={{paddingTop:8,display:"flex",justifyContent:"space-between"}}>
-                <span style={{fontSize:11,color:"rgba(255,255,255,0.25)",fontFamily:"monospace",letterSpacing:1}}>TOTAL ACTIVITIES</span>
-                <span style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"monospace"}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
+                <span style={{fontSize:11,color:"rgba(255,255,255,0.25)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1}}>TOTAL ACTIVITIES</span>
+                <span style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
               </div>
             </div>}
             <div style={{padding:"9px 0px"}}>
@@ -192,8 +192,8 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
               <button onClick={aiFood} disabled={aiLoad} style={{padding:"5px 10px",borderRadius:5,border:"1px solid rgba(255,159,67,0.3)",background:"rgba(255,159,67,0.05)",color:"rgba(255,159,67,0.8)",fontSize:11,cursor:aiLoad?"wait":"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:600,whiteSpace:"nowrap",height:28,flexShrink:0}}>{aiLoad?"✦...":"✦ CO-ARCH EST"}</button>
             </div>
             {det.food.dailyBudget&&<div style={{display:"flex",justifyContent:"space-between",padding:"8px 12px",background:"rgba(255,159,67,0.05)",border:"1px solid rgba(255,159,67,0.16)",borderRadius:7}}>
-              <span style={{fontSize:12,color:"rgba(255,255,255,0.35)",fontFamily:"monospace"}}>{segment.nights} nights × ${det.food.dailyBudget}/day</span>
-              <span style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"monospace"}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
+              <span style={{fontSize:12,color:"rgba(255,255,255,0.35)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{segment.nights} nights × ${det.food.dailyBudget}/day</span>
+              <span style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
             </div>}
             <SDF label="FOOD NOTES" value={det.food.notes} onChange={v=>uF("notes",v)} placeholder="Must-try dishes, market days, dietary notes..." accent="#FF9F43" multiline/>
           </div>}
@@ -202,11 +202,11 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
               {det.misc.map(m=>(
                 <div key={m.id} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 0",borderBottom:"1px solid rgba(162,155,254,0.07)"}}>
                   <div style={{flex:1,fontSize:isMobile?12:15,color:"#FFF",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{m.name}</div>
-                  <span style={{fontSize:isMobile?12:15,fontWeight:700,color:"#A29BFE",fontFamily:"monospace",flexShrink:0}}>${parseFloat(m.cost||0).toLocaleString()}</span>
+                  <span style={{fontSize:isMobile?12:15,fontWeight:700,color:"#A29BFE",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>${parseFloat(m.cost||0).toLocaleString()}</span>
                   <button onClick={()=>setDet(d=>({...d,misc:d.misc.filter(x=>x.id!==m.id)}))} style={{background:"none",border:"none",color:"rgba(255,255,255,0.18)",fontSize:16,cursor:"pointer",lineHeight:1,padding:"0 2px",flexShrink:0}}>×</button>
                 </div>
               ))}
-              <div style={{paddingTop:8,display:"flex",justifyContent:"space-between"}}><span style={{fontSize:11,color:"rgba(255,255,255,0.25)",fontFamily:"monospace",letterSpacing:1}}>TOTAL MISC</span><span style={{fontSize:13,fontWeight:600,color:"rgba(162,155,254,0.8)",fontFamily:"monospace"}}>${det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0).toLocaleString()}</span></div>
+              <div style={{paddingTop:8,display:"flex",justifyContent:"space-between"}}><span style={{fontSize:11,color:"rgba(255,255,255,0.25)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1}}>TOTAL MISC</span><span style={{fontSize:13,fontWeight:600,color:"rgba(162,155,254,0.8)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0).toLocaleString()}</span></div>
             </div>}
             <div style={{background:"rgba(162,155,254,0.02)",border:"1px dashed rgba(162,155,254,0.16)",borderRadius:8,padding:"11px 12px"}}>
               <div style={{fontSize:11,color:"rgba(162,155,254,0.4)",letterSpacing:1.5,marginBottom:6,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500}}>ADD EXPENSE</div>

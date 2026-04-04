@@ -69,8 +69,8 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
         <div style={{flex:1,minWidth:0,textAlign:'left'}}>
           <div style={{fontSize:13,fontWeight:500,color:item.owned?'#69F0AE':'#E8DCC8',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'normal',overflow:'visible',textOverflow:'clip',lineHeight:1.3}}>{item.essential&&<span style={{fontSize:9,color:'#FFD93D',marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:'rgba(255,255,255,0.3)',marginRight:2}}>~</span>}{item.name||'Unnamed'}</div>
           <div style={{display:'flex',gap:8,marginTop:2}}>
-            {parseFloat(item.weight)>0&&<span style={{fontSize:11,color:'rgba(255,255,255,0.38)',fontFamily:'monospace'}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
-            {parseFloat(item.cost)>0&&<span style={{fontSize:11,color:'rgba(255,217,61,0.5)',fontFamily:'monospace'}}>${item.cost}</span>}
+            {parseFloat(item.weight)>0&&<span style={{fontSize:11,color:'rgba(255,255,255,0.38)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
+            {parseFloat(item.cost)>0&&<span style={{fontSize:11,color:'rgba(255,217,61,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
           </div>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
@@ -88,19 +88,19 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
             {[{label:'WT (lbs)',f:'weight'},{label:'COST ($)',f:'cost'},{label:'VOL (L)',f:'volume'}].map(({label,f})=>(
               <div key={f}>
                 <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{label}</div>
-                <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:7,color:'#FFD93D',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:'monospace',transition:'border-color 0.2s,box-shadow 0.2s'}} onFocus={e=>{e.target.style.borderColor='rgba(255,159,67,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(255,159,67,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';}}/>
+                <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:7,color:'#FFD93D',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",transition:'border-color 0.2s,box-shadow 0.2s'}} onFocus={e=>{e.target.style.borderColor='rgba(255,159,67,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(255,159,67,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';}}/>
               </div>
             ))}
           </div>
           <div>
             <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>BAG</div>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-              {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,'bag',b)} style={{padding:'5px 10px',borderRadius:20,border:`1px solid ${item.bag===b?BAG_C[b]||'#FF9F43':'rgba(255,255,255,0.35)'}`,background:item.bag===b?'rgba(255,255,255,0.06)':'transparent',color:item.bag===b?BAG_C[b]||'#FF9F43':'rgba(255,255,255,0.4)',fontSize:11,cursor:'pointer',fontFamily:'monospace',fontWeight:item.bag===b?700:400}}>{b}</button>)}
+              {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,'bag',b)} style={{padding:'5px 10px',borderRadius:20,border:`1px solid ${item.bag===b?BAG_C[b]||'#FF9F43':'rgba(255,255,255,0.35)'}`,background:item.bag===b?'rgba(255,255,255,0.06)':'transparent',color:item.bag===b?BAG_C[b]||'#FF9F43':'rgba(255,255,255,0.4)',fontSize:11,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:item.bag===b?700:400}}>{b}</button>)}
             </div>
           </div>
           <div style={{display:'flex',gap:8,paddingTop:4}}>
-            <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:'12px',borderRadius:12,border:`1px solid ${item.owned?'rgba(105,240,174,0.4)':'rgba(196,87,30,0.4)'}`,background:item.owned?'rgba(105,240,174,0.08)':'rgba(169,70,29,0.1)',color:item.owned?'#69F0AE':'#FF9F43',fontSize:13,cursor:'pointer',fontFamily:'monospace',fontWeight:700}}>{item.owned?'✓ OWNED':'MARK OWNED'}</button>
-            <button onClick={()=>{removeItem(item.id);setEditOpen(false);}} style={{padding:'12px 16px',borderRadius:12,border:'1px solid rgba(255,107,107,0.3)',background:'rgba(255,107,107,0.06)',color:'rgba(255,107,107,0.7)',fontSize:11,cursor:'pointer',fontFamily:'monospace',fontWeight:700,letterSpacing:1}}>REMOVE</button>
+            <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:'12px',borderRadius:12,border:`1px solid ${item.owned?'rgba(105,240,174,0.4)':'rgba(196,87,30,0.4)'}`,background:item.owned?'rgba(105,240,174,0.08)':'rgba(169,70,29,0.1)',color:item.owned?'#69F0AE':'#FF9F43',fontSize:13,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{item.owned?'✓ OWNED':'MARK OWNED'}</button>
+            <button onClick={()=>{removeItem(item.id);setEditOpen(false);}} style={{padding:'12px 16px',borderRadius:12,border:'1px solid rgba(255,107,107,0.3)',background:'rgba(255,107,107,0.06)',color:'rgba(255,107,107,0.7)',fontSize:11,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1}}>REMOVE</button>
           </div>
         </div>
       </BottomSheet>
@@ -119,9 +119,9 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontSize:13,fontWeight:500,color:item.owned?"rgba(105,240,174,0.82)":"rgba(255,242,210,0.78)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2}}>{item.essential&&<span style={{fontSize:9,color:"#FFD93D",marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginRight:2}}>~</span>}{item.name||"Unnamed"}</div>
             <div style={{display:"flex",gap:8,alignItems:"center"}}>
-              {parseFloat(item.weight)>0&&<span style={{fontSize:13,color:"rgba(255,255,255,0.45)",fontFamily:"monospace"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
-              {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(255,217,61,0.55)",fontFamily:"monospace"}}>${item.cost}</span>}
-              <span style={{fontSize:13,color:(BAG_C[item.bag]||"rgba(255,159,67,0.6)")+"aa",fontFamily:"monospace"}}>{item.bag}</span>
+              {parseFloat(item.weight)>0&&<span style={{fontSize:13,color:"rgba(255,255,255,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
+              {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(255,217,61,0.55)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
+              <span style={{fontSize:13,color:(BAG_C[item.bag]||"rgba(255,159,67,0.6)")+"aa",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{item.bag}</span>
             </div>
           </div>
           <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
@@ -137,15 +137,15 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
           <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:7,color:"#FFF",fontSize:12,padding:"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} placeholder="Item name" onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
             {[{label:"WT (lbs)",f:"weight"},{label:"COST ($)",f:"cost"},{label:"VOL (L)",f:"volume"}].map(({label,f})=>(
-              <div key={f}><div style={{fontSize:9,color:"rgba(255,159,67,0.65)",letterSpacing:1,marginBottom:3,fontFamily:"monospace"}}>{label}</div><input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:5,color:"#FFD93D",fontSize:12,padding:"6px 8px",outline:"none",fontFamily:"monospace",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/></div>
+              <div key={f}><div style={{fontSize:9,color:"rgba(255,159,67,0.65)",letterSpacing:1,marginBottom:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{label}</div><input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:5,color:"#FFD93D",fontSize:12,padding:"6px 8px",outline:"none",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/></div>
             ))}
           </div>
           <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-            {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:"4px 8px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.35)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.45)",fontSize:10,cursor:"pointer",fontFamily:"monospace",fontWeight:item.bag===b?700:400}}>{b}</button>)}
+            {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:"4px 8px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.35)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.45)",fontSize:10,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:item.bag===b?700:400}}>{b}</button>)}
           </div>
           <div style={{display:"flex",gap:8}}>
-            <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"9px 8px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#FF9F43",fontSize:13,cursor:"pointer",fontFamily:"monospace",fontWeight:700,whiteSpace:"nowrap"}}>{item.owned?"✓ OWNED":"MARK OWNED"}</button>
-            <button onClick={()=>removeItem(item.id)} style={{padding:"8px 12px",borderRadius:7,border:"1px solid rgba(255,107,107,0.3)",background:"rgba(255,107,107,0.06)",color:"rgba(255,107,107,0.7)",fontSize:13,cursor:"pointer",fontFamily:"monospace",fontWeight:700}}>✕</button>
+            <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"9px 8px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#FF9F43",fontSize:13,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap"}}>{item.owned?"✓ OWNED":"MARK OWNED"}</button>
+            <button onClick={()=>removeItem(item.id)} style={{padding:"8px 12px",borderRadius:7,border:"1px solid rgba(255,107,107,0.3)",background:"rgba(255,107,107,0.06)",color:"rgba(255,107,107,0.7)",fontSize:13,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>✕</button>
           </div>
         </div>
       )}
@@ -413,7 +413,7 @@ Return ONLY a JSON array:
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#00E5FF"},{label:"GEAR READY",value:gearPct+"%",color:"#FF9F43"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(0,0,0,0.25)",border:`1.5px solid ${s.color}55`,borderTop:`1.5px solid ${s.color}99`,borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:`0 0 12px ${s.color}30, inset 0 1px 0 ${s.color}55`}}>
               <div style={{fontSize:10,fontWeight:500,color:"rgba(255,255,255,0.50)",letterSpacing:0,marginBottom:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.2}}>{s.label}</div>
-              <div style={{fontSize:isMobile?12:18,fontWeight:600,color:s.color,fontFamily:"monospace"}}>{s.value}</div>
+              <div style={{fontSize:isMobile?12:18,fontWeight:600,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.value}</div>
             </div>
           ))}
         </div>
@@ -484,13 +484,13 @@ Return ONLY a JSON array:
                     return(<div key={item.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:i%2===0?"rgba(18,5,0,0.9)":"rgba(10,3,0,0.9)",borderBottom:i<unowned.length-1?"1px solid rgba(255,255,255,0.06)":"none",borderLeft:`3px solid ${c}`}}>
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{fontSize:13,fontWeight:600,color:"#FFF",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>{item.name}</div>
-                        <div style={{fontSize:10,color:`${c}99`,letterSpacing:1,marginTop:2,fontFamily:"monospace"}}>{item.cat?.toUpperCase()} · {item.bag}</div>
+                        <div style={{fontSize:10,color:`${c}99`,letterSpacing:1,marginTop:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{item.cat?.toUpperCase()} · {item.bag}</div>
                       </div>
                       <div style={{textAlign:"right",flexShrink:0}}>
-                        <div style={{fontSize:14,fontWeight:700,color:"#FFD93D",fontFamily:"monospace"}}>${parseFloat(item.cost||0).toLocaleString()}</div>
-                        <div style={{fontSize:10,color:"rgba(255,255,255,0.28)",fontFamily:"monospace"}}>running: ${running.toLocaleString()}</div>
+                        <div style={{fontSize:14,fontWeight:700,color:"#FFD93D",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${parseFloat(item.cost||0).toLocaleString()}</div>
+                        <div style={{fontSize:10,color:"rgba(255,255,255,0.28)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>running: ${running.toLocaleString()}</div>
                       </div>
-                      <button onClick={()=>toggleOwned(item.id)} style={{padding:"5px 10px",borderRadius:6,border:"1px solid rgba(105,240,174,0.3)",background:"rgba(105,240,174,0.06)",color:"#69F0AE",fontSize:11,cursor:"pointer",fontFamily:"monospace",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>GOT IT</button>
+                      <button onClick={()=>toggleOwned(item.id)} style={{padding:"5px 10px",borderRadius:6,border:"1px solid rgba(105,240,174,0.3)",background:"rgba(105,240,174,0.06)",color:"#69F0AE",fontSize:11,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>GOT IT</button>
                     </div>);
                   })}
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 14px",background:"rgba(255,107,107,0.08)",borderTop:"1px solid rgba(255,107,107,0.2)"}}>
@@ -613,10 +613,10 @@ Return ONLY a JSON array:
               <div ref={chatEnd}/>
             </div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
-              {["Keep me under 15 lbs","I do laundry weekly","Add rain gear","Pack for heat"].map(p=><button key={p} onClick={()=>setChatInput(p)} style={{padding:"6px 12px",borderRadius:14,border:"1px solid rgba(196,87,30,0.35)",background:"rgba(169,70,29,0.12)",color:"rgba(255,159,67,0.9)",fontSize:15,cursor:"pointer",fontFamily:"monospace",whiteSpace:"nowrap",fontWeight:700}}>{p}</button>)}
+              {["Keep me under 15 lbs","I do laundry weekly","Add rain gear","Pack for heat"].map(p=><button key={p} onClick={()=>setChatInput(p)} style={{padding:"6px 12px",borderRadius:14,border:"1px solid rgba(196,87,30,0.35)",background:"rgba(169,70,29,0.12)",color:"rgba(255,159,67,0.9)",fontSize:15,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",fontWeight:700}}>{p}</button>)}
             </div>
             <div style={{display:"flex",gap:7}}>
-              <input value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendChat();}} placeholder="Ask anything about your pack..." style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:8,color:"#FFF",fontSize:15,padding:"11px 14px",fontFamily:"monospace",outline:"none",minHeight:44,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
+              <input value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendChat();}} placeholder="Ask anything about your pack..." style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:8,color:"#FFF",fontSize:15,padding:"11px 14px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",minHeight:44,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
               <button onClick={sendChat} style={{background:"rgba(169,70,29,0.25)",border:"1px solid rgba(196,87,30,0.45)",borderRadius:8,color:"#FF9F43",fontSize:16,padding:"8px 14px",cursor:"pointer",minWidth:44,minHeight:44,fontWeight:700}}>↑</button>
             </div>
           </div>}
@@ -625,7 +625,7 @@ Return ONLY a JSON array:
       {packTab==="weight"&&(
         <div style={{overflowY:"auto",flex:1,padding:"12px 16px"}}>
           <div style={{display:"flex",justifyContent:"flex-end",marginBottom:14}}>
-            <button onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:15,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:6,padding:"7px 16px",cursor:"pointer",fontFamily:"monospace",letterSpacing:1,fontWeight:700}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
+            <button onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:15,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:6,padding:"7px 16px",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:700}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
           </div>
           {["Backpack","Global Briefcase","Worn","Digital"].map(bagName=>{
             const bagItems=items.filter(i=>i.bag===bagName);

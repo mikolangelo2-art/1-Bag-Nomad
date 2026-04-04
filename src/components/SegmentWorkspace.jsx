@@ -280,8 +280,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               </div>
             ))}
             <div style={{display:'flex',justifyContent:'space-between',padding:'4px 2px'}}>
-              <span style={{fontSize:12,color:'rgba(255,255,255,0.60)',fontFamily:'monospace',letterSpacing:1}}>TOTAL</span>
-              <span style={{fontSize:14,fontWeight:600,color:'rgba(255,217,61,0.85)',fontFamily:'monospace'}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
+              <span style={{fontSize:12,color:'rgba(255,255,255,0.60)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1}}>TOTAL</span>
+              <span style={{fontSize:14,fontWeight:600,color:'rgba(255,217,61,0.85)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
             </div>
           </div>}
           {det.activities.length===0&&!(suggestion?.activities?.some((_,i)=>!isDism(`activity_${i}`)))&&!suggestionsLoading&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,217,61,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
@@ -322,8 +322,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <button onClick={aiFood} disabled={aiLoad} style={{padding:'8px 14px',borderRadius:6,border:'1px solid rgba(255,159,67,0.3)',background:'rgba(255,159,67,0.05)',color:'rgba(255,159,67,0.8)',fontSize:12,cursor:aiLoad?'wait':'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:600,whiteSpace:'nowrap',height:34,flexShrink:0}}>{aiLoad?"✦...":"✦ CO-ARCH EST"}</button>
           </div>
           {det.food.dailyBudget&&<div style={{display:'flex',justifyContent:'space-between',padding:'10px 14px',background:'rgba(255,159,67,0.05)',border:'1px solid rgba(255,159,67,0.16)',borderRadius:8,marginBottom:10}}>
-            <span style={{fontSize:13,color:'rgba(255,255,255,0.60)',fontFamily:'monospace'}}>{segment.nights} nights × ${det.food.dailyBudget}/day</span>
-            <span style={{fontSize:14,fontWeight:600,color:'rgba(255,217,61,0.85)',fontFamily:'monospace'}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
+            <span style={{fontSize:13,color:'rgba(255,255,255,0.60)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{segment.nights} nights × ${det.food.dailyBudget}/day</span>
+            <span style={{fontSize:14,fontWeight:600,color:'rgba(255,217,61,0.85)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
           </div>}
           <SDF label="FOOD NOTES" value={det.food.notes} onChange={v=>uF("notes",v)} placeholder="Must-try dishes, market days, dietary notes..." accent="#FF9F43" multiline/>
         </div>}
