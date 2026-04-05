@@ -99,6 +99,8 @@ export function buildSegmentSuggestionsPrompt(tripData, travelerProfile, phasesS
 PHASES:
 ${phases.map((p, i) => {const globalIdx=offset+i;const from=globalIdx===0?home:(i===0?(tripData.phases[offset-1]?.name||tripData.phases[offset-1]?.destination||'Previous'):(phases[i-1].name||phases[i-1].destination||'Previous'));return `${globalIdx+1}. FROM ${from} → ${p.name||p.destination||p.city}, ${p.country} | ${p.arrival}→${p.departure} | ${p.nights}n | $${p.budget||p.cost}`;}).join('\n')}
 
+CRITICAL BUDGET RULE: Every suggestion you generate MUST fit within the phase budget. Transport + Stay + Activities combined must not exceed the phase budget. Do not suggest any option that would push the total over budget. If budget is tight, prioritize Stay first, then Transport, then Activities.
+
 For each phase: transport route+cost, stay name+cost, 2 activities+costs, food budget.
 
 Return ONLY JSON:

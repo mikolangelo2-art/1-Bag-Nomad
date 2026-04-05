@@ -10,6 +10,7 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
   const [input,setInput]=useState("");
   const [loading,setLoading]=useState(false);
   const endRef=useRef();
+  useEffect(()=>{const h=(e)=>{if(e.detail?.message){setOpen(true);setInput(e.detail.message);}};window.addEventListener('openCA',h);return()=>window.removeEventListener('openCA',h);},[]);
   useEffect(()=>{if(endRef.current)endRef.current.scrollIntoView({behavior:"smooth"});},[msgs,loading]);
   const phases=tripData?.phases||[];
   const ctx=scr==="trip-console"?`You are the Co-Architect for "${tripData?.tripName||"this expedition"}". Full expedition: ${phases.length} phases, ${tripData?.totalNights||0} nights total. Departure: ${tripData?.startDate||tripData?.departureDate||"TBD"}. Phases: ${phases.map(p=>`${p.name} (${p.arrival||""} to ${p.departure||""}, ${p.nights}n, $${p.budget||p.cost||0})`).join("; ")}. Help refine, expand, or think through their expedition. Be concise and warm.`

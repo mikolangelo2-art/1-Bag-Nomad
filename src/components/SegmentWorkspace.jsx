@@ -353,7 +353,11 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <div style={{height:'100%',width:Math.min(pct,100)+'%',background:barColor,borderRadius:3,transition:'width 0.60s cubic-bezier(0.25,0.46,0.45,0.94)'}}/>
             </div>
             <div style={{textAlign:'center',marginTop:6,fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:barColor}}>{pct}% allocated</div>
-            {pct>=100&&<div style={{marginTop:10,padding:'10px 14px',border:'1.5px solid rgba(255,107,107,0.40)',borderRadius:8,background:'rgba(255,107,107,0.06)',fontSize:12,color:'#FF6B6B',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>⚠️ Over budget by {fmt(total-budget)}</div>}
+            {pct>=100&&<div style={{background:'rgba(255,107,107,0.08)',border:'1px solid rgba(255,107,107,0.3)',borderRadius:12,padding:'12px 16px',marginTop:12}}>
+              <div style={{color:'#FF6B6B',fontSize:13,fontWeight:600,marginBottom:6}}>⚠️ Over budget by {fmt(total-budget)}</div>
+              <div style={{color:'rgba(255,255,255,0.55)',fontSize:12,marginBottom:12,lineHeight:1.5}}>Want help finding options that fit your budget?</div>
+              <button onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm over budget on ${segment?.name||'this segment'} by ${fmt(total-budget)}. Can you suggest alternatives that fit within my ${fmt(budget)} budget?`}}))} style={{background:'rgba(255,217,61,0.12)',border:'1px solid rgba(255,217,61,0.35)',borderRadius:8,color:'#FFD93D',fontSize:12,fontWeight:600,padding:'8px 14px',cursor:'pointer',letterSpacing:0.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>✦ Ask Co-Architect for alternatives</button>
+            </div>}
           </div>);})()}
         {/* DOCS & VISA */}
         {tab==="docs"&&<div style={{padding:0}}>
