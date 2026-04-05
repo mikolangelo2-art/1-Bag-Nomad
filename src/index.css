@@ -67,6 +67,12 @@ body {
   zoom: 1.15;
 }
 
+@media (max-width: 599px) {
+  #root {
+    zoom: 1;
+  }
+}
+
 h1,
 h2 {
   font-family: var(--heading);
