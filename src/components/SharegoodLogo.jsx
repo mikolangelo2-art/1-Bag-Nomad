@@ -107,7 +107,7 @@ export const SharegoodLogo = memo(function SharegoodLogo({
         transition: trans,
       }}>
         {/* Orbital ring */}
-        {animate && <div style={{
+        {(animate || !!animationState) && <div style={{
           position: "absolute",
           top: (size - ringSize) / 2, left: (size - ringSize) / 2,
           width: ringSize, height: ringSize,
@@ -118,7 +118,7 @@ export const SharegoodLogo = memo(function SharegoodLogo({
         }}/>}
 
         {/* Glow layer */}
-        {animate && c && <div style={{
+        {(animate || !!animationState) && c && <div style={{
           position: "absolute", inset: -size * 0.3,
           borderRadius: "50%",
           background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,

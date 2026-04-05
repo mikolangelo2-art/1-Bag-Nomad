@@ -69,7 +69,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
         </div>
         {/* Center: logo + wordmark */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
-          <SharegoodLogo size={isMobile?30:42} opacity={0.88} glowColor={logoGlow} animate={false}/>
+          <SharegoodLogo size={isMobile?30:42} opacity={0.88} glowColor={logoGlow} animationState="idle"/>
           <div style={{textAlign:"center"}}>
             <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:18,fontWeight:500,color:"#FFF",letterSpacing:3,lineHeight:1}}>1 Bag Nomad</div>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:4,marginTop:3}}>
