@@ -16,6 +16,7 @@ import SDF from './SDF';
 import PhaseCard from './PhaseCard';
 import PhaseDetailPage from './PhaseDetailPage';
 import Timeline from './Timeline';
+import IntelMap from './IntelMap';
 
 function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading}) {
   const isMobile=useMobile();
@@ -261,16 +262,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           <div>
             {!explorerDest?(
               <div>
-                <div style={{fontSize:isMobile?15:16,color:"#FFD93D",letterSpacing:isMobile?3:5,marginBottom:isMobile?14:20}}>SELECT A PHASE · FOR DESTINATION INTEL</div>
-                <div style={{display:"grid",gridTemplateColumns:isMobile?"repeat(auto-fill,minmax(130px,1fr))":"repeat(auto-fill,minmax(200px,1fr))",gap:isMobile?8:12}}>
-                  {flatPhases.map(phase=>(
-                    <button key={phase.id} onClick={()=>openIntel(phase.name,phase.name,phase.type)} style={{background:phase.color+"08",border:"1px solid "+phase.color+"33",borderRadius:isMobile?8:10,padding:isMobile?"11px 12px":"16px 18px",cursor:"pointer",textAlign:"left",minHeight:isMobile?60:80}}>
-                      <div style={{fontSize:isMobile?15:13,color:"#FF9F43",marginBottom:isMobile?3:5}}>{phase.flag} Phase {phase.id}</div>
-                      <div style={{fontSize:isMobile?15:17,fontWeight:700,color:"#FFF"}}>{phase.name}</div>
-                      <div style={{fontSize:isMobile?15:14,color:"rgba(255,255,255,0.5)",marginTop:isMobile?2:4}}>{TI[phase.type]} {phase.type}</div>
-                    </button>
-                  ))}
-                </div>
+                <IntelMap tripData={tripData} isMobile={isMobile} onSelectPhase={(phase)=>openIntel(phase.name,phase.name,phase.type)}/>
               </div>
             ):(
               <div>
