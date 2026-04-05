@@ -47,7 +47,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
     <div className="dream-root" style={{opacity:mounted?1:0,transform:mounted?"scale(1)":"scale(0.97)",transition:"opacity 0.7s ease-in-out, transform 0.7s ease-in-out"}}>
       <div className="dream-glow"/>
       <DreamHeader step={2} screenLabel="VISION REVEAL"/>
-      <div className="dream-content" style={{maxWidth:1100,position:"relative",zIndex:10}}>
+      <div className="dream-content" style={{maxWidth:1100,position:"relative",zIndex:10,...(isMobile?{paddingLeft:16,paddingRight:16}:{})}}>
         <div className="narrative-card">
           <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"90%",height:"130%",background:"radial-gradient(ellipse,rgba(169,70,29,0.22) 0%,transparent 68%)",pointerEvents:"none"}}/>
           <div style={{fontSize:15,color:"#C4571E",letterSpacing:3,marginBottom:12,position:"relative"}}>✦ YOUR EXPEDITION VISION</div>
