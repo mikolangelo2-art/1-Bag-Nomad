@@ -24,6 +24,7 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
     :"Your Co-Architect is here. What's on your mind?";
   const subtitle=scr==="phase-detail"?currentPhase?.name?.toUpperCase():scr==="segment-workspace"?currentSegment?.name?.toUpperCase():scr==="pack-console"?"PACK CONSOLE":tripData?.tripName?.toUpperCase()||"";
   const send=async()=>{if(!input.trim()||loading)return;const userMsg=input;setInput("");const newMsgs=[...msgs,{role:"user",text:userMsg}];setMsgs(newMsgs);setLoading(true);try{const history=newMsgs.map(m=>`${m.role==="user"?"User":"Co-Architect"}: ${m.text}`).join("\n");const response=await askAI(`${ctx}\n\nConversation:\n${history}\n\nCo-Architect:`,800);setMsgs([...newMsgs,{role:"ai",text:response}]);}catch(e){setMsgs([...newMsgs,{role:"ai",text:"I'm having trouble connecting. Try again in a moment."}]);}setLoading(false);};
+  const parseMarkdown=(text)=>{if(!text)return null;const parts=text.split(/(\*\*[^*]+\*\*)/g);return parts.map((part,i)=>{if(part.startsWith('**')&&part.endsWith('**'))return <strong key={i} style={{fontWeight:600,color:'#FFD93D'}}>{part.slice(2,-2)}</strong>;return <span key={i}>{part}</span>;});};
   if(scr==="dream")return null;
   return(<>
     {!open&&<div style={{position:"fixed",bottom:isMobile?62:24,right:isMobile?12:"calc((100vw / 1.15 - 1382px) / 4)",display:"flex",flexDirection:"column",alignItems:"center",gap:4,zIndex:1000}}>
@@ -46,7 +47,7 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
           </div>}
           {msgs.map((m,i)=><div key={i} style={{display:"flex",gap:8,flexDirection:m.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>
             <div style={{width:22,height:22,borderRadius:"50%",background:m.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{m.role==="ai"?"✦":"·"}</div>
-            <div style={{borderRadius:12,padding:m.role==="ai"?"14px 16px":"10px 14px",fontSize:m.role==="ai"?15:13,fontFamily:m.role==="ai"?"'Fraunces',serif":"'Inter',system-ui,-apple-system,sans-serif",fontStyle:"normal",color:"#FFF",lineHeight:m.role==="ai"?1.6:1.7,maxWidth:"85%",background:m.role==="ai"?"rgba(255,159,67,0.06)":"rgba(255,255,255,0.06)",border:m.role==="ai"?"1px solid rgba(255,159,67,0.25)":"1px solid rgba(255,255,255,0.08)"}}>{m.text}</div>
+            <div style={{borderRadius:12,padding:m.role==="ai"?"14px 16px":"10px 14px",fontSize:m.role==="ai"?15:13,fontFamily:m.role==="ai"?"'Fraunces',serif":"'Inter',system-ui,-apple-system,sans-serif",fontStyle:"normal",color:"#FFF",lineHeight:m.role==="ai"?1.6:1.7,maxWidth:"85%",background:m.role==="ai"?"rgba(255,159,67,0.06)":"rgba(255,255,255,0.06)",border:m.role==="ai"?"1px solid rgba(255,159,67,0.25)":"1px solid rgba(255,255,255,0.08)"}}>{m.role==="ai"?parseMarkdown(m.text):m.text}</div>
           </div>)}
           {loading&&<div style={{display:"flex",gap:6,animation:"msgIn 0.25s ease"}}><div style={{width:22,height:22,borderRadius:"50%",background:"#A9461D",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>✦</div><div style={{fontSize:13,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",padding:"4px 0"}}>thinking...</div></div>}
           <div ref={endRef}/>
