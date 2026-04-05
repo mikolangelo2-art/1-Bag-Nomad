@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
+import SharegoodLogo from './SharegoodLogo';
 
 function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab}) {
   const isMobile=useMobile();
@@ -27,7 +28,7 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
   return(<>
     {!open&&<div style={{position:"fixed",bottom:isMobile?62:24,right:12,display:"flex",flexDirection:"column",alignItems:"center",gap:4,zIndex:1000}}>
       <button onClick={()=>setOpen(true)} style={{width:isMobile?48:64,height:isMobile?48:64,borderRadius:"50%",background:"rgba(169,70,29,0.9)",border:"1px solid rgba(255,217,61,0.4)",boxShadow:"0 0 20px rgba(255,217,61,0.3)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",animation:"caFabPulse 3s ease-in-out infinite",padding:0,opacity:0.85}}>
-        <img src="/1bn-logo.png" width={isMobile?32:44} height={isMobile?32:44} alt="CA" style={{borderRadius:"50%"}}/>
+        <SharegoodLogo size={56} animationState="idle" opacity={1}/>
       </button>
       {!isMobile&&<span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:9,letterSpacing:2,color:"rgba(255,159,67,0.7)",textTransform:"uppercase",whiteSpace:"nowrap"}}>CO-ARCHITECT</span>}
     </div>}
