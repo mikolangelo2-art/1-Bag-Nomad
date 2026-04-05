@@ -335,10 +335,10 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:16}}>{segment.nights} Nights · Budget: {fmt(budget)}</div>
             {[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hasT},{icon:'🏨',label:'STAY',cost:sCost,has:hasS},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0},{icon:'🍜',label:'FOOD',cost:fCost,has:!!det.food?.dailyBudget},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0}].map(r=>(
               <div key={r.label} style={{display:'flex',alignItems:'center',padding:'12px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-                <span style={{fontSize:20,marginRight:10}}>{r.icon}</span>
+                <span style={{width:32,fontSize:20}}>{r.icon}</span>
                 <span style={{flex:1,fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.70)',letterSpacing:1}}>{r.label}</span>
-                <span style={{fontSize:15,fontWeight:600,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginRight:12}}>{r.cost>0?fmt(r.cost):'—'}</span>
-                <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:r.has?'#69F0AE':'rgba(255,255,255,0.60)',letterSpacing:1}}>{r.has?'✓ Added':'—'}</span>
+                <span style={{width:80,textAlign:'right',fontSize:15,fontWeight:600,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{r.cost>0?fmt(r.cost):'—'}</span>
+                <span style={{width:80,textAlign:'right',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:r.has?'#69F0AE':'rgba(255,255,255,0.60)',letterSpacing:1}}>{r.has?'✓ Added':'—'}</span>
               </div>
             ))}
             <div style={{display:'flex',justifyContent:'space-between',padding:'14px 0 6px',borderTop:'1px solid rgba(255,255,255,0.12)',marginTop:4}}>
