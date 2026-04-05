@@ -1,56 +1,46 @@
-import { useState, useEffect, useMemo, memo } from "react";
-import { ComposableMap, Geographies, Geography, Line, Marker } from "react-simple-maps";
+import { useState, useEffect, useRef, useMemo, memo, useCallback } from "react";
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import CITY_COORDS from '../constants/cityCoords';
 
-const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+
 const EASE = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+
+const CATEGORY_COLORS = {
+  'DIVE': '#00E5FF',
+  'CULTURE': '#FF9F43',
+  'NATURE': '#69F0AE',
+  'ADVENTURE': '#FF6B6B',
+  'WELLNESS': '#C678DD',
+  'EXPLORATION': '#FFD93D',
+  'MARINE': '#00E5FF',
+  'TRANSIT': '#A29BFE',
+};
 
 const INTEL_CSS = `
 @keyframes imDotPulse {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-@keyframes imDotIn {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-@keyframes imRouteIn {
-  from { stroke-dashoffset: 200; }
-  to { stroke-dashoffset: 0; }
-}
-@keyframes imRouteDash {
-  to { stroke-dashoffset: -50; }
+  50% { transform: scale(1.08); }
 }
 @keyframes imLabelIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
+.intel-marker { transition: opacity 400ms ${EASE}, transform 400ms ${EASE}; }
 `;
 
 function resolveCoord(phase) {
   return CITY_COORDS[phase.name] || CITY_COORDS[phase.country] || null;
 }
 
-function getProjectionConfig(coords) {
-  if (!coords.length) return { scale: 160, center: [20, 10] };
-  const lngs = coords.map(c => c[0]);
-  const lats = coords.map(c => c[1]);
-  const minLng = Math.min(...lngs), maxLng = Math.max(...lngs);
-  const minLat = Math.min(...lats), maxLat = Math.max(...lats);
-  const centerLng = (minLng + maxLng) / 2;
-  const centerLat = (minLat + maxLat) / 2;
-  const spanLng = Math.max(maxLng - minLng, 30);
-  const spanLat = Math.max(maxLat - minLat, 20);
-  const span = Math.max(spanLng, spanLat * 1.5);
-  const scale = Math.min(800, Math.max(120, 18000 / span));
-  return { scale, center: [centerLng, centerLat] };
-}
-
 const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
+  const mapContainerRef = useRef(null);
+  const mapRef = useRef(null);
+  const markersRef = useRef([]);
   const [mapReady, setMapReady] = useState(false);
+  const [mapFailed, setMapFailed] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [dotsVisible, setDotsVisible] = useState(false);
-  const [routeVisible, setRouteVisible] = useState(false);
 
   const phases = tripData?.phases || [];
 
@@ -59,174 +49,220 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
     [phases]
   );
 
-  const projConfig = useMemo(() =>
-    getProjectionConfig(phaseCoords.map(p => p.coord)),
-    [phaseCoords]
-  );
-
-  useEffect(() => {
-    const t1 = setTimeout(() => setMapReady(true), 100);
-    const t2 = setTimeout(() => setRouteVisible(true), 700);
-    const t3 = setTimeout(() => setDotsVisible(true), 600);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  // Fade other markers when one is selected
+  const updateMarkerOpacity = useCallback((activeId) => {
+    markersRef.current.forEach(({ el, id }) => {
+      const faded = activeId !== null && id !== activeId;
+      el.style.opacity = faded ? "0.15" : "1";
+    });
+    const map = mapRef.current;
+    if (map && map.getLayer('route')) {
+      map.setPaintProperty('route', 'line-opacity', activeId !== null ? 0.08 : 0.5);
+    }
   }, []);
 
-  const handleDotClick = (phase) => {
-    if (selectedId === phase.id) {
-      setSelectedId(null);
-    } else {
-      setSelectedId(phase.id);
-      if (onSelectPhase) onSelectPhase(phase);
+  // Init Mapbox
+  useEffect(() => {
+    if (!mapContainerRef.current || mapFailed) return;
+    let map;
+    try {
+      map = new mapboxgl.Map({
+        container: mapContainerRef.current,
+        style: 'mapbox://styles/mapbox/satellite-streets-v12',
+        projection: 'mercator',
+        attributionControl: false,
+        fadeDuration: 0,
+        center: [10, 15],
+        zoom: 2.2,
+      });
+      mapRef.current = map;
+    } catch (e) {
+      setMapFailed(true);
+      return;
     }
-  };
 
-  const dotSize = isMobile ? 8 : 6;
-  const outerSize = isMobile ? 16 : 12;
+    map.once('idle', () => {
+      map.dragRotate.disable();
+      map.scrollZoom.disable();
+      map.boxZoom.disable();
+      map.doubleClickZoom.disable();
+      map.touchZoomRotate.disable();
+      map.keyboard.disable();
+
+      map.resize();
+
+      setTimeout(() => {
+        const allPhases = tripData?.phases || [];
+        const resolved = allPhases.map(p => ({ ...p, coord: resolveCoord(p) })).filter(p => p.coord);
+        const coords = resolved.map(p => p.coord);
+
+        // Auto-frame to trip region
+        if (coords.length >= 2) {
+          const bounds = new mapboxgl.LngLatBounds();
+          coords.forEach(c => bounds.extend(c));
+          map.fitBounds(bounds, {
+            padding: { top: 80, bottom: 80, left: 80, right: 80 },
+            maxZoom: 4,
+            duration: 1200,
+            essential: true,
+          });
+        } else if (coords.length === 1) {
+          map.flyTo({ center: coords[0], zoom: 4, duration: 1200, essential: true });
+        } else {
+          map.flyTo({ center: [10, 15], zoom: 2.2, duration: 1200, essential: true });
+        }
+
+        // Route line — GeoJSON
+        if (coords.length > 1) {
+          map.addSource('route', {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              geometry: {
+                type: 'LineString',
+                coordinates: coords,
+              }
+            }
+          });
+          map.addLayer({
+            id: 'route',
+            type: 'line',
+            source: 'route',
+            paint: {
+              'line-color': '#FFD93D',
+              'line-width': 2,
+              'line-opacity': 0.8,
+              'line-dasharray': [2, 3],
+            }
+          });
+        }
+
+        // City dot markers — category colored, with labels
+        resolved.forEach((phase, i) => {
+          const dotColor = CATEGORY_COLORS[phase.type?.toUpperCase()] || '#FFD93D';
+          console.log(`Phase ${i}: ${phase.name} → coord:`, phase.coord);
+
+          const el = document.createElement('div');
+          el.className = 'intel-marker';
+          el.style.cssText = `display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:4px;opacity:0;`;
+
+          const dot = document.createElement('div');
+          dot.style.cssText = `width:${isMobile ? 20 : 14}px;height:${isMobile ? 20 : 14}px;border-radius:50%;background:${dotColor};border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px ${dotColor},0 0 16px ${dotColor}40;flex-shrink:0;`;
+
+          const label = document.createElement('div');
+          label.textContent = phase.name;
+          label.style.cssText = `color:#FFF;font-family:Inter,sans-serif;font-size:11px;font-weight:600;white-space:nowrap;background:rgba(0,0,0,0.65);padding:2px 6px;border-radius:4px;pointer-events:none;letter-spacing:0.3px;`;
+
+          el.appendChild(dot);
+          el.appendChild(label);
+
+          setTimeout(() => { el.style.opacity = "1"; }, 600 + i * 100);
+
+          el.addEventListener('click', () => {
+            const newId = selectedIdRef.current === phase.id ? null : phase.id;
+            selectedIdRef.current = newId;
+            setSelectedId(newId);
+            updateMarkerOpacity(newId);
+            if (newId !== null && onSelectPhase) onSelectPhase(phase);
+          });
+
+          const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+            .setLngLat(phase.coord)
+            .addTo(map);
+          markersRef.current.push({ marker, el, id: phase.id });
+        });
+
+        setMapReady(true);
+      }, 300);
+    });
+
+    map.on('error', () => {
+      setMapFailed(true);
+    });
+
+    return () => {
+      markersRef.current.forEach(({ marker }) => marker.remove());
+      markersRef.current = [];
+      map?.remove();
+      mapRef.current = null;
+    };
+  }, [tripData, isMobile, mapFailed, updateMarkerOpacity, onSelectPhase]);
+
+  const selectedIdRef = useRef(selectedId);
+  useEffect(() => { selectedIdRef.current = selectedId; }, [selectedId]);
+
+  // Dispatch intelMapActive event for header animation
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('intelMapActive', { detail: { active: true } }));
+    return () => window.dispatchEvent(new CustomEvent('intelMapActive', { detail: { active: false } }));
+  }, []);
+
+  const handleBack = () => {
+    setSelectedId(null);
+    selectedIdRef.current = null;
+    updateMarkerOpacity(null);
+  };
 
   return (
     <div style={{
-      position: "relative",
-      width: "100%",
-      minHeight: isMobile ? 340 : 420,
-      overflow: "hidden",
-      borderRadius: 16,
-      background: "rgba(0,4,12,0.9)",
-      border: "1px solid rgba(255,217,61,0.12)",
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 40,
+      width: "100vw",
+      height: "100vh",
     }}>
       <style>{INTEL_CSS}</style>
 
-      {/* Map */}
-      <div style={{
-        opacity: mapReady ? 1 : 0,
-        transition: `opacity 600ms ${EASE}`,
-        width: "100%",
-        height: "100%",
-        position: "absolute",
-        inset: 0,
-      }}>
-        <ComposableMap
-          projection="geoMercator"
-          projectionConfig={projConfig}
-          style={{ width: "100%", height: "100%" }}
-        >
-          <Geographies geography={GEO_URL}>
-            {({ geographies }) => geographies.map(geo => (
-              <Geography
-                key={geo.rsmKey}
-                geography={geo}
-                fill="#E8DCC8"
-                fillOpacity={0.04}
-                stroke="rgba(255,217,61,0.12)"
-                strokeWidth={0.4}
-                style={{ default: { outline: "none" }, hover: { outline: "none" }, pressed: { outline: "none" } }}
-              />
-            ))}
-          </Geographies>
+      {/* Mapbox container — full viewport */}
+      <div
+        ref={mapContainerRef}
+        style={{
+          width: "100%",
+          height: "100%",
+          opacity: mapReady ? 1 : 0,
+          transition: `opacity 600ms ${EASE}`,
+        }}
+      />
 
-          {/* Route lines */}
-          {routeVisible && phaseCoords.length > 1 && phaseCoords.map((p, i) => {
-            if (i === phaseCoords.length - 1) return null;
-            const faded = selectedId !== null && selectedId !== p.id && selectedId !== phaseCoords[i + 1].id;
-            return (
-              <Line
-                key={`route-${i}`}
-                from={p.coord}
-                to={phaseCoords[i + 1].coord}
-                stroke="rgba(255,217,61,0.35)"
-                strokeWidth={1.5}
-                strokeOpacity={faded ? 0.08 : 0.35}
-                strokeDasharray="6,4"
-                strokeLinecap="round"
-                style={{
-                  transition: `stroke-opacity 400ms ${EASE}`,
-                  animation: `imRouteDash 6s linear infinite`,
-                }}
-              />
-            );
-          })}
-
-          {/* Phase markers */}
-          {dotsVisible && phaseCoords.map((phase, i) => {
-            const isSelected = selectedId === phase.id;
-            const isFaded = selectedId !== null && !isSelected;
-            const color = phase.color || "#FFD93D";
-            return (
-              <Marker key={phase.id} coordinates={phase.coord}>
-                {/* Outer glow */}
-                <circle
-                  r={isSelected ? outerSize * 1.5 : outerSize}
-                  fill={color}
-                  fillOpacity={isSelected ? 0.2 : 0.08}
-                  style={{
-                    transition: `all 400ms ${EASE}`,
-                    opacity: isFaded ? 0.15 : 1,
-                    animation: !isSelected && !isFaded ? `imDotPulse 3s ${EASE} infinite` : "none",
-                  }}
-                />
-                {/* Inner dot — tap target */}
-                <circle
-                  r={dotSize}
-                  fill={color}
-                  fillOpacity={isFaded ? 0.2 : 1}
-                  style={{
-                    cursor: "pointer",
-                    pointerEvents: "all",
-                    transition: `all 400ms ${EASE}`,
-                    animation: `imDotIn 300ms ${EASE} ${600 + i * 100}ms both`,
-                  }}
-                  onClick={() => handleDotClick(phase)}
-                />
-                {/* Label */}
-                <g style={{
-                  opacity: isFaded ? 0.15 : 1,
-                  transition: `opacity 400ms ${EASE}`,
-                  animation: `imLabelIn 300ms ${EASE} ${800 + i * 100}ms both`,
-                }}>
-                  <text
-                    textAnchor="middle"
-                    y={-(outerSize + 6)}
-                    style={{
-                      fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-                      fontSize: isMobile ? 11 : 13,
-                      fill: "rgba(232,220,200,0.85)",
-                      fontWeight: isSelected ? 700 : 400,
-                      pointerEvents: "none",
-                      transition: `all 300ms ${EASE}`,
-                    }}
-                  >
-                    {phase.id} · {phase.name}
-                  </text>
-                </g>
-              </Marker>
-            );
-          })}
-        </ComposableMap>
-      </div>
-
-      {/* Loading skeleton */}
+      {/* Loading skeleton — cross-fades out */}
       <div style={{
         position: "absolute",
         inset: 0,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        background: "rgba(0,4,12,0.95)",
         opacity: mapReady ? 0 : 1,
         transition: `opacity 600ms ${EASE}`,
-        pointerEvents: "none",
+        pointerEvents: mapReady ? "none" : "auto",
       }}>
         <div style={{
-          width: 8,
-          height: 8,
-          borderRadius: "50%",
+          width: 8, height: 8, borderRadius: "50%",
           background: "rgba(255,217,61,0.4)",
           animation: "imDotPulse 1.5s ease-in-out infinite",
         }} />
       </div>
 
+      {/* Fallback if Mapbox fails */}
+      {mapFailed && (
+        <div style={{
+          position: "absolute", inset: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: "rgba(0,4,12,0.95)",
+        }}>
+          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>
+            Map unavailable — tap phases below
+          </div>
+        </div>
+      )}
+
       {/* Back button when dot selected */}
       {selectedId !== null && (
         <button
-          onClick={() => setSelectedId(null)}
+          onClick={handleBack}
           style={{
             position: "absolute",
             top: isMobile ? 12 : 16,
@@ -241,7 +277,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
             cursor: "pointer",
             minHeight: 44,
             minWidth: 44,
-            zIndex: 10,
+            zIndex: 50,
             animation: `imLabelIn 300ms ${EASE} both`,
           }}
         >
@@ -252,7 +288,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
       {/* Phase count badge */}
       <div style={{
         position: "absolute",
-        bottom: isMobile ? 12 : 16,
+        bottom: isMobile ? 72 : 16,
         right: isMobile ? 12 : 16,
         background: "rgba(0,4,12,0.8)",
         border: "1px solid rgba(255,217,61,0.2)",
@@ -263,6 +299,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
         color: "rgba(255,217,61,0.7)",
         letterSpacing: 1.5,
         pointerEvents: "none",
+        zIndex: 50,
       }}>
         {phaseCoords.length} PHASES · TAP A DOT
       </div>
