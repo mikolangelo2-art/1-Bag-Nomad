@@ -64,6 +64,7 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  zoom: 1.15;
 }
 
 h1,
