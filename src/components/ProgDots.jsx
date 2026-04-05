@@ -1,3 +1,6 @@
+import { CAT_DOT_COLORS } from '../constants/colors';
+import { loadSeg } from '../utils/storageHelpers';
+
 function ProgDots({phaseId,segment,intelSnippet}) {
   const d=loadSeg()[`${phaseId}-${segment.id}`]||{};
   const dots=[!!(d.transport?.mode||d.transport?.cost),!!(d.stay?.name||d.stay?.cost),(d.activities?.length||0)>0,!!(d.food?.dailyBudget),(d.misc?.length||0)>0,!!(intelSnippet?.tagline||d.intel?.notes)];
