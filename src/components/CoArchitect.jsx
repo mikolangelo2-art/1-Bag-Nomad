@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import posthog from "posthog-js";
 import { useMobile } from '../hooks/useMobile';
+import SharegoodLogo from './SharegoodLogo';
 import ConsoleHeader from './ConsoleHeader';
 import { askAI, parseJSON } from '../utils/aiHelpers';
 import { estCost } from '../utils/priceHelpers';
@@ -113,7 +114,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
                 <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",flexDirection:msg.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>
                   <div style={{width:22,height:22,borderRadius:"50%",background:msg.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{msg.role==="ai"?"✨":"👤"}</div>
                   {msg.isWelcome
-                    ?<div style={{position:"relative",background:"linear-gradient(135deg,rgba(169,70,29,0.2),rgba(255,217,61,0.07))",border:"2px solid rgba(255,159,67,0.30)",borderRadius:12,padding:"20px 16px 16px",fontSize:18,fontWeight:400,color:"rgba(255,255,255,0.88)",lineHeight:1.7,maxWidth:"92%",whiteSpace:"pre-line",fontFamily:"'Fraunces',serif",animation:"fadeUp 0.6s ease",boxShadow:"inset 0 0 24px rgba(255,159,67,0.04)",overflow:"hidden",display:"flex",flexDirection:"column",alignItems:"center"}}><img src="/1bn-logo.png" alt="" aria-hidden style={{display:"block",width:140,height:140,objectFit:"contain",opacity:0.12,pointerEvents:"none",filter:"brightness(1.15) sepia(0.2) saturate(0.85)",marginBottom:12}}/><div style={{textAlign:"center"}}>{msg.text}</div></div>
+                    ?<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:12,padding:"20px 0 8px"}}><SharegoodLogo size={48} animate={false} glowColor="rgba(169,70,29,0.4)" opacity={0.85}/><div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"rgba(232,220,200,0.7)",textAlign:"center",letterSpacing:0.5}}>Welcome — I'm your expedition co-architect.</div></div>
                     :<div style={{background:msg.role==="ai"?"rgba(255,159,67,0.04)":"rgba(255,255,255,0.05)",border:msg.role==="ai"?"2px solid rgba(255,159,67,0.30)":`1px solid rgba(255,255,255,0.08)`,borderRadius:12,padding:msg.role==="ai"?"18px 20px":"10px 14px",fontSize:msg.role==="ai"?16:13,fontFamily:msg.role==="ai"?"'Fraunces',serif":"'Inter',system-ui,-apple-system,sans-serif",fontStyle:msg.role==="ai"?"italic":"normal",color:"#FFF",lineHeight:msg.role==="ai"?1.7:1.5,maxWidth:"92%",boxShadow:msg.role==="ai"?"inset 0 0 24px rgba(255,159,67,0.04)":"none"}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>}
                 </div>
               ))}
