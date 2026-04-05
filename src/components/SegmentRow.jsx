@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fmt, fD } from '../utils/dateHelpers';
