@@ -226,11 +226,8 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
 
       {/* Loading skeleton — cross-fades out */}
       <div style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
+        position: "absolute",
+        inset: 0,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
