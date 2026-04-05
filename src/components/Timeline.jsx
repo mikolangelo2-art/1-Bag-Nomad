@@ -19,7 +19,7 @@ function Timeline({ tripData }) {
 
   return (
     <div style={{padding:"20px 0 40px",position:"relative"}}>
-      <div style={{background:'rgba(0,8,20,0.82)',borderRadius:12,padding:'28px 24px',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',margin:'0 auto',maxWidth:600}}>
+      <div style={{background:'rgba(0,8,20,0.55)',borderRadius:12,padding:'24px 28px'}}>
       {/* Running total */}
       <div style={{textAlign:"center",marginBottom:28}}>
         <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,217,61,0.6)",letterSpacing:3,marginBottom:4}}>TOTAL EXPEDITION BUDGET</div>
