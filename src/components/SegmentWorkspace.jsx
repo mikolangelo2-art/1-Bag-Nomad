@@ -203,6 +203,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {det.stay.link&&<a href={det.stay.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:4}}>{det.stay.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
             {suggestion?.stay?.suggestions?.length>1&&<div onClick={()=>setShowStayResuggest(true)} style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',cursor:'pointer',marginTop:8,textDecoration:'underline'}}>↩ View other suggestions</div>}
           </div>}
+          {hasS&&!showStayResuggest&&<div style={{textAlign:'center',marginTop:8,marginBottom:4}}>
+            <span onClick={()=>{uS("name","");uS("cost","");uS("checkin","");uS("checkout","");uS("link","");uS("notes","");}} style={{color:'rgba(255,255,255,0.4)',fontSize:12,cursor:'pointer',letterSpacing:0.3,textDecoration:'underline',textUnderlineOffset:3}} onMouseEnter={e=>e.target.style.color='rgba(255,255,255,0.7)'} onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.4)'}>↩ Clear selection</span>
+          </div>}
           {hasS&&showStayResuggest&&suggestion?.stay&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
             <div style={suggestionHeaderStyle}>✦ CHANGE PROPERTY</div>
             <div style={{marginBottom:10}}>
