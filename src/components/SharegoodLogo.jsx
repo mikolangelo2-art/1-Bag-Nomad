@@ -9,8 +9,8 @@ const LOGO_CSS = `
   50% { transform: scale(1.03) }
 }
 @keyframes llIdleGlow {
-  0%, 100% { opacity: 0.04 }
-  50% { opacity: 0.08 }
+  0%, 100% { opacity: 0.12 }
+  50% { opacity: 0.22 }
 }
 @keyframes llListening {
   0%, 100% { transform: scale(1) }
@@ -112,7 +112,7 @@ export const SharegoodLogo = memo(function SharegoodLogo({
           top: (size - ringSize) / 2, left: (size - ringSize) / 2,
           width: ringSize, height: ringSize,
           borderRadius: "50%",
-          border: "1px solid rgba(255,217,61,0.12)",
+          border: "1.5px solid rgba(255,217,61,0.45)",
           animation: c ? `llRingSpin ${c.ringSpeed} linear infinite${c.ringFlash ? `, ${c.ringFlash}` : ""}` : "none",
           pointerEvents: "none",
         }}/>}
