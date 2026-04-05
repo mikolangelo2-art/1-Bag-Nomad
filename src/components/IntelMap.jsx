@@ -83,10 +83,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
 
     map.once('idle', () => {
       map.dragRotate.disable();
-      map.scrollZoom.disable();
       map.boxZoom.disable();
-      map.doubleClickZoom.disable();
-      map.touchZoomRotate.disable();
       map.keyboard.disable();
 
       map.resize();
@@ -151,7 +148,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
 
           const label = document.createElement('div');
           label.textContent = phase.name;
-          label.style.cssText = `color:#FFF;font-family:Inter,sans-serif;font-size:11px;font-weight:600;white-space:nowrap;background:rgba(0,0,0,0.65);padding:2px 6px;border-radius:4px;pointer-events:none;letter-spacing:0.3px;`;
+          label.style.cssText = `color:#FFF;font-family:Inter,sans-serif;font-size:11px;font-weight:600;white-space:nowrap;background:rgba(169,70,29,1);padding:2px 6px;border-radius:4px;pointer-events:none;letter-spacing:0.3px;`;
 
           el.appendChild(dot);
           el.appendChild(label);
@@ -229,21 +226,36 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
 
       {/* Loading skeleton — cross-fades out */}
       <div style={{
-        position: "absolute",
-        inset: 0,
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        gap: 24,
         background: "rgba(0,4,12,0.95)",
         opacity: mapReady ? 0 : 1,
         transition: `opacity 600ms ${EASE}`,
         pointerEvents: mapReady ? "none" : "auto",
+        zIndex: 45,
       }}>
         <div style={{
-          width: 8, height: 8, borderRadius: "50%",
-          background: "rgba(255,217,61,0.4)",
-          animation: "imDotPulse 1.5s ease-in-out infinite",
-        }} />
+          fontSize: 90,
+          animation: "spinGlobe 20s linear infinite",
+          filter: "drop-shadow(0 0 20px rgba(0,229,255,0.4))",
+        }}>🌍</div>
+        <div style={{
+          fontFamily: "'Fraunces',serif",
+          fontSize: 18,
+          fontWeight: 300,
+          fontStyle: "italic",
+          color: "rgba(255,217,61,0.65)",
+          letterSpacing: 1.5,
+          textAlign: "center",
+        }}>Click destination for local information</div>
       </div>
 
       {/* Fallback if Mapbox fails */}
