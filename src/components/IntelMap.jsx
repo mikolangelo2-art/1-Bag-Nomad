@@ -144,11 +144,15 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
           el.style.cssText = `display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:4px;opacity:0;`;
 
           const dot = document.createElement('div');
-          dot.style.cssText = `width:${isMobile ? 20 : 14}px;height:${isMobile ? 20 : 14}px;border-radius:50%;background:${dotColor};border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px ${dotColor},0 0 16px ${dotColor}40;flex-shrink:0;`;
+          dot.style.cssText = `position:relative;display:flex;align-items:center;justify-content:center;width:${isMobile ? 20 : 14}px;height:${isMobile ? 20 : 14}px;border-radius:50%;background:${dotColor};border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px ${dotColor},0 0 16px ${dotColor}40;flex-shrink:0;`;
+          const num = document.createElement('span');
+          num.textContent = String(i + 1);
+          num.style.cssText = `font-family:Inter,sans-serif;font-size:${isMobile ? 10 : 8}px;font-weight:700;color:#FFFFFF;line-height:1;pointer-events:none;text-shadow:0 1px 2px rgba(0,0,0,0.8);`;
+          dot.appendChild(num);
 
           const label = document.createElement('div');
           label.textContent = phase.name;
-          label.style.cssText = `color:#FFF;font-family:Inter,sans-serif;font-size:11px;font-weight:600;white-space:nowrap;background:rgba(169,70,29,1);padding:2px 6px;border-radius:4px;pointer-events:none;letter-spacing:0.3px;`;
+          label.style.cssText = `color:#FFF;font-family:Inter,sans-serif;font-size:11px;font-weight:600;white-space:nowrap;background:rgba(200,30,30,0.92);padding:2px 6px;border-radius:4px;pointer-events:none;letter-spacing:0.3px;`;
 
           el.appendChild(dot);
           el.appendChild(label);
