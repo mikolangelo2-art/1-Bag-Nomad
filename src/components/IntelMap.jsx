@@ -241,7 +241,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
       }}>
         <div style={{
           fontSize: 90,
-          marginTop: isMobile ? "-140px" : "-56px",
+          marginTop: isMobile ? "-140px" : "-90px",
           animation: "spinGlobe 20s linear infinite",
           filter: "drop-shadow(0 0 20px rgba(0,229,255,0.4))",
         }}>🌍</div>
