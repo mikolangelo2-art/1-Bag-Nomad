@@ -233,8 +233,6 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
         alignItems: "center",
         justifyContent: "center",
         gap: 24,
-        paddingTop: isMobile ? "0px" : "56px",
-        paddingBottom: isMobile ? "140px" : "0px",
         background: "rgba(0,4,12,0.95)",
         opacity: mapReady ? 0 : 1,
         transition: `opacity 600ms ${EASE}`,
@@ -243,6 +241,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
       }}>
         <div style={{
           fontSize: 90,
+          marginTop: isMobile ? "-140px" : "-56px",
           animation: "spinGlobe 20s linear infinite",
           filter: "drop-shadow(0 0 20px rgba(0,229,255,0.4))",
         }}>🌍</div>
