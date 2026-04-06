@@ -170,7 +170,6 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
         // City dot markers — category colored, with labels
         resolved.forEach((phase, i) => {
           const dotColor = CATEGORY_COLORS[phase.type?.toUpperCase()] || '#FFD93D';
-          console.log(`Phase ${i}: ${phase.name} → coord:`, phase.coord);
 
           const el = document.createElement('div');
           el.className = 'intel-marker';
@@ -185,7 +184,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
 
           const label = document.createElement('div');
           label.textContent = phase.name;
-          label.style.cssText = `color:#FFF;font-family:Inter,sans-serif;font-size:11px;font-weight:600;white-space:nowrap;background:rgba(200,30,30,0.92);padding:2px 6px;border-radius:4px;pointer-events:none;letter-spacing:0.3px;`;
+          label.style.cssText = `color:#FFF;font-family:Inter,sans-serif;font-size:11px;font-weight:600;white-space:nowrap;background:rgba(10,7,5,0.88);padding:2px 6px;border-radius:4px;pointer-events:none;letter-spacing:0.3px;`;
 
           el.appendChild(dot);
           el.appendChild(label);
@@ -245,8 +244,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
       right: 0,
       bottom: 0,
       zIndex: 40,
-      width: "100vw",
-      height: "100vh",
+      overflow: "hidden",
     }}>
       <style>{INTEL_CSS}</style>
 
