@@ -187,11 +187,12 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
           el.className = 'intel-marker';
           el.style.cssText = `display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:4px;opacity:0;`;
 
+          const sz = isMobile ? 22 : 20;
           const dot = document.createElement('div');
-          dot.style.cssText = `position:relative;display:flex;align-items:center;justify-content:center;width:${isMobile ? 20 : 14}px;height:${isMobile ? 20 : 14}px;border-radius:50%;background:${dotColor};border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px ${dotColor},0 0 16px ${dotColor}40;flex-shrink:0;`;
+          dot.style.cssText = `position:relative;display:flex;align-items:center;justify-content:center;width:${sz}px;height:${sz}px;border-radius:50%;background:${dotColor};border:2px solid rgba(255,255,255,0.95);flex-shrink:0;`;
           const num = document.createElement('span');
           num.textContent = String(i + 1);
-          num.style.cssText = `font-family:Inter,sans-serif;font-size:${isMobile ? 10 : 8}px;font-weight:700;color:#FFFFFF;line-height:1;pointer-events:none;text-shadow:0 1px 2px rgba(0,0,0,0.8);`;
+          num.style.cssText = `font-family:Inter,sans-serif;font-size:${isMobile ? 11 : 10}px;font-weight:800;color:#FFFFFF;line-height:1;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.9);letter-spacing:-0.3px;`;
           dot.appendChild(num);
 
           const label = document.createElement('div');
