@@ -24,6 +24,7 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
   const [focused,setFocused]=useState(false);
   const [logoState,setLogoState]=useState("idle");
   const [hintIdx,setHintIdx]=useState(0);
+  const [retryMsg,setRetryMsg]=useState("");
   const [travelerGroup,setTravelerGroup]=useState("solo");
   const [travelStyle,setTravelStyle]=useState("");
   const [interests,setInterests]=useState([]);
@@ -46,7 +47,25 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
     const nightCount=(date&&returnDate)?Math.round((new Date(returnDate)-new Date(date))/(1000*60*60*24)):null;
     const nightsDirective=nightCount?`CRITICAL: trip is exactly ${nightCount} nights — phases must sum to exactly ${nightCount} totalNights.`:"Infer duration from vision.";
     const bAmt=Number(budgetAmount)||0;
-    const budgetConstraint=hasBudget?`⚠️ BUDGET ALLOCATION DIRECTIVE:\nThe traveler's total budget is $${budgetAmount}. This is a SPEND TARGET, not a ceiling to stay under.\nYour job is to ALLOCATE this $${budgetAmount} across the phases — not to estimate what the trip "might" cost.\n- Divide $${budgetAmount} proportionally across phases based on nights and destination cost-of-living\n- A ${bAmt>=25000?"LUXURY":""}${bAmt>=10000&&bAmt<25000?"HIGH-END":""}${bAmt>=3000&&bAmt<10000?"MID-RANGE":""}${bAmt<3000?"BUDGET":""} trip: choose accommodations and experiences that would realistically spend this amount\n- The sum of all phase "budget" fields MUST equal approximately $${budgetAmount}\n- "totalBudget" in your JSON MUST be set to ${budgetAmount}\n`:"NO BUDGET SET — set totalBudget to 0.";
+    const tierLabel=bAmt>=25000?"LUXURY":bAmt>=10000?"HIGH-END":bAmt>=3000?"MID-RANGE":"BUDGET";
+    const budgetConstraint=hasBudget?`HARD BUDGET CONSTRAINT — MATHEMATICAL REQUIREMENT:
+The traveler's total budget is $${budgetAmount}. This is BOTH a spend target AND an absolute ceiling.
+
+ALLOCATION RULES:
+1. Sum of all phase "budget" fields MUST equal $${budgetAmount} (±$50 rounding tolerance only)
+2. "totalBudget" in your JSON MUST be exactly ${budgetAmount}
+3. Distribute $${budgetAmount} proportionally: more nights = higher share, expensive countries = higher share
+4. ${tierLabel} tier — choose accommodations and experiences matching this spend level realistically
+5. SHOW YOUR MATH in budgetBreakdown: flights + accommodation + food + transport + activities + buffer = $${budgetAmount}
+6. If your phases would exceed $${budgetAmount}, reduce nights or swap to cheaper destinations — do NOT exceed the budget
+7. BEFORE returning JSON, mentally verify: add up all phase budgets — does the sum equal $${budgetAmount}? If not, adjust.
+
+COMMON MISTAKES TO AVOID:
+- Do NOT estimate costs from scratch and hope they match — ALLOCATE the stated budget across phases
+- Do NOT round each phase independently (causes drift) — allocate proportionally then round
+- Do NOT set totalBudget to anything other than ${budgetAmount}
+- A $6,000 trip should have phases summing to $6,000 — not $8,000 or $4,000`
+    :"NO BUDGET SET — set totalBudget to 0.";
     const allInterests=[...interests,...specialtyInterests];
     const specialtyRules=specialtyInterests.length>0?`\n${specialtyInterests.includes('fishing')?'- If "Fishing": prioritize coastal/offshore destinations, weight activities toward charters and water time, suggest fishing lodge accommodation\n':''}${specialtyInterests.includes('nightlife')?'- If "Nightlife": prioritize cities with strong nightlife scenes, suggest late-morning starts, accommodation near action\n':''}${specialtyInterests.includes('music')?'- If "Music/Festivals": build itinerary around festival dates, suggest shoulder accommodation strategy\n':''}${specialtyInterests.includes('wine')?'- If "Wine Tourism": weight vineyard regions, include cellar door experiences, suggest harvest season timing\n':''}${specialtyInterests.includes('skiing')?'- If "Skiing/Snow": weight mountain resort destinations, check snow season dates\n':''}${specialtyInterests.includes('fishing')||specialtyInterests.includes('camping')?'- If "Camping/Fishing": suggest dawn departures, remote accommodation options\n':''}${specialtyInterests.includes('yoga')?'- If "Yoga Retreat": include wellness centers, suggest peaceful accommodation\n':''}`:'';
     const travelerConstraints=`TRAVELER PROFILE — HARD CONSTRAINTS:\n- Traveling party: ${travelerGroup==='couple'?'Couple or 2 friends traveling together — budget covers both people, activities and accommodation for 2':'Solo traveler'}\n- Travel style: ${travelStyle||'Independent explorer'}${hasBudget?`\n- Budget: $${budgetAmount} FIRM — reflects total spend for the traveling party`:''}\n${nightCount?`- Nights: ${nightCount} — do not deviate`:''}\n${allInterests.length>0?`- Interests: ${allInterests.join(', ')} — weight destinations and activities toward these\n`:''}- If "First Timer": 1-2 countries max, beginner-friendly destinations, simple logistics, reassuring tone\n- If "Luxury": 5-star properties, premium experiences, business class\n- If "Couple/2 friends": romantic or buddy-trip framing as appropriate, experiences that work for two${specialtyRules}`;
@@ -55,9 +74,34 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
       const packSchema=`,"packProfile":{"categories":["clothes","tech","documents","travel","health"],"hiddenCategories":["dive","creator"],"tripType":"culture","climate":"mediterranean","season":"dry","tempRange":"18-28C","activities":["city-walking","fine-dining"],"duration":"medium","essentialItems":["walking shoes","universal adapter"],"optionalItems":["wetsuit","down jacket"]}`;
       const basePrompt=`${travelerConstraints}\n\n${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"${breakdownSchema}${packSchema}}${hasBudget?`\n\nREMINDER: "totalBudget" MUST be ${budgetAmount}. Each phase "budget" is that phase's share of $${budgetAmount}. The budgetBreakdown fields (flights, accommodation, food, transport, activities, buffer) must sum to approximately $${budgetAmount}. Distribute realistically based on destination costs, trip length, and accommodation tier. Do NOT estimate from scratch — ALLOCATE the stated budget.`:''}
 packProfile must reflect the actual generated itinerary. categories should include only what this specific traveler needs. essentialItems should name specific gear critical for the trip (e.g. "BCD", "wetsuit", "hiking boots", "down jacket"). optionalItems should name items unnecessary for this trip.`;
-      let raw=await askAI(basePrompt,2800);
+      let raw=await askAI(basePrompt,2800,0.3);
       let parsed=parseJSON(raw);
       console.log('[1BN] AI budgetBreakdown returned:',parsed?.budgetBreakdown||'MISSING');
+
+      // Budget validator — catch wild misses before scaling
+      if(parsed&&hasBudget&&parsed.phases?.length&&bAmt>0){
+        const phaseSum=parsed.phases.reduce((s,p)=>s+(p.budget||p.cost||0),0)||1;
+        const ratio=phaseSum/bAmt;
+        console.log(`[1BN] Budget validation: AI total $${phaseSum} vs target $${bAmt} (ratio ${ratio.toFixed(2)})`);
+        if(ratio<0.5||ratio>2.0){
+          console.log('[1BN] Budget wildly off — retrying with correction prompt');
+          setRetryMsg("Refining your budget allocation...");
+          try{
+            const retryPrompt=`Your previous budget allocation was $${phaseSum} but the target is $${bAmt}. Return the SAME destinations and itinerary structure with phase budgets corrected to sum to exactly $${bAmt}. Return ONLY valid JSON in the same format — no explanation.
+Current itinerary: ${JSON.stringify(parsed.phases.map(p=>({destination:p.destination,country:p.country,nights:p.nights,type:p.type})))}
+Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be ${bAmt}.`;
+            const retryRaw=await askAI(retryPrompt,1200,0.2);
+            const retryParsed=parseJSON(retryRaw);
+            if(retryParsed?.phases?.length){
+              const retrySum=retryParsed.phases.reduce((s,p)=>s+(p.budget||p.cost||0),0);
+              console.log(`[1BN] Retry budget: $${retrySum} vs target $${bAmt}`);
+              parsed.phases=retryParsed.phases;
+            }
+          }catch(retryErr){console.log('[1BN] Retry failed, proceeding with scaling',retryErr);}
+          setRetryMsg("");
+        }
+      }
+
       if(parsed&&hasBudget&&parsed.phases?.length){
         // Pure math: scale AI's proportional split to match stated budget
         const phaseSum=parsed.phases.reduce((s,p)=>s+(p.budget||p.cost||0),0)||1;
@@ -128,7 +172,7 @@ packProfile must reflect the actual generated itinerary. categories should inclu
         <div style={{textAlign:"center",marginBottom:isMobile?20:28,animation:"fadeUp 0.6s ease",padding:isMobile?"0 12px":0}}>
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:14}}>
             <SharegoodLogo size={isMobile?148:168} animate={true} logoState={logoState} glowColor={loading?"rgba(0,229,255,0.7)":"rgba(0,229,255,0.3)"} opacity={loading?1:0.92}/>
-            {loading&&<div key={hintIdx} style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,159,67,0.65)",marginTop:10,animation:"hintFade 2.5s ease forwards",textAlign:"center",letterSpacing:0.5}}>{GENERATION_HINTS[hintIdx]}</div>}
+            {loading&&<div key={retryMsg||hintIdx} style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:retryMsg?"rgba(255,217,61,0.75)":"rgba(255,159,67,0.65)",marginTop:10,animation:"hintFade 2.5s ease forwards",textAlign:"center",letterSpacing:0.5}}>{retryMsg||GENERATION_HINTS[hintIdx]}</div>}
           </div>
           <div style={{minHeight:isMobile?80:110}}>
             {heroPhase>=1&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?28:38,fontWeight:100,color:"rgba(255,255,255,0.88)",lineHeight:1.15,letterSpacing:2,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>Your expedition</div>}

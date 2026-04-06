@@ -37,16 +37,77 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   function fmtD(d){return d.toLocaleDateString("en-US",{month:"short",day:"numeric"});}
   async function genInsight(){
     setLoading(true);
-    const res=await askAI(`Co-architect. Goal:"${goalLabel}". Vision:"${data.vision}". ${data.budgetMode!=="dream"?"Budget: "+data.budgetAmount:"No budget."} Items:${JSON.stringify(items.map(i=>({destination:i.destination,type:i.type,nights:i.nights})))} One sentence excitement. ONE clarifying question. Max 3 sentences.`,350);
+    const res=await askAI(`Co-architect. Goal:"${goalLabel}". Vision:"${data.vision}". ${data.budgetMode!=="dream"?"Budget: "+data.budgetAmount:"No budget."} Items:${JSON.stringify(items.map(i=>({destination:i.destination,type:i.type,nights:i.nights})))} One sentence excitement. ONE clarifying question. Max 3 sentences.`,350,0.7);
     setChat(p=>[...p,{role:"ai",text:res}]);setLoading(false);
   }
   async function sendMsg(){
     if(!input.trim())return;
     const msg=input;setInput("");setChat(p=>[...p,{role:"user",text:msg}]);setLoading(true);
+    const hasBudget=data.budgetMode!=="dream"&&data.budgetAmount&&Number(data.budgetAmount)>0;
+    const budgetCtx=hasBudget?`Budget: $${data.budgetAmount} FIRM.`:"No budget set.";
     try{
-      const raw=await askAI(`Co-architect. Goal:"${goalLabel}". Vision:"${data.vision}". ${data.budgetMode!=="dream"?"Budget:"+data.budgetAmount+".":"No budget."} Items:${JSON.stringify(items.map(i=>({id:i.id,destination:i.destination,country:i.country,nights:i.nights,type:i.type})))} Traveler:"${msg}" Return ONLY valid JSON:{"response":"warm 2-3 sentences","changes":[{"id":0,"field":"destination","value":"New Place","country":"New Country"}],"warnings":[{"phaseIndex":0,"type":"date_conflict","message":"...","suggestion":"...","dismissible":true}]}. When changing destination always include country. If you detect a date conflict or seasonal mismatch include a warning.`,600);
+      const raw=await askAI(`Co-architect. Goal:"${goalLabel}". Vision:"${data.vision}". ${budgetCtx}
+Current itinerary: ${JSON.stringify(items.map(i=>({id:i.id,destination:i.destination,country:i.country,nights:i.nights,type:i.type,cost:i.cost})))}
+Traveler request: "${msg}"
+
+Return ONLY valid JSON:
+{
+  "response": "warm 2-3 sentence reply confirming what you changed",
+  "changes": [{"id": 0, "field": "destination", "value": "New Place", "country": "New Country"}, {"id": 0, "field": "nights", "value": 5}, {"id": 0, "field": "cost", "value": 800}],
+  "addPhases": [{"destination": "City", "country": "Country", "nights": 5, "type": "Culture", "cost": 700, "flag": "🌍", "insertAfter": 1}],
+  "removePhaseIds": [],
+  "warnings": []
+}
+RULES:
+- When changing destination ALWAYS include updated country and cost
+- When changing nights ALWAYS include updated cost
+- addPhases: full phase object + insertAfter (id of phase to insert after, or 0 for start)
+- removePhaseIds: array of phase ids to delete
+- If change would exceed budget of $${hasBudget?data.budgetAmount:"N/A"}, add a warning and suggest adjustment
+- ALWAYS apply changes — do not just suggest them`,600,0.4);
       const parsed=parseJSON(raw);
-      if(parsed){setChat(p=>[...p,{role:"ai",text:parsed.response}]);if(parsed.changes?.length)setItems(p=>{let u=[...p];parsed.changes.forEach(c=>{u=u.map(it=>{if(it.id!==c.id)return it;const upd={...it,[c.field]:c.value};if(c.field==="destination"&&c.country)upd.country=c.country;if(c.field==="country")upd.country=c.value;return upd;})});return u;});if(parsed.warnings?.length)parsed.warnings.forEach(w=>{try{const existing=JSON.parse(localStorage.getItem('1bn_warnings_v1')||'[]');existing.push(w);localStorage.setItem('1bn_warnings_v1',JSON.stringify(existing));}catch(e){}});}
+      if(parsed){
+        setChat(p=>[...p,{role:"ai",text:parsed.response}]);
+        setItems(p=>{
+          let u=[...p];
+          // Apply field-level changes
+          if(parsed.changes?.length){
+            parsed.changes.forEach(c=>{
+              u=u.map(it=>{
+                if(it.id!==c.id)return it;
+                const upd={...it,[c.field]:c.value};
+                if(c.field==="destination"&&c.country)upd.country=c.country;
+                if(c.field==="country")upd.country=c.value;
+                if(c.field==="cost")upd.cost=Number(c.value)||upd.cost;
+                if(c.field==="nights")upd.nights=Number(c.value)||upd.nights;
+                return upd;
+              });
+            });
+          }
+          // Remove phases
+          if(parsed.removePhaseIds?.length){
+            u=u.filter(it=>!parsed.removePhaseIds.includes(it.id));
+          }
+          // Add new phases
+          if(parsed.addPhases?.length){
+            parsed.addPhases.forEach(np=>{
+              const newItem={
+                id:Date.now()+Math.random(),
+                destination:np.destination,country:np.country,
+                nights:np.nights||5,cost:np.cost||0,
+                type:np.type||"Exploration",flag:np.flag||"🌍",
+                color:np.color||"#A29BFE",why:np.why||""
+              };
+              const insertIdx=np.insertAfter?u.findIndex(it=>it.id===np.insertAfter):-1;
+              if(insertIdx>=0)u.splice(insertIdx+1,0,newItem);
+              else u.push(newItem);
+            });
+          }
+          // Reassign sequential ids
+          return u.map((it,idx)=>({...it,id:idx+1}));
+        });
+        if(parsed.warnings?.length)parsed.warnings.forEach(w=>{try{const existing=JSON.parse(localStorage.getItem('1bn_warnings_v1')||'[]');existing.push(w);localStorage.setItem('1bn_warnings_v1',JSON.stringify(existing));}catch(e){}});
+      }
       else setChat(p=>[...p,{role:"ai",text:"Got it — which stop would you like to change?"}]);
     }catch(e){setChat(p=>[...p,{role:"ai",text:"What specifically would you like to change?"}]);}
     setLoading(false);
@@ -80,7 +141,23 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
       <div style={{display:"flex",flex:1,overflow:"hidden",minHeight:0,...(isMobile?{flexDirection:"column"}:{})}}>
         {(!isMobile||mobileTab==="itinerary")&&(
           <div style={{width:"42%",overflowY:"auto",padding:12,...(isMobile?{maxHeight:"none",width:"100%",padding:"12px 16px"}:{})}}>
-            <div style={{fontSize:15,color:"rgba(255,255,255,0.85)",letterSpacing:3,marginBottom:10}}>YOUR ITINERARY · TAP TO EDIT</div>
+            <div style={{fontSize:15,color:"rgba(255,255,255,0.85)",letterSpacing:3,marginBottom:6}}>YOUR ITINERARY · TAP TO EDIT</div>
+            {(()=>{
+              const bAmt=Number(data.budgetAmount)||0;
+              const hasBudget=data.budgetMode!=="dream"&&bAmt>0;
+              if(!hasBudget)return null;
+              const remaining=bAmt-totalCost;
+              const pct=totalCost/bAmt;
+              const isOver=remaining<0;
+              const isWarn=!isOver&&pct>0.9;
+              const color=isOver?"#FF6B6B":isWarn?"#FFD93D":"#69F0AE";
+              return(
+                <div style={{marginBottom:10,padding:"6px 10px",borderRadius:8,background:isOver?"rgba(255,107,107,0.08)":isWarn?"rgba(255,217,61,0.06)":"rgba(105,240,174,0.06)",border:`1px solid ${color}44`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                  <span style={{fontSize:12,color:"rgba(255,255,255,0.5)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1}}>{isOver?"⚠ OVER BUDGET":isWarn?"NEAR LIMIT":"ON BUDGET"}</span>
+                  <span style={{fontSize:13,fontWeight:700,color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{fmt(totalCost)} / {fmt(bAmt)} {isOver?`· ${fmt(Math.abs(remaining))} over`:`· ${fmt(Math.abs(remaining))} left`}</span>
+                </div>
+              );
+            })()}
             {items.map((item,i)=>{
               const c=item.color,isEd=editingId===item.id;
               return(
