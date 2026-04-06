@@ -32,9 +32,66 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
   async function refine(){
     if(!refineInput.trim()||loading)return;
     setLoading(true);const msg=refineInput;setRefineInput("");
+    const hasBudget=data.budgetMode!=="dream"&&data.budgetAmount&&Number(data.budgetAmount)>0;
+    const bAmt=Number(data.budgetAmount)||0;
+    const phaseCount=vd.phases?.length||0;
+    const totalNights=vd.totalNights||vd.phases?.reduce((s,p)=>s+(p.nights||0),0)||0;
     try{
-      const raw=await askAI(`Expedition co-architect. Phases:${JSON.stringify(vd.phases)}. Vision:"${data.vision}". Request:"${msg}". Return ONLY valid JSON:{"narrative":"2-3 warm sentences","vibe":"3 words · ","phases":[{"destination":"","country":"","nights":7,"type":"","why":"","flag":"🌍"}],"totalNights":0,"totalBudget":0,"countries":0,"highlight":""}`,1800);
+      const raw=await askAI(`You are reshaping an expedition vision — NOT rebuilding the itinerary.
+
+LOCKED CONSTRAINTS — DO NOT CHANGE:
+- Exactly ${phaseCount} phases (same count)
+- Exactly ${totalNights} total nights (redistribute across phases if needed, but sum must equal ${totalNights})
+${hasBudget?`- Exactly $${data.budgetAmount} total budget (redistribute across phases if needed, but sum must equal $${data.budgetAmount})`:'- No budget set'}
+- Do NOT add or remove phases — only reshape existing ones
+
+WHAT YOU CAN CHANGE:
+- Swap destinations to better match the refined vision
+- Change phase types (Culture, Dive, Trek, etc.)
+- Redistribute nights between phases (keeping the same total)
+${hasBudget?'- Redistribute budget between phases (keeping the same total)':''}
+- Rewrite the narrative, vibe, highlight, and phase "why" descriptions
+- Update country and flag to match new destinations
+
+Current vision: "${data.vision}"
+Current phases: ${JSON.stringify(vd.phases)}
+${data.city?`Departure city: ${data.city}`:''}
+${data.travelerProfile?`Traveler: ${data.travelerProfile.group==='couple'?'Couple/2 friends':'Solo'}, style: ${data.travelerProfile.style||'independent'}${data.travelerProfile.interests?.length?', interests: '+data.travelerProfile.interests.join(', '):''}`:''}
+
+User's refinement: "${msg}"
+
+Reshape the vision to honor this request. Keep the same structure — change the flavor.
+Return ONLY valid JSON:
+{"narrative":"2-3 vivid sentences reflecting the refined vision","vibe":"3 words · separated","phases":[{"destination":"City","country":"Country","nights":NUMBER,"type":"Type","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":${totalNights},"totalBudget":${hasBudget?data.budgetAmount:'0'},"countries":NUMBER,"highlight":"most exciting moment in refined vision"}`,1800,0.4);
       const parsed=parseJSON(raw);
+      // Hard enforcement: lock budget and duration even if AI drifts
+      if(parsed&&parsed.phases?.length){
+        // Duration lock
+        const nightSum=parsed.phases.reduce((s,p)=>s+(p.nights||0),0);
+        if(nightSum!==totalNights&&totalNights>0){
+          console.log(`[1BN] Vision refine duration lock: ${nightSum} -> ${totalNights}`);
+          const nRatio=totalNights/nightSum;
+          let remaining=totalNights;
+          parsed.phases.forEach((p,i)=>{
+            if(i===parsed.phases.length-1){p.nights=remaining;}
+            else{p.nights=Math.max(1,Math.round((p.nights||1)*nRatio));remaining-=p.nights;}
+          });
+          parsed.totalNights=totalNights;
+        }
+        // Budget lock
+        if(hasBudget&&bAmt>0){
+          const phaseSum=parsed.phases.reduce((s,p)=>s+(p.budget||p.cost||0),0)||1;
+          const ratio=bAmt/phaseSum;
+          console.log(`[1BN] Vision refine budget lock: AI $${phaseSum} x ${ratio.toFixed(2)} -> $${bAmt}`);
+          parsed.phases.forEach(p=>{p.budget=Math.round((p.budget||p.cost||0)*ratio/10)*10;});
+          parsed.totalBudget=bAmt;
+        }
+        // Phase count lock
+        if(parsed.phases.length>phaseCount){
+          console.log(`[1BN] Vision refine phase count lock: ${parsed.phases.length} -> ${phaseCount} (truncating)`);
+          parsed.phases=parsed.phases.slice(0,phaseCount);
+        }
+      }
       if(parsed){
         setVd(parsed);setNarrativeDone(false);setShowStats(false);setShowPhases(false);setNarrative("");
         let i=0;const txt=parsed.narrative||"";
@@ -124,7 +181,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
               <div style={{fontSize:15,color:"rgba(255,255,255,0.9)",letterSpacing:2,marginBottom:10}}>💬 REFINE YOUR VISION</div>
               {loading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",marginBottom:8}}>✨ refining...</div>}
               <div style={{display:"flex",gap:7}}>
-                <input style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:isMobile?"11px":"9px 11px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Swap a destination, adjust duration..." onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
+                <input style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:isMobile?"11px":"9px 11px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Reshape your vision — more culture, less beach, different vibe..." onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
                 <button style={{background:"rgba(169,70,29,0.2)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:8,color:"#FFD93D",fontSize:15,padding:"8px 12px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={refine}>↑</button>
               </div>
             </div>

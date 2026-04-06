@@ -47,6 +47,8 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
     const budgetCtx=hasBudget?`Budget: $${data.budgetAmount} FIRM.`:"No budget set.";
     try{
       const raw=await askAI(`Co-architect. Goal:"${goalLabel}". Vision:"${data.vision}". ${budgetCtx}
+Total nights: ${totalNights}. When adding phases, redistribute existing nights — do not extend the trip.
+${hasBudget?`When adding phases, redistribute the existing $${data.budgetAmount} budget — do NOT increase total spend. If a new phase costs $X, include cost reductions to other phases totaling $X.`:''}
 Current itinerary: ${JSON.stringify(items.map(i=>({id:i.id,destination:i.destination,country:i.country,nights:i.nights,type:i.type,cost:i.cost})))}
 Traveler request: "${msg}"
 
@@ -63,6 +65,8 @@ RULES:
 - When changing nights ALWAYS include updated cost
 - addPhases: full phase object + insertAfter (id of phase to insert after, or 0 for start)
 - removePhaseIds: array of phase ids to delete
+- When using addPhases: include cost changes to existing phases that offset the new phase cost — total must stay at $${hasBudget?data.budgetAmount:'N/A'}
+- When using addPhases: reduce nights on existing phases so total stays at ${totalNights} — do not extend the trip
 - If change would exceed budget of $${hasBudget?data.budgetAmount:"N/A"}, add a warning and suggest adjustment
 - ALWAYS apply changes — do not just suggest them`,600,0.4);
       const parsed=parseJSON(raw);
