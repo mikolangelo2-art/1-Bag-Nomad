@@ -412,7 +412,7 @@ Return ONLY a JSON array:
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%",padding:'10px 12px'}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#00E5FF"},{label:"GEAR READY",value:gearPct+"%",color:"#FF9F43"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#FFD93D"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(0,0,0,0.25)",border:`1.5px solid ${s.color}55`,borderTop:`1.5px solid ${s.color}99`,borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:`0 0 12px ${s.color}30, inset 0 1px 0 ${s.color}55`}}>
-              <div style={{fontSize:9,fontWeight:700,color:"rgba(255,255,255,0.55)",letterSpacing:'0.08em',marginBottom:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{s.label}</div>
+              <div style={{fontSize:9,fontWeight:700,color:"rgba(255,255,255,0.55)",letterSpacing:'0.06em',marginBottom:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.2}}>{s.label}</div>
               <div style={{fontSize:isMobile?13:18,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.value}</div>
             </div>
           ))}
