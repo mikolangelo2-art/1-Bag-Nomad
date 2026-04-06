@@ -233,6 +233,8 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
         alignItems: "center",
         justifyContent: "center",
         gap: 24,
+        height: "100%",
+        paddingBottom: isMobile ? "80px" : "0px",
         background: "rgba(0,4,12,0.95)",
         opacity: mapReady ? 0 : 1,
         transition: `opacity 600ms ${EASE}`,
@@ -249,7 +251,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
           fontSize: 18,
           fontWeight: 300,
           fontStyle: "italic",
-          color: "rgba(255,217,61,0.65)",
+          color: "rgba(255,159,67,0.65)",
           letterSpacing: 1.5,
           textAlign: "center",
         }}>Click destination for local information</div>
