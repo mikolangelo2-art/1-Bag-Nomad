@@ -325,15 +325,15 @@ Return ONLY a JSON array:
       <div style={{display:'flex',flexDirection:'column',flex:1,overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
         {/* Header */}
         <div style={{display:'flex',alignItems:'center',padding:'16px',gap:12,borderBottom:'1px solid rgba(255,255,255,0.08)',flexShrink:0,background:'rgba(10,4,0,0.95)',position:'sticky',top:0,zIndex:10}}>
-          <button onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:22,cursor:'pointer',padding:'0 8px 0 0',lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>‹ <span style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,opacity:0.60}}>PACK LIST</span></button>
+          <button onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:22,cursor:'pointer',padding:'0 8px 0 0',lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>‹ <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,fontWeight:700,opacity:0.90}}>PACK LIST</span></button>
           <span style={{fontSize:18}}>{cat.icon}</span>
           <span style={{flex:1,fontSize:16,fontWeight:600,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{cat.label}</span>
           <span style={{fontSize:12,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{ownedInCat}/{catItems.length}</span>
         </div>
         {/* Subheader */}
         <div style={{display:'flex',gap:16,padding:'10px 16px',borderBottom:'1px solid rgba(255,255,255,0.06)',flexShrink:0}}>
-          <span style={{fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}><span style={{color:cat.color,fontWeight:700}}>{catW.toFixed(1)}{unit}</span> total weight</span>
-          {catCost>0&&<span style={{fontSize:11,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}><span style={{color:'#FFD93D',fontWeight:700}}>${catCost.toLocaleString()}</span> total cost</span>}
+          <span style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}><span style={{color:cat.color,fontWeight:700}}>{catW.toFixed(1)}{unit}</span> total weight</span>
+          {catCost>0&&<span style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}><span style={{color:'#FFD93D',fontWeight:700}}>${catCost.toLocaleString()}</span> total cost</span>}
         </div>
         {/* Item list */}
         <div style={{flex:1,padding:'8px 16px 24px'}}>
@@ -544,7 +544,7 @@ Return ONLY a JSON array:
             </button>
             <div style={{maxHeight:packBriefCollapsed?0:400,overflow:"hidden",transition:"max-height 0.28s ease-out"}}>
               <div style={{padding:"0 12px 12px"}}>
-                <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,255,255,0.80)",lineHeight:1.7,marginBottom:10}}>{getPackBrief(pp,tripData)||`Reviewing your pack for a ${goalLabel} trip across ${countries.slice(0,3).join(", ")}${countries.length>3?" +"+(countries.length-3)+" more":""} — ${totalNights} nights.`}</div>
+                <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,255,255,0.85)",lineHeight:1.7,marginBottom:10}}>{getPackBrief(pp,tripData)||`Reviewing your pack for a ${goalLabel} trip across ${countries.slice(0,3).join(", ")}${countries.length>3?" +"+(countries.length-3)+" more":""} — ${totalNights} nights.`}</div>
                 <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,255,255,0.55)",letterSpacing:1,marginBottom:8}}>Built for: {tripData?.tripName||"your expedition"} · {totalNights} nights · {pp?.tripType||goalLabel} · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
                 <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{tripTypes.map(t=><span key={t} style={{fontSize:11,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.18)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:10,padding:"3px 9px",letterSpacing:1,fontWeight:700}}>{TI[t]||"🗺️"} {t}</span>)}</div>
               </div>
@@ -582,8 +582,8 @@ Return ONLY a JSON array:
                         {isEssential?<span style={{fontSize:11,color:"#FF9F43",background:"rgba(255,159,67,0.18)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:6,padding:"2px 8px",letterSpacing:1.5,fontWeight:700,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>ESSENTIAL</span>:<span style={{fontSize:11,color:"rgba(105,240,174,0.85)",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.3)",borderRadius:6,padding:"2px 8px",letterSpacing:1.5,fontWeight:700,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>RECOMMENDED</span>}
                         <span style={{fontSize:11,color:c,background:c+"14",border:`1px solid ${c}44`,borderRadius:6,padding:"2px 8px",letterSpacing:1,fontWeight:700,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.cat}</span>
                       </div>
-                      <div style={{fontSize:14,fontWeight:600,color:"#FFF",marginBottom:4}}>{s.name}</div>
-                      <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.70)",lineHeight:1.6}}>{s.reason}</div>
+                      <div style={{fontSize:15,fontWeight:600,color:"#FFF",marginBottom:5}}>{s.name}</div>
+                      <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,255,255,0.82)",lineHeight:1.65}}>{s.reason}</div>
                     </div>
                     <div style={{textAlign:"right",flexShrink:0,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.cost>0&&<div style={{fontSize:12,fontWeight:700,color:"#FFD93D",marginBottom:3}}>~${s.cost}</div>}{s.weight>0&&<div style={{fontSize:12,color:"rgba(255,255,255,0.45)"}}>~{s.weight}lb</div>}</div>
                   </div>
