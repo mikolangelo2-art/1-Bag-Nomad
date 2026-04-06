@@ -103,7 +103,7 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, d
     const geoStroke = dream ? '#E8DCC8' : isPack ? '#FF9F43' : '#00E5FF';
     const geoStrokeOp = dream ? 0.03 : isPack ? 0.08 : (isMobileMap ? 0.22 : 0.18);
 
-    // Departure city coord — handles full airlabs strings like "Denver International Airport, US"
+    // Departure city coord — handles full airlabs strings like "Phoenix Sky Harbor International Airport, US"
     const depCoord = (()=>{
       if(!departureCity) return null;
       if(CITY_COORDS[departureCity]) return CITY_COORDS[departureCity];
@@ -111,10 +111,18 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, d
         .replace(/\s+International\s+Airport.*$/i,'')
         .replace(/\s+Intl\s+Airport.*$/i,'')
         .replace(/\s+Airport.*$/i,'')
+        .replace(/\s+Sky\s+Harbor.*$/i,'')
+        .replace(/\s+Fort\s+Worth.*$/i,'')
+        .replace(/\s+Saint\s+Paul.*$/i,'')
         .replace(/,\s*[A-Z]{2,3}$/,'')
         .replace(/,.*$/,'')
         .trim();
-      return CITY_COORDS[stripped] || null;
+      if(CITY_COORDS[stripped]) return CITY_COORDS[stripped];
+      // Word-reduction fallback: try first 2 words, then first word
+      const words = stripped.split(/\s+/);
+      if(words.length > 2 && CITY_COORDS[words.slice(0,2).join(' ')]) return CITY_COORDS[words.slice(0,2).join(' ')];
+      if(words.length > 1 && CITY_COORDS[words[0]]) return CITY_COORDS[words[0]];
+      return null;
     })();
     const routeCoords = depCoord ? [depCoord, ...coords] : coords;
 

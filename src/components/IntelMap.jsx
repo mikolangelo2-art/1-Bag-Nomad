@@ -94,7 +94,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
         const coords = resolved.map(p => p.coord);
 
         // Auto-frame to trip region (includes departure city if known)
-        // Handles full airlabs strings like "Denver International Airport, US"
+        // Handles full airlabs strings like "Phoenix Sky Harbor International Airport, US"
         const depCity = tripData?.departureCity || '';
         const depCoord = (() => {
           if (!depCity) return null;
@@ -103,10 +103,18 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
             .replace(/\s+International\s+Airport.*$/i, '')
             .replace(/\s+Intl\s+Airport.*$/i, '')
             .replace(/\s+Airport.*$/i, '')
+            .replace(/\s+Sky\s+Harbor.*$/i, '')
+            .replace(/\s+Fort\s+Worth.*$/i, '')
+            .replace(/\s+Saint\s+Paul.*$/i, '')
             .replace(/,\s*[A-Z]{2,3}$/, '')
             .replace(/,.*$/, '')
             .trim();
-          return CITY_COORDS[stripped] || null;
+          if (CITY_COORDS[stripped]) return CITY_COORDS[stripped];
+          // Word-reduction fallback: try first 2 words, then first word
+          const words = stripped.split(/\s+/);
+          if (words.length > 2 && CITY_COORDS[words.slice(0,2).join(' ')]) return CITY_COORDS[words.slice(0,2).join(' ')];
+          if (words.length > 1 && CITY_COORDS[words[0]]) return CITY_COORDS[words[0]];
+          return null;
         })();
         if (coords.length >= 2) {
           const bounds = new mapboxgl.LngLatBounds();

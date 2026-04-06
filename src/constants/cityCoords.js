@@ -19,6 +19,13 @@ const CITY_COORDS = {
 
   // Airport name aliases — where airport name ≠ city name (post-strip lookup)
   'Logan': [-71.1, 42.4],                          // Logan Intl → Boston
+  'Phoenix Sky Harbor': [-112.1, 33.4],            // Sky Harbor → Phoenix
+  'Dallas Fort Worth': [-97.0, 32.9], 'DFW': [-97.0, 32.9],
+  'Minneapolis Saint Paul': [-93.2, 44.9], 'Minneapolis St Paul': [-93.2, 44.9],
+  'Salt Lake City': [-111.9, 40.8],
+  'San Diego': [-117.2, 32.7], 'San Antonio': [-98.5, 29.4],
+  'Tampa': [-82.5, 27.9], 'Fort Lauderdale': [-80.2, 26.1],
+  'Kansas City': [-94.6, 39.1], 'St Louis': [-90.2, 38.6],
   'O\'Hare': [-87.9, 42.0], 'Ohare': [-87.9, 42.0], // O'Hare → Chicago
   'Midway': [-87.7, 41.8],                          // Midway → Chicago
   'Dulles': [-77.5, 38.9],                          // Dulles → Washington DC
