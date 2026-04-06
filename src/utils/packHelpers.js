@@ -1,4 +1,137 @@
-// ── Default Pack List ─────────────────────────────────────────
+// ── Tier 1: Base Pack — universal, every trip ─────────────────
+export const BASE_PACK = [
+  {name:"45L Travel Backpack",        cat:"travel",  cost:299, weight:4.5,  volume:2.2,  bag:"Backpack",         owned:true},
+  {name:"Packable Day Bag",           cat:"travel",  cost:65,  weight:0.4,  volume:0.6,  bag:"Backpack",         owned:true},
+  {name:"Medium Packing Cube",        cat:"clothes", cost:0,   weight:0.22, volume:8,    bag:"Backpack",         owned:true},
+  {name:"Small Packing Cube",         cat:"clothes", cost:0,   weight:0.2,  volume:4,    bag:"Backpack",         owned:true},
+  {name:"2 T-Shirts",                 cat:"clothes", cost:0,   weight:0.4,  volume:0.5,  bag:"Backpack",         owned:true},
+  {name:"1 Lightweight Pants",        cat:"clothes", cost:0,   weight:0.45, volume:0.6,  bag:"Backpack",         owned:true},
+  {name:"1 Swim Shorts",              cat:"clothes", cost:0,   weight:0.2,  volume:0.3,  bag:"Backpack",         owned:true},
+  {name:"2 Underwear",                cat:"clothes", cost:0,   weight:0.1,  volume:0.15, bag:"Backpack",         owned:true},
+  {name:"2 Socks",                    cat:"clothes", cost:0,   weight:0.1,  volume:0.15, bag:"Backpack",         owned:true},
+  {name:"Flip Flops",                 cat:"clothes", cost:100, weight:0.4,  volume:1.2,  bag:"Backpack",         owned:true},
+  {name:"Smartphone",                 cat:"tech",    cost:0,   weight:0.44, volume:0.1,  bag:"Worn",             owned:true},
+  {name:"Charging Cables",            cat:"tech",    cost:0,   weight:0.2,  volume:0.3,  bag:"Global Briefcase", owned:true},
+  {name:"Universal Power Adapter",    cat:"tech",    cost:0,   weight:0.2,  volume:0.35, bag:"Global Briefcase", owned:true},
+  {name:"Portable Power Bank",        cat:"tech",    cost:0,   weight:0.2,  volume:0.4,  bag:"Global Briefcase", owned:true},
+  {name:"Travel Wash Pouch",          cat:"health",  cost:0,   weight:0.4,  volume:2,    bag:"Backpack",         owned:true},
+  {name:"Toothbrush & Paste",         cat:"health",  cost:0,   weight:0.15, volume:0.18, bag:"Backpack",         owned:true},
+  {name:"Small First Aid Kit",        cat:"health",  cost:0,   weight:0.35, volume:3,    bag:"Backpack",         owned:false},
+  {name:"Sunscreen",                  cat:"health",  cost:0,   weight:0.25, volume:0.3,  bag:"Backpack",         owned:true},
+  {name:"Passport",                   cat:"docs",    cost:200, weight:0.1,  volume:0.1,  bag:"Worn",             owned:true},
+  {name:"Debit and Credit Cards",     cat:"docs",    cost:0,   weight:0.01, volume:0.01, bag:"Worn",             owned:true},
+  {name:"Travel Insurance Docs",      cat:"docs",    cost:0,   weight:0,    volume:0.12, bag:"Digital",          owned:false},
+];
+
+// ── Tier 2: Adaptive Packs — merged based on trip signals ──────
+export const ADAPTIVE_PACKS = {
+  tropical: [
+    {name:"Lightweight Sun Hoodie",    cat:"clothes",  cost:75,  weight:0.55, volume:0.8,  bag:"Backpack", owned:false},
+    {name:"Insect Repellent",          cat:"health",   cost:0,   weight:0.15, volume:0.2,  bag:"Backpack", owned:false},
+    {name:"Reef-Safe Sunscreen",       cat:"health",   cost:15,  weight:0.25, volume:0.3,  bag:"Backpack", owned:false},
+  ],
+  cold: [
+    {name:"Down Jacket",               cat:"clothes",  cost:200, weight:1.2,  volume:3,    bag:"Backpack", owned:false},
+    {name:"Thermal Base Layer",        cat:"clothes",  cost:80,  weight:0.3,  volume:0.5,  bag:"Backpack", owned:false},
+    {name:"Warm Beanie",               cat:"clothes",  cost:25,  weight:0.1,  volume:0.2,  bag:"Backpack", owned:false},
+  ],
+  dive: [
+    {name:"Dive Mask",                 cat:"dive",     cost:100, weight:0.5,  volume:0.85, bag:"Backpack", owned:false},
+    {name:"Dive Computer",             cat:"dive",     cost:300, weight:0.2,  volume:0.12, bag:"Backpack", owned:false},
+    {name:"Surface Marker Buoy",       cat:"dive",     cost:20,  weight:0.35, volume:0.45, bag:"Backpack", owned:false},
+    {name:"Reef Hook",                 cat:"dive",     cost:15,  weight:0.2,  volume:0.2,  bag:"Backpack", owned:false},
+    {name:"Mesh Dive Bag",             cat:"dive",     cost:20,  weight:0.3,  volume:0.3,  bag:"Backpack", owned:false},
+    {name:"Mask Defog",                cat:"dive",     cost:12,  weight:0.05, volume:0.05, bag:"Backpack", owned:false},
+    {name:"O-ring Kit",                cat:"dive",     cost:8,   weight:0.05, volume:0.05, bag:"Backpack", owned:false},
+    {name:"Zip Ties",                  cat:"dive",     cost:5,   weight:0.02, volume:0.02, bag:"Backpack", owned:false},
+  ],
+  creator: [
+    {name:"Laptop",                    cat:"creator",  cost:0,   weight:4.7,  volume:1,    bag:"Global Briefcase", owned:true},
+    {name:"Action Camera",             cat:"creator",  cost:290, weight:0.4,  volume:0.2,  bag:"Global Briefcase", owned:false},
+    {name:"Compact Travel Tripod",     cat:"creator",  cost:35,  weight:0.3,  volume:0.3,  bag:"Backpack",         owned:false},
+    {name:"Wireless Lavalier Mic",     cat:"creator",  cost:75,  weight:0.1,  volume:0.1,  bag:"Global Briefcase", owned:false},
+    {name:"Portable SSD",              cat:"creator",  cost:130, weight:0.12, volume:0.03, bag:"Global Briefcase", owned:false},
+    {name:"Camera Organizer Cube",     cat:"creator",  cost:60,  weight:0.7,  volume:3,    bag:"Backpack",         owned:false},
+  ],
+  adventure: [
+    {name:"Hiking Boots",              cat:"adventure",cost:180, weight:2.0,  volume:4,    bag:"Worn",     owned:false},
+    {name:"Rain Jacket",               cat:"adventure",cost:120, weight:0.5,  volume:1,    bag:"Backpack", owned:false},
+    {name:"Headlamp",                  cat:"adventure",cost:30,  weight:0.1,  volume:0.15, bag:"Backpack", owned:false},
+    {name:"Trekking Poles (compact)",  cat:"adventure",cost:60,  weight:0.5,  volume:1.5,  bag:"Backpack", owned:false},
+  ],
+  moto: [
+    {name:"Riding Gloves",             cat:"moto",     cost:60,  weight:0.3,  volume:0.5,  bag:"Backpack", owned:false},
+    {name:"Riding Jacket",             cat:"moto",     cost:200, weight:1.5,  volume:3,    bag:"Worn",     owned:false},
+  ],
+  safari: [
+    {name:"Binoculars",                cat:"safari",   cost:150, weight:0.7,  volume:1,    bag:"Backpack", owned:false},
+    {name:"Neutral Tone Clothes Set",  cat:"safari",   cost:100, weight:0.8,  volume:1.2,  bag:"Backpack", owned:false},
+  ],
+  long: [
+    {name:"Travel Merino Wool Bundle", cat:"clothes",  cost:280, weight:0.3,  volume:0.4,  bag:"Backpack", owned:false},
+    {name:"Electric Razor Set",        cat:"health",   cost:75,  weight:0.3,  volume:0.5,  bag:"Backpack", owned:true},
+    {name:"Anti-diarrheal Tablets",    cat:"health",   cost:0,   weight:0.05, volume:0.05, bag:"Backpack", owned:false},
+    {name:"Motion Sickness Pills",     cat:"health",   cost:0,   weight:0.05, volume:0.05, bag:"Backpack", owned:true},
+  ],
+  luxury: [
+    {name:"1 Button Shirt",            cat:"clothes",  cost:50,  weight:0.25, volume:0.4,  bag:"Backpack", owned:false},
+    {name:"2 Hats",                    cat:"clothes",  cost:0,   weight:0.2,  volume:0.8,  bag:"Worn",     owned:true},
+  ],
+  culture: [
+    {name:"1 Button Shirt",            cat:"clothes",  cost:50,  weight:0.25, volume:0.4,  bag:"Backpack", owned:false},
+    {name:"Compact Travel Drone",      cat:"creator",  cost:350, weight:0.6,  volume:0.6,  bag:"Global Briefcase", owned:false},
+  ],
+  couple: [
+    {name:"Shared Toiletry Bag",       cat:"health",   cost:0,   weight:0.3,  volume:1.5,  bag:"Backpack", owned:false},
+  ],
+  driving: [
+    {name:"International Drivers Permit",cat:"docs",   cost:0,   weight:0.01, volume:0.01, bag:"Global Briefcase", owned:true},
+  ],
+};
+
+// ── Tier 3: Build Trip Pack — base + adaptive layers ──────────
+export function buildTripPack(pp, tp) {
+  const t = Date.now();
+  let items = [...BASE_PACK];
+
+  const climate = pp?.climate || 'mediterranean';
+  if (climate.includes('tropical') || climate.includes('hot')) items.push(...ADAPTIVE_PACKS.tropical);
+  if (climate.includes('cool') || climate.includes('cold') || climate.includes('alpine')) items.push(...ADAPTIVE_PACKS.cold);
+
+  const activities = pp?.activities || [];
+  const cats = pp?.categories || [];
+  if (cats.includes('dive') || activities.includes('diving')) items.push(...ADAPTIVE_PACKS.dive);
+  if (cats.includes('creator')) items.push(...ADAPTIVE_PACKS.creator);
+  if (cats.includes('adventure') || activities.includes('trekking')) items.push(...ADAPTIVE_PACKS.adventure);
+  if (cats.includes('moto')) items.push(...ADAPTIVE_PACKS.moto);
+  if (cats.includes('safari')) items.push(...ADAPTIVE_PACKS.safari);
+
+  const dur = pp?.duration || 'medium';
+  if (dur === 'long') items.push(...ADAPTIVE_PACKS.long);
+
+  const style = tp?.style || '';
+  if (style === 'Luxury' || style === 'Comfort & Quality') items.push(...ADAPTIVE_PACKS.luxury);
+  if (activities.some(a => ['city-walking','fine-dining','culture'].includes(a))) items.push(...ADAPTIVE_PACKS.culture);
+  if (tp?.group === 'couple') items.push(...ADAPTIVE_PACKS.couple);
+  if (cats.includes('moto') || activities.includes('driving')) items.push(...ADAPTIVE_PACKS.driving);
+
+  // Deduplicate by name (first occurrence wins — base layer takes priority for owned status)
+  const seen = new Map();
+  items.forEach(item => { const k = item.name.toLowerCase(); if (!seen.has(k)) seen.set(k, item); });
+
+  const ess = (pp?.essentialItems || []).map(n => n.toLowerCase());
+  const opt = (pp?.optionalItems || []).map(n => n.toLowerCase());
+
+  return [...seen.values()].map((item, i) => ({
+    ...item,
+    id: t + i,
+    status: item.owned ? 'owned' : 'needed',
+    essential: ess.some(e => item.name.toLowerCase().includes(e)),
+    optional: opt.some(o => item.name.toLowerCase().includes(o)),
+  }));
+}
+
+// ── Default Pack List (fallback — no packProfile) ──────────────
 export function getDefaultPack() {
   const t = Date.now();
   return [

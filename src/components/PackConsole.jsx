@@ -10,7 +10,7 @@ import { useMobile } from '../hooks/useMobile';
 import { askAI, parseJSON } from '../utils/aiHelpers';
 import { TI, loadCoach, loadOnboard } from '../utils/storageHelpers';
 import { BAG_COLORS, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS } from '../constants/colors';
-import { getDefaultPack, mapPackItemsWithVolumes } from '../utils/packHelpers';
+import { buildTripPack, getDefaultPack, mapPackItemsWithVolumes } from '../utils/packHelpers';
 
 // ── CircularRing (pack-only) ─────────────────────────────────
 function CircularRing({value,max,label,sublabel,color,unit}) {
@@ -172,8 +172,10 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   ];
   const pp=tripData.packProfile||null;
   const [enabledCats,setEnabledCats]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_cats_v1");if(s)return JSON.parse(s);}catch(e){}return null;});
-  const CATS=enabledCats?ALL_CATS.filter(c=>enabledCats.includes(c.id)):pp?ALL_CATS.filter(c=>pp.categories?.includes(c.id)):ALL_CATS.filter(c=>["clothes","tech","creator","dive","health","travel","docs"].includes(c.id));
   useEffect(()=>{if(enabledCats)try{localStorage.setItem("1bn_pack_cats_v1",JSON.stringify(enabledCats));}catch(e){}},[enabledCats]);
+  // Derive visible categories from actual items — always in sync with tiered pack system
+  const itemCats=[...new Set(items.map(i=>i.cat))];
+  const CATS=enabledCats?ALL_CATS.filter(c=>enabledCats.includes(c.id)):ALL_CATS.filter(c=>itemCats.includes(c.id));
   const BAGS=["Backpack","Global Briefcase","Worn","Digital","Day Bag"];
   const WL=15,KGL=7,VL=45;
   const BAG_C=BAG_COLORS;
@@ -181,7 +183,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const [packTab,setPackTab]=useState("pack");
   const [packView,setPackView]=useState("dashboard");
   const [activeCategory,setActiveCategory]=useState(null);
-  const [items,setItems]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_v5");if(s){const p=JSON.parse(s);if(p?.length>0)return mapPackItemsWithVolumes(p);}}catch(e){}const base=getDefaultPack();if(!pp)return mapPackItemsWithVolumes(base);const visCats=pp.categories||[];const ess=(pp.essentialItems||[]).map(n=>n.toLowerCase());const opt=(pp.optionalItems||[]).map(n=>n.toLowerCase());return mapPackItemsWithVolumes(base.filter(i=>visCats.includes(i.cat)||i.cat==="docs").map(i=>({...i,essential:ess.some(e=>i.name.toLowerCase().includes(e)),optional:opt.some(o=>i.name.toLowerCase().includes(o))})).sort((a,b)=>(b.essential?1:0)-(a.essential?1:0)||(a.optional?1:0)-(b.optional?1:0)));});
+  const [items,setItems]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_v5");if(s){const p=JSON.parse(s);if(p?.length>0)return mapPackItemsWithVolumes(p);}}catch(e){}return mapPackItemsWithVolumes(pp?buildTripPack(pp,tripData.travelerProfile||null):getDefaultPack());});
   const [filterCat,setFilterCat]=useState("all");
   const [openCats,setOpenCats]=useState({});
   const [unit,setUnit]=useState("lbs");
@@ -209,7 +211,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
 
   useEffect(()=>{chatEnd.current?.scrollIntoView({behavior:"smooth"});},[chat]);
   useEffect(()=>{try{localStorage.setItem("1bn_pack_v5",JSON.stringify(items));}catch(e){}if(packFirstRender.current){packFirstRender.current=false;return;}setPackSaveFlash(true);if(packSaveRef.current)clearTimeout(packSaveRef.current);packSaveRef.current=setTimeout(()=>setPackSaveFlash(false),2000);},[items]);
-  useEffect(()=>{if(packTab==="refine"){posthog.capture("refine_tab_opened");if(!suggestDone&&!suggestLoading){const t=setTimeout(()=>genSuggestions(),800);return()=>clearTimeout(t);}}},[ packTab]);
+  useEffect(()=>{if(packTab==="tailor"){posthog.capture("tailor_tab_opened");if(!suggestDone&&!suggestLoading){const t=setTimeout(()=>genSuggestions(),800);return()=>clearTimeout(t);}}},[ packTab]);
 
   const countries=[...new Set(tripData.phases.map(p=>p.country))];
   const tripTypes=[...new Set(tripData.phases.map(p=>p.type))];
@@ -358,7 +360,7 @@ Return ONLY a JSON array:
         <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:4}}>
           {[
             {icon:"📦",label:"PACK LIST",color:"#FF9F43",desc:"Full gear list by category. Expand sections, check off what you own, edit weights and volumes."},
-            {icon:"✨",label:"REFINE",color:"#69F0AE",desc:"Co-Architect suggestions based on your destinations and travel style. Add what fits, skip what doesn't."},
+            {icon:"✨",label:"TAILOR",color:"#69F0AE",desc:"Co-Architect suggestions tailored to your specific destinations and travel style. Add what fits, skip what doesn't."},
             {icon:"📊",label:"BREAKDOWN",color:"#A29BFE",desc:"Visual weight and volume breakdown across every bag category."},
             {icon:"🛒",label:"NEED TO BUY",color:"#00E5FF",desc:"Focused list of items you haven't checked off yet. Your pre-trip shopping list."},
           ].map(t=>(
@@ -440,11 +442,11 @@ Return ONLY a JSON array:
           <span style={{fontSize:isMobile?12:15,lineHeight:1}}>{isFullscreen?"⊡":"⛶"}</span>
           <span style={{fontSize:isMobile?9:13,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
         </button>
-        {[{id:"pack",label:isMobile?"PACK":"PACK LIST",emoji:"🎒"},{id:"refine",label:"REFINE",emoji:"✦"},{id:"weight",label:isMobile?"WEIGHT":"BREAKDOWN",emoji:"⚖️"}].map(t=>(
+        {[{id:"pack",label:isMobile?"PACK":"PACK LIST",emoji:"🎒"},{id:"tailor",label:"TAILOR",emoji:"✦"},{id:"weight",label:isMobile?"WEIGHT":"BREAKDOWN",emoji:"⚖️"}].map(t=>(
           <button key={t.id} onClick={()=>{setPackTab(t.id);if(t.id!=="pack"){setPackView('dashboard');setActiveCategory(null);}}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",position:"relative"}}>
             {t.emoji&&<span style={{fontSize:isMobile?12:15,lineHeight:1}}>{t.emoji}</span>}
             <span style={{fontSize:isMobile?9:13,letterSpacing:isMobile?1:1,fontWeight:700,whiteSpace:"nowrap"}}>{t.label}</span>
-            {t.id==="refine"&&suggestions.length>0&&<div style={{position:"absolute",top:6,right:"20%",width:7,height:7,borderRadius:"50%",background:"#4D9FFF",boxShadow:"0 0 8px #4D9FFF"}}/>}
+            {t.id==="tailor"&&suggestions.length>0&&<div style={{position:"absolute",top:6,right:"20%",width:7,height:7,borderRadius:"50%",background:"#4D9FFF",boxShadow:"0 0 8px #4D9FFF"}}/>}
           </button>
         ))}
       </div>
@@ -533,7 +535,7 @@ Return ONLY a JSON array:
           </div>
         </div>
       )}
-      {packTab==="refine"&&(
+      {packTab==="tailor"&&(
         <div style={{overflowY:"auto",flex:1,padding:"12px 16px"}}>
           <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.15),rgba(255,217,61,0.05))",border:"1px solid rgba(169,70,29,0.35)",borderRadius:12,marginBottom:16,overflow:"hidden"}}>
             <button onClick={()=>{const next=!packBriefCollapsed;setPackBriefCollapsed(next);if(next)try{localStorage.setItem(briefKey,"1");}catch(e){}}} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"none",border:"none",cursor:"pointer"}}>
@@ -605,7 +607,7 @@ Return ONLY a JSON array:
           {suggestDone&&!suggestLoading&&<div style={{borderTop:"1px solid rgba(196,87,30,0.25)",paddingTop:16}}>
             <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",fontWeight:300,color:"#FFD93D",marginBottom:12,lineHeight:1.4}}>Refine packing list with your co-architect</div>
             <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:12,maxHeight:220,overflowY:"auto"}}>
-              {chat.length===0&&<div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,200,120,0.82)",lineHeight:1.7,padding:"4px 0"}}>"Need help staying under 15 lbs? Tell me and I'll refine your list."</div>}
+              {chat.length===0&&<div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,200,120,0.82)",lineHeight:1.7,padding:"4px 0"}}>"Tell me your trip vibe and I'll tailor your pack to match."</div>}
               {chat.map((m,i)=>(
                 <div key={i} style={{display:"flex",gap:7,flexDirection:m.role==="user"?"row-reverse":"row"}}>
                   <div style={{width:20,height:20,borderRadius:"50%",background:m.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flexShrink:0}}>{m.role==="ai"?"✦":"M"}</div>

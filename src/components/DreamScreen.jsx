@@ -131,30 +131,35 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
         console.log('[1BN] packProfile missing from AI — synthesizing from trip data');
         const phTypes=(parsed.phases||[]).map(p=>(p.type||'').toLowerCase());
         const hasDive=phTypes.includes('dive')||interests.includes('diving')||data.selectedGoal==='diver';
-        const hasTrek=phTypes.includes('trek')||interests.includes('adventure');
-        const hasCreator=interests.includes('vlog');
+        const hasTrek=phTypes.includes('trek')||phTypes.includes('adventure')||interests.includes('adventure');
+        const hasCreator=interests.includes('vlog');        // creator only if user is a vlogger
         const hasMoto=interests.includes('moto');
         const hasSafari=interests.includes('safari');
+        // Base categories — always present via BASE_PACK; only add specialty cats that have ADAPTIVE_PACKS entries
         const cats=["clothes","tech","travel","health","docs"];
         const hidden=[];
-        const tripType=phTypes[0]||"culture";
-        const isNonAdventure=["music","culture","nomad","city"].includes(tripType);
         if(hasDive)cats.push("dive");else hidden.push("dive");
         if(hasCreator)cats.push("creator");else hidden.push("creator");
-        if(hasMoto){cats.push("moto");} if(hasSafari){cats.push("safari");} if(hasTrek){cats.push("adventure");}
-        if(isNonAdventure){if(!hasDive)hidden.push("scuba");hidden.push("skiing","climbing");}
+        if(hasMoto)cats.push("moto");
+        if(hasSafari)cats.push("safari");
+        if(hasTrek)cats.push("adventure");
         const tn=(parsed.phases||[]).reduce((s,p)=>s+(p.nights||0),0);
         const dur=tn<14?"short":tn<=30?"medium":"long";
-        const tropical=["thailand","indonesia","philippines","maldives","honduras","belize","costa rica","vietnam","malaysia","india","mexico","barbados","tanzania"];
-        const cold=["iceland","norway","switzerland","japan","nepal"];
-        const dests=(parsed.phases||[]).map(p=>(p.country||'').toLowerCase());
-        const climate=dests.some(d=>tropical.some(t=>d.includes(t)))?"tropical-hot":dests.some(d=>cold.some(c=>d.includes(c)))?"temperate-cool":"mediterranean";
+        const tropical=["thailand","indonesia","philippines","maldives","honduras","belize","costa rica","vietnam","malaysia","india","mexico","barbados","tanzania","kenya","tanzania","ghana","senegal","colombia","brazil","peru","ecuador"];
+        const cold=["iceland","norway","sweden","finland","switzerland","austria","canada","nepal","mongolia","new zealand","patagonia"];
+        const dests=(parsed.phases||[]).map(p=>(p.country||p.destination||'').toLowerCase());
+        const climate=dests.some(d=>cold.some(c=>d.includes(c)))?"temperate-cool":dests.some(d=>tropical.some(t=>d.includes(t)))?"tropical-hot":"mediterranean";
         const acts=[];
-        if(hasDive){acts.push("diving","snorkeling");} if(hasTrek)acts.push("trekking"); acts.push("city-walking");
-        if(travelStyle==="Luxury")acts.push("fine-dining"); if(interests.includes('food'))acts.push("fine-dining");
+        if(hasDive)acts.push("diving","snorkeling");
+        if(hasTrek)acts.push("trekking","hiking");
+        acts.push("city-walking");
+        if(travelStyle==="Luxury"||interests.includes('food'))acts.push("fine-dining");
         if(interests.includes('wellness'))acts.push("yoga");
         const essential=["passport","universal adapter"];
-        if(hasDive){essential.push("mask","dive computer","reef-safe sunscreen");} if(hasTrek)essential.push("hiking boots","rain jacket"); if(climate==="tropical-hot")essential.push("sunscreen","insect repellent");
+        if(hasDive)essential.push("dive mask","dive computer","reef-safe sunscreen");
+        if(hasTrek)essential.push("hiking boots","rain jacket");
+        if(climate==="tropical-hot")essential.push("sunscreen","insect repellent");
+        if(dur==="long")essential.push("travel merino wool");
         parsed.packProfile={categories:cats,hiddenCategories:hidden,tripType:phTypes[0]||"culture",climate,season:"dry",tempRange:climate==="tropical-hot"?"28-35C":climate==="temperate-cool"?"10-18C":"18-28C",activities:[...new Set(acts)],duration:dur,essentialItems:essential,optionalItems:hasDive?[]:["wetsuit","dive computer","BCD"]};
       }
       console.log('[1BN] packProfile:',parsed?.packProfile);
