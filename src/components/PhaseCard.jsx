@@ -65,7 +65,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
             {phase.totalDives>0&&<span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,fontWeight:700,color:'#00E5FF'}}>🤿{phase.totalDives}</span>}
             <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:700,color:'#FFD93D',marginLeft:'auto'}}>{fmt(phase.totalBudget)}</span>
           </div>
-          {phase.note&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:'italic',color:'rgba(255,255,255,0.55)',lineHeight:1.7,paddingLeft:42,marginTop:8,borderLeft:'2px solid rgba(255,255,255,0.08)',marginLeft:40}}>{phase.note}</div>}
+          {phase.note&&<div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:400,fontStyle:'italic',color:'rgba(255,255,255,0.82)',lineHeight:1.75,paddingLeft:42,marginTop:8,borderLeft:'2px solid rgba(255,255,255,0.15)',marginLeft:40}}>{phase.note}</div>}
           {pct>0&&<div style={{marginTop:10,paddingLeft:42,display:'flex',alignItems:'center',gap:8}}>
             <div style={{height:2,background:'rgba(255,255,255,0.06)',borderRadius:2,overflow:'hidden',width:80}}><div style={{height:'100%',width:pct+'%',background:`linear-gradient(90deg,${phase.color}55,${phase.color})`,borderRadius:2,transition:'width 0.60s cubic-bezier(0.25,0.46,0.45,0.94)'}}/></div>
             <span style={{fontSize:11,color:'rgba(255,255,255,0.3)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{pct}% PLANNED</span>
@@ -94,7 +94,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
           <span style={{fontSize:15,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",flexShrink:0}}>{fmt(phase.totalBudget)}</span>
           <span style={{fontSize:14,color:"rgba(255,255,255,0.30)",flexShrink:0}}>›</span>
         </div>
-        {phase.note&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.62)",lineHeight:1.65,paddingLeft:28,marginBottom:6,marginTop:1}}>{phase.note}</div>}
+        {phase.note&&<div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:400,fontStyle:"italic",color:"rgba(255,255,255,0.82)",lineHeight:1.7,paddingLeft:28,marginBottom:8,marginTop:3}}>{phase.note}</div>}
         <div style={{display:"flex",alignItems:"center",gap:8,paddingLeft:28,flexWrap:"nowrap"}}>
           <span style={{fontSize:15,color:"rgba(255,255,255,0.62)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,whiteSpace:"nowrap"}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
           <span style={{fontSize:15,color:phase.color,fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>🌙{phase.totalNights} Nights</span>
