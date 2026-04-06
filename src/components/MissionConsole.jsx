@@ -18,7 +18,7 @@ import PhaseDetailPage from './PhaseDetailPage';
 import Timeline from './Timeline';
 import IntelMap from './IntelMap';
 
-function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading}) {
+function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading,onUpdateTripData}) {
   const isMobile=useMobile();
   const [tab,setTab]=useState(initialTab);
   const [intelMapActive,setIntelMapActive]=useState(false);
@@ -53,6 +53,18 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   useEffect(()=>saveReturn(returnData),[returnData]);
   const uR=(f,v)=>setReturnData(d=>({...d,flight:{...d.flight,[f]:v}}));
 
+  // Departure city — inline editable
+  const [editingDep,setEditingDep]=useState(false);
+  const [depInput,setDepInput]=useState(tripData.departureCity||tripData.city||"");
+  useEffect(()=>{if(!editingDep)setDepInput(tripData.departureCity||tripData.city||"");},[tripData.departureCity,tripData.city,editingDep]);
+  const depRef=useRef(null);
+  useEffect(()=>{if(editingDep)depRef.current?.focus();},[editingDep]);
+  function saveDep(){
+    const val=depInput.trim();
+    if(onUpdateTripData)onUpdateTripData({departureCity:val,city:val});
+    setEditingDep(false);
+  }
+
   async function openIntel(dest,phaseName,type){
     setExplorerDest({destination:dest,phaseName,type});setTab("intel");
     if(explorerData[dest]&&!explorerData[dest].error)return;
@@ -71,7 +83,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
 
   return(
     <div className="mc-root" style={{animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
-      <WorldMapBackground phases={tripData.phases||[]} activeCountry={phaseDetailView?.country} departureCity={tripData.departureCity||tripData.city||""}/>
+      <WorldMapBackground phases={tripData.phases||[]} activeCountry={phaseDetailView?.country} departureCity={depInput}/>
       {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} homeCity={tripData.departureCity||tripData.city||""} segPhases={segPhases} warningFlags={warningFlags} onDismissWarning={dismissWarning} allPhases={tripData.phases||[]}/>}
       {showOnboard&&<OnboardCard storageKey="trip" ctaLabel="✦ ENTER MY EXPEDITION" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>
@@ -114,6 +126,29 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
         {tripData.tripName&&<div style={{marginBottom:isMobile?5:7,position:"relative"}}>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:17,fontWeight:300,fontStyle:"italic",color:"#E8DCC8",lineHeight:1}}>{tripData.tripName}</div>
           {!isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:2,marginTop:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{[...new Set(flatPhases.map(p=>p.country))].join(" · ")}</div>}
+          <div style={{marginTop:5,display:"flex",alignItems:"center",gap:6}}>
+            {editingDep?(
+              <input
+                ref={depRef}
+                value={depInput}
+                onChange={e=>setDepInput(e.target.value)}
+                onBlur={saveDep}
+                onKeyDown={e=>{if(e.key==="Enter")saveDep();if(e.key==="Escape"){setEditingDep(false);}}}
+                placeholder="Departure city..."
+                style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,color:"#FFD93D",background:"rgba(255,217,61,0.08)",border:"1px solid rgba(255,217,61,0.35)",borderRadius:5,padding:"3px 8px",outline:"none",width:isMobile?130:160}}
+              />
+            ):(
+              <button
+                onClick={()=>setEditingDep(true)}
+                style={{display:"flex",alignItems:"center",gap:5,background:"none",border:"none",padding:0,cursor:"pointer"}}
+              >
+                <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:10,letterSpacing:2,color:depInput?"rgba(255,217,61,0.7)":"rgba(255,217,61,0.35)",fontWeight:700}}>
+                  {depInput?`FROM · ${depInput.toUpperCase()}`:"＋ SET DEPARTURE CITY"}
+                </span>
+                <span style={{fontSize:9,color:"rgba(255,217,61,0.3)"}}>✎</span>
+              </button>
+            )}
+          </div>
         </div>}
         {isMobile?(()=>{
           const allSegD=loadSeg();
@@ -264,7 +299,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           <div>
             {!explorerDest?(
               <div>
-                <IntelMap tripData={tripData} isMobile={isMobile} onSelectPhase={(phase)=>openIntel(phase.name,phase.name,phase.type)}/>
+                <IntelMap tripData={{...tripData,departureCity:depInput}} isMobile={isMobile} onSelectPhase={(phase)=>openIntel(phase.name,phase.name,phase.type)}/>
               </div>
             ):(
               <div>

@@ -184,7 +184,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
 
           const label = document.createElement('div');
           label.textContent = phase.name;
-          label.style.cssText = `color:#FFF;font-family:Inter,sans-serif;font-size:11px;font-weight:600;white-space:nowrap;background:rgba(10,7,5,0.88);padding:2px 6px;border-radius:4px;pointer-events:none;letter-spacing:0.3px;`;
+          label.style.cssText = `color:#FFF;font-family:Inter,sans-serif;font-size:11px;font-weight:600;white-space:nowrap;background:rgba(200,30,30,0.92);padding:2px 6px;border-radius:4px;pointer-events:none;letter-spacing:0.3px;`;
 
           el.appendChild(dot);
           el.appendChild(label);
