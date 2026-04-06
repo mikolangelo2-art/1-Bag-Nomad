@@ -173,9 +173,6 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const pp=tripData.packProfile||null;
   const [enabledCats,setEnabledCats]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_cats_v1");if(s)return JSON.parse(s);}catch(e){}return null;});
   useEffect(()=>{if(enabledCats)try{localStorage.setItem("1bn_pack_cats_v1",JSON.stringify(enabledCats));}catch(e){}},[enabledCats]);
-  // Derive visible categories from actual items — always in sync with tiered pack system
-  const itemCats=[...new Set(items.map(i=>i.cat))];
-  const CATS=enabledCats?ALL_CATS.filter(c=>enabledCats.includes(c.id)):ALL_CATS.filter(c=>itemCats.includes(c.id));
   const BAGS=["Backpack","Global Briefcase","Worn","Digital","Day Bag"];
   const WL=15,KGL=7,VL=45;
   const BAG_C=BAG_COLORS;
@@ -184,6 +181,9 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const [packView,setPackView]=useState("dashboard");
   const [activeCategory,setActiveCategory]=useState(null);
   const [items,setItems]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_v5");if(s){const p=JSON.parse(s);if(p?.length>0)return mapPackItemsWithVolumes(p);}}catch(e){}return mapPackItemsWithVolumes(pp?buildTripPack(pp,tripData.travelerProfile||null):getDefaultPack());});
+  // Derive visible categories from actual items — always in sync with tiered pack system
+  const itemCats=[...new Set(items.map(i=>i.cat))];
+  const CATS=enabledCats?ALL_CATS.filter(c=>enabledCats.includes(c.id)):ALL_CATS.filter(c=>itemCats.includes(c.id));
   const [filterCat,setFilterCat]=useState("all");
   const [openCats,setOpenCats]=useState({});
   const [unit,setUnit]=useState("lbs");

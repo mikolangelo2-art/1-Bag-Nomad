@@ -74,7 +74,11 @@ const CITY_COORDS = {
   'Bogota': [-74.1, 4.7], 'Bogotá': [-74.1, 4.7],
   'Cartagena': [-75.5, 10.4], 'Mexico': [-102.5, 23.6], 'Mexico City': [-99.1, 19.4],
   'Tulum': [-87.5, 20.2], 'Cancun': [-86.8, 21.2], 'Oaxaca': [-96.7, 17.1],
+  'Puerto Vallarta': [-105.2, 20.6], 'Puerto Vallarta Historic Center': [-105.2, 20.6],
   'Guadalajara': [-103.4, 20.7], 'San Miguel de Allende': [-100.7, 20.9],
+  'Cabo San Lucas': [-109.9, 22.9], 'Los Cabos': [-109.7, 23.1],
+  'Playa del Carmen': [-87.1, 20.6], 'Cozumel': [-86.9, 20.5],
+  'Merida': [-89.6, 20.9], 'San Cristobal de las Casas': [-92.6, 16.7],
 
   // South America
   'Brazil': [-51.9, -14.2], 'São Paulo': [-46.6, -23.5], 'Rio de Janeiro': [-43.2, -22.9],
