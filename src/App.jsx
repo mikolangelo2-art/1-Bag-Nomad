@@ -205,7 +205,7 @@ input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.45)!important;
 .cta-build-btn{width:100%;padding:16px;border-radius:13px;border:none;background:linear-gradient(135deg,#A9461D 0%,#C4571E 38%,#69F0AE 100%);color:#060A0F;font-size:12px;font-weight:900;cursor:pointer;letter-spacing:2.5px;font-family:'Inter',system-ui,-apple-system,sans-serif;animation:consolePulse 2.8s ease-in-out infinite;transition:transform 0.2s}
 .cta-build-btn:hover{transform:translateY(-2px);animation:none}
 .build-root{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#120A04;min-height:100vh;color:#FFF;display:flex;flex-direction:column}
-.mc-root{font-family:'Inter',system-ui,-apple-system,sans-serif;background:radial-gradient(ellipse at 50% 0%,rgba(0,229,255,0.04) 0%,transparent 50%) no-repeat fixed,#120A04;min-height:100vh;color:#FFF;display:flex;flex-direction:column}
+.mc-root{font-family:'Inter',system-ui,-apple-system,sans-serif;background:radial-gradient(ellipse at 50% 0%,rgba(0,229,255,0.06) 0%,transparent 55%) no-repeat fixed,#000C18;min-height:100vh;color:#FFF;display:flex;flex-direction:column}
 .mc-tab{background:none;border:none;cursor:pointer;padding:9px 12px;font-size:11px;letter-spacing:2px;white-space:nowrap;color:#FFF;border-bottom:2px solid transparent;transition:all 0.30s cubic-bezier(0.25,0.46,0.45,0.94);font-family:'Inter',system-ui,-apple-system,sans-serif;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
 .mc-tab.active{color:#00E5FF;border-bottom-color:#00E5FF}
 .mc-content{padding:14px 22px;overflow-y:auto;flex:1;min-height:0}

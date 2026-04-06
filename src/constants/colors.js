@@ -19,7 +19,7 @@ export const BG_DARK_TRIP    = "rgba(18,10,4,0.92)";  // BG_PAGE at 92% opacity
 export const BG_PAGE_LEGACY  = "#0A0705";              // Dark Walnut — retired
 export const BLACK_OVERLAY   = "rgba(0,0,0,0.55)";
 export const BG_DREAM_GRADIENT = "radial-gradient(ellipse at 50% 0%, rgba(169,70,29,0.12) 0%, transparent 60%), #120A04";
-export const BG_TRIP_GRADIENT  = "radial-gradient(ellipse at 50% 0%, rgba(0,229,255,0.04) 0%, transparent 50%), #000D1A";
+export const BG_TRIP_GRADIENT  = "radial-gradient(ellipse at 50% 0%, rgba(0,229,255,0.06) 0%, transparent 55%), #000C18";
 export const BG_PACK_GRADIENT  = "radial-gradient(ellipse at 50% 0%, rgba(255,159,67,0.10) 0%, transparent 55%), #120A04";
 
 // ── Parchment / Sand Alphas ──────────────────────────────────
