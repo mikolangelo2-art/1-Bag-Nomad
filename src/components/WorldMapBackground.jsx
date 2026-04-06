@@ -103,8 +103,19 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, d
     const geoStroke = dream ? '#E8DCC8' : isPack ? '#FF9F43' : '#00E5FF';
     const geoStrokeOp = dream ? 0.03 : isPack ? 0.08 : (isMobileMap ? 0.22 : 0.18);
 
-    // Departure city coord — prepend to route if found
-    const depCoord = departureCity ? (CITY_COORDS[departureCity] || null) : null;
+    // Departure city coord — handles full airlabs strings like "Denver International Airport, US"
+    const depCoord = (()=>{
+      if(!departureCity) return null;
+      if(CITY_COORDS[departureCity]) return CITY_COORDS[departureCity];
+      const stripped = departureCity
+        .replace(/\s+International\s+Airport.*$/i,'')
+        .replace(/\s+Intl\s+Airport.*$/i,'')
+        .replace(/\s+Airport.*$/i,'')
+        .replace(/,\s*[A-Z]{2,3}$/,'')
+        .replace(/,.*$/,'')
+        .trim();
+      return CITY_COORDS[stripped] || null;
+    })();
     const routeCoords = depCoord ? [depCoord, ...coords] : coords;
 
     return (

@@ -143,7 +143,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
                 style={{display:"flex",alignItems:"center",gap:5,background:"none",border:"none",padding:0,cursor:"pointer"}}
               >
                 <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:10,letterSpacing:2,color:depInput?"rgba(255,217,61,0.7)":"rgba(255,217,61,0.35)",fontWeight:700}}>
-                  {depInput?`FROM · ${depInput.toUpperCase()}`:"＋ SET DEPARTURE CITY"}
+                  {depInput?`FROM · ${depInput.replace(/\s+International\s+Airport.*$/i,'').replace(/\s+Intl\s+Airport.*$/i,'').replace(/\s+Airport.*$/i,'').replace(/,\s*[A-Z]{2,3}$/,'').replace(/,.*$/,'').trim().toUpperCase()}`:"＋ SET DEPARTURE CITY"}
                 </span>
                 <span style={{fontSize:9,color:"rgba(255,217,61,0.3)"}}>✎</span>
               </button>
