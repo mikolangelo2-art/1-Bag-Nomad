@@ -70,9 +70,9 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
         ))}
       </div>
       <div style={{display:"flex",alignItems:"center",gap:12,padding:"8px 14px",background:"rgba(255,255,255,0.02)",borderBottom:"1px solid #111D2A",flexShrink:0}}>
-        <span style={{fontSize:15,color:"rgba(255,255,255,0.75)",letterSpacing:1}}>DEPARTURE</span>
-        <input type="date" style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:6,color:"#00E5FF",fontSize:15,padding:"3px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",colorScheme:"dark"}} value={startDate} onChange={e=>setStartDate(e.target.value)} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
-        <span style={{fontSize:15,color:"rgba(255,255,255,0.65)",marginLeft:"auto"}}>{totalNights} nights</span>
+        <span style={{fontSize:isMobile?9:11,fontWeight:700,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"rgba(255,255,255,0.4)",letterSpacing:2}}>DEPARTURE</span>
+        <input type="date" style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.18)",borderRadius:6,color:"rgba(0,229,255,0.85)",fontSize:isMobile?13:14,padding:"3px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",colorScheme:"dark"}} value={startDate} onChange={e=>setStartDate(e.target.value)} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.5)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.10)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.18)";e.target.style.boxShadow="none";}}/>
+        <span style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.35)",marginLeft:"auto",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{totalNights}n</span>
       </div>
       {isMobile&&<div style={{display:"flex",borderBottom:"1px solid #1a2535",background:"#080D14",flexShrink:0}}>
         {["chat","itinerary"].map(t=><button key={t} onClick={()=>setMobileTab(t)} style={{flex:1,padding:"10px 0",background:"none",border:"none",borderBottom:mobileTab===t?"2px solid #69F0AE":"2px solid transparent",color:mobileTab===t?"#69F0AE":"rgba(255,255,255,0.4)",fontSize:11,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,minHeight:44}}>{t==="itinerary"?"🗺️ ITINERARY":"✨ TRIP BRIEF"}</button>)}
@@ -107,7 +107,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
         )}
         {(!isMobile||mobileTab==="chat")&&(
           <div style={{flex:1,display:"flex",flexDirection:"column",borderRight:isMobile?"none":"1px solid #111D2A",...(isMobile?{flex:1,borderTop:"1px solid #111D2A"}:{})}}>
-            <div style={{padding:isMobile?"8px 16px":"8px 11px",borderBottom:"1px solid #111D2A",fontSize:15,color:"#C4571E",letterSpacing:2,flexShrink:0}}>{data.isRevision?"✏️ REVISE YOUR EXPEDITION":"✦ CO-ARCHITECT"}</div>
+            <div style={{padding:isMobile?"6px 16px":"8px 11px",borderBottom:"1px solid #111D2A",fontSize:isMobile?10:13,fontWeight:600,color:"rgba(196,87,30,0.7)",letterSpacing:isMobile?2:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>{data.isRevision?"✏️ REVISE YOUR EXPEDITION":"✦ CO-ARCHITECT"}</div>
             <div style={{flex:1,overflowY:"auto",padding:isMobile?16:20,display:"flex",flexDirection:"column",gap:14}}>
               {chat.map((msg,i)=>(
                 <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",flexDirection:msg.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>

@@ -241,7 +241,6 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
               <span style={{fontSize:11,fontWeight:700,color:"#FFD93D",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flex:1}}>✦ EXPEDITION COMPLETE · TAP TO CELEBRATE</span>
               <span style={{fontSize:12,color:"rgba(255,217,61,0.5)"}}>→</span>
             </div>}
-            {tripData.visionNarrative&&(()=>{const _vn=tripData.visionNarrative;const _lim=160;const _trunc=_vn.length>_lim?_vn.slice(0,_lim).slice(0,_vn.slice(0,_lim).lastIndexOf(' '))+'...':_vn;return(<div style={{marginBottom:8}}><div style={{fontSize:11,color:"rgba(232,220,200,0.50)",letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,240,210,0.80)",lineHeight:1.75,borderLeft:"2px solid rgba(232,220,200,0.12)",paddingLeft:12,textAlign:"left"}}>"{_trunc}"</div></div>);})()}
             <div style={{fontSize:isMobile?12:14,color:"#E8DCC8",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:isMobile?"normal":"nowrap"}}>YOUR EXPEDITION · {segPhases.length} PHASES</div>
             {isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>TAP PHASE TO EXPAND</div>}
             {isMobile&&(
