@@ -49,6 +49,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
     return findSuggestionForSegment(all, segment.name);
   })();
   const dismissKey = segment.name || `${phaseId}`;
+  const caFromArch=(()=>{const fp=(allPhases||[]).find(p=>p.type!=="Return"&&p.name===segment.name&&(!segment.country||p.country===segment.country));return fp?.caActivities?.filter(a=>a&&(a.name||a.title))||[];})();
   const [dismissed,setDismissed]=useState(()=>loadDismissed());
   const isDism=(type)=>!!dismissed[`${dismissKey}_${type}`];
   const dismiss=(type)=>{const d={...dismissed,[`${dismissKey}_${type}`]:true};setDismissed(d);saveDismissed(d);};
@@ -250,6 +251,25 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         </div>}
         {/* ACTIVITIES */}
         {tab==="activities"&&<div style={{padding:0}}>
+          {caFromArch.length>0&&<div style={{marginBottom:16}}>
+            <div style={{...suggestionHeaderStyle,marginBottom:10}}>✦ FROM YOUR CO-ARCHITECT CONVERSATION</div>
+            {caFromArch.map((a,idx)=>{
+              const actName=a.name||a.title||"";
+              const actNotes=a.notes||a.brief||"";
+              return(
+                <div key={`ca-act-${idx}`} className="sg-suggestion-card" style={{...suggestionCardStyle,marginBottom:10}}>
+                  <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{actName}</div>
+                  {a.provider&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:4}}>{a.provider}</div>}
+                  {actNotes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{actNotes}</div>}
+                  {a.estimatedCost&&<div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:8}}>Est. {a.estimatedCost}</div>}
+                  <div style={disclaimerStyle}>Mentioned in chat — add to your plan if it fits</div>
+                  <div style={{display:'flex',gap:8}}>
+                    <button onClick={()=>acceptActivity({name:actName,notes:actNotes,estimatedCost:a.estimatedCost||a.cost,provider:a.provider||""})} style={acceptBtnStyle}>+ ADD TO PLAN</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>}
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>

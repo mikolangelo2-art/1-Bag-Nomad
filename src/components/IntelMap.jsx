@@ -31,7 +31,16 @@ const INTEL_CSS = `
 `;
 
 function resolveCoord(phase) {
-  return CITY_COORDS[phase.name] || CITY_COORDS[phase.country] || null;
+  if (phase?.type === 'Return') return null;
+  const dest = phase.destination || phase.name;
+  const country = (phase.country || '').trim();
+  const compound = dest && country ? `${dest}, ${country}` : null;
+  return (compound && CITY_COORDS[compound])
+    || (phase.name && CITY_COORDS[phase.name])
+    || (dest && CITY_COORDS[dest])
+    || (phase.destination && CITY_COORDS[phase.destination])
+    || (phase.country && CITY_COORDS[phase.country])
+    || null;
 }
 
 const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
@@ -42,11 +51,14 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
   const [mapFailed, setMapFailed] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
 
-  const phases = tripData?.phases || [];
+  const destPhases = useMemo(
+    () => (tripData?.phases || []).filter(p => p.type !== 'Return'),
+    [tripData?.phases]
+  );
 
-  const phaseCoords = useMemo(() =>
-    phases.map(p => ({ ...p, coord: resolveCoord(p) })).filter(p => p.coord),
-    [phases]
+  const phaseCoords = useMemo(
+    () => destPhases.map(p => ({ ...p, coord: resolveCoord(p) })).filter(p => p.coord),
+    [destPhases]
   );
 
   // Fade other markers when one is selected
@@ -89,7 +101,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
       map.resize();
 
       setTimeout(() => {
-        const allPhases = tripData?.phases || [];
+        const allPhases = (tripData?.phases || []).filter(p => p.type !== 'Return');
         const resolved = allPhases.map(p => ({ ...p, coord: resolveCoord(p) })).filter(p => p.coord);
         const coords = resolved.map(p => p.coord);
 
@@ -369,7 +381,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
         pointerEvents: "none",
         zIndex: 50,
       }}>
-        {phaseCoords.length} PHASES · TAP A DOT
+        {phaseCoords.length} {phaseCoords.length === 1 ? 'DESTINATION' : 'DESTINATIONS'} · TAP A DOT
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
   const [launching,setLaunching]=useState(false);
   const [mounted,setMounted]=useState(!freshMount);
   const [bdOpen,setBdOpen]=useState(true);
-  useEffect(()=>{window.scrollTo(0,0);posthog.capture("vision_reveal_viewed",{phases_count:vd.phases?.length,total_budget:vd.totalBudget,countries_count:vd.countries});posthog.capture("$pageview",{$current_url:"/vision-reveal"});if(freshMount){const t=setTimeout(()=>setMounted(true),50);return()=>clearTimeout(t);}},[]);
+  useEffect(()=>{const destCount=(data.visionData?.phases||[]).filter(p=>p.type!=="Return").length;window.scrollTo(0,0);posthog.capture("vision_reveal_viewed",{phases_count:destCount,total_budget:data.visionData?.totalBudget,countries_count:data.visionData?.countries});posthog.capture("$pageview",{$current_url:"/vision-reveal"});if(freshMount){const t=setTimeout(()=>setMounted(true),50);return()=>clearTimeout(t);}},[]);
   useEffect(()=>{
     let i=0;const txt=vd.narrative||"";
     const t=setTimeout(()=>{
@@ -121,7 +121,7 @@ Return ONLY valid JSON:
         </div>
         {showStats&&(
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:isMobile?6:8,marginBottom:16,animation:"fadeUp 0.5s ease"}}>
-            {[{label:"COUNTRIES",value:vd.countries,color:"#FFD93D"},{label:"PHASES",value:vd.phases?.length,color:"#FFD93D"},{label:"NIGHTS",value:vd.totalNights,color:"#FFD93D"},{label:"BUDGET",value:fmt(vd.totalBudget||0),color:"#FFD93D"}].map(s=>(
+            {[{label:"COUNTRIES",value:vd.countries,color:"#FFD93D"},{label:"PHASES",value:(vd.phases||[]).filter(p=>p.type!=="Return").length,color:"#FFD93D"},{label:"NIGHTS",value:vd.totalNights,color:"#FFD93D"},{label:"BUDGET",value:fmt(vd.totalBudget||0),color:"#FFD93D"}].map(s=>(
               <div key={s.label} className="stat-card" style={{overflow:"hidden"}}><div style={{fontSize:isMobile?9:11,color:"rgba(255,255,255,0.45)",letterSpacing:isMobile?1:1.5,marginBottom:4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>{s.label}</div><div style={{fontSize:isMobile?16:22,fontWeight:700,color:s.color,whiteSpace:"nowrap"}}>{s.value}</div></div>
             ))}
           </div>

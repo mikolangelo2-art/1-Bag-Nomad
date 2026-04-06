@@ -20,7 +20,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   const colors=PALETTE_8;
   // Filter return phase — kept separately, re-attached in buildHandoff
   const [returnPhaseData]=useState(()=>(visionData.phases||[]).find(p=>p.type==="Return")||null);
-  const [items,setItems]=useState(()=>(visionData.phases||[]).filter(p=>p.type!=="Return").map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:p.budget||estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8],why:p.why||""})));
+  const [items,setItems]=useState(()=>(visionData.phases||[]).filter(p=>p.type!=="Return").map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:p.budget||estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8],why:p.why||"",caActivities:Array.isArray(p.caActivities)?p.caActivities.slice():[]})));
   const [startDate,setStartDate]=useState(data.date||"2026-09-16");
   const [chat,setChat]=useState([{role:"ai",text:data.isRevision?"Welcome back — let's revise your expedition. ✏️\n\nYour itinerary is loaded. Tell me what you'd like to change.":"Welcome — I'm your expedition co-architect. ✨\n\nYour vision is incredible and I'm genuinely excited to help you build it.",isWelcome:true}]);
   const [input,setInput]=useState("");
@@ -63,6 +63,8 @@ Return ONLY valid JSON:
   "changes": [{"id": 0, "field": "destination", "value": "New Place", "country": "New Country"}, {"id": 0, "field": "nights", "value": 5}, {"id": 0, "field": "cost", "value": 800}],
   "addPhases": [{"destination": "City", "country": "Country", "nights": 5, "type": "Culture", "cost": 700, "flag": "🌍", "insertAfter": 1}],
   "removePhaseIds": [],
+  "activitySuggestions": [],
+  "targetDestination": "",
   "warnings": []
 }
 RULES:
@@ -74,7 +76,8 @@ RULES:
 - When using addPhases: reduce nights on existing phases so total stays at ${totalNights} — do not extend the trip
 - If change would exceed budget of $${hasBudget?data.budgetAmount:"N/A"}, add a warning and suggest adjustment
 - ALWAYS apply changes — do not just suggest them
-- When reporting destination count to user, say "${items.length} destinations" (exclude return)`,600,0.4);
+- When reporting destination count to user, say "${items.length} destinations" (exclude return)
+- If the user asks to add or remember a specific activity for a stop, set targetDestination to that stop's city name and activitySuggestions to an array of objects: {"name":"...","notes":"optional","estimatedCost":"optional"} (or plain strings for name-only)`,600,0.4);
       const parsed=parseJSON(raw);
       if(parsed){
         setChat(p=>[...p,{role:"ai",text:parsed.response}]);
@@ -106,12 +109,24 @@ RULES:
                 destination:np.destination,country:np.country,
                 nights:np.nights||5,cost:np.cost||0,
                 type:np.type||"Exploration",flag:np.flag||"🌍",
-                color:np.color||"#A29BFE",why:np.why||""
+                color:np.color||"#A29BFE",why:np.why||"",caActivities:[]
               };
               const insertIdx=np.insertAfter?u.findIndex(it=>it.id===np.insertAfter):-1;
               if(insertIdx>=0)u.splice(insertIdx+1,0,newItem);
               else u.push(newItem);
             });
+          }
+          if(parsed.activitySuggestions?.length&&parsed.targetDestination){
+            const tgt=(parsed.targetDestination||"").trim().toLowerCase();
+            const norm=(s)=>typeof s==="string"?{name:s,notes:"",estimatedCost:"",provider:""}:{name:s.name||s.title||"",notes:s.notes||"",estimatedCost:s.estimatedCost||s.cost||"",provider:s.provider||""};
+            const added=parsed.activitySuggestions.map(norm).filter(a=>a.name);
+            if(tgt&&added.length){
+              u=u.map(it=>{
+                const d=(it.destination||"").trim().toLowerCase();
+                if(d!==tgt&&!d.startsWith(tgt)&&!tgt.startsWith(d))return it;
+                return{...it,caActivities:[...(it.caActivities||[]),...added]};
+              });
+            }
           }
           // Reassign sequential ids
           return u.map((it,idx)=>({...it,id:idx+1}));
@@ -124,7 +139,7 @@ RULES:
   }
   // Architecture #1: each item auto-wraps as 1 segment
   function buildHandoff(){
-    const destPhases=items.map((item,i)=>({id:i+1,name:item.destination,flag:item.flag,color:item.color,budget:item.cost,nights:item.nights,type:item.type,arrival:dates[i]?.arrival.toISOString().split("T")[0]||"",departure:dates[i]?.departure.toISOString().split("T")[0]||"",country:item.country,diveCount:item.type==="Dive"?Math.floor(item.nights*1.5):0,cost:item.cost,note:item.why||visionData.phases?.find(p=>p.destination===item.destination)?.why||""}));
+    const destPhases=items.map((item,i)=>({id:i+1,name:item.destination,flag:item.flag,color:item.color,budget:item.cost,nights:item.nights,type:item.type,arrival:dates[i]?.arrival.toISOString().split("T")[0]||"",departure:dates[i]?.departure.toISOString().split("T")[0]||"",country:item.country,diveCount:item.type==="Dive"?Math.floor(item.nights*1.5):0,cost:item.cost,note:item.why||visionData.phases?.find(p=>p.destination===item.destination)?.why||"",...(item.caActivities?.length?{caActivities:[...item.caActivities]}:{})}));
     const lastDepDate=dates[items.length-1]?.departure?.toISOString().split("T")[0]||"";
     const rp=returnPhaseData||{destination:data.city||"Home",country:"United States",type:"Return",nights:0,cost:Math.round(totalCost*0.08/10)*10,budget:Math.round(totalCost*0.08/10)*10,flag:"🏠",color:"#94A3B8",why:`Homebound from ${items[items.length-1]?.destination||"final destination"}`};
     const returnPhaseHandoff={id:destPhases.length+1,name:rp.destination,flag:rp.flag||"🏠",color:rp.color||"#94A3B8",budget:rp.budget||rp.cost||0,nights:0,type:"Return",arrival:lastDepDate,departure:data.returnDate||lastDepDate,country:rp.country||"United States",diveCount:0,cost:rp.budget||rp.cost||0,note:rp.why||""};
