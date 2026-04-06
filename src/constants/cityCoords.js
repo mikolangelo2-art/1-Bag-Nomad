@@ -17,6 +17,46 @@ const CITY_COORDS = {
   'Charleston': [-79.9, 32.8], 'Savannah': [-81.1, 32.1], 'Key West': [-81.8, 24.6],
   'New Orleans Louisiana': [-90.1, 29.9],
 
+  // Airport name aliases — where airport name ≠ city name (post-strip lookup)
+  'Logan': [-71.1, 42.4],                          // Logan Intl → Boston
+  'O\'Hare': [-87.9, 42.0], 'Ohare': [-87.9, 42.0], // O'Hare → Chicago
+  'Midway': [-87.7, 41.8],                          // Midway → Chicago
+  'Dulles': [-77.5, 38.9],                          // Dulles → Washington DC
+  'Reagan': [-77.0, 38.9], 'National': [-77.0, 38.9], // Reagan National → DC
+  'Hartsfield': [-84.4, 33.6], 'Hartsfield-Jackson': [-84.4, 33.6], // → Atlanta
+  'Orlando': [-81.4, 28.4], 'Sanford': [-81.2, 28.8], // Florida airports
+  'Salt Lake': [-111.9, 40.8], 'Salt Lake City': [-111.9, 40.8],
+  'Minneapolis': [-93.2, 44.9], 'St. Paul': [-93.1, 44.9],
+  'Detroit': [-83.0, 42.4], 'Charlotte': [-80.9, 35.2],
+  'Baltimore': [-76.6, 39.2], 'BWI': [-76.7, 39.2],
+  'Newark': [-74.2, 40.7], 'JFK': [-73.8, 40.6], 'LaGuardia': [-73.9, 40.8],
+  'Burbank': [-118.4, 34.2], 'Ontario': [-117.6, 34.1], 'Long Beach': [-118.2, 33.8],
+  'San Jose': [-121.9, 37.4], 'Oakland': [-122.2, 37.7],
+  'Raleigh': [-78.8, 35.9], 'Pittsburgh': [-80.0, 40.5], 'Cleveland': [-81.9, 41.4],
+  'Indianapolis': [-86.2, 39.8], 'Kansas City': [-94.6, 39.1],
+  'Sacramento': [-121.5, 38.6], 'Tucson': [-110.9, 32.1], 'Albuquerque': [-106.7, 35.1],
+  'Anchorage': [-150.0, 61.2], 'Fairbanks': [-147.9, 64.8],
+
+  // International airport name aliases
+  'Heathrow': [-0.5, 51.5], 'Gatwick': [-0.2, 51.2], 'Stansted': [0.2, 51.9],
+  'Luton': [-0.4, 51.9], 'City': [-0.1, 51.5],                    // London airports
+  'Charles de Gaulle': [2.5, 49.0], 'CDG': [2.5, 49.0],           // Paris
+  'Orly': [2.4, 48.7],                                              // Paris Orly
+  'Schiphol': [4.8, 52.3],                                          // Amsterdam
+  'Frankfurt': [8.7, 50.0],                                         // Frankfurt airport
+  'Changi': [104.0, 1.4],                                           // Singapore
+  'Narita': [140.4, 35.8], 'Haneda': [139.8, 35.5],                // Tokyo airports
+  'Incheon': [126.5, 37.5],                                         // Seoul
+  'Suvarnabhumi': [100.8, 13.7], 'Don Mueang': [100.6, 13.9],      // Bangkok
+  'Kingsford Smith': [151.2, -33.9],                                // Sydney
+  'Tullamarine': [144.8, -37.7],                                    // Melbourne
+  'Pearson': [-79.6, 43.7],                                         // Toronto
+  'Trudeau': [-73.7, 45.5],                                         // Montreal
+  'Vancouver': [-123.2, 49.2],                                      // Vancouver airport
+  'Hamad': [51.6, 25.3],                                            // Doha Qatar
+  'Al Maktoum': [55.2, 24.9], 'Dubai World Central': [55.2, 24.9], // Dubai
+  'Ben Gurion': [34.9, 32.0],                                       // Tel Aviv
+
   // Cuba & Caribbean
   'Cuba': [-79.5, 22.0], 'Havana': [-82.4, 23.1], 'Trinidad, Cuba': [-79.9, 21.8],
   'Trinidad': [-79.9, 21.8], 'Varadero': [-81.2, 23.1], 'Cienfuegos': [-80.4, 22.1],
