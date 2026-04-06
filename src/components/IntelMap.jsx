@@ -93,10 +93,13 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
         const resolved = allPhases.map(p => ({ ...p, coord: resolveCoord(p) })).filter(p => p.coord);
         const coords = resolved.map(p => p.coord);
 
-        // Auto-frame to trip region
+        // Auto-frame to trip region (includes departure city if known)
+        const depCity = tripData?.departureCity || '';
+        const depCoord = depCity ? (CITY_COORDS[depCity] || null) : null;
         if (coords.length >= 2) {
           const bounds = new mapboxgl.LngLatBounds();
           coords.forEach(c => bounds.extend(c));
+          if (depCoord) bounds.extend(depCoord);
           map.fitBounds(bounds, {
             padding: { top: 80, bottom: 80, left: 80, right: 80 },
             maxZoom: 4,
@@ -109,15 +112,18 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
           map.flyTo({ center: [10, 15], zoom: 2.2, duration: 1200, essential: true });
         }
 
-        // Route line — GeoJSON
-        if (coords.length > 1) {
+        // Build route coords — prepend departure city if known
+        const routeCoords = depCoord ? [depCoord, ...coords] : coords;
+
+        // Route line — GeoJSON (starts from departure city if known)
+        if (routeCoords.length > 1) {
           map.addSource('route', {
             type: 'geojson',
             data: {
               type: 'Feature',
               geometry: {
                 type: 'LineString',
-                coordinates: coords,
+                coordinates: routeCoords,
               }
             }
           });
@@ -132,6 +138,33 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
               'line-dasharray': [2, 3],
             }
           });
+        }
+
+        // Departure city marker — ring style, distinct from phase dots
+        if (depCoord) {
+          const depEl = document.createElement('div');
+          depEl.className = 'intel-marker';
+          depEl.style.cssText = `display:flex;flex-direction:column;align-items:center;gap:3px;opacity:0;`;
+
+          const sz = isMobile ? 18 : 14;
+          const ring = document.createElement('div');
+          ring.style.cssText = `position:relative;width:${sz}px;height:${sz}px;border-radius:50%;border:2px solid rgba(232,220,200,0.85);background:rgba(232,220,200,0.12);box-shadow:0 0 8px rgba(232,220,200,0.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;`;
+          const innerDot = document.createElement('div');
+          innerDot.style.cssText = `width:4px;height:4px;border-radius:50%;background:#E8DCC8;flex-shrink:0;`;
+          ring.appendChild(innerDot);
+
+          const depLabel = document.createElement('div');
+          depLabel.textContent = depCity.toUpperCase();
+          depLabel.style.cssText = `color:#E8DCC8;font-family:Inter,sans-serif;font-size:9px;font-weight:700;white-space:nowrap;background:rgba(10,7,5,0.85);padding:2px 5px;border-radius:3px;pointer-events:none;letter-spacing:1px;opacity:0.8;`;
+
+          depEl.appendChild(ring);
+          depEl.appendChild(depLabel);
+          setTimeout(() => { depEl.style.opacity = "1"; }, 400);
+
+          const depMarker = new mapboxgl.Marker({ element: depEl, anchor: 'center' })
+            .setLngLat(depCoord)
+            .addTo(map);
+          markersRef.current.push({ marker: depMarker, el: depEl, id: 'departure' });
         }
 
         // City dot markers — category colored, with labels

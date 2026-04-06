@@ -71,7 +71,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
 
   return(
     <div className="mc-root" style={{animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
-      <WorldMapBackground phases={tripData.phases||[]} activeCountry={phaseDetailView?.country}/>
+      <WorldMapBackground phases={tripData.phases||[]} activeCountry={phaseDetailView?.country} departureCity={tripData.departureCity||tripData.city||""}/>
       {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} homeCity={tripData.departureCity||tripData.city||""} segPhases={segPhases} warningFlags={warningFlags} onDismissWarning={dismissWarning} allPhases={tripData.phases||[]}/>}
       {showOnboard&&<OnboardCard storageKey="trip" ctaLabel="✦ ENTER MY EXPEDITION" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>

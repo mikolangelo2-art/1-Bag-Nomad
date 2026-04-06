@@ -57,6 +57,27 @@ const CITY_COORDS = {
 
   // Pacific
   'Maldives': [73.2, 3.2], 'Male': [73.5, 4.2],
+
+  // Common departure / home cities
+  'London': [-0.1, 51.5], 'Manchester': [-2.2, 53.5], 'Edinburgh': [-3.2, 55.9],
+  'New York': [-74.0, 40.7], 'NYC': [-74.0, 40.7], 'Los Angeles': [-118.2, 34.1], 'LA': [-118.2, 34.1],
+  'Chicago': [-87.6, 41.9], 'San Francisco': [-122.4, 37.8], 'Miami': [-80.2, 25.8],
+  'Toronto': [-79.4, 43.7], 'Vancouver': [-123.1, 49.3], 'Montreal': [-73.6, 45.5],
+  'Singapore': [103.8, 1.4], 'Dubai': [55.3, 25.2], 'Abu Dhabi': [54.4, 24.5],
+  'Hong Kong': [114.1, 22.3], 'Seoul': [127.0, 37.6], 'Beijing': [116.4, 39.9],
+  'Shanghai': [121.5, 31.2], 'Taipei': [121.5, 25.0],
+  'Amsterdam': [4.9, 52.4], 'Berlin': [13.4, 52.5], 'Frankfurt': [8.7, 50.1],
+  'Munich': [11.6, 48.1], 'Zurich': [8.5, 47.4], 'Geneva': [6.1, 46.2],
+  'Brussels': [4.4, 50.8], 'Vienna': [16.4, 48.2], 'Copenhagen': [12.6, 55.7],
+  'Stockholm': [18.1, 59.3], 'Oslo': [10.8, 59.9], 'Helsinki': [25.0, 60.2],
+  'Dublin': [-6.3, 53.3], 'Warsaw': [21.0, 52.2], 'Prague': [14.4, 50.1],
+  'Budapest': [19.0, 47.5], 'Bucharest': [26.1, 44.4],
+  'Istanbul': [29.0, 41.0], 'Tel Aviv': [34.8, 32.1], 'Riyadh': [46.7, 24.7],
+  'Johannesburg': [28.0, -26.2], 'Cape Town': [18.4, -33.9], 'Nairobi': [36.8, -1.3],
+  'Lagos': [3.4, 6.5], 'Accra': [-0.2, 5.6],
+  'Buenos Aires': [-58.4, -34.6], 'Santiago': [-70.7, -33.5], 'São Paulo': [-46.6, -23.5],
+  'Rio de Janeiro': [-43.2, -22.9], 'Bogotá': [-74.1, 4.7],
+  'Brisbane': [153.0, -27.5], 'Perth': [115.9, -31.9], 'Honolulu': [-157.8, 21.3],
 };
 
 export default CITY_COORDS;
