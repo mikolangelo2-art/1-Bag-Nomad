@@ -42,11 +42,13 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   const TODAY=new Date();
   const daysToDepart=daysBetween(TODAY,new Date(tripData.startDate||"2026-09-16"));
   const uc=urgencyColor(daysToDepart);
-  const segPhases=tripData.segmentedPhases||toSegPhases(tripData.phases||[]);
+  const segPhases=tripData.segmentedPhases||toSegPhases(destFlatPhases);
   const totalNights=segPhases.reduce((s,p)=>s+p.totalNights,0);
   const totalBudget=segPhases.reduce((s,p)=>s+p.totalBudget,0);
   const totalDives=segPhases.reduce((s,p)=>s+p.totalDives,0);
   const flatPhases=tripData.phases||[];
+  const returnPhase=flatPhases.find(p=>p.type==="Return")||null;
+  const destFlatPhases=flatPhases.filter(p=>p.type!=="Return");
   const lastSeg=segPhases[segPhases.length-1];
   const isComplete=lastSeg&&new Date()>new Date((lastSeg.departure||"2099-01-01")+"T12:00:00");
   const [returnData,setReturnData]=useState(()=>loadReturn());
@@ -241,7 +243,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
               <span style={{fontSize:11,fontWeight:700,color:"#FFD93D",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flex:1}}>✦ EXPEDITION COMPLETE · TAP TO CELEBRATE</span>
               <span style={{fontSize:12,color:"rgba(255,217,61,0.5)"}}>→</span>
             </div>}
-            <div style={{fontSize:isMobile?12:14,color:"#E8DCC8",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:isMobile?"normal":"nowrap"}}>YOUR EXPEDITION · {segPhases.length} PHASES</div>
+            <div style={{fontSize:isMobile?12:14,color:"#E8DCC8",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:isMobile?"normal":"nowrap"}}>YOUR EXPEDITION · {segPhases.length} {segPhases.length===1?"DESTINATION":"DESTINATIONS"}</div>
             {isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>TAP PHASE TO EXPAND</div>}
             {isMobile&&(
               <div style={{borderRadius:11,overflow:"hidden",border:"1px solid rgba(255,159,67,0.22)",background:"rgba(169,70,29,0.06)",marginBottom:2}}>
@@ -270,6 +272,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
               </div>
             )}
             {segPhases.map((phase,i)=>i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading}/>)}
+            {returnPhase&&<PhaseCard key="return" phase={returnPhase} intelData={explorerData} idx={segPhases.length} onTap={null} allSuggestions={null} suggestionsLoading={false}/>}
           </div>
         )}
         {tab==="budget"&&(

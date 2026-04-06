@@ -71,8 +71,9 @@ COMMON MISTAKES TO AVOID:
     const travelerConstraints=`TRAVELER PROFILE — HARD CONSTRAINTS:\n- Traveling party: ${travelerGroup==='couple'?'Couple or 2 friends traveling together — budget covers both people, activities and accommodation for 2':'Solo traveler'}\n- Travel style: ${travelStyle||'Independent explorer'}${hasBudget?`\n- Budget: $${budgetAmount} FIRM — reflects total spend for the traveling party`:''}\n${nightCount?`- Nights: ${nightCount} — do not deviate`:''}\n${allInterests.length>0?`- Interests: ${allInterests.join(', ')} — weight destinations and activities toward these\n`:''}- If "First Timer": 1-2 countries max, beginner-friendly destinations, simple logistics, reassuring tone\n- If "Luxury": 5-star properties, premium experiences, business class\n- If "Couple/2 friends": romantic or buddy-trip framing as appropriate, experiences that work for two${specialtyRules}`;
     try {
       const breakdownSchema=hasBudget?`,"budgetBreakdown":{"flights":NUMBER,"accommodation":NUMBER,"food":NUMBER,"transport":NUMBER,"activities":NUMBER,"buffer":NUMBER,"flightsNote":"flight routing e.g. LAX → Lisbon return","accommodationNote":"e.g. Guesthouses and boutique hotels","foodNote":"e.g. Local restaurants and cafes","routingNote":"one sentence explaining WHY this route was chosen — the key routing decision in plain English, why these destinations in this order"}`:'';
+      const returnPhaseNote=`The LAST phase must always be the return trip home: {"destination":"${city||"Home"}","country":"United States","type":"Return","nights":0,"budget":NUMBER,"why":"Homebound — routing note","flag":"🏠"}. Return phase cost IS included in total budget.`;
       const packSchema=`,"packProfile":{"categories":["clothes","tech","documents","travel","health"],"hiddenCategories":["dive","creator"],"tripType":"culture","climate":"mediterranean","season":"dry","tempRange":"18-28C","activities":["city-walking","fine-dining"],"duration":"medium","essentialItems":["walking shoes","universal adapter"],"optionalItems":["wetsuit","down jacket"]}`;
-      const basePrompt=`${travelerConstraints}\n\n${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"${breakdownSchema}${packSchema}}${hasBudget?`\n\nREMINDER: "totalBudget" MUST be ${budgetAmount}. Each phase "budget" is that phase's share of $${budgetAmount}. The budgetBreakdown fields (flights, accommodation, food, transport, activities, buffer) must sum to approximately $${budgetAmount}. Distribute realistically based on destination costs, trip length, and accommodation tier. Do NOT estimate from scratch — ALLOCATE the stated budget.`:''}
+      const basePrompt=`${travelerConstraints}\n\n${budgetConstraint}\nElite travel co-architect. Vision:"${vision}". Trip:"${tripName||"My Expedition"}". From:"${city||"unknown"}". Departs:"${date||"flexible"}". Returns:"${returnDate||"open-ended"}". ${nightsDirective} ${returnPhaseNote} Return ONLY valid JSON:{"narrative":"3 vivid sentences","vibe":"3 words separated by · ","phases":[{"destination":"City","country":"Country","nights":7,"type":"Culture","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":0,"totalBudget":${hasBudget?budgetAmount:'0'},"countries":0,"highlight":"most exciting moment","goalLabel":"inferred goal type"${breakdownSchema}${packSchema}}${hasBudget?`\n\nFINAL CHECK: All phase budgets (including return phase) must sum to ${budgetAmount}. Last phase must be type "Return" with nights:0. "totalBudget" must be exactly ${budgetAmount}. budgetBreakdown must sum to ${budgetAmount}.`:''}
 packProfile must reflect the actual generated itinerary. categories should include only what this specific traveler needs. essentialItems should name specific gear critical for the trip (e.g. "BCD", "wetsuit", "hiking boots", "down jacket"). optionalItems should name items unnecessary for this trip.`;
       let raw=await askAI(basePrompt,2800,0.3);
       let parsed=parseJSON(raw);
@@ -126,6 +127,23 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
         bd.buffer=Math.round((bd.buffer||0)*bRatio/10)*10;
         console.log('[1BN] Final budgetBreakdown:',bd);
       }
+      // Ensure return phase is last — synthesize if AI omitted it
+      if(parsed?.phases?.length){
+        const lastP=parsed.phases[parsed.phases.length-1];
+        if(lastP?.type!=="Return"){
+          const depCity=city||"Home";
+          const returnCost=hasBudget?Math.max(Math.round(bAmt*0.08/10)*10,100):0;
+          if(hasBudget&&returnCost>0){
+            const destSum=parsed.phases.reduce((s,p)=>s+(p.budget||p.cost||0),0)||1;
+            const targetDest=bAmt-returnCost;
+            if(targetDest>0){const r=targetDest/destSum;parsed.phases.forEach(p=>{p.budget=Math.round((p.budget||p.cost||0)*r/10)*10;p.cost=p.budget;});}
+          }
+          parsed.phases.push({id:parsed.phases.length+1,destination:depCity,name:depCity,country:"United States",type:"Return",nights:0,cost:returnCost,budget:returnCost,why:`Homebound from ${lastP?.destination||"final destination"}`,flag:"🏠",color:"#94A3B8"});
+          if(hasBudget)parsed.totalBudget=bAmt;
+          console.log(`[1BN] Return phase synthesized: ${depCity} $${returnCost}`);
+        }
+      }
+
       // Synthesize packProfile if AI omitted it
       if(parsed&&!parsed.packProfile){
         console.log('[1BN] packProfile missing from AI — synthesizing from trip data');

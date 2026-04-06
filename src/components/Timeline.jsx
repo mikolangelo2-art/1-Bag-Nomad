@@ -24,7 +24,7 @@ function Timeline({ tripData }) {
       <div style={{textAlign:"center",marginBottom:28}}>
         <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,217,61,0.6)",letterSpacing:3,marginBottom:4}}>TOTAL EXPEDITION BUDGET</div>
         <div style={{fontFamily:"'Fraunces',serif",fontSize:32,color:"#FFD93D",fontWeight:700}}>{fmt(totalBudget)}</div>
-        <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,255,255,0.4)",marginTop:4}}>{totalNights} nights · {phases.length} phases</div>
+        <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,255,255,0.4)",marginTop:4}}>{totalNights} nights · {phases.filter(p=>p.type!=="Return").length} destinations</div>
       </div>
 
       {/* Thread container */}
@@ -42,32 +42,31 @@ function Timeline({ tripData }) {
         </div>
 
         {/* Phase nodes */}
-        {phases.map((phase, i) => (
+        {phases.map((phase, i) => {
+          const isReturn = phase.type === "Return";
+          return(
           <div key={phase.id || i}>
-            {/* Transport connector */}
             {i > 0 && <div style={{paddingLeft:6,marginBottom:8,marginTop:-4}}>
               <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,255,255,0.3)",letterSpacing:1}}>
-                {phase.type === "Transit" ? "✈️ transit" : ""}
+                {isReturn ? "✈️ return flight" : phase.type === "Transit" ? "✈️ transit" : ""}
               </div>
             </div>}
-
-            {/* Phase node */}
-            <div style={{position:"relative",marginBottom:24,animation:"fadeUp 0.4s ease both",animationDelay:i * 0.1 + "s"}}>
-              <div style={{position:"absolute",left:-22,top:6,width:8,height:8,borderRadius:"50%",background:phase.color || "#FF9F43",boxShadow:`0 0 6px ${phase.color || "#FF9F43"}55`}}/>
+            <div style={{position:"relative",marginBottom:24,animation:"fadeUp 0.4s ease both",animationDelay:i * 0.1 + "s",opacity:isReturn?0.55:1}}>
+              <div style={{position:"absolute",left:-22,top:6,width:isReturn?6:8,height:isReturn?6:8,borderRadius:"50%",background:isReturn?"rgba(148,163,184,0.6)":(phase.color || "#FF9F43"),boxShadow:isReturn?"none":`0 0 6px ${phase.color || "#FF9F43"}55`}}/>
               <div style={{display:"flex",alignItems:"baseline",gap:8,marginBottom:2}}>
-                {phase.flag && <span style={{fontSize:18}}>{phase.flag}</span>}
-                <div style={{fontFamily:"'Fraunces',serif",fontSize:24,color:"#E8DCC8",fontWeight:500}}>{phase.name || phase.destination}</div>
+                {phase.flag && <span style={{fontSize:isReturn?14:18}}>{phase.flag}</span>}
+                <div style={{fontFamily:"'Fraunces',serif",fontSize:isReturn?16:24,color:isReturn?"rgba(148,163,184,0.70)":"#E8DCC8",fontWeight:isReturn?300:500,fontStyle:isReturn?"italic":"normal"}}>{isReturn?`Return to ${phase.name||phase.destination}`:(phase.name || phase.destination)}</div>
               </div>
-              <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:14,color:"rgba(255,255,255,0.55)",marginBottom:3}}>
+              {!isReturn&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:14,color:"rgba(255,255,255,0.55)",marginBottom:3}}>
                 {phase.arrival && phase.departure ? `${fD(phase.arrival)} – ${fD(phase.departure)}` : "Dates TBD"}
-              </div>
-              <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:16,color:"rgba(255,255,255,0.45)",display:"flex",gap:8}}>
-                <span>{phase.nights}n</span>
-                <span style={{color:"#FFD93D",fontWeight:600}}>{fmt(phase.budget || phase.cost || 0)}</span>
+              </div>}
+              <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:isReturn?13:16,color:"rgba(255,255,255,0.35)",display:"flex",gap:8}}>
+                {!isReturn&&<span>{phase.nights}n</span>}
+                {(phase.budget||phase.cost)>0&&<span style={{color:isReturn?"rgba(148,163,184,0.55)":"#FFD93D",fontWeight:600}}>~{fmt(phase.budget || phase.cost || 0)}</span>}
               </div>
             </div>
           </div>
-        ))}
+        );})}
 
         {/* Homecoming footer */}
         <div style={{position:"relative",animation:"fadeUp 0.4s ease both",animationDelay:phases.length * 0.1 + "s"}}>

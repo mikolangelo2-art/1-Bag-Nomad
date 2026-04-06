@@ -18,7 +18,9 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   useEffect(()=>{window.scrollTo(0,0);},[]);
   // estCost — imported from priceHelpers.js
   const colors=PALETTE_8;
-  const [items,setItems]=useState(()=>(visionData.phases||[]).map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:p.budget||estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8],why:p.why||""})));
+  // Filter return phase — kept separately, re-attached in buildHandoff
+  const [returnPhaseData]=useState(()=>(visionData.phases||[]).find(p=>p.type==="Return")||null);
+  const [items,setItems]=useState(()=>(visionData.phases||[]).filter(p=>p.type!=="Return").map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:p.budget||estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8],why:p.why||""})));
   const [startDate,setStartDate]=useState(data.date||"2026-09-16");
   const [chat,setChat]=useState([{role:"ai",text:data.isRevision?"Welcome back — let's revise your expedition. ✏️\n\nYour itinerary is loaded. Tell me what you'd like to change.":"Welcome — I'm your expedition co-architect. ✨\n\nYour vision is incredible and I'm genuinely excited to help you build it.",isWelcome:true}]);
   const [input,setInput]=useState("");
@@ -45,8 +47,11 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
     const msg=input;setInput("");setChat(p=>[...p,{role:"user",text:msg}]);setLoading(true);
     const hasBudget=data.budgetMode!=="dream"&&data.budgetAmount&&Number(data.budgetAmount)>0;
     const budgetCtx=hasBudget?`Budget: $${data.budgetAmount} FIRM.`:"No budget set.";
+    const depMonth=new Date(startDate).getMonth();
+    const season=depMonth<=1||depMonth===11?"winter":depMonth<=4?"spring":depMonth<=7?"summer":"fall";
+    const dateCtx=startDate?`Departure: ${startDate}. Return: ${data.returnDate||"open-ended"}. Season: ${season}. Do NOT ask what time of year — you already know.`:"";
     try{
-      const raw=await askAI(`Co-architect. Goal:"${goalLabel}". Vision:"${data.vision}". ${budgetCtx}
+      const raw=await askAI(`Co-architect. Goal:"${goalLabel}". Vision:"${data.vision}". ${budgetCtx} ${dateCtx}
 Total nights: ${totalNights}. When adding phases, redistribute existing nights — do not extend the trip.
 ${hasBudget?`When adding phases, redistribute the existing $${data.budgetAmount} budget — do NOT increase total spend. If a new phase costs $X, include cost reductions to other phases totaling $X.`:''}
 Current itinerary: ${JSON.stringify(items.map(i=>({id:i.id,destination:i.destination,country:i.country,nights:i.nights,type:i.type,cost:i.cost})))}
@@ -68,7 +73,8 @@ RULES:
 - When using addPhases: include cost changes to existing phases that offset the new phase cost — total must stay at $${hasBudget?data.budgetAmount:'N/A'}
 - When using addPhases: reduce nights on existing phases so total stays at ${totalNights} — do not extend the trip
 - If change would exceed budget of $${hasBudget?data.budgetAmount:"N/A"}, add a warning and suggest adjustment
-- ALWAYS apply changes — do not just suggest them`,600,0.4);
+- ALWAYS apply changes — do not just suggest them
+- When reporting destination count to user, say "${items.length} destinations" (exclude return)`,600,0.4);
       const parsed=parseJSON(raw);
       if(parsed){
         setChat(p=>[...p,{role:"ai",text:parsed.response}]);
@@ -118,10 +124,14 @@ RULES:
   }
   // Architecture #1: each item auto-wraps as 1 segment
   function buildHandoff(){
+    const destPhases=items.map((item,i)=>({id:i+1,name:item.destination,flag:item.flag,color:item.color,budget:item.cost,nights:item.nights,type:item.type,arrival:dates[i]?.arrival.toISOString().split("T")[0]||"",departure:dates[i]?.departure.toISOString().split("T")[0]||"",country:item.country,diveCount:item.type==="Dive"?Math.floor(item.nights*1.5):0,cost:item.cost,note:item.why||visionData.phases?.find(p=>p.destination===item.destination)?.why||""}));
+    const lastDepDate=dates[items.length-1]?.departure?.toISOString().split("T")[0]||"";
+    const rp=returnPhaseData||{destination:data.city||"Home",country:"United States",type:"Return",nights:0,cost:Math.round(totalCost*0.08/10)*10,budget:Math.round(totalCost*0.08/10)*10,flag:"🏠",color:"#94A3B8",why:`Homebound from ${items[items.length-1]?.destination||"final destination"}`};
+    const returnPhaseHandoff={id:destPhases.length+1,name:rp.destination,flag:rp.flag||"🏠",color:rp.color||"#94A3B8",budget:rp.budget||rp.cost||0,nights:0,type:"Return",arrival:lastDepDate,departure:data.returnDate||lastDepDate,country:rp.country||"United States",diveCount:0,cost:rp.budget||rp.cost||0,note:rp.why||""};
     return{tripName:data.tripName||"My Expedition",startDate,departureCity:data.city||"",vision:data.vision,visionNarrative:visionData.narrative,visionHighlight:visionData.highlight,goalLabel,
       budgetBreakdown:visionData.budgetBreakdown||null,travelerProfile:data.travelerProfile||null,packProfile:visionData.packProfile||null,
-      phases:items.map((item,i)=>({id:i+1,name:item.destination,flag:item.flag,color:item.color,budget:item.cost,nights:item.nights,type:item.type,arrival:dates[i]?.arrival.toISOString().split("T")[0]||"",departure:dates[i]?.departure.toISOString().split("T")[0]||"",country:item.country,diveCount:item.type==="Dive"?Math.floor(item.nights*1.5):0,cost:item.cost,note:item.why||visionData.phases?.[i]?.why||""})),
-      totalNights,totalBudget:totalCost,totalDives:items.filter(i=>i.type==="Dive").reduce((s,i)=>s+Math.floor(i.nights*1.5),0)};
+      phases:[...destPhases,returnPhaseHandoff],
+      totalNights,totalBudget:totalCost+(returnPhaseHandoff.budget||0),totalDives:items.filter(i=>i.type==="Dive").reduce((s,i)=>s+Math.floor(i.nights*1.5),0)};
   }
   return(
     <div className="build-root" style={{opacity:mounted?1:0,transform:mounted?"translateY(0)":"translateY(32px)",transition:"opacity 0.55s ease,transform 0.55s cubic-bezier(0.22,1,0.36,1)",overflowX:"hidden"}}>

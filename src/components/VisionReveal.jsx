@@ -32,16 +32,19 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
   async function refine(){
     if(!refineInput.trim()||loading)return;
     setLoading(true);const msg=refineInput;setRefineInput("");
+    // Preserve return phase — re-attach after refine regardless of what AI returns
+    const savedReturn=vd.phases?.find(p=>p.type==="Return")||null;
     const hasBudget=data.budgetMode!=="dream"&&data.budgetAmount&&Number(data.budgetAmount)>0;
     const bAmt=Number(data.budgetAmount)||0;
-    const phaseCount=vd.phases?.length||0;
-    const totalNights=vd.totalNights||vd.phases?.reduce((s,p)=>s+(p.nights||0),0)||0;
+    const destPhases=(vd.phases||[]).filter(p=>p.type!=="Return");
+    const phaseCount=destPhases.length;
+    const totalNights=vd.totalNights||destPhases.reduce((s,p)=>s+(p.nights||0),0)||0;
     try{
       const raw=await askAI(`You are reshaping an expedition vision — NOT rebuilding the itinerary.
 
 LOCKED CONSTRAINTS — DO NOT CHANGE:
-- Exactly ${phaseCount} phases (same count)
-- Exactly ${totalNights} total nights (redistribute across phases if needed, but sum must equal ${totalNights})
+- Exactly ${phaseCount} destination phases (same count — the return phase is handled separately, do not include it)
+- Exactly ${totalNights} total nights (redistribute across destination phases if needed, but sum must equal ${totalNights})
 ${hasBudget?`- Exactly $${data.budgetAmount} total budget (redistribute across phases if needed, but sum must equal $${data.budgetAmount})`:'- No budget set'}
 - Do NOT add or remove phases — only reshape existing ones
 
@@ -54,7 +57,7 @@ ${hasBudget?'- Redistribute budget between phases (keeping the same total)':''}
 - Update country and flag to match new destinations
 
 Current vision: "${data.vision}"
-Current phases: ${JSON.stringify(vd.phases)}
+Current destination phases (exclude the return trip from reshaping): ${JSON.stringify(destPhases)}
 ${data.city?`Departure city: ${data.city}`:''}
 ${data.travelerProfile?`Traveler: ${data.travelerProfile.group==='couple'?'Couple/2 friends':'Solo'}, style: ${data.travelerProfile.style||'independent'}${data.travelerProfile.interests?.length?', interests: '+data.travelerProfile.interests.join(', '):''}`:''}
 
@@ -86,11 +89,16 @@ Return ONLY valid JSON:
           parsed.phases.forEach(p=>{p.budget=Math.round((p.budget||p.cost||0)*ratio/10)*10;});
           parsed.totalBudget=bAmt;
         }
-        // Phase count lock
-        if(parsed.phases.length>phaseCount){
-          console.log(`[1BN] Vision refine phase count lock: ${parsed.phases.length} -> ${phaseCount} (truncating)`);
-          parsed.phases=parsed.phases.slice(0,phaseCount);
+        // Phase count lock — only on destination phases
+        const parsedDest=parsed.phases.filter(p=>p.type!=="Return");
+        if(parsedDest.length>phaseCount){
+          console.log(`[1BN] Vision refine phase count lock: ${parsedDest.length} -> ${phaseCount} (truncating)`);
+          parsed.phases=parsedDest.slice(0,phaseCount);
+        } else {
+          parsed.phases=parsedDest;
         }
+        // Always re-attach return phase — unchanged
+        if(savedReturn)parsed.phases.push(savedReturn);
       }
       if(parsed){
         setVd(parsed);setNarrativeDone(false);setShowStats(false);setShowPhases(false);setNarrative("");
