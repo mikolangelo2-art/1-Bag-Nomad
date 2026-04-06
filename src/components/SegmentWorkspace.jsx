@@ -15,6 +15,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const [tab,setTab]=useState("transport");
   const [editingTransport,setEditingTransport]=useState(false);
   const [planningOwn,setPlanningOwn]=useState(false);
+  const [transportFocused,setTransportFocused]=useState(false);
   const [editingStay,setEditingStay]=useState(false);
   const [selectedStayProp,setSelectedStayProp]=useState("");
   const [showStayResuggest,setShowStayResuggest]=useState(false);
@@ -65,7 +66,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const acceptTransport=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("from",prevCity||homeCity||"");uT("to",segment.name||"");uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",`${t.route}\n\nEst. ${t.estimatedCost}${t.bestTiming?`\nBest timing: ${t.bestTiming}`:""}${t.notes?`\n${t.notes}`:""}`);if(segment.arrival){uT("depTime",fD(segment.arrival));uT("arrTime",fD(segment.arrival));}dismiss('transport');};
   const acceptStay=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');};
   const acceptActivity=(a)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');setDet(d=>({...d,activities:[...d.activities,{name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()}]}));};
-  const hasT=!!(det.transport?.from&&det.transport?.to)||!!(det.transport?.mode&&det.transport?.cost);
+  const hasT=(!transportFocused)&&(!!(det.transport?.from&&det.transport?.to)||!!(det.transport?.mode&&det.transport?.cost));
   useEffect(()=>{if(hasT)setPlanningOwn(false);},[hasT]);
   const hasS=det.stay?.name?.length>0;
   const TABS=[{id:"transport",label:"TRAVEL",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:isMobile?"ACTS":"ACTIVITIES",icon:"🎯",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"budget",label:"BUDGET",icon:"💰"},{id:"calendar",label:isMobile?"CAL":"CALENDAR",icon:"📅"},{id:"docs",label:"DOCS",icon:"📋"}];
@@ -154,8 +155,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10}}>
               <SDF label="MODE" value={det.transport.mode} onChange={v=>uT("mode",v)} placeholder="Flight / Ferry / Car..." accent="#00E5FF"/>
               <SDF label="COST ($)" type="number" value={det.transport.cost} onChange={v=>uT("cost",v)} placeholder="0" accent="#00E5FF"/>
-              <SDF label="FROM" value={det.transport.from} onChange={v=>uT("from",v)} placeholder="Departure city" accent="#00E5FF"/>
-              <SDF label="TO" value={det.transport.to} onChange={v=>uT("to",v)} placeholder="Arrival city" accent="#00E5FF"/>
+              <SDF label="FROM" value={det.transport.from} onChange={v=>uT("from",v)} placeholder="Departure city" accent="#00E5FF" onFocus={()=>setTransportFocused(true)} onBlur={()=>setTransportFocused(false)}/>
+              <SDF label="TO" value={det.transport.to} onChange={v=>uT("to",v)} placeholder="Arrival city" accent="#00E5FF" onFocus={()=>setTransportFocused(true)} onBlur={()=>setTransportFocused(false)}/>
             </div>
             {(transportEstLoading||transportEst)&&<div style={{padding:'8px 12px',marginTop:8,borderRadius:8,background:'rgba(255,159,67,0.04)',border:'1px solid rgba(255,159,67,0.12)',display:'flex',alignItems:'center',gap:8}}>
               {transportEstLoading?<span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.60)',letterSpacing:1}}>✦ Estimating...</span>
