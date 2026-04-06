@@ -53,6 +53,8 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   useEffect(()=>saveReturn(returnData),[returnData]);
   const uR=(f,v)=>setReturnData(d=>({...d,flight:{...d.flight,[f]:v}}));
 
+  const [blueprintOpen,setBlueprintOpen]=useState(false);
+
   // Departure city — inline editable
   const [editingDep,setEditingDep]=useState(false);
   const [depInput,setDepInput]=useState(tripData.departureCity||tripData.city||"");
@@ -242,6 +244,32 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
             {tripData.visionNarrative&&(()=>{const _vn=tripData.visionNarrative;const _lim=160;const _trunc=_vn.length>_lim?_vn.slice(0,_lim).slice(0,_vn.slice(0,_lim).lastIndexOf(' '))+'...':_vn;return(<div style={{marginBottom:8}}><div style={{fontSize:11,color:"rgba(232,220,200,0.50)",letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:6}}>✦ EXPEDITION VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,240,210,0.80)",lineHeight:1.75,borderLeft:"2px solid rgba(232,220,200,0.12)",paddingLeft:12,textAlign:"left"}}>"{_trunc}"</div></div>);})()}
             <div style={{fontSize:isMobile?12:14,color:"#E8DCC8",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:isMobile?"normal":"nowrap"}}>YOUR EXPEDITION · {segPhases.length} PHASES</div>
             {isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>TAP PHASE TO EXPAND</div>}
+            {isMobile&&(
+              <div style={{borderRadius:11,overflow:"hidden",border:"1px solid rgba(255,159,67,0.22)",background:"rgba(169,70,29,0.06)",marginBottom:2}}>
+                <button onClick={()=>setBlueprintOpen(o=>!o)} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",background:"none",border:"none",cursor:"pointer",gap:8}}>
+                  <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:10,fontWeight:700,letterSpacing:3,color:"rgba(255,159,67,0.75)"}}>✦ BLUEPRINT</span>
+                  <span style={{fontSize:10,color:"rgba(255,159,67,0.45)",transition:"transform 0.3s ease",display:"inline-block",transform:blueprintOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
+                </button>
+                {blueprintOpen&&<div style={{padding:"0 14px 14px",borderTop:"1px solid rgba(255,159,67,0.10)"}}>
+                  {(tripData.visionNarrative||tripData.vision)&&<div style={{borderLeft:"2px solid rgba(255,159,67,0.4)",paddingLeft:12,marginBottom:14,marginTop:12}}><div style={{fontSize:10,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:4}}>✦ ORIGINAL VISION</div><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.7}}>"{tripData.visionNarrative||tripData.vision}"</div></div>}
+                  {tripData.budgetBreakdown?(()=>{const bd=tripData.budgetBreakdown;const cats=[{key:"flights",icon:"✈️",label:"Flights"},{key:"accommodation",icon:"🏨",label:"Stay"},{key:"food",icon:"🍜",label:"Food"},{key:"transport",icon:"🚌",label:"Transport"},{key:"activities",icon:"🎯",label:"Activities"},{key:"buffer",icon:"🎒",label:"Buffer"}].filter(c=>bd[c.key]>0);const total=cats.reduce((s,c)=>s+(bd[c.key]||0),0);return(
+                    <div style={{background:"rgba(169,70,29,0.06)",borderRadius:9,padding:"10px 12px"}}>
+                      <div style={{fontSize:10,color:"rgba(255,159,67,0.75)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:8}}>✦ BUDGET BREAKDOWN</div>
+                      {cats.map(c=><div key={c.key} style={{display:"flex",alignItems:"center",padding:"5px 0",gap:8,borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+                        <span style={{fontSize:13,width:20,textAlign:"center",flexShrink:0}}>{c.icon}</span>
+                        <span style={{fontSize:12,color:"rgba(255,255,255,0.7)",flex:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{c.label}</span>
+                        <span style={{fontSize:13,fontWeight:700,color:"#FFD93D",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>~{fmt(bd[c.key]||0)}</span>
+                      </div>)}
+                      <div style={{display:"flex",alignItems:"center",paddingTop:8,gap:8}}>
+                        <span style={{fontSize:12,color:"rgba(255,255,255,0.9)",fontWeight:700,flex:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>TOTAL</span>
+                        <span style={{fontSize:15,fontWeight:900,color:"#FFD93D",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>~{fmt(total)}</span>
+                      </div>
+                      {bd.routingNote&&<div style={{marginTop:10,borderLeft:"2px solid rgba(255,159,67,0.35)",paddingLeft:10}}><div style={{fontSize:9,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:3}}>✦ WHY THIS ROUTE</div><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.7)",lineHeight:1.6}}>{bd.routingNote}</div></div>}
+                    </div>
+                  );})():<div style={{padding:"8px 0"}}><div style={{fontSize:13,fontWeight:700,color:"#FFD93D",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Total: {fmt(tripData.totalBudget||0)}</div><div style={{fontSize:12,color:"rgba(255,255,255,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:3}}>{tripData.phases?.length||0} phases · {segPhases.reduce((s,p)=>s+p.totalNights,0)} nights</div></div>}
+                </div>}
+              </div>
+            )}
             {segPhases.map((phase,i)=>i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading}/>)}
           </div>
         )}

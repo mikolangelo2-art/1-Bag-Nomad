@@ -61,11 +61,11 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   return(
     <div className="build-root" style={{opacity:mounted?1:0,transform:mounted?"translateY(0)":"translateY(32px)",transition:"opacity 0.55s ease,transform 0.55s cubic-bezier(0.22,1,0.36,1)",overflowX:"hidden"}}>
       <ConsoleHeader console="dream" isMobile={isMobile} screenLabel="CO-ARCHITECT" rightSlot={<div style={{display:"flex",gap:5,alignItems:"center"}}>{[1,2,3,4].map(n=><div key={n} style={{width:n<3?22:n===3?28:18,height:6,borderRadius:3,background:n===1?"rgba(255,159,67,0.85)":n===2?"rgba(255,159,67,0.55)":n===3?"#FFD93D":"rgba(0,229,255,0.15)",boxShadow:n===1?"0 0 8px rgba(255,159,67,0.5)":n===3?"0 0 10px rgba(255,217,61,0.7)":"none",transition:"all 0.3s ease"}}/>)}</div>}/>
-      <div style={{display:"flex",border:"none",background:"#080D14",flexShrink:0,paddingRight:4,overflow:"hidden"}}>
+      <div style={{display:"flex",border:"none",background:"#080D14",flexShrink:0}}>
         {[{label:"STOPS",val:items.length,c:"#00E5FF"},{label:"COUNTRIES",val:countries.length,c:"#69F0AE"},{label:"NIGHTS",val:totalNights,c:"#A29BFE"},{label:"BUDGET",val:fmt(totalCost),c:"#FFD93D"}].map((s,i)=>(
-          <div key={s.label} style={{flex:1,padding:"8px 6px",textAlign:"center",borderRight:i<3?"1px solid #111D2A":"none"}}>
-            <div style={{fontSize:15,color:"rgba(255,255,255,0.35)",letterSpacing:1}}>{s.label}</div>
-            <div style={{fontSize:isMobile?13:15,fontWeight:700,color:s.c}}>{s.val}</div>
+          <div key={s.label} style={{flex:1,minWidth:0,padding:isMobile?"6px 4px":"8px 6px",textAlign:"center",borderRight:i<3?"1px solid #111D2A":"none"}}>
+            <div style={{fontSize:isMobile?8:13,color:"rgba(255,255,255,0.35)",letterSpacing:isMobile?0.5:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.label}</div>
+            <div style={{fontSize:isMobile?13:15,fontWeight:700,color:s.c,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.val}</div>
           </div>
         ))}
       </div>
