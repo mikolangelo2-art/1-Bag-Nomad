@@ -42,13 +42,13 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   const TODAY=new Date();
   const daysToDepart=daysBetween(TODAY,new Date(tripData.startDate||"2026-09-16"));
   const uc=urgencyColor(daysToDepart);
+  const flatPhases=tripData.phases||[];
+  const returnPhase=flatPhases.find(p=>p.type==="Return")||null;
+  const destFlatPhases=flatPhases.filter(p=>p.type!=="Return");
   const segPhases=tripData.segmentedPhases||toSegPhases(destFlatPhases);
   const totalNights=segPhases.reduce((s,p)=>s+p.totalNights,0);
   const totalBudget=segPhases.reduce((s,p)=>s+p.totalBudget,0);
   const totalDives=segPhases.reduce((s,p)=>s+p.totalDives,0);
-  const flatPhases=tripData.phases||[];
-  const returnPhase=flatPhases.find(p=>p.type==="Return")||null;
-  const destFlatPhases=flatPhases.filter(p=>p.type!=="Return");
   const lastSeg=segPhases[segPhases.length-1];
   const isComplete=lastSeg&&new Date()>new Date((lastSeg.departure||"2099-01-01")+"T12:00:00");
   const [returnData,setReturnData]=useState(()=>loadReturn());
