@@ -1,5 +1,5 @@
 // ── Keyframe Names ───────────────────────────────────────────
-// All keyframes are injected via the CSS template literal in App.jsx.
+// All keyframes are injected via the CSS template literal in src/App.jsx.
 // These constants provide a single source of truth for animation names
 // referenced in inline styles, preventing typo drift.
 
