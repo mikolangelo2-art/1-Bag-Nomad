@@ -20,6 +20,10 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const [editingStay,setEditingStay]=useState(false);
   const [selectedStayProp,setSelectedStayProp]=useState("");
   const [showStayResuggest,setShowStayResuggest]=useState(false);
+  const [editingFood,setEditingFood]=useState(false);
+  const [showFoodResuggest,setShowFoodResuggest]=useState(false);
+  const [stayFocused,setStayFocused]=useState(false);
+  const [foodFocused,setFoodFocused]=useState(false);
   const [transportEst,setTransportEst]=useState(null);
   const [transportEstLoading,setTransportEstLoading]=useState(false);
   const transportEstTimer=useRef(null);
@@ -65,22 +69,34 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const uT=(f,v)=>setDet(d=>({...d,transport:{...d.transport,[f]:v}}));
   const uS=(f,v)=>setDet(d=>({...d,stay:{...d.stay,[f]:v}}));
   const uF=(f,v)=>setDet(d=>({...d,food:{...d.food,[f]:v}}));
-  async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}
+  async function aiFood(){
+    setAiLoad(true);
+    try{
+      const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);
+      const nums=(r.match(/\d+/g)||[]).map(Number).filter(x=>x>0&&x<500);
+      let n="";
+      if(nums.length===1)n=String(nums[0]);
+      else if(nums.length>=2)n=String(Math.round((nums[0]+nums[1])/2));
+      if(n)uF("dailyBudget",n);
+    }finally{
+      setAiLoad(false);
+    }
+  }
   const acceptTransport=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("from",prevCity||homeCity||"");uT("to",segment.name||"");uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",transportNotesFromSuggestion(t,{prevCity,homeCity,segmentName:segment.name}));dismiss('transport');};
   const clearTransport=()=>{setDet(d=>({...d,transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:"",link:""}}));const nd={...dismissed};delete nd[`${dismissKey}_transport`];setDismissed(nd);saveDismissed(nd);setEditingTransport(false);setPlanningOwn(false);};
   const acceptStay=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');};
   const acceptActivity=(a,suggestionIdx=null)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');const row={name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()};if(suggestionIdx!=null)row.suggestionActivityIdx=suggestionIdx;setDet(d=>({...d,activities:[...d.activities,row]}));};
   // Leg endpoints set: show transport card + EDIT; keep planning form visible until then (avoid unmounting MODE/COST on first cost digit).
   const transportLegLocked=(!transportFocused)&&(!!(det.transport?.from&&det.transport?.to));
-  // Hide Co-Architect suggestion once user has a leg or both mode+cost (same as before).
-  const hideTransportSuggestion=(!transportFocused)&&(!!(det.transport?.from&&det.transport?.to)||!!(det.transport?.mode&&det.transport?.cost));
+  // A2 Travel: hide transport suggestion only when from+to locked (not on mode+cost alone — avoids layout jump).
+  const hideTransportSuggestion=(!transportFocused)&&(!!(det.transport?.from&&det.transport?.to));
   useEffect(()=>{if(transportLegLocked)setPlanningOwn(false);},[transportLegLocked]);
   useEffect(()=>{if(!det.transport.from&&!det.transport.to&&!det.transport.mode&&!det.transport.cost){const d={...dismissed};delete d[`${dismissKey}_transport`];setDismissed(d);saveDismissed(d);}},[det.transport.from,det.transport.to,det.transport.mode,det.transport.cost]);
   const stayNameTrim=(det.stay?.name||"").trim();
   const hasS=stayNameTrim.length>0;
   const stayCostNum=Number(String(det.stay?.cost??"").replace(/[^0-9.]/g,""))||0;
   const hasStaySecondaryField=!!(det.stay?.checkin&&det.stay?.checkout)||stayCostNum>0||(det.stay?.link||"").trim().length>0||(det.stay?.notes||"").trim().length>0;
-  const showStayAccommodationCard=hasS&&hasStaySecondaryField;
+  const showStayAccommodationCard=hasS&&hasStaySecondaryField&&!stayFocused;
   const prevStop=(prevCity||"").trim();
   const homeStop=(homeCity||"").trim();
   const thisStop=(segment.name||"").trim();
@@ -228,7 +244,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
-          {suggestion?.stay&&!isDism('stay')&&!hasS&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
+          {suggestion?.stay&&!isDism('stay')&&!showStayAccommodationCard&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
             <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{suggestion.stay.recommendation}</div>
             <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:8}}>{suggestion.stay.type}</div>
@@ -285,7 +301,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{marginTop:8}}><SDF label="NOTES" value={det.stay.notes} onChange={v=>uS("notes",v)} placeholder="Room type, included meals, host contact..." accent="#69F0AE" multiline/></div>
             <button type="button" onClick={()=>setEditingStay(false)} style={{marginTop:10,width:'100%',padding:'10px',borderRadius:8,border:'none',background:'rgba(105,240,174,0.12)',color:'#69F0AE',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,cursor:'pointer',minHeight:40}}>SAVE CHANGES</button>
           </div>}
-          {!showStayAccommodationCard&&!(suggestion?.stay&&!isDism('stay'))&&!suggestionsLoading&&<div>
+          {!showStayAccommodationCard&&!(suggestion?.stay&&!isDism('stay'))&&!suggestionsLoading&&<div onFocus={()=>setStayFocused(true)} onBlur={(e)=>{if(!e.currentTarget.contains(e.relatedTarget))setStayFocused(false);}}>
             <div style={{textAlign:'center',padding:'24px 0 20px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.40)',marginBottom:12}}>No accommodation planned yet.</div></div>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10}}>
               <SDF label="PROPERTY" value={det.stay.name} onChange={v=>uS("name",v)} placeholder="Hotel / hostel / resort..." accent="#69F0AE"/>
@@ -297,6 +313,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             </div>
             <div style={{marginTop:10}}><SDF label="BOOKING LINK" value={det.stay.link} onChange={v=>uS("link",v)} placeholder="https://..." accent="#69F0AE"/></div>
             <div style={{marginTop:8}}><SDF label="NOTES" value={det.stay.notes} onChange={v=>uS("notes",v)} placeholder="Room type, included meals, host contact..." accent="#69F0AE" multiline/></div>
+            {!showStayAccommodationCard&&(hasS||hasStaySecondaryField)&&<div style={{marginTop:12}}>
+              <button type="button" onClick={()=>{if(typeof document!=="undefined")document.activeElement?.blur();setStayFocused(false);}} style={{padding:'8px 14px',borderRadius:6,border:'1px solid rgba(255,159,67,0.30)',background:'none',color:'rgba(255,159,67,0.70)',fontSize:12,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:600,whiteSpace:'nowrap',height:34}}>SAVE</button>
+            </div>}
           </div>}
         </div>}
         {/* ACTIVITIES */}
@@ -393,12 +412,26 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <div style={{marginTop:14}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code..." accent="#FFD93D" multiline/></div>
         </div>}
         {/* FOOD */}
-        {tab==="food"&&<div style={{padding:0}}>
+        {tab==="food"&&(()=>{const hasFood=!!(det.food?.dailyBudget&&String(det.food.dailyBudget).trim());const showFoodSummary=hasFood&&!editingFood&&!foodFocused;return(<div style={{padding:0}} onFocus={()=>setFoodFocused(true)} onBlur={(e)=>{if(!e.currentTarget.contains(e.relatedTarget))setFoodFocused(false);}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
-          {suggestion?.food&&!isDism('food')&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
+          {showFoodSummary&&<div style={{border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:14,background:'rgba(0,229,255,0.06)',padding:'18px 20px',marginBottom:14}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:12}}>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.75)',letterSpacing:2,marginBottom:6}}>🍜 FOOD & DINING</div>
+                <div style={{fontSize:16,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>${det.food.dailyBudget}/day</div>
+                <div style={{fontSize:13,color:'rgba(255,217,61,0.85)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{segment.nights} nights · ${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</div>
+                {det.food.notes&&<div style={{fontSize:12,color:'rgba(255,255,255,0.60)',marginTop:8,lineHeight:1.5,whiteSpace:'pre-line'}}>{det.food.notes.length>140?det.food.notes.slice(0,140)+'...':det.food.notes}</div>}
+              </div>
+              <button type="button" onClick={()=>setEditingFood(true)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,flexShrink:0}}>EDIT</button>
+            </div>
+            {suggestion?.food&&<div style={{textAlign:'left',marginTop:10}}>
+              <button type="button" onClick={()=>{setShowFoodResuggest(true);setEditingFood(true);}} style={{background:'none',border:'none',color:'rgba(255,159,67,0.75)',fontSize:12,cursor:'pointer',padding:0,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",textDecoration:'underline',textUnderlineOffset:3}}>↩ View suggestion</button>
+            </div>}
+          </div>}
+          {suggestion?.food&&((!hasFood&&!isDism('food'))||(hasFood&&showFoodResuggest))&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
             <div style={suggestionHeaderStyle}>✦ FOOD & DINING</div>
             <div style={{fontSize:14,fontWeight:600,color:'#FFD93D',marginBottom:8}}>Est. {(suggestion.food.dailyBudget||"").replace(/\/day$/i,"")}/day{suggestion.food.totalEstimate?` · ~${suggestion.food.totalEstimate} total`:""}</div>
             {suggestion.food.recommendations?.map((rec,i)=>(
@@ -407,12 +440,14 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {suggestion.food.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginTop:8}}>{suggestion.food.notes}</div>}
             <div style={{...disclaimerStyle,marginTop:12}}>⚡ Suggestions based on current market knowledge — always verify locally</div>
             <div style={{display:'flex',gap:8}}>
-              <button type="button" onClick={()=>{const bud=(suggestion.food.dailyBudget||"").match(/\d+/)?.[0]||"";if(bud)uF("dailyBudget",bud);uF("notes",suggestion.food.recommendations?.join('\n')||"");dismiss('food');}} style={acceptBtnStyle}>USE ESTIMATES</button>
-              <button type="button" onClick={()=>dismiss('food')} style={dismissBtnStyle}>PLAN MY OWN</button>
+              <button type="button" onClick={()=>{const nums=((suggestion.food.dailyBudget||"").match(/\d+/g)||[]).map(Number).filter(x=>x>0&&x<500);let bud="";if(nums.length===1)bud=String(nums[0]);else if(nums.length>=2)bud=String(Math.round((nums[0]+nums[1])/2));if(bud)uF("dailyBudget",bud);uF("notes",suggestion.food.recommendations?.join('\n')||"");dismiss('food');setEditingFood(false);setShowFoodResuggest(false);}} style={acceptBtnStyle}>USE ESTIMATES</button>
+              <button type="button" onClick={()=>{dismiss('food');setShowFoodResuggest(false);}} style={dismissBtnStyle}>PLAN MY OWN</button>
             </div>
           </div>}
-          <div style={{display:'flex',gap:10,alignItems:'flex-end',marginBottom:10}}>
-            <div style={{flex:1}}><SDF label="DAILY FOOD BUDGET ($)" type="number" value={det.food.dailyBudget} onChange={v=>uF("dailyBudget",v)} placeholder="e.g. 45" accent="#FF9F43"/></div>
+          {!showFoodSummary&&<>
+          <div style={{display:'flex',gap:10,alignItems:'flex-end',marginBottom:10,flexWrap:isMobile?'wrap':'nowrap'}}>
+            <div style={{flex:1,minWidth:0}}><SDF label="DAILY FOOD BUDGET ($)" type="number" value={det.food.dailyBudget} onChange={v=>uF("dailyBudget",v)} placeholder="e.g. 45" accent="#FF9F43"/></div>
+            {!!(det.food.dailyBudget&&String(det.food.dailyBudget).trim())&&<button type="button" onClick={()=>{if(typeof document!=="undefined")document.activeElement?.blur();setFoodFocused(false);setEditingFood(false);}} style={{padding:'8px 14px',borderRadius:6,border:'1px solid rgba(255,159,67,0.30)',background:'none',color:'rgba(255,159,67,0.70)',fontSize:12,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:600,whiteSpace:'nowrap',height:34,flexShrink:0}}>SAVE</button>}
             <button type="button" onClick={aiFood} disabled={aiLoad} style={{padding:'8px 14px',borderRadius:6,border:'1px solid rgba(255,159,67,0.3)',background:'rgba(255,159,67,0.05)',color:'rgba(255,159,67,0.8)',fontSize:12,cursor:aiLoad?'wait':'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:600,whiteSpace:'nowrap',height:34,flexShrink:0}}>{aiLoad?"✦...":"✦ CO-ARCH EST"}</button>
           </div>
           {det.food.dailyBudget&&<div style={{display:'flex',justifyContent:'space-between',padding:'10px 14px',background:'rgba(255,159,67,0.05)',border:'1px solid rgba(255,159,67,0.16)',borderRadius:8,marginBottom:10}}>
@@ -420,7 +455,11 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <span style={{fontSize:14,fontWeight:600,color:'rgba(255,217,61,0.85)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
           </div>}
           <SDF label="FOOD NOTES" value={det.food.notes} onChange={v=>uF("notes",v)} placeholder="Must-try dishes, market days, dietary notes..." accent="#FF9F43" multiline/>
-        </div>}
+          {hasFood&&editingFood&&<div style={{textAlign:'left',marginTop:10}}>
+            <button type="button" onClick={()=>{setEditingFood(false);setShowFoodResuggest(false);}} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'6px 14px',cursor:'pointer',minHeight:30}}>DONE</button>
+          </div>}
+          </>}
+        </div>);})()}
         {/* BUDGET */}
         {tab==="budget"&&(()=>{const tCost=parseFloat(det.transport?.cost)||0;const sCost=parseFloat(det.stay?.cost)||0;const aCost=det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0);const fCost=(parseFloat(det.food?.dailyBudget)||0)*segment.nights;const mCost=det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0);const total=tCost+sCost+aCost+fCost+mCost;const budget=segment.budget||0;const pct=budget>0?Math.round((total/budget)*100):0;const barColor=pct>=100?'#FF6B6B':pct>=80?'#FFD93D':'#00E5FF';
           const tf=(det.transport?.from||'').trim();const tt=(det.transport?.to||'').trim();const tMode=(det.transport?.mode||'').trim();
