@@ -9,22 +9,30 @@ import BottomSheet from './BottomSheet';
 function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions,suggestionsLoading}) {
   const isMobile=useMobile();
 
-  // ── Return Trip variant ──────────────────────────────────────
-  if(phase?.type==="Return") return(
+  // ── Return Trip variant — title row mirrors destination cards (centered name) ──
+  if(phase?.type==="Return"){
+    const retTitle=isMobile
+      ?{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:500,color:"#E8DCC8",lineHeight:1.1,textAlign:"center"}
+      :{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:600,color:"#E8DCC8",textAlign:"center"};
+    return(
     <div style={{borderRadius:13,border:"1px solid rgba(148,163,184,0.20)",borderTop:"1px solid rgba(148,163,184,0.35)",background:"rgba(0,8,20,0.35)",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)",overflow:"hidden",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`,opacity:0.80}}>
-      <div style={{padding:"12px 16px",borderLeft:"3px solid rgba(148,163,184,0.40)",display:"flex",alignItems:"center",gap:10}}>
-        <span style={{fontSize:18,flexShrink:0}}>{phase.flag||"🏠"}</span>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
-            <span style={{fontSize:10,color:"rgba(148,163,184,0.70)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,fontWeight:700}}>RETURN FLIGHT</span>
+      <div style={{padding:isMobile?"16px 16px":"14px 16px",borderLeft:"3px solid rgba(148,163,184,0.40)"}}>
+        <div style={{display:"flex",alignItems:"center",gap:isMobile?8:8,marginBottom:6,width:"100%"}}>
+          {isMobile?<div style={{width:30,flexShrink:0}} aria-hidden />:<div style={{width:22,height:22,flexShrink:0}} aria-hidden />}
+          <span style={{fontSize:isMobile?20:14,lineHeight:1,flexShrink:0}}>{phase.flag||"🏠"}</span>
+          <div style={{flex:1,minWidth:0,textAlign:"center"}}>
+            <div style={retTitle}>RETURN FLIGHT</div>
           </div>
-          <div style={{fontSize:14,fontWeight:500,color:"rgba(232,220,200,0.65)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>Home to {phase.name||phase.destination}</div>
-          {phase.why&&<div style={{fontFamily:"'Fraunces',serif",fontSize:12,fontStyle:"italic",color:"rgba(148,163,184,0.55)",lineHeight:1.5,marginTop:2}}>{phase.why}</div>}
+          <div style={{minWidth:isMobile?56:72,textAlign:"right",flexShrink:0}}>
+            {(phase.budget||phase.cost)>0?<span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:isMobile?15:15,fontWeight:600,color:"rgba(255,217,61,0.85)",whiteSpace:"nowrap"}}>~{fmt(phase.budget||phase.cost)}</span>:<span style={{width:1}} />}
+          </div>
         </div>
-        {(phase.budget||phase.cost)>0&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:14,fontWeight:600,color:"rgba(148,163,184,0.65)",whiteSpace:"nowrap",flexShrink:0}}>~{fmt(phase.budget||phase.cost)}</div>}
+        <div style={{fontSize:isMobile?13:14,fontWeight:500,color:"rgba(232,220,200,0.72)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",textAlign:"center",lineHeight:1.45,paddingLeft:isMobile?8:0,paddingRight:isMobile?8:0}}>Home to {phase.name||phase.destination}</div>
+        {phase.why&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:13,fontStyle:"italic",color:"rgba(148,163,184,0.62)",lineHeight:1.5,marginTop:6,textAlign:"center"}}>{phase.why}</div>}
       </div>
     </div>
-  );
+    );
+  }
   const [open,setOpen]=useState(autoOpen);
   const [sheetOpen,setSheetOpen]=useState(false);
   const [anyAskOpen,setAnyAskOpen]=useState(false);
