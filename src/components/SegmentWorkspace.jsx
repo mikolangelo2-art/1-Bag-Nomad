@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
-import { fmt, fD, formatSegmentCardDateHeader } from '../utils/dateHelpers';
+import { fmt, fD, formatSegmentCardDateHeader, formatTravelLegDates } from '../utils/dateHelpers';
 import { loadSeg, saveSeg } from '../utils/storageHelpers';
 import { returnToLogCopy } from '../utils/microcopy';
 import { detectMode, findSuggestionForSegment, flatPhaseIndexForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion, transportSuggestionEstimateHint, parseTransportEstimateToCostDigits, suggestionRowHasPayload, isRowEmpty } from '../utils/tripConsoleHelpers';
@@ -9,11 +9,18 @@ import SDF from './SDF';
 import CityInput from './CityInput';
 import WorldMapBackground from './WorldMapBackground';
 
+function applyTransportDateDefaults(transport, segment) {
+  const tr = { ...transport };
+  if (!(String(tr.departDate ?? "").trim()) && segment?.arrival) tr.departDate = segment.arrival;
+  if (!(String(tr.arriveDate ?? "").trim()) && segment?.arrival) tr.arriveDate = segment.arrival;
+  return tr;
+}
+
 function CollapsibleSuggestion({summaryCard=false,onSwitchToSuggestion,confirmMessage,children}){
   const [open,setOpen]=useState(false);
   return(
     <div style={{marginTop:10}}>
-      <button type="button" onClick={()=>setOpen(o=>!o)} style={{background:'none',border:'none',color:'rgba(255,159,67,0.65)',fontSize:12,cursor:'pointer',padding:0,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:'0.1em',textAlign:'left',width:'100%'}}>{open?'⌄ Hide suggestion':'› View suggestion'}</button>
+      <button type="button" onClick={()=>setOpen(o=>!o)} style={{background:'none',border:'none',color:'rgba(255,159,67,0.65)',fontSize:13,cursor:'pointer',padding:0,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:'0.1em',textAlign:'left',width:'100%',lineHeight:1.45}}>{open?'⌄ Hide suggestion':'› View suggestion'}</button>
       <div style={{maxHeight:open?1600:0,overflow:'hidden',transition:'max-height 0.4s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
         <div style={{paddingTop:12}}>
           {children}
@@ -29,8 +36,8 @@ function CollapsibleSuggestion({summaryCard=false,onSwitchToSuggestion,confirmMe
 function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,intelSnippet,onBack,onBackToExpedition,suggestion:suggestionProp,suggestionsLoading,homeCity="",prevCity="",allPhases=[]}) {
   const isMobile=useMobile();
   const key=`${phaseId}-${segment.id}`;
-  const blank={transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
-  const [det,setDet]=useState(()=>{const a=loadSeg();const base=a[key]?{...blank,...a[key]}:blank;const stay={...base.stay};if(!(String(stay.checkin||"").trim())&&segment?.arrival)stay.checkin=segment.arrival;if(!(String(stay.checkout||"").trim())&&segment?.departure)stay.checkout=segment.departure;return{...base,stay};});
+  const blank={transport:{mode:"",from:"",to:"",departDate:"",departTime:"",arriveDate:"",arriveTime:"",depTime:"",arrTime:"",cost:"",notes:"",link:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
+  const [det,setDet]=useState(()=>{const a=loadSeg();const base=a[key]?{...blank,...a[key]}:blank;const stay={...base.stay};if(!(String(stay.checkin||"").trim())&&segment?.arrival)stay.checkin=segment.arrival;if(!(String(stay.checkout||"").trim())&&segment?.departure)stay.checkout=segment.departure;const transport=applyTransportDateDefaults({...blank.transport,...base.transport},segment);return{...base,stay,transport};});
   const [tab,setTab]=useState("transport");
   const [editingTransport,setEditingTransport]=useState(false);
   const [planningOwn,setPlanningOwn]=useState(false);
@@ -98,7 +105,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   async function loadDocs(){if(docsData||docsLoading)return;setDocsLoading(true);try{const raw=await askAI(`Travel advisor. Destination:${segment.name},${segment.country}. Home:USA. Return JSON only:{"visa":{"required":true,"details":"","cost":""},"health":{"required":[],"recommended":[],"notes":""},"money":{"currency":"","tips":"","warning":""},"connectivity":{"tips":""},"safety":{"level":"low","notes":""},"customs":{"tips":""},"emergency":{"police":"","ambulance":"","embassy":""}}`,800);const m=raw.match(/\{[\s\S]*\}/);if(m){const d=JSON.parse(m[0]);setDocsData(d);localStorage.setItem(`1bn_docs_${phaseId}_v1`,JSON.stringify(d));}}catch(e){}setDocsLoading(false);}
   useEffect(()=>{window.scrollTo(0,0);},[]);
   useEffect(()=>{setPlanningOwnStay(false);setShowStayResuggest(false);setShowFoodResuggest(false);},[key]);
-  useEffect(()=>{const a=loadSeg();const base=a[key]?{...blank,...a[key]}:blank;const stay={...base.stay};if(!(String(stay.checkin||"").trim())&&segment?.arrival)stay.checkin=segment.arrival;if(!(String(stay.checkout||"").trim())&&segment?.departure)stay.checkout=segment.departure;setDet({...base,stay});},[key]);
+  useEffect(()=>{const a=loadSeg();const base=a[key]?{...blank,...a[key]}:blank;const stay={...base.stay};if(!(String(stay.checkin||"").trim())&&segment?.arrival)stay.checkin=segment.arrival;if(!(String(stay.checkout||"").trim())&&segment?.departure)stay.checkout=segment.departure;const transport=applyTransportDateDefaults({...blank.transport,...base.transport},segment);setDet({...base,stay,transport});},[key]);
   useEffect(()=>{if(isFirst.current){isFirst.current=false;return;}const a=loadSeg();const ex=a[key]||{};const merged={...ex,...det,status:ex.status||'planning',statusUpdatedAt:ex.statusUpdatedAt||null,changes:ex.changes||[]};if(isRowEmpty(merged.transport))delete merged.transport;if(isRowEmpty(merged.stay))delete merged.stay;if(isRowEmpty(merged.food))delete merged.food;a[key]=merged;saveSeg(a);setSaveFlash(true);if(saveFlashRef.current)clearTimeout(saveFlashRef.current);saveFlashRef.current=setTimeout(()=>setSaveFlash(false),2000);},[det]);
   const uT=(f,v)=>setDet(d=>({...d,transport:{...d.transport,[f]:v}}));
   const uS=(f,v)=>setDet(d=>({...d,stay:{...d.stay,[f]:v}}));
@@ -117,7 +124,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
     }
   }
   const acceptTransport=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("from",prevCity||homeCity||"");uT("to",segment.name||"");uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",transportNotesFromSuggestion(t,{prevCity,homeCity,segmentName:segment.name}));dismiss('transport');};
-  const clearTransport=()=>{setDet(d=>({...d,transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:"",link:""}}));const nd={...dismissed};delete nd[`${dismissKey}_transport`];setDismissed(nd);saveDismissed(nd);setEditingTransport(false);setPlanningOwn(false);};
+  const clearTransport=()=>{setDet(d=>({...d,transport:{mode:"",from:"",to:"",departDate:"",departTime:"",arriveDate:"",arriveTime:"",depTime:"",arrTime:"",cost:"",notes:"",link:""}}));const nd={...dismissed};delete nd[`${dismissKey}_transport`];setDismissed(nd);saveDismissed(nd);setEditingTransport(false);setPlanningOwn(false);};
   const acceptStay=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');};
   const acceptActivity=(a,suggestionIdx=null)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');const row={name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()};if(suggestionIdx!=null)row.suggestionActivityIdx=suggestionIdx;setDet(d=>({...d,activities:[...d.activities,row]}));};
   // Leg endpoints set: show transport card + EDIT; keep planning form visible until then (avoid unmounting MODE/COST on first cost digit).
@@ -125,6 +132,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const transportLegLocked=(!transportFocused)&&transportEndpointsLocked;
   // A2 Travel: hide transport suggestion only when from+to locked (not on mode+cost alone — avoids layout jump).
   const hideTransportSuggestion=transportLegLocked;
+  const travelSummaryDateLine=formatTravelLegDates(det.transport);
+  const transportCostModeParts=(()=>{const p=[];if(!travelSummaryDateLine){const dpt=(det.transport.departTime||det.transport.depTime||"").trim();const arv=(det.transport.arriveTime||det.transport.arrTime||"").trim();if(dpt)p.push(`Depart ${dpt}`);if(arv)p.push(`Arrive ${arv}`);}if(det.transport.cost)p.push(`Est. $${det.transport.cost}`);if(det.transport.mode&&det.transport.from)p.push(det.transport.mode);return p;})();
   useEffect(()=>{if(transportLegLocked)setPlanningOwn(false);},[transportLegLocked]);
   useEffect(()=>{if(!isRowEmpty({from:det.transport?.from,to:det.transport?.to,mode:det.transport?.mode,cost:det.transport?.cost}))return;const d={...dismissed};delete d[`${dismissKey}_transport`];setDismissed(d);saveDismissed(d);},[det.transport.from,det.transport.to,det.transport.mode,det.transport.cost]);
   const stayNameTrim=(det.stay?.name||"").trim();
@@ -140,10 +149,12 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const fromLegChips=!!(prevStop||(homeStop&&(!prevStop||homeStop.toLowerCase()!==prevStop.toLowerCase())));
   const toLegChips=!!thisStop;
   const segmentCardDateHeader=formatSegmentCardDateHeader(segment.arrival,segment.departure,segment.nights);
-  const returnToLogFooterStyle={fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.36)',letterSpacing:'0.14em',lineHeight:1.55,marginTop:14,paddingTop:12,borderTop:'1px solid rgba(255,255,255,0.06)'};
-  const tripFieldLabel={fontSize:isMobile?11:13,color:"rgba(0,229,255,0.75)",letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,opacity:0.92};
+  const suggestionHeaderReadable={...suggestionHeaderStyle,fontSize:12,lineHeight:1.45};
+  const disclaimerReadable={...disclaimerStyle,fontSize:12,lineHeight:1.58};
+  const returnToLogFooterStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.36)',letterSpacing:'0.14em',lineHeight:1.58,marginTop:14,paddingTop:12,borderTop:'1px solid rgba(255,255,255,0.06)'};
+  const tripFieldLabel={fontSize:isMobile?12:14,color:"rgba(0,229,255,0.75)",letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,opacity:0.92};
   const cityInStyle={background:"rgba(0,0,0,0.55)",border:"1px solid rgba(255,255,255,0.22)",borderRadius:6,color:"#FFF",fontSize:isMobile?12:15,padding:isMobile?"4px 7px":"5px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",maxWidth:"100%",boxSizing:"border-box",lineHeight:1.6};
-  const legChipStyle={padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.35)",background:"rgba(0,229,255,0.06)",color:"rgba(0,229,255,0.88)",fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",minHeight:32};
+  const legChipStyle={padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.35)",background:"rgba(0,229,255,0.06)",color:"rgba(0,229,255,0.88)",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",minHeight:32,lineHeight:1.35};
   const transportFromToGrid=(forManual)=><>
     <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10}}>
       <div style={{display:'flex',flexDirection:'column',gap:isMobile?2:3}}>
@@ -158,6 +169,18 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         <div style={tripFieldLabel}>TO</div>
         {thisStop?<div style={{display:'flex',flexWrap:'wrap',gap:6}}><button type="button" onClick={()=>uT("to",thisStop)} style={legChipStyle}>This stop: {thisStop}</button></div>:null}
         <CityInput accent="cyan" value={det.transport.to} onChange={v=>uT("to",v)} placeholder="City, region, or airport" style={cityInStyle} onFocus={()=>forManual&&setTransportFocused(true)} onBlur={()=>forManual&&setTransportFocused(false)}/>
+      </div>
+    </div>
+  </>;
+  const transportDateTimeGrid=<>
+    <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10,marginTop:10}}>
+      <div style={{display:'flex',gap:8,alignItems:'flex-end',flexWrap:'wrap'}}>
+        <div style={{flex:'1 1 160px',minWidth:0}}><SDF type="date" label="DEPART DATE" value={det.transport.departDate??""} onChange={v=>uT("departDate",v)} accent="#00E5FF"/></div>
+        <div style={{flex:'0 1 104px',minWidth:84}}><SDF label="DEPART TIME" value={det.transport.departTime??""} onChange={v=>uT("departTime",v)} placeholder="HH:MM" accent="#00E5FF"/></div>
+      </div>
+      <div style={{display:'flex',gap:8,alignItems:'flex-end',flexWrap:'wrap'}}>
+        <div style={{flex:'1 1 160px',minWidth:0}}><SDF type="date" label="ARRIVE DATE" value={det.transport.arriveDate??""} onChange={v=>uT("arriveDate",v)} accent="#00E5FF"/></div>
+        <div style={{flex:'0 1 104px',minWidth:84}}><SDF label="ARRIVE TIME" value={det.transport.arriveTime??""} onChange={v=>uT("arriveTime",v)} placeholder="HH:MM" accent="#00E5FF"/></div>
       </div>
     </div>
   </>;
@@ -196,27 +219,27 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
       {/* Tab content */}
       <div key={tab} style={{border:'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(0,8,20,0.85)',padding:'16px 14px',margin:'12px 0',minHeight:300,textAlign:'left',animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
         {(tab==="transport"||tab==="stay"||tab==="activities"||tab==="food")&&!!segmentCardDateHeader&&<div style={{textAlign:'center',margin:'0 0 14px',padding:'0 8px 12px',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
-          <div style={{fontSize:isMobile?12:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.52)',letterSpacing:0.35,lineHeight:1.45}}>{segmentCardDateHeader}</div>
+          <div style={{fontSize:isMobile?13:14,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.52)',letterSpacing:0.35,lineHeight:1.52}}>{segmentCardDateHeader}</div>
         </div>}
         {/* TRANSPORT */}
         {tab==="transport"&&<div style={{padding:0}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
-            <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
+            <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
           {suggestion?.transport&&!isDism('transport')&&!hideTransportSuggestion&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
-            <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
+            <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
             <div style={{fontSize:14,fontWeight:700,color:'#FFD93D',marginBottom:8,lineHeight:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
               This leg: {plannedLegFrom} → {plannedLegTo}
               <span style={{color:'rgba(255,245,220,0.45)',fontWeight:600}}> · </span>
               Est. {suggestion.transport.estimatedCost}
             </div>
-            {suggestion.transport.route?<div style={{fontSize:13,color:'rgba(255,255,255,0.36)',lineHeight:1.55,marginBottom:6,whiteSpace:'pre-wrap'}}>{suggestion.transport.route}</div>:null}
-            <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:4}}>{suggestion.transport.duration}</div>
-            <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.42)',lineHeight:1.5,marginBottom:6}}>{transportSuggestionEstimateHint({prevCity,segmentName:segment.name})}</div>
-            {suggestion.transport.bestTiming&&<div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:4}}>{suggestion.transport.bestTiming}</div>}
-            {suggestion.transport.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{suggestion.transport.notes}</div>}
-            <div style={disclaimerStyle}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
+            {suggestion.transport.route?<div style={{fontSize:14,color:'rgba(255,255,255,0.36)',lineHeight:1.58,marginBottom:6,whiteSpace:'pre-wrap'}}>{suggestion.transport.route}</div>:null}
+            <div style={{fontSize:14,color:'rgba(255,255,255,0.75)',marginBottom:4,lineHeight:1.45}}>{suggestion.transport.duration}</div>
+            <div style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.42)',lineHeight:1.52,marginBottom:6}}>{transportSuggestionEstimateHint({prevCity,segmentName:segment.name})}</div>
+            {suggestion.transport.bestTiming&&<div style={{fontSize:14,color:'rgba(255,255,255,0.75)',marginBottom:4,lineHeight:1.45}}>{suggestion.transport.bestTiming}</div>}
+            {suggestion.transport.notes&&<div style={{fontSize:14,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12,lineHeight:1.5}}>{suggestion.transport.notes}</div>}
+            <div style={disclaimerReadable}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
             <div style={{display:'flex',gap:8}}>
               <button type="button" onClick={()=>acceptTransport(suggestion.transport)} style={acceptBtnStyle}>USE THIS ROUTE</button>
               <button type="button" onClick={()=>{dismiss('transport');setPlanningOwn(true);}} style={dismissBtnStyle}>PLAN MY OWN</button>
@@ -230,18 +253,19 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <button type="button" onClick={()=>setEditingTransport(e=>!e)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28}}>{editingTransport?'DONE':'EDIT'}</button>
             </div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{det.transport.from&&det.transport.to?`${det.transport.from} → ${det.transport.to}`:det.transport.mode||"Transport"}</div>
-            {(det.transport.depTime||det.transport.arrTime||det.transport.cost||(det.transport.mode&&det.transport.from))&&<div style={{fontSize:13,color:'#FF9F43',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:4}}>{[det.transport.depTime?`Depart ${det.transport.depTime}`:null,det.transport.arrTime?`Arrive ${det.transport.arrTime}`:null,det.transport.cost?`Est. $${det.transport.cost}`:null,(det.transport.mode&&det.transport.from)?det.transport.mode:null].filter(Boolean).join(' · ')}</div>}
-            {det.transport.notes&&!editingTransport&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,color:'rgba(255,255,255,0.60)',marginTop:6,lineHeight:1.5,whiteSpace:'pre-line'}}>{det.transport.notes.length>120?det.transport.notes.slice(0,120)+'...':det.transport.notes}</div>}
+            {!!travelSummaryDateLine&&<div style={{fontSize:14,color:'rgba(255,255,255,0.78)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:4,lineHeight:1.5}}>{travelSummaryDateLine}</div>}
+            {transportCostModeParts.length>0&&<div style={{fontSize:14,color:'#FF9F43',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:4,lineHeight:1.45}}>{transportCostModeParts.join(' · ')}</div>}
+            {det.transport.notes&&!editingTransport&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:'rgba(255,255,255,0.60)',marginTop:6,lineHeight:1.52,whiteSpace:'pre-line'}}>{det.transport.notes.length>120?det.transport.notes.slice(0,120)+'...':det.transport.notes}</div>}
             {det.transport.link&&<a href={det.transport.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:4}}>{det.transport.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
             {transportLegLocked&&!editingTransport&&<div style={{textAlign:'left',marginTop:10,marginBottom:2}}>
               <span onClick={clearTransport} style={{color:'rgba(255,255,255,0.4)',fontSize:12,cursor:'pointer',letterSpacing:0.3,textDecoration:'underline',textUnderlineOffset:3}} onMouseEnter={e=>{e.target.style.color='rgba(255,255,255,0.7)';}} onMouseLeave={e=>{e.target.style.color='rgba(255,255,255,0.4)';}}>↩ Clear transport</span>
             </div>}
             </div>
             {!editingTransport&&suggestion?.transport&&<CollapsibleSuggestion summaryCard confirmMessage="Replace your saved transport with this Co-Architect suggestion?" onSwitchToSuggestion={()=>acceptTransport(suggestion.transport)}>
-              <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
-              <div style={{fontSize:13,fontWeight:600,color:'#FFD93D',marginBottom:6,lineHeight:1.45,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Est. {suggestion.transport.estimatedCost} · {suggestion.transport.duration||""}</div>
-              {suggestion.transport.route?<div style={{fontSize:12,color:'rgba(255,255,255,0.50)',lineHeight:1.5,marginBottom:8,whiteSpace:'pre-wrap'}}>{suggestion.transport.route}</div>:null}
-              <div style={disclaimerStyle}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
+              <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
+              <div style={{fontSize:14,fontWeight:600,color:'#FFD93D',marginBottom:6,lineHeight:1.48,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Est. {suggestion.transport.estimatedCost} · {suggestion.transport.duration||""}</div>
+              {suggestion.transport.route?<div style={{fontSize:13,color:'rgba(255,255,255,0.50)',lineHeight:1.52,marginBottom:8,whiteSpace:'pre-wrap'}}>{suggestion.transport.route}</div>:null}
+              <div style={disclaimerReadable}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
             </CollapsibleSuggestion>}
             {!editingTransport&&<div style={returnToLogFooterStyle}>{returnToLogCopy('Travel')}</div>}
           </div>}
@@ -255,10 +279,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <SDF label="COST ($)" type="number" value={det.transport.cost} onChange={v=>uT("cost",v)} placeholder="0" accent="#00E5FF"/>
             </div>
             {transportFromToGrid(false)}
-            <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10,marginTop:10}}>
-              <SDF label="DEPART (TIME OR DATE)" value={det.transport.depTime} onChange={v=>uT("depTime",v)} placeholder="e.g. 08:30 AM or Sep 26" accent="#00E5FF"/>
-              <SDF label="ARRIVE (TIME OR DATE)" value={det.transport.arrTime} onChange={v=>uT("arrTime",v)} placeholder="e.g. 11:45 AM or Sep 26" accent="#00E5FF"/>
-            </div>
+            {transportDateTimeGrid}
             <div style={{marginTop:10}}><SDF label="BOOKING LINK" value={det.transport.link||""} onChange={v=>uT("link",v)} placeholder="https://..." accent="#00E5FF"/></div>
             <div style={{marginTop:8}}><SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="e.g. 1) Flight AA… 2) Shuttle to pier 3) Utila ferry — refs & costs per leg" accent="#00E5FF" multiline/></div>
             <button type="button" onClick={()=>setEditingTransport(false)} style={{marginTop:10,width:'100%',padding:'10px',borderRadius:8,border:'none',background:'rgba(0,229,255,0.12)',color:'#00E5FF',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,cursor:'pointer',minHeight:40}}>SAVE CHANGES</button>
@@ -271,29 +292,26 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             </div>
             {transportFromToGrid(true)}
             {(transportEstLoading||transportEst)&&<div style={{padding:'8px 12px',marginTop:8,borderRadius:8,background:'rgba(255,159,67,0.04)',border:'1px solid rgba(255,159,67,0.12)',display:'flex',flexDirection:'column',alignItems:'flex-start',gap:6}}>
-              {transportEstLoading?<span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.60)',letterSpacing:1}}>✦ Estimating...</span>
-              :transportEst&&<span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:0.5,lineHeight:1.5}}>
+              {transportEstLoading?<span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.60)',letterSpacing:1,lineHeight:1.45}}>✦ Estimating...</span>
+              :transportEst&&<span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:0.5,lineHeight:1.52}}>
                 ✦ Est. {transportEst.estimate}{transportEst.note?` — ${transportEst.note}`:""}{" "}
                 <button type="button" onClick={()=>{const d=parseTransportEstimateToCostDigits(transportEst.estimate);if(d)uT("cost",d);}} style={{background:'none',border:'none',padding:0,color:'#FF9F43',textDecoration:'underline',cursor:'pointer',fontSize:'inherit',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600}}>use</button>
-                <span style={{display:'block',fontSize:10,color:'rgba(255,255,255,0.35)',marginTop:4,fontWeight:400}}>Fills low end of a range into cost (adjust if you book mid/high).</span>
+                <span style={{display:'block',fontSize:11,color:'rgba(255,255,255,0.35)',marginTop:4,fontWeight:400,lineHeight:1.45}}>Fills low end of a range into cost (adjust if you book mid/high).</span>
               </span>}
             </div>}
-            <div style={{fontSize:11,color:'rgba(255,255,255,0.38)',lineHeight:1.55,marginTop:6,marginBottom:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
+            <div style={{fontSize:12,color:'rgba(255,255,255,0.38)',lineHeight:1.58,marginTop:6,marginBottom:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
               More than one hop (flight + bus + ferry)? Use <span style={{color:'rgba(0,229,255,0.72)'}}>NOTES</span> to list each leg, times, and refs; <span style={{color:'rgba(0,229,255,0.72)'}}>BOOKING LINK</span> for your main ticket or a trip folder. <span style={{color:'rgba(255,255,255,0.28)'}}>ACTIVITIES</span> is for things you do at this stop, not airport transfers.
             </div>
-            <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10,marginTop:10}}>
-              <SDF label="DEPART (TIME OR DATE)" value={det.transport.depTime} onChange={v=>uT("depTime",v)} placeholder="e.g. 08:30 AM or Sep 26" accent="#00E5FF"/>
-              <SDF label="ARRIVE (TIME OR DATE)" value={det.transport.arrTime} onChange={v=>uT("arrTime",v)} placeholder="e.g. 11:45 AM or Sep 26" accent="#00E5FF"/>
-            </div>
+            {transportDateTimeGrid}
             <div style={{marginTop:10}}><SDF label="BOOKING LINK" value={det.transport.link||""} onChange={v=>uT("link",v)} placeholder="https://..." accent="#00E5FF"/></div>
             <div style={{marginTop:8}}><SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="e.g. 1) Flight AA… 2) Shuttle to pier 3) Utila ferry — refs & costs per leg" accent="#00E5FF" multiline/></div>
             {suggestion?.transport&&isDism('transport')&&<CollapsibleSuggestion>
-              <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
+              <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
               <div style={{fontSize:14,fontWeight:700,color:'#FFD93D',marginBottom:8,lineHeight:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>This leg: {plannedLegFrom} → {plannedLegTo}<span style={{color:'rgba(255,245,220,0.45)',fontWeight:600}}> · </span>Est. {suggestion.transport.estimatedCost}</div>
-              {suggestion.transport.route?<div style={{fontSize:13,color:'rgba(255,255,255,0.36)',lineHeight:1.55,marginBottom:6,whiteSpace:'pre-wrap'}}>{suggestion.transport.route}</div>:null}
-              <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:4}}>{suggestion.transport.duration}</div>
-              {suggestion.transport.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{suggestion.transport.notes}</div>}
-              <div style={disclaimerStyle}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
+              {suggestion.transport.route?<div style={{fontSize:14,color:'rgba(255,255,255,0.36)',lineHeight:1.58,marginBottom:6,whiteSpace:'pre-wrap'}}>{suggestion.transport.route}</div>:null}
+              <div style={{fontSize:14,color:'rgba(255,255,255,0.75)',marginBottom:4,lineHeight:1.45}}>{suggestion.transport.duration}</div>
+              {suggestion.transport.notes&&<div style={{fontSize:14,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12,lineHeight:1.5}}>{suggestion.transport.notes}</div>}
+              <div style={disclaimerReadable}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
               <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                 <button type="button" onClick={()=>acceptTransport(suggestion.transport)} style={acceptBtnStyle}>USE THIS ROUTE</button>
                 <button type="button" onClick={()=>{const nd={...dismissed};delete nd[`${dismissKey}_transport`];setDismissed(nd);saveDismissed(nd);setPlanningOwn(true);}} style={dismissBtnStyle}>SHOW SUGGESTION CARD</button>
@@ -305,19 +323,19 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         {tab==="stay"&&<div style={{padding:0}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
-            <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
+            <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
           {suggestion?.stay&&!isDism('stay')&&!showStayAccommodationCard&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
-            <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
+            <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{suggestion.stay.recommendation}</div>
-            <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:8}}>{suggestion.stay.type}</div>
+            <div style={{fontSize:14,color:'rgba(255,255,255,0.75)',marginBottom:8,lineHeight:1.45}}>{suggestion.stay.type}</div>
             {suggestion.stay.suggestions?.length>0&&<div style={{marginBottom:10}}>
-              <div style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',letterSpacing:2,marginBottom:6}}>SELECT PROPERTY</div>
+              <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',letterSpacing:2,marginBottom:6,lineHeight:1.4}}>SELECT PROPERTY</div>
               {suggestion.stay.suggestions.map((prop,pi)=><div key={`stay-pick-${pi}-${String(prop).slice(0,48)}`} onClick={()=>setSelectedStayProp(prop)} style={{border:selectedStayProp===prop?'1px solid rgba(255,159,67,0.60)':'1px solid rgba(255,255,255,0.12)',borderRadius:8,padding:'10px 14px',marginBottom:6,cursor:'pointer',fontSize:13,color:selectedStayProp===prop?'#FF9F43':'rgba(255,255,255,0.75)',background:selectedStayProp===prop?'rgba(255,159,67,0.08)':'transparent',transition:'all 0.20s'}}>{prop}</div>)}
             </div>}
             <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
-            {suggestion.stay.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{suggestion.stay.notes}</div>}
-            <div style={disclaimerStyle}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
+            {suggestion.stay.notes&&<div style={{fontSize:14,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12,lineHeight:1.5}}>{suggestion.stay.notes}</div>}
+            <div style={disclaimerReadable}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
             <div style={{display:'flex',gap:8}}>
               <button type="button" onClick={()=>{const s=suggestion.stay;const name=selectedStayProp||s.suggestions?.[0]||"";const alts=(s.suggestions||[]).filter(p=>p!==name);if(name)uS("name",name);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');}} style={acceptBtnStyle}>USE THIS STAY</button>
               <button type="button" onClick={()=>{dismiss('stay');setPlanningOwnStay(true);}} style={dismissBtnStyle}>PLAN MY OWN</button>
@@ -336,12 +354,12 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {det.stay.link&&<a href={det.stay.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:4}}>{det.stay.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
             </div>
             {!editingStay&&suggestion?.stay&&<CollapsibleSuggestion summaryCard confirmMessage="Replace your saved stay with this Co-Architect suggestion?" onSwitchToSuggestion={()=>{const s=suggestion.stay;const name=selectedStayProp||s.suggestions?.[0]||"";const alts=(s.suggestions||[]).filter(p=>p!==name);if(name)uS("name",name);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');}}>
-              <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
+              <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
               <div style={{fontSize:14,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{suggestion.stay.recommendation}</div>
-              <div style={{fontSize:12,color:'rgba(255,255,255,0.55)',marginBottom:8}}>{suggestion.stay.type}</div>
-              <div style={{fontSize:13,color:'#FFD93D',fontWeight:600,marginBottom:6}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
-              {suggestion.stay.notes&&<div style={{fontSize:12,color:'rgba(255,255,255,0.55)',fontStyle:'italic',marginBottom:8}}>{suggestion.stay.notes}</div>}
-              <div style={disclaimerStyle}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
+              <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',marginBottom:8,lineHeight:1.45}}>{suggestion.stay.type}</div>
+              <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:6,lineHeight:1.45}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
+              {suggestion.stay.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontStyle:'italic',marginBottom:8,lineHeight:1.5}}>{suggestion.stay.notes}</div>}
+              <div style={disclaimerReadable}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
             </CollapsibleSuggestion>}
             {!editingStay&&<div style={returnToLogFooterStyle}>{returnToLogCopy('Stay')}</div>}
           </div>}
@@ -349,16 +367,16 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <span onClick={()=>{uS("name","");uS("cost","");uS("checkin","");uS("checkout","");uS("link","");uS("notes","");const d={...dismissed};delete d[`${dismissKey}_stay`];setDismissed(d);saveDismissed(d);setPlanningOwnStay(false);setShowStayResuggest(false);}} style={{color:'rgba(255,255,255,0.4)',fontSize:12,cursor:'pointer',letterSpacing:0.3,textDecoration:'underline',textUnderlineOffset:3}} onMouseEnter={e=>e.target.style.color='rgba(255,255,255,0.7)'} onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.4)'}>↩ Clear selection</span>
           </div>}
           {showStayAccommodationCard&&showStayResuggest&&suggestion?.stay&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
-            <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
+            <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{suggestion.stay.recommendation}</div>
-            <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:8}}>{suggestion.stay.type}</div>
+            <div style={{fontSize:14,color:'rgba(255,255,255,0.75)',marginBottom:8,lineHeight:1.45}}>{suggestion.stay.type}</div>
             {suggestion.stay.suggestions?.length>0&&<div style={{marginBottom:10}}>
-              <div style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',letterSpacing:2,marginBottom:6}}>SELECT PROPERTY</div>
+              <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',letterSpacing:2,marginBottom:6,lineHeight:1.4}}>SELECT PROPERTY</div>
               {suggestion.stay.suggestions.map((prop,pi)=><div key={`stay-resug-${pi}-${String(prop).slice(0,48)}`} onClick={()=>setSelectedStayProp(prop)} style={{border:selectedStayProp===prop?'1px solid rgba(255,159,67,0.60)':'1px solid rgba(255,255,255,0.12)',borderRadius:8,padding:'10px 14px',marginBottom:6,cursor:'pointer',fontSize:13,color:selectedStayProp===prop?'#FF9F43':'rgba(255,255,255,0.75)',background:selectedStayProp===prop?'rgba(255,159,67,0.08)':'transparent',transition:'all 0.20s'}}>{prop}</div>)}
             </div>}
             <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
-            {suggestion.stay.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{suggestion.stay.notes}</div>}
-            <div style={disclaimerStyle}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
+            {suggestion.stay.notes&&<div style={{fontSize:14,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12,lineHeight:1.5}}>{suggestion.stay.notes}</div>}
+            <div style={disclaimerReadable}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
             <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
               <button type="button" onClick={()=>{const s=suggestion.stay;const name=selectedStayProp||s.suggestions?.[0]||"";const alts=(s.suggestions||[]).filter(p=>p!==name);if(name)uS("name",name);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');setShowStayResuggest(false);}} style={acceptBtnStyle}>USE THIS STAY</button>
               <button type="button" onClick={()=>{dismiss('stay');setPlanningOwnStay(true);setShowStayResuggest(false);}} style={dismissBtnStyle}>PLAN MY OWN</button>
@@ -366,7 +384,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             </div>
           </div>}
           {bookDropdown==='stay'&&<div style={{position:'relative',zIndex:100,marginBottom:10}}><div style={{background:'rgba(0,8,20,0.95)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:12,padding:8,boxShadow:'0 8px 32px rgba(0,0,0,0.6)'}}>
-            <div style={{fontSize:9,color:'rgba(255,255,255,0.30)',letterSpacing:2,padding:'4px 14px'}}>SEARCH STAYS</div>
+            <div style={{fontSize:10,color:'rgba(255,255,255,0.30)',letterSpacing:2,padding:'4px 14px',lineHeight:1.4}}>SEARCH STAYS</div>
             {[{n:'Booking.com',u:`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(segment.name)}`},{n:'Airbnb',u:`https://www.airbnb.com/s/${encodeURIComponent(segment.name)}/homes`},{n:'Hotels.com',u:`https://www.hotels.com/search.do?q-destination=${encodeURIComponent(segment.name)}`},{n:'Hostelworld',u:`https://www.hostelworld.com/search?search_keywords=${encodeURIComponent(segment.name)}`}].map(l=><a key={l.n} href={l.u} target="_blank" rel="noopener noreferrer" onClick={()=>setBookDropdown(null)} style={{display:'block',padding:'10px 14px',fontSize:13,color:'rgba(255,255,255,0.75)',borderRadius:8,cursor:'pointer',textDecoration:'none'}} onMouseOver={e=>e.currentTarget.style.background='rgba(255,159,67,0.08)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>{l.n}</a>)}
           </div></div>}
           {showStayAccommodationCard&&editingStay&&<div style={{border:'1px solid rgba(255,255,255,0.10)',borderRadius:12,background:'rgba(255,255,255,0.04)',padding:16,marginBottom:14,animation:'slideOpen 0.40s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
@@ -395,16 +413,16 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{marginTop:10}}><SDF label="BOOKING LINK" value={det.stay.link} onChange={v=>uS("link",v)} placeholder="https://..." accent="#69F0AE"/></div>
             <div style={{marginTop:8}}><SDF label="NOTES" value={det.stay.notes} onChange={v=>uS("notes",v)} placeholder="Room type, included meals, host contact..." accent="#69F0AE" multiline/></div>
             {suggestion?.stay&&(isDism('stay')||planningOwnStay)&&<CollapsibleSuggestion>
-              <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
+              <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
               <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{suggestion.stay.recommendation}</div>
-              <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:8}}>{suggestion.stay.type}</div>
+              <div style={{fontSize:14,color:'rgba(255,255,255,0.75)',marginBottom:8,lineHeight:1.45}}>{suggestion.stay.type}</div>
               {suggestion.stay.suggestions?.length>0&&<div style={{marginBottom:10}}>
-                <div style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',letterSpacing:2,marginBottom:6}}>SELECT PROPERTY</div>
+                <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',letterSpacing:2,marginBottom:6,lineHeight:1.4}}>SELECT PROPERTY</div>
                 {suggestion.stay.suggestions.map((prop,pi)=><div key={`stay-plan-${pi}-${String(prop).slice(0,48)}`} onClick={()=>setSelectedStayProp(prop)} style={{border:selectedStayProp===prop?'1px solid rgba(255,159,67,0.60)':'1px solid rgba(255,255,255,0.12)',borderRadius:8,padding:'10px 14px',marginBottom:6,cursor:'pointer',fontSize:13,color:selectedStayProp===prop?'#FF9F43':'rgba(255,255,255,0.75)',background:selectedStayProp===prop?'rgba(255,159,67,0.08)':'transparent',transition:'all 0.20s'}}>{prop}</div>)}
               </div>}
               <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
-              {suggestion.stay.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{suggestion.stay.notes}</div>}
-              <div style={disclaimerStyle}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
+              {suggestion.stay.notes&&<div style={{fontSize:14,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12,lineHeight:1.5}}>{suggestion.stay.notes}</div>}
+              <div style={disclaimerReadable}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
               <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                 <button type="button" onClick={()=>{const s=suggestion.stay;const name=selectedStayProp||s.suggestions?.[0]||"";const alts=(s.suggestions||[]).filter(p=>p!==name);if(name)uS("name",name);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');}} style={acceptBtnStyle}>USE THIS STAY</button>
                 <button type="button" onClick={()=>{const nd={...dismissed};delete nd[`${dismissKey}_stay`];setDismissed(nd);saveDismissed(nd);setPlanningOwnStay(false);}} style={dismissBtnStyle}>SHOW SUGGESTION CARD</button>
@@ -418,7 +436,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         {/* ACTIVITIES */}
         {tab==="activities"&&<div style={{padding:0}}>
           {caFromArch.length>0&&<div style={{marginBottom:16}}>
-            <div style={{...suggestionHeaderStyle,marginBottom:10}}>✦ FROM YOUR CO-ARCHITECT CONVERSATION</div>
+            <div style={{...suggestionHeaderReadable,marginBottom:10}}>✦ FROM YOUR CO-ARCHITECT CONVERSATION</div>
             {caFromArch.map((a,idx)=>{
               const actName=a.name||a.title||"";
               const actNotes=a.notes||a.brief||"";
@@ -428,7 +446,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
                   {a.provider&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:4}}>{a.provider}</div>}
                   {actNotes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{actNotes}</div>}
                   {a.estimatedCost&&<div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:8}}>Est. {a.estimatedCost}</div>}
-                  <div style={disclaimerStyle}>Mentioned in chat — add to your plan if it fits</div>
+                  <div style={disclaimerReadable}>Mentioned in chat — add to your plan if it fits</div>
                   <div style={{display:'flex',gap:8}}>
                     <button type="button" onClick={()=>acceptActivity({name:actName,notes:actNotes,estimatedCost:a.estimatedCost||a.cost,provider:a.provider||""})} style={acceptBtnStyle}>+ ADD TO PLAN</button>
                   </div>
@@ -438,16 +456,16 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
-            <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
+            <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
           {suggestion?.activities?.map((activity,idx)=>(
             !isDism(`activity_${idx}`)&&!det.activities.some(x=>x.suggestionActivityIdx===idx)&&<div key={`act-sug-${idx}-${String(activity.name||'').slice(0,32)}`} className="sg-suggestion-card" style={{...suggestionCardStyle,marginBottom:10,animationDelay:`${idx*100}ms`}}>
-              <div style={suggestionHeaderStyle}>✦ SUGGESTED ACTIVITY</div>
+              <div style={suggestionHeaderReadable}>✦ SUGGESTED ACTIVITY</div>
               <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{activity.name}</div>
               {activity.provider&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:4}}>{activity.provider}</div>}
               <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {activity.estimatedCost}</div>
               {activity.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{activity.notes}</div>}
-              <div style={disclaimerStyle}>⚡ Estimates only — prices vary when booked</div>
+              <div style={disclaimerReadable}>⚡ Estimates only — prices vary when booked</div>
               <div style={{display:'flex',gap:8}}>
                 <button type="button" onClick={()=>acceptActivity(activity,idx)} style={acceptBtnStyle}>+ ADD TO PLAN</button>
                 <button type="button" onClick={()=>dismiss(`activity_${idx}`)} style={dismissBtnStyle}>SKIP</button>
@@ -515,36 +533,36 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         {tab==="food"&&(()=>{const hasFood=!isRowEmpty(det.food?.dailyBudget);const showFoodSummary=hasFood&&!editingFood&&!foodFocused&&!showFoodResuggest;const showFoodSuggestionCard=!!(suggestion?.food&&(showFoodResuggest||(!hasFood&&!isDism('food'))));const showFoodManual=!showFoodSummary&&!showFoodSuggestionCard&&!(suggestionsLoading&&!suggestion);return(<div style={{padding:0}} onFocus={()=>setFoodFocused(true)} onBlur={(e)=>{if(!e.currentTarget.contains(e.relatedTarget))setFoodFocused(false);}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
-            <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
+            <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
           {showFoodSummary&&<div style={{border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:14,background:'rgba(0,229,255,0.06)',padding:'18px 20px',marginBottom:14,display:'flex',flexDirection:'column'}}>
             <div style={{flex:1,minHeight:0}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:12}}>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.75)',letterSpacing:2,marginBottom:6}}>🍜 FOOD & DINING</div>
+                <div style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.75)',letterSpacing:2,marginBottom:6,lineHeight:1.4}}>🍜 FOOD & DINING</div>
                 <div style={{fontSize:16,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>${det.food.dailyBudget}/day</div>
                 <div style={{fontSize:13,color:'rgba(255,217,61,0.85)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{segment.nights} nights · ${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</div>
                 {det.food.notes&&<div style={{fontSize:12,color:'rgba(255,255,255,0.60)',marginTop:8,lineHeight:1.5,whiteSpace:'pre-line'}}>{det.food.notes.length>140?det.food.notes.slice(0,140)+'...':det.food.notes}</div>}
               </div>
-              <button type="button" onClick={()=>setEditingFood(true)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,flexShrink:0}}>EDIT</button>
+              <button type="button" onClick={()=>setEditingFood(true)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,flexShrink:0,lineHeight:1.3}}>EDIT</button>
             </div>
             </div>
             {!editingFood&&suggestion?.food&&<CollapsibleSuggestion summaryCard confirmMessage="Replace your saved food plan with Co-Architect estimates?" onSwitchToSuggestion={()=>{const nums=((suggestion.food.dailyBudget||"").match(/\d+/g)||[]).map(Number).filter(x=>x>0&&x<500);let bud="";if(nums.length===1)bud=String(nums[0]);else if(nums.length>=2)bud=String(Math.round((nums[0]+nums[1])/2));if(bud)setDet(d=>({...d,food:{...d.food,dailyBudget:bud,notes:suggestion.food.recommendations?.join('\n')||d.food.notes}}));dismiss('food');setEditingFood(false);setShowFoodResuggest(false);}}>
-              <div style={suggestionHeaderStyle}>✦ FOOD & DINING</div>
+              <div style={suggestionHeaderReadable}>✦ FOOD & DINING</div>
               <div style={{fontSize:13,fontWeight:600,color:'#FFD93D',marginBottom:8}}>Est. {(suggestion.food.dailyBudget||"").replace(/\/day$/i,"")}/day{suggestion.food.totalEstimate?` · ~${suggestion.food.totalEstimate} total`:""}</div>
-              {suggestion.food.recommendations?.slice(0,4).map((rec,i)=><div key={i} style={{fontSize:12,color:'rgba(255,255,255,0.55)',marginBottom:4,paddingLeft:6,borderLeft:'2px solid rgba(255,159,67,0.22)'}}>{rec}</div>)}
-              <div style={{...disclaimerStyle,marginTop:8}}>⚡ Suggestions based on current market knowledge — always verify locally</div>
+              {suggestion.food.recommendations?.slice(0,4).map((rec,i)=><div key={i} style={{fontSize:13,color:'rgba(255,255,255,0.55)',marginBottom:4,paddingLeft:6,borderLeft:'2px solid rgba(255,159,67,0.22)',lineHeight:1.48}}>{rec}</div>)}
+              <div style={{...disclaimerReadable,marginTop:8}}>⚡ Suggestions based on current market knowledge — always verify locally</div>
             </CollapsibleSuggestion>}
             {!editingFood&&<div style={returnToLogFooterStyle}>{returnToLogCopy('Food')}</div>}
           </div>}
           {showFoodSuggestionCard&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
-            <div style={suggestionHeaderStyle}>✦ FOOD & DINING</div>
+            <div style={suggestionHeaderReadable}>✦ FOOD & DINING</div>
             <div style={{fontSize:14,fontWeight:600,color:'#FFD93D',marginBottom:8}}>Est. {(suggestion.food.dailyBudget||"").replace(/\/day$/i,"")}/day{suggestion.food.totalEstimate?` · ~${suggestion.food.totalEstimate} total`:""}</div>
             {suggestion.food.recommendations?.map((rec,i)=>(
               <div key={i} style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:6,paddingLeft:8,borderLeft:'2px solid rgba(255,159,67,0.30)'}}>{rec}</div>
             ))}
             {suggestion.food.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginTop:8}}>{suggestion.food.notes}</div>}
-            <div style={{...disclaimerStyle,marginTop:12}}>⚡ Suggestions based on current market knowledge — always verify locally</div>
+            <div style={{...disclaimerReadable,marginTop:12}}>⚡ Suggestions based on current market knowledge — always verify locally</div>
             <div style={{display:'flex',gap:8}}>
               <button type="button" onClick={()=>{const nums=((suggestion.food.dailyBudget||"").match(/\d+/g)||[]).map(Number).filter(x=>x>0&&x<500);let bud="";if(nums.length===1)bud=String(nums[0]);else if(nums.length>=2)bud=String(Math.round((nums[0]+nums[1])/2));if(bud)setDet(d=>({...d,food:{...d.food,dailyBudget:bud,notes:suggestion.food.recommendations?.join('\n')||d.food.notes}}));dismiss('food');setEditingFood(false);setShowFoodResuggest(false);}} style={acceptBtnStyle}>USE ESTIMATES</button>
               <button type="button" onClick={()=>{dismiss('food');setShowFoodResuggest(false);}} style={dismissBtnStyle}>PLAN MY OWN</button>
@@ -562,18 +580,18 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
           <SDF label="FOOD NOTES" value={det.food.notes} onChange={v=>uF("notes",v)} placeholder="Must-try dishes, market days, dietary notes..." accent="#FF9F43" multiline/>
           {suggestion?.food&&isDism('food')&&<CollapsibleSuggestion>
-            <div style={suggestionHeaderStyle}>✦ FOOD & DINING</div>
+            <div style={suggestionHeaderReadable}>✦ FOOD & DINING</div>
             <div style={{fontSize:14,fontWeight:600,color:'#FFD93D',marginBottom:8}}>Est. {(suggestion.food.dailyBudget||"").replace(/\/day$/i,"")}/day{suggestion.food.totalEstimate?` · ~${suggestion.food.totalEstimate} total`:""}</div>
             {suggestion.food.recommendations?.map((rec,i)=>(<div key={i} style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:6,paddingLeft:8,borderLeft:'2px solid rgba(255,159,67,0.30)'}}>{rec}</div>))}
             {suggestion.food.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginTop:8}}>{suggestion.food.notes}</div>}
-            <div style={{...disclaimerStyle,marginTop:12}}>⚡ Suggestions based on current market knowledge — always verify locally</div>
+            <div style={{...disclaimerReadable,marginTop:12}}>⚡ Suggestions based on current market knowledge — always verify locally</div>
             <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
               <button type="button" onClick={()=>{const nums=((suggestion.food.dailyBudget||"").match(/\d+/g)||[]).map(Number).filter(x=>x>0&&x<500);let bud="";if(nums.length===1)bud=String(nums[0]);else if(nums.length>=2)bud=String(Math.round((nums[0]+nums[1])/2));if(bud)setDet(d=>({...d,food:{...d.food,dailyBudget:bud,notes:suggestion.food.recommendations?.join('\n')||d.food.notes}}));dismiss('food');setEditingFood(false);setShowFoodResuggest(false);}} style={acceptBtnStyle}>USE ESTIMATES</button>
               <button type="button" onClick={()=>{const nd={...dismissed};delete nd[`${dismissKey}_food`];setDismissed(nd);saveDismissed(nd);setShowFoodResuggest(true);setEditingFood(false);}} style={dismissBtnStyle}>SHOW SUGGESTION CARD</button>
             </div>
           </CollapsibleSuggestion>}
           {hasFood&&editingFood&&<div style={{textAlign:'left',marginTop:10}}>
-            <button type="button" onClick={()=>{setEditingFood(false);setShowFoodResuggest(false);}} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'6px 14px',cursor:'pointer',minHeight:30}}>DONE</button>
+            <button type="button" onClick={()=>{setEditingFood(false);setShowFoodResuggest(false);}} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'6px 14px',cursor:'pointer',minHeight:30,lineHeight:1.3}}>DONE</button>
           </div>}
           </>}
         </div>);})()}
@@ -593,7 +611,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           const budgetRows=[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hideTransportSuggestion,snap:transportSnap},{icon:'🏨',label:'STAY',cost:sCost,has:hasS,snap:hasS?staySnap:''},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0,snap:activitiesSnap,snapLines:actLines},{icon:'🍜',label:'FOOD',cost:fCost,has:!isRowEmpty(db),snap:foodSnap},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0,snap:miscSnap}];
           return(
           <div style={{padding:0}}>
-            <div style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12,textAlign:'left'}}>PHASE BUDGET</div>
+            <div style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12,textAlign:'left',lineHeight:1.4}}>PHASE BUDGET</div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4,textAlign:'left'}}>{segment.name}</div>
             <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:16,textAlign:'left'}}>{segment.nights} Nights · Budget: {fmt(budget)}</div>
             {budgetRows.map(r=>{
@@ -603,12 +621,12 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
                 <span style={{width:isMobile?30:36,fontSize:isMobile?22:24,flexShrink:0,lineHeight:1.2,textAlign:'left'}}>{r.icon}</span>
                 <div style={{flex:1,minWidth:0,textAlign:'left'}}>
                   <div style={{fontSize:isMobile?15:17,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.90)',letterSpacing:isMobile?0.8:1.2,fontWeight:700,textAlign:'left'}}>{r.label}</div>
-                  {r.snapLines&&r.snapLines.length>0&&<div style={{marginTop:7}}>{r.snapLines.map((line,i)=><div key={i} style={{...snapStyle,marginTop:i?10:0,display:'flex',gap:10,alignItems:'baseline'}}><span style={{flexShrink:0,color:'rgba(255,217,61,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,lineHeight:1,fontStyle:'normal',fontWeight:700}}>●</span><span style={{flex:1,minWidth:0}}>{line}</span></div>)}</div>}
+                  {r.snapLines&&r.snapLines.length>0&&<div style={{marginTop:7}}>{r.snapLines.map((line,i)=><div key={i} style={{...snapStyle,marginTop:i?10:0,display:'flex',gap:10,alignItems:'baseline'}}><span style={{flexShrink:0,color:'rgba(255,217,61,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,lineHeight:1,fontStyle:'normal',fontWeight:700}}>●</span><span style={{flex:1,minWidth:0}}>{line}</span></div>)}</div>}
                   {r.snap&&!r.snapLines?.length&&<div style={snapStyle}>{r.snap}</div>}
                 </div>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',flexShrink:0,gap:5}}>
                   <span style={{fontSize:isMobile?16:18,fontWeight:700,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>{r.cost>0?fmt(r.cost):'—'}</span>
-                  <span style={{fontSize:isMobile?12:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,color:r.has?'#69F0AE':'rgba(255,255,255,0.60)',letterSpacing:0.5,whiteSpace:'nowrap'}}>{r.has?'✓ Added':'—'}</span>
+                  <span style={{fontSize:isMobile?13:14,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,color:r.has?'#69F0AE':'rgba(255,255,255,0.60)',letterSpacing:0.5,whiteSpace:'nowrap',lineHeight:1.35}}>{r.has?'✓ Added':'—'}</span>
                 </div>
               </div>
               );
@@ -624,7 +642,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{marginTop:12,height:6,background:'rgba(255,255,255,0.06)',borderRadius:3,overflow:'hidden'}}>
               <div style={{height:'100%',width:Math.min(pct,100)+'%',background:barColor,borderRadius:3,transition:'width 0.60s cubic-bezier(0.25,0.46,0.45,0.94)'}}/>
             </div>
-            <div style={{textAlign:'center',marginTop:6,fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:barColor}}>{pct}% allocated</div>
+            <div style={{textAlign:'center',marginTop:6,fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:barColor,lineHeight:1.4}}>{pct}% allocated</div>
             {pct>=100&&<div style={{background:'rgba(255,107,107,0.08)',border:'1px solid rgba(255,107,107,0.3)',borderRadius:12,padding:'12px 16px',marginTop:12}}>
               <div style={{color:'#FF6B6B',fontSize:13,fontWeight:600,marginBottom:6}}>⚠️ Over budget by {fmt(total-budget)}</div>
               <div style={{color:'rgba(255,255,255,0.55)',fontSize:12,marginBottom:12,lineHeight:1.5}}>Want help finding options that fit your budget?</div>

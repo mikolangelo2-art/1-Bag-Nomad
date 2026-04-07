@@ -42,3 +42,52 @@ export function formatSegmentCardDateHeader(arrival, departure, nights) {
   if (range && nightPart) return `${range} · ${nightPart}`;
   return range || nightPart;
 }
+
+/**
+ * Format saved transport leg dates/times for the committed Travel summary card.
+ * Returns "" when both departDate and arriveDate are empty (no line rendered).
+ * Reads legacy depTime/arrTime into time slots when departTime/arriveTime are empty.
+ */
+export function formatTravelLegDates(t = {}) {
+  if (!t || typeof t !== "object") return "";
+  const dd = String(t.departDate ?? "").trim();
+  const ad = String(t.arriveDate ?? "").trim();
+  const dtm = String(t.departTime ?? "").trim() || String(t.depTime ?? "").trim();
+  const atm = String(t.arriveTime ?? "").trim() || String(t.arrTime ?? "").trim();
+
+  if (!dd && !ad) return "";
+
+  const fmtDate = (iso) => {
+    if (!iso) return "";
+    const d = new Date(iso + "T12:00:00");
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  };
+
+  if (dd && ad) {
+    if (dd === ad) {
+      let s = fmtDate(dd);
+      if (dtm && atm) s += ` · ${dtm} → ${atm}`;
+      else if (dtm) s += ` · depart ${dtm}`;
+      else if (atm) s += ` · arrive ${atm}`;
+      return s;
+    }
+    let s = `${fmtDate(dd)} → ${fmtDate(ad)}`;
+    if (dtm || atm) {
+      const parts = [dtm || null, atm || null].filter(Boolean);
+      if (parts.length) s += ` · ${parts.join(" → ")}`;
+    }
+    return s;
+  }
+  if (dd) {
+    let s = fmtDate(dd);
+    if (dtm) s += ` · ${dtm}`;
+    return s;
+  }
+  if (ad) {
+    let s = fmtDate(ad);
+    if (atm) s += ` · ${atm}`;
+    return s;
+  }
+  return "";
+}
