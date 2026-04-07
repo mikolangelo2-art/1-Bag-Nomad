@@ -360,8 +360,10 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           const transportSnap=(tf||tt)?`${tf||'…'} → ${tt||segment.name}`:(tMode||'');
           const stayNm=(det.stay?.name||'').trim();
           const staySnap=stayNm?`${stayNm} · ${segment.nights}n`:`${segment.nights}n`;
-          const actNames=det.activities.map(a=>(a.name||'').trim()).filter(Boolean);
-          let activitiesSnap='';if(actNames.length===1)activitiesSnap=actNames[0];else if(actNames.length>1){const joined=actNames.slice(0,4).join(' · ');activitiesSnap=actNames.length>4?`${joined} · …`:joined;}
+          const actSnip=(a)=>{const n=(a.name||'').trim();const c=parseFloat(a.cost);const has$=Number.isFinite(c)&&c>0;if(has$&&n)return`${fmt(c)} · ${n}`;if(has$)return fmt(c);return n;};
+          const actParts=det.activities.map(actSnip).filter(Boolean);
+          let activitiesSnap=actParts.join(' · ');
+          if(activitiesSnap.length>260)activitiesSnap=`${activitiesSnap.slice(0,257)}…`;
           const db=det.food?.dailyBudget;const foodSnap=db?`${segment.nights}n × $${db}/day`:'';
           const miscSnap=det.misc.map(m=>(m.name||'').trim()).filter(Boolean).join(' · ').slice(0,120);
           const budgetRows=[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hasT,snap:transportSnap},{icon:'🏨',label:'STAY',cost:sCost,has:hasS,snap:hasS?staySnap:''},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0,snap:activitiesSnap},{icon:'🍜',label:'FOOD',cost:fCost,has:!!db,snap:foodSnap},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0,snap:miscSnap}];
