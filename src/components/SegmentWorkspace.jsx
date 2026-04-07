@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fmt, fD } from '../utils/dateHelpers';
@@ -48,13 +48,17 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const saveFlashRef=useRef(null);
   const isFirst=useRef(true);
   const [status,setStatus]=useState(()=>{const d=loadSeg()[key];return d?.status||'planning';});
-  // Resolve suggestion: use prop if available, otherwise look up from localStorage (index + name)
-  const suggestion = (()=>{
+  const suggestionWsKey=`${phaseId}:${segment?.id ?? ""}:${segment?.name ?? ""}`;
+  const suggestionFromMemo=useMemo(()=>{
     if(suggestionProp) return suggestionProp;
-    const all = loadSuggestionsFromStorage();
-    const idx = flatPhaseIndexForSegment(segment, allPhases);
-    return findSuggestionForSegment(all, segment.name, idx);
-  })();
+    const all=loadSuggestionsFromStorage();
+    const idx=flatPhaseIndexForSegment(segment,allPhases);
+    return findSuggestionForSegment(all,segment.name,idx);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- segment id+name only; whole `segment` ref often changes without semantic change
+  },[suggestionProp,phaseId,segment?.id,segment?.name,allPhases]);
+  const suggestionStashRef=useRef({k:"",sug:null});
+  if(suggestionFromMemo) suggestionStashRef.current={k:suggestionWsKey,sug:suggestionFromMemo};
+  const suggestion=suggestionFromMemo||(suggestionStashRef.current.k===suggestionWsKey?suggestionStashRef.current.sug:null);
   const dismissKey = segment.name || `${phaseId}`;
   const caFromArch=(()=>{const fp=(allPhases||[]).find(p=>p.type!=="Return"&&p.name===segment.name&&(!segment.country||p.country===segment.country));return fp?.caActivities?.filter(a=>a&&(a.name||a.title))||[];})();
   const [dismissed,setDismissed]=useState(()=>loadDismissed());
@@ -253,7 +257,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {suggestion.stay.suggestions?.length>0&&<div style={{marginBottom:10}}>
               <div style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',letterSpacing:2,marginBottom:6}}>SELECT PROPERTY</div>
               {suggestion.stay.suggestions.map((prop,pi)=><div key={`stay-pick-${pi}-${String(prop).slice(0,48)}`} onClick={()=>setSelectedStayProp(prop)} style={{border:selectedStayProp===prop?'1px solid rgba(255,159,67,0.60)':'1px solid rgba(255,255,255,0.12)',borderRadius:8,padding:'10px 14px',marginBottom:6,cursor:'pointer',fontSize:13,color:selectedStayProp===prop?'#FF9F43':'rgba(255,255,255,0.75)',background:selectedStayProp===prop?'rgba(255,159,67,0.08)':'transparent',transition:'all 0.20s'}}>{prop}</div>)}
-              <SDF label="OR ENTER YOUR OWN" value={selectedStayProp&&!suggestion.stay.suggestions.includes(selectedStayProp)?selectedStayProp:""} onChange={v=>setSelectedStayProp(v)} placeholder="Your property choice..." accent="#FF9F43"/>
             </div>}
             <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
             {suggestion.stay.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{suggestion.stay.notes}</div>}
@@ -270,7 +273,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <button type="button" onClick={()=>setEditingStay(e=>!e)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28}}>{editingStay?'DONE':'EDIT'}</button>
             </div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{det.stay.name}</div>
-            {(det.stay.checkin||det.stay.checkout)&&<div style={{fontSize:13,color:'#FF9F43',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:4}}>{det.stay.checkin?`Check-in ${fD(det.stay.checkin)}`:""}{det.stay.checkin&&det.stay.checkout?" · ":""}{det.stay.checkout?`Check-out ${fD(det.stay.checkout)}`:""}{segment.nights?` · ${segment.nights} nights`:""}</div>}
+            {(()=>{const ci=(det.stay.checkin||segment.arrival||"").trim();const co=(det.stay.checkout||segment.departure||"").trim();const n=Number(segment.nights);const parts=[];if(ci)parts.push(`Check-in ${fD(ci)}`);if(co)parts.push(`Check-out ${fD(co)}`);if(Number.isFinite(n)&&n>0)parts.push(`${n} nights`);if(parts.length===0)return null;return <div style={{fontSize:13,color:'#FF9F43',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:4}}>{parts.join(" · ")}</div>;})()}
             {det.stay.cost&&<div style={{fontSize:13,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. ${det.stay.cost}</div>}
             {det.stay.notes&&!editingStay&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,color:'rgba(255,255,255,0.60)',marginTop:6,lineHeight:1.5,whiteSpace:'pre-line'}}>{det.stay.notes.length>140?det.stay.notes.slice(0,140)+'...':det.stay.notes}</div>}
             {det.stay.link&&<a href={det.stay.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:4}}>{det.stay.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
@@ -288,7 +291,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {suggestion.stay.suggestions?.length>0&&<div style={{marginBottom:10}}>
               <div style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',letterSpacing:2,marginBottom:6}}>SELECT PROPERTY</div>
               {suggestion.stay.suggestions.map((prop,pi)=><div key={`stay-resug-${pi}-${String(prop).slice(0,48)}`} onClick={()=>setSelectedStayProp(prop)} style={{border:selectedStayProp===prop?'1px solid rgba(255,159,67,0.60)':'1px solid rgba(255,255,255,0.12)',borderRadius:8,padding:'10px 14px',marginBottom:6,cursor:'pointer',fontSize:13,color:selectedStayProp===prop?'#FF9F43':'rgba(255,255,255,0.75)',background:selectedStayProp===prop?'rgba(255,159,67,0.08)':'transparent',transition:'all 0.20s'}}>{prop}</div>)}
-              <SDF label="OR ENTER YOUR OWN" value={selectedStayProp&&!suggestion.stay.suggestions.includes(selectedStayProp)?selectedStayProp:""} onChange={v=>setSelectedStayProp(v)} placeholder="Your property choice..." accent="#FF9F43"/>
             </div>}
             <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
             {suggestion.stay.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{suggestion.stay.notes}</div>}
