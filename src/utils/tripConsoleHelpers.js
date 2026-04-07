@@ -165,6 +165,16 @@ export function transportNotesFromSuggestion(t, { prevCity, homeCity, segmentNam
   return parts.join("\n\n");
 }
 
+/** Short copy under Co-Architect transport estimate — clarifies whole-journey vs this-leg. */
+export function transportSuggestionEstimateHint({ prevCity, segmentName } = {}) {
+  const hasPrev = !!(prevCity && String(prevCity).trim());
+  const stop = String(segmentName || "this stop").trim() || "this stop";
+  if (hasPrev) {
+    return `Estimate often matches the full route above. Your saved leg is ${String(prevCity).trim()} → ${stop} — adjust cost if this hop is priced separately.`;
+  }
+  return `Typical total to reach ${stop} from trip start (one journey, not per segment unless the route is a single leg).`;
+}
+
 // ── Segment Suggestions Prompt Builder ────────────────────────
 export function buildSegmentSuggestionsPrompt(tripData, travelerProfile, phasesSlice, startIndex) {
   const phases = phasesSlice || (tripData.phases || []).slice(0, 5);
@@ -178,6 +188,8 @@ PHASES:
 ${phases.map((p, i) => {const globalIdx=offset+i;const from=globalIdx===0?home:(i===0?(tripData.phases[offset-1]?.name||tripData.phases[offset-1]?.destination||'Previous'):(phases[i-1].name||phases[i-1].destination||'Previous'));return `${globalIdx+1}. FROM ${from} → ${p.name||p.destination||p.city}, ${p.country} | ${p.arrival}→${p.departure} | ${p.nights}n | $${p.budget||p.cost}`;}).join('\n')}
 
 CRITICAL BUDGET RULE: Every suggestion you generate MUST fit within the phase budget. Transport + Stay + Activities combined must not exceed the phase budget. Do not suggest any option that would push the total over budget. If budget is tight, prioritize Stay first, then Transport, then Activities.
+
+TRANSPORT ROUTE + COST: The route string may describe the full path for context. For estimatedCost: if this phase is reached directly from HOME (first stop on the whole trip, or first phase in the list with FROM home), the estimate may include major international legs. For EVERY later phase, estimatedCost MUST be the typical price for THIS LEG ONLY from the immediately previous phase/stop to this one (e.g. domestic hop or ferry)—never repeat the same full-journey dollar amount as the first phase unless it is truly one bundled ticket.
 
 For each phase: transport route+cost, stay name+cost, 2 activities+costs, food budget.
 

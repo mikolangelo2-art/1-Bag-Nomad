@@ -5,6 +5,7 @@ import {
   flatPhaseIndexForSegment,
   findSuggestionForSegment,
   transportNotesFromSuggestion,
+  transportSuggestionEstimateHint,
 } from "./tripConsoleHelpers.js";
 
 describe("getSuggestionsTripId", () => {
@@ -80,6 +81,18 @@ describe("transportNotesFromSuggestion", () => {
       { prevCity: "", homeCity: "Atlanta", segmentName: "Utila" }
     );
     assert.ok(n.includes(r));
+  });
+});
+
+describe("transportSuggestionEstimateHint", () => {
+  it("explains first-stop vs multi-leg pricing", () => {
+    const first = transportSuggestionEstimateHint({ prevCity: "", segmentName: "Utila" });
+    assert.ok(first.includes("Utila"));
+    assert.ok(first.toLowerCase().includes("trip start"));
+    const mid = transportSuggestionEstimateHint({ prevCity: "Utila", segmentName: "Roatan" });
+    assert.ok(mid.includes("Utila"));
+    assert.ok(mid.includes("Roatan"));
+    assert.ok(mid.toLowerCase().includes("leg"));
   });
 });
 

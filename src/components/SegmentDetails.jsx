@@ -3,7 +3,7 @@ import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fD } from '../utils/dateHelpers';
 import { loadSeg, saveSeg } from '../utils/storageHelpers';
-import { detectMode, findSuggestionForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion } from '../utils/tripConsoleHelpers';
+import { detectMode, findSuggestionForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion, transportSuggestionEstimateHint } from '../utils/tripConsoleHelpers';
 import SDF from './SDF';
 
 function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatusChange,suggestion:suggestionProp,suggestionsLoading}) {
@@ -73,6 +73,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
               <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{suggestion.transport.route}</div>
               <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:3}}>{suggestion.transport.duration}</div>
               <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {suggestion.transport.estimatedCost}</div>
+              <div style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',lineHeight:1.45,marginBottom:6}}>{transportSuggestionEstimateHint({prevCity:"",segmentName:segment.name})}</div>
               {suggestion.transport.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:8}}>{suggestion.transport.notes}</div>}
               <div style={disclaimerStyle}>⚡ Estimates — actual prices vary when booked</div>
               <div style={{display:'flex',gap:6}}>
@@ -89,8 +90,8 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
               <SDF label="COST ($)" type="number" value={det.transport.cost} onChange={v=>uT("cost",v)} placeholder="0" accent="#00E5FF"/>
               <SDF label="FROM" value={det.transport.from} onChange={v=>uT("from",v)} placeholder="Departure" accent="#00E5FF"/>
               <SDF label="TO" value={det.transport.to} onChange={v=>uT("to",v)} placeholder="Arrival" accent="#00E5FF"/>
-              <SDF label="DEP TIME" value={det.transport.depTime} onChange={v=>uT("depTime",v)} placeholder="08:30 AM" accent="#00E5FF"/>
-              <SDF label="ARR TIME" value={det.transport.arrTime} onChange={v=>uT("arrTime",v)} placeholder="11:45 AM" accent="#00E5FF"/>
+              <SDF label="DEPART (TIME OR DATE)" value={det.transport.depTime} onChange={v=>uT("depTime",v)} placeholder="e.g. 08:30 or Sep 26" accent="#00E5FF"/>
+              <SDF label="ARRIVE (TIME OR DATE)" value={det.transport.arrTime} onChange={v=>uT("arrTime",v)} placeholder="e.g. 11:45 or Sep 26" accent="#00E5FF"/>
             </div>
             <SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="Flight number, booking ref..." accent="#00E5FF" multiline/>
           </div>}
