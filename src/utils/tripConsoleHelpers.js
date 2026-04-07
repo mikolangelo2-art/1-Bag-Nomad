@@ -46,7 +46,8 @@ export const suggestionCardStyle = {
   borderRadius: '14px',
   background: 'rgba(255,159,67,0.09)',
   padding: '18px',
-  marginBottom: '14px',
+  marginBottom: '18px',
+  textAlign: 'left',
   animation: 'suggestIn 0.40s cubic-bezier(0.25,0.46,0.45,0.94) both'
 };
 export const suggestionHeaderStyle = {
@@ -55,7 +56,8 @@ export const suggestionHeaderStyle = {
   color: '#FF9F43',
   letterSpacing: '2px',
   marginBottom: '12px',
-  opacity: 0.85
+  opacity: 0.85,
+  textAlign: 'left'
 };
 export const disclaimerStyle = {
   fontSize: '11px',
@@ -63,7 +65,8 @@ export const disclaimerStyle = {
   color: 'rgba(255,255,255,0.30)',
   fontStyle: 'italic',
   marginBottom: '12px',
-  lineHeight: 1.5
+  lineHeight: 1.5,
+  textAlign: 'left'
 };
 export const acceptBtnStyle = {
   flex: 1, padding: '10px',
