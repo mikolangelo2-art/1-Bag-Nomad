@@ -54,7 +54,7 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
           <div ref={endRef}/>
         </div>
         <div style={{padding:"12px 16px",borderTop:"1px solid rgba(255,255,255,0.08)",display:"flex",gap:8,flexShrink:0,paddingBottom:`calc(12px + env(safe-area-inset-bottom))`}}>
-          <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")send();}} placeholder="Ask your Co-Architect..." style={{flex:1,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,159,67,0.3)",borderRadius:10,padding:"10px 14px",color:"white",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:16,outline:"none",boxSizing:"border-box"}}/>
+          <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")send();}} placeholder="How can I help you?" style={{flex:1,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,159,67,0.3)",borderRadius:10,padding:"10px 14px",color:"white",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:16,outline:"none",boxSizing:"border-box"}}/>
           <button onClick={send} disabled={loading} style={{background:"rgba(255,159,67,0.2)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:10,padding:"10px 16px",color:"rgba(255,159,67,0.9)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,fontWeight:700,letterSpacing:1,cursor:loading?"wait":"pointer",minWidth:44,minHeight:44}}>↑</button>
         </div>
       </div>
