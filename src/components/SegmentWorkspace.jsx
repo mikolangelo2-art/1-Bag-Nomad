@@ -355,17 +355,32 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <SDF label="FOOD NOTES" value={det.food.notes} onChange={v=>uF("notes",v)} placeholder="Must-try dishes, market days, dietary notes..." accent="#FF9F43" multiline/>
         </div>}
         {/* BUDGET */}
-        {tab==="budget"&&(()=>{const tCost=parseFloat(det.transport?.cost)||0;const sCost=parseFloat(det.stay?.cost)||0;const aCost=det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0);const fCost=(parseFloat(det.food?.dailyBudget)||0)*segment.nights;const mCost=det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0);const total=tCost+sCost+aCost+fCost+mCost;const budget=segment.budget||0;const pct=budget>0?Math.round((total/budget)*100):0;const barColor=pct>=100?'#FF6B6B':pct>=80?'#FFD93D':'#00E5FF';return(
+        {tab==="budget"&&(()=>{const tCost=parseFloat(det.transport?.cost)||0;const sCost=parseFloat(det.stay?.cost)||0;const aCost=det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0);const fCost=(parseFloat(det.food?.dailyBudget)||0)*segment.nights;const mCost=det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0);const total=tCost+sCost+aCost+fCost+mCost;const budget=segment.budget||0;const pct=budget>0?Math.round((total/budget)*100):0;const barColor=pct>=100?'#FF6B6B':pct>=80?'#FFD93D':'#00E5FF';
+          const tf=(det.transport?.from||'').trim();const tt=(det.transport?.to||'').trim();const tMode=(det.transport?.mode||'').trim();
+          const transportSnap=(tf||tt)?`${tf||'…'} → ${tt||segment.name}`:(tMode||'');
+          const stayNm=(det.stay?.name||'').trim();
+          const staySnap=stayNm?`${stayNm} · ${segment.nights}n`:`${segment.nights}n`;
+          const actNames=det.activities.map(a=>(a.name||'').trim()).filter(Boolean);
+          let activitiesSnap='';if(actNames.length===1)activitiesSnap=actNames[0];else if(actNames.length>1){const joined=actNames.slice(0,4).join(' · ');activitiesSnap=actNames.length>4?`${joined} · …`:joined;}
+          const db=det.food?.dailyBudget;const foodSnap=db?`${segment.nights}n × $${db}/day`:'';
+          const miscSnap=det.misc.map(m=>(m.name||'').trim()).filter(Boolean).join(' · ').slice(0,120);
+          const budgetRows=[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hasT,snap:transportSnap},{icon:'🏨',label:'STAY',cost:sCost,has:hasS,snap:hasS?staySnap:''},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0,snap:activitiesSnap},{icon:'🍜',label:'FOOD',cost:fCost,has:!!db,snap:foodSnap},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0,snap:miscSnap}];
+          return(
           <div style={{padding:0}}>
             <div style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12}}>PHASE BUDGET</div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{segment.name}</div>
             <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:16}}>{segment.nights} Nights · Budget: {fmt(budget)}</div>
-            {[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hasT},{icon:'🏨',label:'STAY',cost:sCost,has:hasS},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0},{icon:'🍜',label:'FOOD',cost:fCost,has:!!det.food?.dailyBudget},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0}].map(r=>(
-              <div key={r.label} style={{display:'flex',alignItems:'center',padding:'12px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-                <span style={{width:32,fontSize:20}}>{r.icon}</span>
-                <span style={{flex:1,textAlign:'left',fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.70)',letterSpacing:1}}>{r.label}</span>
-                <span style={{width:80,textAlign:'right',fontSize:15,fontWeight:600,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{r.cost>0?fmt(r.cost):'—'}</span>
-                <span style={{width:80,textAlign:'right',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:r.has?'#69F0AE':'rgba(255,255,255,0.60)',letterSpacing:1}}>{r.has?'✓ Added':'—'}</span>
+            {budgetRows.map(r=>(
+              <div key={r.label} style={{display:'flex',alignItems:'flex-start',gap:10,padding:'12px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                <span style={{width:32,fontSize:20,flexShrink:0,lineHeight:1.25}}>{r.icon}</span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.70)',letterSpacing:1,fontWeight:600}}>{r.label}</div>
+                  {r.snap&&<div style={{fontSize:12,fontFamily:"'Fraunces',serif",fontStyle:'italic',color:'rgba(255,245,220,0.58)',marginTop:5,lineHeight:1.45,wordBreak:'break-word'}}>{r.snap}</div>}
+                </div>
+                <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',flexShrink:0,gap:4}}>
+                  <span style={{fontSize:15,fontWeight:600,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>{r.cost>0?fmt(r.cost):'—'}</span>
+                  <span style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:r.has?'#69F0AE':'rgba(255,255,255,0.60)',letterSpacing:0.5,whiteSpace:'nowrap'}}>{r.has?'✓ Added':'—'}</span>
+                </div>
               </div>
             ))}
             <div style={{display:'flex',justifyContent:'space-between',padding:'14px 0 6px',borderTop:'1px solid rgba(255,255,255,0.12)',marginTop:4}}>
