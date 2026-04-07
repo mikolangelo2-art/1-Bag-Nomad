@@ -3,7 +3,7 @@ import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fmt, fD } from '../utils/dateHelpers';
 import { loadSeg, saveSeg } from '../utils/storageHelpers';
-import { detectMode, findSuggestionForSegment, flatPhaseIndexForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion, transportSuggestionEstimateHint } from '../utils/tripConsoleHelpers';
+import { detectMode, findSuggestionForSegment, flatPhaseIndexForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion, transportSuggestionEstimateHint, parseTransportEstimateToCostDigits } from '../utils/tripConsoleHelpers';
 import SDF from './SDF';
 import CityInput from './CityInput';
 import WorldMapBackground from './WorldMapBackground';
@@ -190,7 +190,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <SDF label="ARRIVE (TIME OR DATE)" value={det.transport.arrTime} onChange={v=>uT("arrTime",v)} placeholder="e.g. 11:45 AM or Sep 26" accent="#00E5FF"/>
             </div>
             <div style={{marginTop:10}}><SDF label="BOOKING LINK" value={det.transport.link||""} onChange={v=>uT("link",v)} placeholder="https://..." accent="#00E5FF"/></div>
-            <div style={{marginTop:8}}><SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="Flight number, booking ref..." accent="#00E5FF" multiline/></div>
+            <div style={{marginTop:8}}><SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="e.g. 1) Flight AA… 2) Shuttle to pier 3) Utila ferry — refs & costs per leg" accent="#00E5FF" multiline/></div>
             <button onClick={()=>setEditingTransport(false)} style={{marginTop:10,width:'100%',padding:'10px',borderRadius:8,border:'none',background:'rgba(0,229,255,0.12)',color:'#00E5FF',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,cursor:'pointer',minHeight:40}}>SAVE CHANGES</button>
           </div>}
           {(!hasT||planningOwn)&&!editingTransport&&<div>
@@ -200,16 +200,23 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <SDF label="COST ($)" type="number" value={det.transport.cost} onChange={v=>uT("cost",v)} placeholder="0" accent="#00E5FF"/>
             </div>
             {transportFromToGrid(true)}
-            {(transportEstLoading||transportEst)&&<div style={{padding:'8px 12px',marginTop:8,borderRadius:8,background:'rgba(255,159,67,0.04)',border:'1px solid rgba(255,159,67,0.12)',display:'flex',alignItems:'center',gap:8}}>
+            {(transportEstLoading||transportEst)&&<div style={{padding:'8px 12px',marginTop:8,borderRadius:8,background:'rgba(255,159,67,0.04)',border:'1px solid rgba(255,159,67,0.12)',display:'flex',flexDirection:'column',alignItems:'flex-start',gap:6}}>
               {transportEstLoading?<span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.60)',letterSpacing:1}}>✦ Estimating...</span>
-              :transportEst&&<span onClick={()=>{if(transportEst.estimate)uT("cost",transportEst.estimate.replace(/[^0-9]/g,'').slice(0,6));}} style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:0.5,cursor:'pointer'}}>✦ Est. {transportEst.estimate}{transportEst.note?` — ${transportEst.note}`:""} <span style={{color:'#FF9F43',textDecoration:'underline'}}>use</span></span>}
+              :transportEst&&<span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:0.5,lineHeight:1.5}}>
+                ✦ Est. {transportEst.estimate}{transportEst.note?` — ${transportEst.note}`:""}{" "}
+                <button type="button" onClick={()=>{const d=parseTransportEstimateToCostDigits(transportEst.estimate);if(d)uT("cost",d);}} style={{background:'none',border:'none',padding:0,color:'#FF9F43',textDecoration:'underline',cursor:'pointer',fontSize:'inherit',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600}}>use</button>
+                <span style={{display:'block',fontSize:10,color:'rgba(255,255,255,0.35)',marginTop:4,fontWeight:400}}>Fills low end of a range into cost (adjust if you book mid/high).</span>
+              </span>}
             </div>}
+            <div style={{fontSize:11,color:'rgba(255,255,255,0.38)',lineHeight:1.55,marginTop:6,marginBottom:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
+              More than one hop (flight + bus + ferry)? Use <span style={{color:'rgba(0,229,255,0.72)'}}>NOTES</span> to list each leg, times, and refs; <span style={{color:'rgba(0,229,255,0.72)'}}>BOOKING LINK</span> for your main ticket or a trip folder. <span style={{color:'rgba(255,255,255,0.28)'}}>ACTIVITIES</span> is for things you do at this stop, not airport transfers.
+            </div>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10,marginTop:10}}>
               <SDF label="DEPART (TIME OR DATE)" value={det.transport.depTime} onChange={v=>uT("depTime",v)} placeholder="e.g. 08:30 AM or Sep 26" accent="#00E5FF"/>
               <SDF label="ARRIVE (TIME OR DATE)" value={det.transport.arrTime} onChange={v=>uT("arrTime",v)} placeholder="e.g. 11:45 AM or Sep 26" accent="#00E5FF"/>
             </div>
             <div style={{marginTop:10}}><SDF label="BOOKING LINK" value={det.transport.link||""} onChange={v=>uT("link",v)} placeholder="https://..." accent="#00E5FF"/></div>
-            <div style={{marginTop:8}}><SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="Flight number, booking ref..." accent="#00E5FF" multiline/></div>
+            <div style={{marginTop:8}}><SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="e.g. 1) Flight AA… 2) Shuttle to pier 3) Utila ferry — refs & costs per leg" accent="#00E5FF" multiline/></div>
           </div>}
         </div>}
         {/* STAY */}

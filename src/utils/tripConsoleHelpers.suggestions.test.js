@@ -7,6 +7,7 @@ import {
   findSuggestionForSegment,
   transportNotesFromSuggestion,
   transportSuggestionEstimateHint,
+  parseTransportEstimateToCostDigits,
 } from "./tripConsoleHelpers.js";
 
 describe("getSuggestionsTripId", () => {
@@ -73,6 +74,23 @@ describe("prevSegmentNameForSeg", () => {
   it("returns previous segment name in flat order", () => {
     assert.equal(prevSegmentNameForSeg({ id: "s2" }, segPhases), "Alpha");
     assert.equal(prevSegmentNameForSeg({ id: "s3" }, segPhases), "Beta");
+  });
+});
+
+describe("parseTransportEstimateToCostDigits", () => {
+  it("uses low end of dollar range (not concatenated digits)", () => {
+    assert.equal(parseTransportEstimateToCostDigits("$2000-5000"), "2000");
+    assert.equal(parseTransportEstimateToCostDigits("$400-600"), "400");
+  });
+
+  it("parses single dollar amounts", () => {
+    assert.equal(parseTransportEstimateToCostDigits("$350"), "350");
+    assert.equal(parseTransportEstimateToCostDigits("$1,200"), "1200");
+  });
+
+  it("returns empty for bad input", () => {
+    assert.equal(parseTransportEstimateToCostDigits(""), "");
+    assert.equal(parseTransportEstimateToCostDigits(null), "");
   });
 });
 

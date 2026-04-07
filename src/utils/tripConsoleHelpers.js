@@ -150,6 +150,29 @@ export const dismissBtnStyle = {
   cursor: 'pointer'
 };
 
+/**
+ * Whole dollars for the transport cost field from an AI estimate like "$2000-5000".
+ * Uses the low end of a range (same idea as acceptTransport split on '-').
+ * Avoids stripping all digits, which produced values like 200050 from $2000-5000.
+ */
+export function parseTransportEstimateToCostDigits(estimateStr) {
+  if (estimateStr == null || typeof estimateStr !== "string") return "";
+  const t = estimateStr.trim();
+  if (!t) return "";
+  const range = t.match(/\$?\s*([\d,]+(?:\.\d+)?)\s*[-–—]\s*\$?\s*([\d,]+(?:\.\d+)?)/);
+  if (range) {
+    const low = Number(String(range[1]).replace(/,/g, ""));
+    if (Number.isFinite(low) && low >= 0) return String(Math.round(low)).slice(0, 6);
+  }
+  const dollar = t.match(/\$\s*([\d,]+(?:\.\d+)?)/);
+  if (dollar) {
+    const n = Number(String(dollar[1]).replace(/,/g, ""));
+    if (Number.isFinite(n) && n >= 0) return String(Math.round(n)).slice(0, 6);
+  }
+  const digits = t.replace(/[^0-9]/g, "");
+  return digits ? digits.replace(/^0+(?=\d)/, "").slice(0, 6) : "";
+}
+
 /** When accepting Co-Architect transport: avoid pasting a full home→…→island chain into NOTES for mid-trip segments. */
 export function transportNotesFromSuggestion(t, { prevCity, homeCity, segmentName } = {}) {
   const fromLeg = String(prevCity || homeCity || "").trim();
