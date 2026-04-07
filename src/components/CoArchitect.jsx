@@ -28,14 +28,26 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   const [loading,setLoading]=useState(false);
   const [editingId,setEditingId]=useState(null);
   const chatEnd=useRef(null);
+  const coerceCostVal=(v)=>{if(v===""||v==null)return 0;if(typeof v==="number")return v;const n=parseFloat(String(v));return Number.isFinite(n)?n:0;};
+  const coerceNightsVal=(v)=>{if(v===""||v==null)return 1;if(typeof v==="number")return Math.max(1,v);const n=parseInt(String(v),10);return Number.isFinite(n)?Math.max(1,n):1;};
+  function commitItemNumeric(id){
+    setItems(p=>p.map(it=>{
+      if(it.id!==id)return it;
+      const nRaw=typeof it.nights==="string"?it.nights:String(it.nights??"");
+      const cRaw=typeof it.cost==="string"?it.cost:String(it.cost??"");
+      const n=nRaw===""?1:parseInt(nRaw,10);
+      const c=cRaw===""?0:parseFloat(cRaw);
+      return{...it,nights:Number.isFinite(n)&&n>=1?n:1,cost:Number.isFinite(c)&&c>=0?c:0};
+    }));
+  }
   const goalLabel=GOAL_PRESETS.find(g=>g.id===data.selectedGoal)?.label||"expedition";
   useEffect(()=>{window.scrollTo(0,0);},[]);
   useEffect(()=>{chatEnd.current?.scrollIntoView({behavior:"smooth"});},[chat]);
   useEffect(()=>{const t=setTimeout(()=>genInsight(),2000);return()=>clearTimeout(t);},[]);
-  const totalNights=items.reduce((s,i)=>s+i.nights,0);
-  const totalCost=items.reduce((s,i)=>s+i.cost,0);
+  const totalNights=items.reduce((s,i)=>s+coerceNightsVal(i.nights),0);
+  const totalCost=items.reduce((s,i)=>s+coerceCostVal(i.cost),0);
   const countries=[...new Set(items.map(i=>i.country))];
-  function getDates(){let cur=new Date(startDate);return items.map(p=>{const arr=new Date(cur);cur.setDate(cur.getDate()+p.nights);return{arrival:arr,departure:new Date(cur)};});}
+  function getDates(){let cur=new Date(startDate);return items.map(p=>{const arr=new Date(cur);const n=coerceNightsVal(p.nights);cur.setDate(cur.getDate()+n);return{arrival:arr,departure:new Date(cur)};});}
   const dates=getDates();
   function fmtD(d){return d.toLocaleDateString("en-US",{month:"short",day:"numeric"});}
   async function genInsight(){
@@ -140,14 +152,14 @@ RULES:
   }
   // Architecture #1: each item auto-wraps as 1 segment
   function buildHandoff(){
-    const destPhases=items.map((item,i)=>({id:i+1,name:item.destination,flag:item.flag,color:item.color,budget:item.cost,nights:item.nights,type:item.type,arrival:dates[i]?.arrival.toISOString().split("T")[0]||"",departure:dates[i]?.departure.toISOString().split("T")[0]||"",country:item.country,diveCount:item.type==="Dive"?Math.floor(item.nights*1.5):0,cost:item.cost,note:item.why||visionData.phases?.find(p=>p.destination===item.destination)?.why||"",...(item.caActivities?.length?{caActivities:[...item.caActivities]}:{})}));
+    const destPhases=items.map((item,i)=>({id:i+1,name:item.destination,flag:item.flag,color:item.color,budget:coerceCostVal(item.cost),nights:coerceNightsVal(item.nights),type:item.type,arrival:dates[i]?.arrival.toISOString().split("T")[0]||"",departure:dates[i]?.departure.toISOString().split("T")[0]||"",country:item.country,diveCount:item.type==="Dive"?Math.floor(coerceNightsVal(item.nights)*1.5):0,cost:coerceCostVal(item.cost),note:item.why||visionData.phases?.find(p=>p.destination===item.destination)?.why||"",...(item.caActivities?.length?{caActivities:[...item.caActivities]}:{})}));
     const lastDepDate=dates[items.length-1]?.departure?.toISOString().split("T")[0]||"";
     const rp=returnPhaseData||{destination:data.city||"Home",country:"United States",type:"Return",nights:0,cost:Math.round(totalCost*0.08/10)*10,budget:Math.round(totalCost*0.08/10)*10,flag:"🏠",color:"#94A3B8",why:`Homebound from ${items[items.length-1]?.destination||"final destination"}`};
     const returnPhaseHandoff={id:destPhases.length+1,name:rp.destination,flag:rp.flag||"🏠",color:rp.color||"#94A3B8",budget:rp.budget||rp.cost||0,nights:0,type:"Return",arrival:lastDepDate,departure:data.returnDate||lastDepDate,country:rp.country||"United States",diveCount:0,cost:rp.budget||rp.cost||0,note:rp.why||""};
     return{tripName:data.tripName||"My Expedition",startDate,departureCity:data.city||"",vision:data.vision,visionNarrative:visionData.narrative,visionHighlight:visionData.highlight,goalLabel,
       budgetBreakdown:visionData.budgetBreakdown||null,travelerProfile:data.travelerProfile||null,packProfile:visionData.packProfile||null,
       phases:[...destPhases,returnPhaseHandoff],
-      totalNights,totalBudget:totalCost+(returnPhaseHandoff.budget||0),totalDives:items.filter(i=>i.type==="Dive").reduce((s,i)=>s+Math.floor(i.nights*1.5),0)};
+      totalNights,totalBudget:totalCost+(returnPhaseHandoff.budget||0),totalDives:items.filter(i=>i.type==="Dive").reduce((s,i)=>s+Math.floor(coerceNightsVal(i.nights)*1.5),0)};
   }
   return(
     <div className="build-root" style={{opacity:mounted?1:0,transform:mounted?"translateY(0)":"translateY(32px)",transition:"opacity 0.55s ease,transform 0.55s cubic-bezier(0.22,1,0.36,1)",overflowX:"hidden"}}>
@@ -195,11 +207,12 @@ RULES:
                   <div onClick={()=>setEditingId(isEd?null:item.id)} style={{padding:isMobile?"8px 10px":"10px 12px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,minHeight:44}}>
                     <div style={{width:18,height:18,borderRadius:"50%",background:`${c}18`,border:`1px solid ${c}44`,color:c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,flexShrink:0}}>{i+1}</div>
                     <div style={{flex:1}}><div style={{fontSize:isMobile?13:15,fontWeight:700,color:"#FFF"}}>{item.flag} {item.destination}</div><div style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.75)"}}><span style={{color:"#FFD93D",fontWeight:700}}>{item.country}</span> · {TI[item.type]} {item.type} · {fmtD(dates[i]?.arrival)}→{fmtD(dates[i]?.departure)}</div></div>
-                    <div style={{textAlign:"right",flexShrink:0,paddingRight:4}}><div style={{fontSize:15,fontWeight:900,color:"#A29BFE",paddingRight:2}}>{item.nights}n</div><div style={{fontSize:15,color:"#FFD93D"}}>{fmt(item.cost)}</div></div>
+                    <div style={{textAlign:"right",flexShrink:0,paddingRight:4}}><div style={{fontSize:15,fontWeight:900,color:"#A29BFE",paddingRight:2}}>{coerceNightsVal(item.nights)}n</div><div style={{fontSize:15,color:"#FFD93D"}}>{fmt(coerceCostVal(item.cost))}</div></div>
                     <span style={{fontSize:15,color:"rgba(255,255,255,0.25)",marginLeft:6}}>{isEd?"▲":"▼"}</span>
                   </div>
                   {isEd&&<div style={{padding:"10px 12px 12px",borderTop:"1px solid rgba(255,255,255,0.05)",background:"rgba(0,0,0,0.2)",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-                    {[{label:"NIGHTS",field:"nights",type:"number"},{label:"COST ($)",field:"cost",type:"number"}].map(f=><div key={f.field} style={{display:"flex",flexDirection:"column",gap:4}}><div style={{fontSize:15,color:"rgba(255,255,255,0.35)",letterSpacing:1}}>{f.label}</div><input type={f.type} style={{background:"#080D14",border:"1px solid #1a2535",borderRadius:5,color:"#FFF",fontSize:15,padding:"5px 7px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none"}} value={item[f.field]} onChange={e=>setItems(p=>p.map(it=>it.id===item.id?{...it,[f.field]:parseInt(e.target.value)||1}:it))}/></div>)}
+                    <div style={{display:"flex",flexDirection:"column",gap:4}}><div style={{fontSize:15,color:"rgba(255,255,255,0.35)",letterSpacing:1}}>NIGHTS</div><input type="text" inputMode="numeric" style={{background:"#080D14",border:"1px solid #1a2535",borderRadius:5,color:"#FFF",fontSize:15,padding:"5px 7px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none"}} value={typeof item.nights==="string"?item.nights:String(item.nights)} onClick={e=>e.stopPropagation()} onChange={e=>{const v=e.target.value;if(v===""||/^\d+$/.test(v))setItems(p=>p.map(it=>it.id===item.id?{...it,nights:v}:it));}} onBlur={()=>commitItemNumeric(item.id)} placeholder="7"/></div>
+                    <div style={{display:"flex",flexDirection:"column",gap:4}}><div style={{fontSize:15,color:"rgba(255,255,255,0.35)",letterSpacing:1}}>COST ($)</div><input type="text" inputMode="decimal" style={{background:"#080D14",border:"1px solid #1a2535",borderRadius:5,color:"#FFF",fontSize:15,padding:"5px 7px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none"}} value={typeof item.cost==="string"?item.cost:String(item.cost)} onClick={e=>e.stopPropagation()} onChange={e=>{const v=e.target.value;if(v===""||/^\d*\.?\d*$/.test(v))setItems(p=>p.map(it=>it.id===item.id?{...it,cost:v}:it));}} onBlur={()=>commitItemNumeric(item.id)} placeholder="0"/></div>
                     <div style={{display:"flex",flexDirection:"column",gap:4}}><div style={{fontSize:15,color:"rgba(255,255,255,0.35)",letterSpacing:1}}>TYPE</div><select style={{background:"#080D14",border:"1px solid #1a2535",borderRadius:5,color:"#FFF",fontSize:15,padding:"5px 7px",outline:"none",width:"100%"}} value={item.type} onChange={e=>setItems(p=>p.map(it=>it.id===item.id?{...it,type:e.target.value}:it))}>{["Exploration","Culture","Dive","Surf","Nature","Trek","Moto","Relax","Transit"].map(t=><option key={t} value={t}>{TI[t]} {t}</option>)}</select></div>
                   </div>}
                 </div>
@@ -228,11 +241,11 @@ RULES:
               <div ref={chatEnd}/>
             </div>
             <div style={{padding:isMobile?"10px 16px":"10px",paddingRight:isMobile?80:10,borderTop:"1px solid #111D2A",display:"flex",gap:5,flexWrap:isMobile?"nowrap":"wrap",overflowX:"auto",flexShrink:0}}>
-              {QUICK_ACTIONS.map(a=><button key={a} onClick={()=>setInput(a)} style={{background:"rgba(169,70,29,0.18)",border:"1px solid rgba(255,217,61,0.35)",borderRadius:20,padding:isMobile?"6px 12px":"7px 14px",fontSize:isMobile?11:15,fontWeight:700,color:"#FFD93D",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:isMobile?32:36}}>{a}</button>)}
+              {QUICK_ACTIONS.map(a=><button type="button" key={a} onClick={()=>setInput(a)} style={{background:"rgba(169,70,29,0.18)",border:"1px solid rgba(255,217,61,0.35)",borderRadius:20,padding:isMobile?"6px 12px":"7px 14px",fontSize:isMobile?11:15,fontWeight:700,color:"#FFD93D",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:isMobile?32:36}}>{a}</button>)}
             </div>
             <div style={{padding:isMobile?"8px 16px":"8px 10px",borderTop:"1px solid #111D2A",display:"flex",gap:7,flexShrink:0}}>
-              <input style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",minHeight:44,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")sendMsg();}} placeholder="Now let's dial it in — what are you thinking?" onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
-              <button style={{background:"rgba(169,70,29,0.2)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:8,color:"#FFD93D",fontSize:15,padding:"8px 11px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={sendMsg}>↑</button>
+              <input style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",minHeight:44,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} value={input} onChange={e=>setInput(e.target.value)} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();sendMsg();}}} placeholder="Now let's dial it in — what are you thinking?" onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
+              <button type="button" style={{background:"rgba(169,70,29,0.2)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:8,color:"#FFD93D",fontSize:15,padding:"8px 11px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={sendMsg}>↑</button>
             </div>
             {!isMobile&&<div style={{margin:"0 10px 10px",flexShrink:0}}>
               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
