@@ -70,8 +70,11 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const clearTransport=()=>{setDet(d=>({...d,transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:"",link:""}}));const nd={...dismissed};delete nd[`${dismissKey}_transport`];setDismissed(nd);saveDismissed(nd);setEditingTransport(false);setPlanningOwn(false);};
   const acceptStay=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');};
   const acceptActivity=(a,suggestionIdx=null)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');const row={name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()};if(suggestionIdx!=null)row.suggestionActivityIdx=suggestionIdx;setDet(d=>({...d,activities:[...d.activities,row]}));};
-  const hasT=(!transportFocused)&&(!!(det.transport?.from&&det.transport?.to)||!!(det.transport?.mode&&det.transport?.cost));
-  useEffect(()=>{if(hasT)setPlanningOwn(false);},[hasT]);
+  // Leg endpoints set: show transport card + EDIT; keep planning form visible until then (avoid unmounting MODE/COST on first cost digit).
+  const transportLegLocked=(!transportFocused)&&(!!(det.transport?.from&&det.transport?.to));
+  // Hide Co-Architect suggestion once user has a leg or both mode+cost (same as before).
+  const hideTransportSuggestion=(!transportFocused)&&(!!(det.transport?.from&&det.transport?.to)||!!(det.transport?.mode&&det.transport?.cost));
+  useEffect(()=>{if(transportLegLocked)setPlanningOwn(false);},[transportLegLocked]);
   useEffect(()=>{if(!det.transport.from&&!det.transport.to&&!det.transport.mode&&!det.transport.cost){const d={...dismissed};delete d[`${dismissKey}_transport`];setDismissed(d);saveDismissed(d);}},[det.transport.from,det.transport.to,det.transport.mode,det.transport.cost]);
   const stayNameTrim=(det.stay?.name||"").trim();
   const hasS=stayNameTrim.length>0;
@@ -143,7 +146,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
-          {suggestion?.transport&&!isDism('transport')&&!hasT&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
+          {suggestion?.transport&&!isDism('transport')&&!hideTransportSuggestion&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
             <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
             <div style={{fontSize:14,fontWeight:700,color:'#FFD93D',marginBottom:8,lineHeight:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
               This leg: {plannedLegFrom} → {plannedLegTo}
@@ -161,7 +164,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <button type="button" onClick={()=>{dismiss('transport');setPlanningOwn(true);}} style={dismissBtnStyle}>PLAN MY OWN</button>
             </div>
           </div>}
-          {hasT&&<div style={{border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:14,background:'rgba(0,229,255,0.06)',padding:'18px 20px',marginBottom:14}}>
+          {transportLegLocked&&<div style={{border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:14,background:'rgba(0,229,255,0.06)',padding:'18px 20px',marginBottom:14}}>
             <div style={{display:'flex',alignItems:'center',marginBottom:10}}>
               <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,flex:1}}>✈️ TRANSPORT</span>
               <button type="button" onClick={()=>{const from=encodeURIComponent(det.transport.from||'');const to=encodeURIComponent(det.transport.to||'');setBookDropdown(bookDropdown==='transport'?null:'transport');}} style={{background:'none',border:'1px solid rgba(0,229,255,0.25)',borderRadius:6,color:'rgba(0,229,255,0.60)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>🔗</button>
@@ -171,7 +174,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {(det.transport.depTime||det.transport.arrTime||det.transport.cost||(det.transport.mode&&det.transport.from))&&<div style={{fontSize:13,color:'#FF9F43',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:4}}>{[det.transport.depTime?`Depart ${det.transport.depTime}`:null,det.transport.arrTime?`Arrive ${det.transport.arrTime}`:null,det.transport.cost?`Est. $${det.transport.cost}`:null,(det.transport.mode&&det.transport.from)?det.transport.mode:null].filter(Boolean).join(' · ')}</div>}
             {det.transport.notes&&!editingTransport&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,color:'rgba(255,255,255,0.60)',marginTop:6,lineHeight:1.5,whiteSpace:'pre-line'}}>{det.transport.notes.length>120?det.transport.notes.slice(0,120)+'...':det.transport.notes}</div>}
             {det.transport.link&&<a href={det.transport.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:4}}>{det.transport.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
-            {hasT&&!editingTransport&&<div style={{textAlign:'left',marginTop:10,marginBottom:2}}>
+            {transportLegLocked&&!editingTransport&&<div style={{textAlign:'left',marginTop:10,marginBottom:2}}>
               <span onClick={clearTransport} style={{color:'rgba(255,255,255,0.4)',fontSize:12,cursor:'pointer',letterSpacing:0.3,textDecoration:'underline',textUnderlineOffset:3}} onMouseEnter={e=>{e.target.style.color='rgba(255,255,255,0.7)';}} onMouseLeave={e=>{e.target.style.color='rgba(255,255,255,0.4)';}}>↩ Clear transport</span>
             </div>}
           </div>}
@@ -179,7 +182,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{fontSize:12,color:'rgba(255,255,255,0.60)',letterSpacing:2,padding:'4px 14px'}}>SEARCH FLIGHTS</div>
             {[{n:'Google Flights',u:`https://www.google.com/travel/flights?q=${encodeURIComponent((det.transport.from||'')+' to '+(det.transport.to||''))}`},{n:'Skyscanner',u:'https://www.skyscanner.com'},{n:'Kayak',u:'https://www.kayak.com/flights'},{n:'Rome2rio',u:`https://www.rome2rio.com/map/${encodeURIComponent(det.transport.from||'')}/${encodeURIComponent(det.transport.to||'')}`}].map(l=><a key={l.n} href={l.u} target="_blank" rel="noopener noreferrer" onClick={()=>setBookDropdown(null)} style={{display:'block',padding:'10px 14px',fontSize:13,color:'rgba(255,255,255,0.75)',borderRadius:8,cursor:'pointer',textDecoration:'none'}} onMouseOver={e=>e.currentTarget.style.background='rgba(255,159,67,0.08)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>{l.n}</a>)}
           </div></div>}
-          {hasT&&editingTransport&&<div style={{border:'1px solid rgba(255,255,255,0.10)',borderRadius:12,background:'rgba(255,255,255,0.04)',padding:16,marginBottom:14,animation:'slideOpen 0.40s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+          {transportLegLocked&&editingTransport&&<div style={{border:'1px solid rgba(255,255,255,0.10)',borderRadius:12,background:'rgba(255,255,255,0.04)',padding:16,marginBottom:14,animation:'slideOpen 0.40s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10}}>
               <SDF label="MODE" value={det.transport.mode} onChange={v=>uT("mode",v)} placeholder="Flight / Ferry / Car..." accent="#00E5FF"/>
               <SDF label="COST ($)" type="number" value={det.transport.cost} onChange={v=>uT("cost",v)} placeholder="0" accent="#00E5FF"/>
@@ -193,7 +196,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{marginTop:8}}><SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="e.g. 1) Flight AA… 2) Shuttle to pier 3) Utila ferry — refs & costs per leg" accent="#00E5FF" multiline/></div>
             <button type="button" onClick={()=>setEditingTransport(false)} style={{marginTop:10,width:'100%',padding:'10px',borderRadius:8,border:'none',background:'rgba(0,229,255,0.12)',color:'#00E5FF',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,cursor:'pointer',minHeight:40}}>SAVE CHANGES</button>
           </div>}
-          {(!hasT||planningOwn)&&!editingTransport&&<div>
+          {(!transportLegLocked||planningOwn)&&!editingTransport&&<div>
             {!(suggestion?.transport&&!isDism('transport'))&&!suggestionsLoading&&<div style={{textAlign:'center',padding:'24px 0 20px'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.40)',marginBottom:12}}>No transport planned yet.</div></div>}
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10}}>
               <SDF label="MODE" value={det.transport.mode} onChange={v=>uT("mode",v)} placeholder="Flight / Ferry / Car..." accent="#00E5FF"/>
@@ -431,7 +434,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           const activitiesSnap=actParts.length<=1?(actParts[0]||''):'';
           const db=det.food?.dailyBudget;const foodSnap=db?`${segment.nights}n × $${db}/day`:'';
           const miscSnap=det.misc.map(m=>(m.name||'').trim()).filter(Boolean).join(' · ').slice(0,120);
-          const budgetRows=[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hasT,snap:transportSnap},{icon:'🏨',label:'STAY',cost:sCost,has:hasS,snap:hasS?staySnap:''},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0,snap:activitiesSnap,snapLines:actLines},{icon:'🍜',label:'FOOD',cost:fCost,has:!!db,snap:foodSnap},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0,snap:miscSnap}];
+          const budgetRows=[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hideTransportSuggestion,snap:transportSnap},{icon:'🏨',label:'STAY',cost:sCost,has:hasS,snap:hasS?staySnap:''},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0,snap:activitiesSnap,snapLines:actLines},{icon:'🍜',label:'FOOD',cost:fCost,has:!!db,snap:foodSnap},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0,snap:miscSnap}];
           return(
           <div style={{padding:0}}>
             <div style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12,textAlign:'left'}}>PHASE BUDGET</div>
