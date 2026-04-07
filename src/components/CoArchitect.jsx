@@ -8,6 +8,7 @@ import { fmt } from '../utils/dateHelpers';
 import { TI } from '../utils/storageHelpers';
 import { GOAL_PRESETS, QUICK_ACTIONS } from '../constants/dreamData';
 import { PALETTE_8 } from '../constants/colors';
+import DatePickerInput from './DatePickerInput';
 
 function CoArchitect({data,visionData,onLaunch,onBack}) {
   const isMobile=useMobile();
@@ -161,7 +162,7 @@ RULES:
       </div>
       <div style={{display:"flex",alignItems:"center",gap:12,padding:"8px 14px",background:"rgba(255,255,255,0.02)",borderBottom:"1px solid #111D2A",flexShrink:0}}>
         <span style={{fontSize:isMobile?9:11,fontWeight:700,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"rgba(255,255,255,0.4)",letterSpacing:2}}>DEPARTURE</span>
-        <input type="date" style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.18)",borderRadius:6,color:"rgba(0,229,255,0.85)",fontSize:isMobile?13:14,padding:"3px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",colorScheme:"dark"}} value={startDate} onChange={e=>setStartDate(e.target.value)} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.5)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.10)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.18)";e.target.style.boxShadow="none";}}/>
+        <div style={{flex:1,minWidth:0,maxWidth:isMobile?"100%":220}}><DatePickerInput value={startDate} onChange={setStartDate} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.18)",borderRadius:6,color:"rgba(0,229,255,0.85)",fontSize:isMobile?13:14,padding:"3px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",colorScheme:"dark"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.5)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.10)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.18)";e.target.style.boxShadow="none";}} aria-label="Departure date" buttonStyle={{border:"1px solid rgba(0,229,255,0.28)",background:"rgba(0,229,255,0.08)"}}/></div>
         <span style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.35)",marginLeft:"auto",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{totalNights}n</span>
       </div>
       {isMobile&&<div style={{display:"flex",borderBottom:"1px solid #1a2535",background:"#080D14",flexShrink:0}}>

@@ -27,7 +27,6 @@ import HandoffScreen from './components/HandoffScreen';
 import HomecomingScreen from './components/HomecomingScreen';
 import CoArchitect from './components/CoArchitect';
 import AntiqueGlobe from './components/AntiqueGlobe';
-import DateInput from './components/DateInput';
 import SDF from './components/SDF';
 import ProgDots from './components/ProgDots';
 import AmbientChat from './components/AmbientChat';

@@ -1,4 +1,5 @@
 import { useMobile } from "../hooks/useMobile";
+import DatePickerInput from "./DatePickerInput";
 
 function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00E5FF",onFocus,onBlur}) {
   const mob=useMobile();
@@ -11,7 +12,7 @@ function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00
     <div style={{display:"flex",flexDirection:"column",gap:mob?2:3}}>
       <div style={{fontSize:mob?11:13,color:"rgba(212,180,120,0.92)",letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,opacity:0.92}}>{label}</div>
       {multiline?<textarea value={safe} onClick={stopClick} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={1} style={s} onFocus={onF} onBlur={onB}/>
-      :type==="date"?<div style={{width:"100%"}}><input type="date" value={safe} onClick={stopClick} onChange={e=>onChange(e.target.value)} style={{...s,colorScheme:"dark"}} onFocus={onF} onBlur={onB}/></div>
+      :type==="date"?<div style={{width:"100%"}}><DatePickerInput value={safe} onChange={onChange} style={s} onFocus={onF} onBlur={onB} aria-label={label}/></div>
       :<input type={type} value={safe} onClick={stopClick} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={onF} onBlur={onB}/>}
     </div>
   );
