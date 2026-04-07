@@ -376,8 +376,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <div key={r.label} style={{display:'flex',alignItems:'flex-start',gap:isMobile?8:12,padding:isMobile?'14px 0':'15px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
                 <span style={{width:isMobile?30:36,fontSize:isMobile?22:24,flexShrink:0,lineHeight:1.2}}>{r.icon}</span>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:isMobile?14:16,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.88)',letterSpacing:isMobile?0.8:1.2,fontWeight:700}}>{r.label}</div>
-                  {r.snap&&<div style={{fontSize:isMobile?14:15,fontFamily:"'Fraunces',serif",fontStyle:'italic',fontWeight:400,color:'rgba(255,245,220,0.78)',marginTop:6,lineHeight:1.5,wordBreak:'break-word'}}>{r.snap}</div>}
+                  <div style={{fontSize:isMobile?15:17,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.90)',letterSpacing:isMobile?0.8:1.2,fontWeight:700}}>{r.label}</div>
+                  {r.snap&&<div style={{fontSize:isMobile?16:18,fontFamily:"'Fraunces',serif",fontStyle:'italic',fontWeight:500,color:'rgba(255,245,220,0.90)',marginTop:7,lineHeight:1.55,wordBreak:'break-word',letterSpacing:'0.01em',textShadow:'0 1px 10px rgba(0,0,0,0.35)'}}>{r.snap}</div>}
                 </div>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',flexShrink:0,gap:5}}>
                   <span style={{fontSize:isMobile?16:18,fontWeight:700,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>{r.cost>0?fmt(r.cost):'—'}</span>
