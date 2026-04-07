@@ -371,15 +371,15 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{segment.name}</div>
             <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:16}}>{segment.nights} Nights · Budget: {fmt(budget)}</div>
             {budgetRows.map(r=>(
-              <div key={r.label} style={{display:'flex',alignItems:'flex-start',gap:10,padding:'12px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-                <span style={{width:32,fontSize:20,flexShrink:0,lineHeight:1.25}}>{r.icon}</span>
+              <div key={r.label} style={{display:'flex',alignItems:'flex-start',gap:isMobile?8:12,padding:isMobile?'14px 0':'15px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                <span style={{width:isMobile?30:36,fontSize:isMobile?22:24,flexShrink:0,lineHeight:1.2}}>{r.icon}</span>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.70)',letterSpacing:1,fontWeight:600}}>{r.label}</div>
-                  {r.snap&&<div style={{fontSize:12,fontFamily:"'Fraunces',serif",fontStyle:'italic',color:'rgba(255,245,220,0.58)',marginTop:5,lineHeight:1.45,wordBreak:'break-word'}}>{r.snap}</div>}
+                  <div style={{fontSize:isMobile?14:16,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.88)',letterSpacing:isMobile?0.8:1.2,fontWeight:700}}>{r.label}</div>
+                  {r.snap&&<div style={{fontSize:isMobile?14:15,fontFamily:"'Fraunces',serif",fontStyle:'italic',fontWeight:400,color:'rgba(255,245,220,0.78)',marginTop:6,lineHeight:1.5,wordBreak:'break-word'}}>{r.snap}</div>}
                 </div>
-                <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',flexShrink:0,gap:4}}>
-                  <span style={{fontSize:15,fontWeight:600,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>{r.cost>0?fmt(r.cost):'—'}</span>
-                  <span style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:r.has?'#69F0AE':'rgba(255,255,255,0.60)',letterSpacing:0.5,whiteSpace:'nowrap'}}>{r.has?'✓ Added':'—'}</span>
+                <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',flexShrink:0,gap:5}}>
+                  <span style={{fontSize:isMobile?16:18,fontWeight:700,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>{r.cost>0?fmt(r.cost):'—'}</span>
+                  <span style={{fontSize:isMobile?12:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,color:r.has?'#69F0AE':'rgba(255,255,255,0.60)',letterSpacing:0.5,whiteSpace:'nowrap'}}>{r.has?'✓ Added':'—'}</span>
                 </div>
               </div>
             ))}
