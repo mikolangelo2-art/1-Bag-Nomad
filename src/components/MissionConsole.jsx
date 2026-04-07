@@ -136,8 +136,9 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
                 ref={depRef}
                 value={depInput}
                 onChange={e=>setDepInput(e.target.value)}
+                onClick={e=>e.stopPropagation()}
                 onBlur={saveDep}
-                onKeyDown={e=>{if(e.key==="Enter")saveDep();if(e.key==="Escape"){setEditingDep(false);}}}
+                onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();saveDep();}if(e.key==="Escape"){e.preventDefault();setDepInput(tripData.departureCity||tripData.city||"");setEditingDep(false);}}}
                 placeholder="Departure city..."
                 style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,color:"#FFD93D",background:"rgba(255,217,61,0.08)",border:"1px solid rgba(255,217,61,0.35)",borderRadius:5,padding:"3px 8px",outline:"none",width:isMobile?130:160}}
               />
