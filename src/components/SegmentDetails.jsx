@@ -36,7 +36,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
   const dismissSD=(type)=>{const d={...dismissed,[`${dismissKey}_${type}`]:true};setDismissedSD(d);saveDismissed(d);};
   const acceptTransportSD=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",`${t.route}\n\nEst. ${t.estimatedCost}${t.bestTiming?`\nBest timing: ${t.bestTiming}`:""}${t.notes?`\n${t.notes}`:""}`);dismissSD('transport');};
   const acceptStaySD=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismissSD('stay');};
-  const acceptActivitySD=(a)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');setDet(d=>({...d,activities:[...d.activities,{name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()}]}));};
+  const acceptActivitySD=(a,suggestionIdx=null)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');const row={name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()};if(suggestionIdx!=null)row.suggestionActivityIdx=suggestionIdx;setDet(d=>({...d,activities:[...d.activities,row]}));};
   async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}
   const CATS=[{id:"transport",icon:"✈️",label:"TRANSPORT",a:DIVE_CYAN,w:CYAN_WASH},{id:"stay",icon:"🏠",label:"STAY",a:SURF_GREEN,w:GREEN_WASH},{id:"activities",icon:"🎯",label:"ACTIVITIES",a:CULTURE_GOLD,w:GOLD_04},{id:"food",icon:"🍽️",label:"FOOD",a:EXPLORATION_ORANGE,w:ORANGE_WASH},{id:"misc",icon:"💸",label:"MISC",a:NATURE_PURPLE,w:PURPLE_WASH},{id:"intel",icon:"🔭",label:"INTEL",a:MOTO_RED,w:RED_04}];
   const done={transport:!!(det.transport.mode||det.transport.cost),stay:!!(det.stay.name||det.stay.cost),activities:det.activities.length>0,food:!!(det.food.dailyBudget),misc:det.misc.length>0,intel:!!(intelSnippet?.tagline||det.intel.notes)};
@@ -124,7 +124,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
           </div>}
           {cat==="activities"&&<div style={{padding:"10px 12px"}}>
             {suggestion?.activities?.map((activity,idx)=>(
-              !isDismSD(`activity_${idx}`)&&<div key={idx} style={{...suggestionCardStyle,marginBottom:8,animationDelay:`${idx*100}ms`}}>
+              !isDismSD(`activity_${idx}`)&&!det.activities.some(x=>x.suggestionActivityIdx===idx)&&<div key={idx} style={{...suggestionCardStyle,marginBottom:8,animationDelay:`${idx*100}ms`}}>
                 <div style={suggestionHeaderStyle}>✦ SUGGESTED ACTIVITY</div>
                 <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{activity.name}</div>
                 {activity.provider&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:3}}>{activity.provider}</div>}
@@ -132,12 +132,12 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
                 {activity.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:8}}>{activity.notes}</div>}
                 <div style={disclaimerStyle}>⚡ Estimates only — prices vary when booked</div>
                 <div style={{display:'flex',gap:6}}>
-                  <button onClick={()=>{acceptActivitySD(activity);dismissSD(`activity_${idx}`);}} style={acceptBtnStyle}>+ ADD TO PLAN</button>
+                  <button onClick={()=>acceptActivitySD(activity,idx)} style={acceptBtnStyle}>+ ADD TO PLAN</button>
                   <button onClick={()=>dismissSD(`activity_${idx}`)} style={dismissBtnStyle}>SKIP</button>
                 </div>
               </div>
             ))}
-            {det.activities.length===0&&!(suggestion?.activities?.some((_,i)=>!isDismSD(`activity_${i}`)))&&<div style={{textAlign:"center",padding:"6px 0 10px",animation:"fadeIn 0.40s cubic-bezier(0.25,0.46,0.45,0.94)"}}><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?11:13,fontStyle:"italic",color:"rgba(255,217,61,0.35)",lineHeight:1.5}}>Add your first activity — dives, tours, day trips</div></div>}
+            {det.activities.length===0&&!(suggestion?.activities?.some((_,i)=>!isDismSD(`activity_${i}`)&&!det.activities.some(x=>x.suggestionActivityIdx===i)))&&<div style={{textAlign:"center",padding:"6px 0 10px",animation:"fadeIn 0.40s cubic-bezier(0.25,0.46,0.45,0.94)"}}><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?11:13,fontStyle:"italic",color:"rgba(255,217,61,0.35)",lineHeight:1.5}}>Add your first activity — dives, tours, day trips</div></div>}
             {det.activities.length>0&&<div style={{marginBottom:12}}>
               {det.activities.map(a=>(
                 <div key={a.id} style={{background:"rgba(255,217,61,0.03)",border:"1px solid rgba(255,217,61,0.10)",borderRadius:8,padding:"12px 14px",marginBottom:8}}>
@@ -149,7 +149,24 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
                       </div>
                       {a.link&&<a href={a.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:"#00E5FF",textDecoration:"none",display:"inline-block",marginTop:4,maxWidth:"100%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
                     </div>
-                    <button onClick={()=>setDet(d=>({...d,activities:d.activities.filter(x=>x.id!==a.id)}))} style={{background:"none",border:"none",color:"rgba(255,255,255,0.30)",fontSize:14,cursor:"pointer",lineHeight:1,padding:"2px 4px",flexShrink:0}}>✕</button>
+                    <button onClick={()=>{
+                      const removed=a;
+                      setDet(d=>({...d,activities:d.activities.filter(x=>x.id!==removed.id)}));
+                      if(suggestion?.activities?.length){
+                        setDismissedSD(d0=>{
+                          const dd={...d0};
+                          let ch=false;
+                          suggestion.activities.forEach((sa,i)=>{
+                            const key=`${dismissKey}_activity_${i}`;
+                            if(!dd[key]) return;
+                            if(removed.suggestionActivityIdx===i){delete dd[key];ch=true;}
+                            else if(removed.suggestionActivityIdx==null&&(removed.name||"").trim().toLowerCase()===(sa.name||"").trim().toLowerCase()){delete dd[key];ch=true;}
+                          });
+                          if(ch) saveDismissed(dd);
+                          return ch?dd:d0;
+                        });
+                      }
+                    }} style={{background:"none",border:"none",color:"rgba(255,255,255,0.30)",fontSize:14,cursor:"pointer",lineHeight:1,padding:"2px 4px",flexShrink:0}}>✕</button>
                   </div>
                 </div>
               ))}
