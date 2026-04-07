@@ -140,6 +140,31 @@ export const dismissBtnStyle = {
   cursor: 'pointer'
 };
 
+/** When accepting Co-Architect transport: avoid pasting a full home→…→island chain into NOTES for mid-trip segments. */
+export function transportNotesFromSuggestion(t, { prevCity, homeCity, segmentName } = {}) {
+  const fromLeg = String(prevCity || homeCity || "").trim();
+  const toLeg = String(segmentName || "").trim();
+  const est = t?.estimatedCost ? `Est. ${t.estimatedCost}` : "";
+  const route = String(t?.route || "").trim();
+  const hopCount = route ? route.split(/\s*(?:→|->|—)\s*/).filter(Boolean).length : 0;
+  const longMultiLeg = hopCount > 2 || route.length > 100;
+  const hasPrevSeg = !!(prevCity && String(prevCity).trim());
+  const parts = [];
+  if (hasPrevSeg && longMultiLeg) {
+    if (fromLeg && toLeg) parts.push(`Leg: ${fromLeg} -> ${toLeg}`);
+    else if (route) parts.push(route);
+    if (est) parts.push(est);
+    if (t?.bestTiming) parts.push(t.bestTiming);
+    if (t?.notes) parts.push(t.notes);
+    return parts.join("\n\n");
+  }
+  if (route) parts.push(route);
+  if (est) parts.push(est);
+  if (t?.bestTiming) parts.push(t.bestTiming);
+  if (t?.notes) parts.push(t.notes);
+  return parts.join("\n\n");
+}
+
 // ── Segment Suggestions Prompt Builder ────────────────────────
 export function buildSegmentSuggestionsPrompt(tripData, travelerProfile, phasesSlice, startIndex) {
   const phases = phasesSlice || (tripData.phases || []).slice(0, 5);

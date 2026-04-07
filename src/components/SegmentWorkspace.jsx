@@ -3,7 +3,7 @@ import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fmt, fD } from '../utils/dateHelpers';
 import { loadSeg, saveSeg } from '../utils/storageHelpers';
-import { detectMode, findSuggestionForSegment, flatPhaseIndexForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle } from '../utils/tripConsoleHelpers';
+import { detectMode, findSuggestionForSegment, flatPhaseIndexForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion } from '../utils/tripConsoleHelpers';
 import SDF from './SDF';
 import WorldMapBackground from './WorldMapBackground';
 
@@ -65,7 +65,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const uS=(f,v)=>setDet(d=>({...d,stay:{...d.stay,[f]:v}}));
   const uF=(f,v)=>setDet(d=>({...d,food:{...d.food,[f]:v}}));
   async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}
-  const acceptTransport=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("from",prevCity||homeCity||"");uT("to",segment.name||"");uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",`${t.route}\n\nEst. ${t.estimatedCost}${t.bestTiming?`\nBest timing: ${t.bestTiming}`:""}${t.notes?`\n${t.notes}`:""}`);if(segment.arrival){uT("depTime",fD(segment.arrival));uT("arrTime",fD(segment.arrival));}dismiss('transport');};
+  const acceptTransport=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("from",prevCity||homeCity||"");uT("to",segment.name||"");uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",transportNotesFromSuggestion(t,{prevCity,homeCity,segmentName:segment.name}));if(segment.arrival){uT("depTime",fD(segment.arrival));uT("arrTime",fD(segment.arrival));}dismiss('transport');};
+  const clearTransport=()=>{setDet(d=>({...d,transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:"",link:""}}));const nd={...dismissed};delete nd[`${dismissKey}_transport`];setDismissed(nd);saveDismissed(nd);setEditingTransport(false);setPlanningOwn(false);};
   const acceptStay=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');};
   const acceptActivity=(a,suggestionIdx=null)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');const row={name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()};if(suggestionIdx!=null)row.suggestionActivityIdx=suggestionIdx;setDet(d=>({...d,activities:[...d.activities,row]}));};
   const hasT=(!transportFocused)&&(!!(det.transport?.from&&det.transport?.to)||!!(det.transport?.mode&&det.transport?.cost));
@@ -135,6 +136,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {(det.transport.depTime||det.transport.cost)&&<div style={{fontSize:13,color:'#FF9F43',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:4}}>{det.transport.depTime?`${det.transport.depTime}`:""}{det.transport.depTime&&det.transport.cost?" · ":""}{det.transport.cost?`Est. $${det.transport.cost}`:""}{det.transport.mode&&det.transport.from?` · ${det.transport.mode}`:""}</div>}
             {det.transport.notes&&!editingTransport&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,color:'rgba(255,255,255,0.60)',marginTop:6,lineHeight:1.5,whiteSpace:'pre-line'}}>{det.transport.notes.length>120?det.transport.notes.slice(0,120)+'...':det.transport.notes}</div>}
             {det.transport.link&&<a href={det.transport.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:4}}>{det.transport.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
+            {hasT&&!editingTransport&&<div style={{textAlign:'left',marginTop:10,marginBottom:2}}>
+              <span onClick={clearTransport} style={{color:'rgba(255,255,255,0.4)',fontSize:12,cursor:'pointer',letterSpacing:0.3,textDecoration:'underline',textUnderlineOffset:3}} onMouseEnter={e=>{e.target.style.color='rgba(255,255,255,0.7)';}} onMouseLeave={e=>{e.target.style.color='rgba(255,255,255,0.4)';}}>↩ Clear transport</span>
+            </div>}
           </div>}
           {bookDropdown==='transport'&&<div style={{position:'relative',zIndex:100,marginBottom:10}}><div style={{background:'rgba(0,8,20,0.95)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:12,padding:8,boxShadow:'0 8px 32px rgba(0,0,0,0.6)'}}>
             <div style={{fontSize:12,color:'rgba(255,255,255,0.60)',letterSpacing:2,padding:'4px 14px'}}>SEARCH FLIGHTS</div>

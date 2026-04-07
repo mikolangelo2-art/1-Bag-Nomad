@@ -3,7 +3,7 @@ import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fD } from '../utils/dateHelpers';
 import { loadSeg, saveSeg } from '../utils/storageHelpers';
-import { detectMode, findSuggestionForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle } from '../utils/tripConsoleHelpers';
+import { detectMode, findSuggestionForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion } from '../utils/tripConsoleHelpers';
 import SDF from './SDF';
 
 function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatusChange,suggestion:suggestionProp,suggestionsLoading}) {
@@ -34,7 +34,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
   const [dismissed,setDismissedSD]=useState(()=>loadDismissed());
   const isDismSD=(type)=>!!dismissed[`${dismissKey}_${type}`];
   const dismissSD=(type)=>{const d={...dismissed,[`${dismissKey}_${type}`]:true};setDismissedSD(d);saveDismissed(d);};
-  const acceptTransportSD=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",`${t.route}\n\nEst. ${t.estimatedCost}${t.bestTiming?`\nBest timing: ${t.bestTiming}`:""}${t.notes?`\n${t.notes}`:""}`);dismissSD('transport');};
+  const acceptTransportSD=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",transportNotesFromSuggestion(t,{prevCity:"",homeCity:"",segmentName:segment.name}));dismissSD('transport');};
   const acceptStaySD=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismissSD('stay');};
   const acceptActivitySD=(a,suggestionIdx=null)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');const row={name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()};if(suggestionIdx!=null)row.suggestionActivityIdx=suggestionIdx;setDet(d=>({...d,activities:[...d.activities,row]}));};
   async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}

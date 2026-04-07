@@ -4,6 +4,7 @@ import {
   getSuggestionsTripId,
   flatPhaseIndexForSegment,
   findSuggestionForSegment,
+  transportNotesFromSuggestion,
 } from "./tripConsoleHelpers.js";
 
 describe("getSuggestionsTripId", () => {
@@ -57,9 +58,34 @@ describe("flatPhaseIndexForSegment", () => {
   });
 });
 
+describe("transportNotesFromSuggestion", () => {
+  it("uses short leg notes when previous segment exists and route is multi-hop", () => {
+    const n = transportNotesFromSuggestion(
+      {
+        route: "Home -> SPS -> La Ceiba -> Utila ferry",
+        estimatedCost: "$400-500",
+        notes: "Book early",
+      },
+      { prevCity: "Utila", homeCity: "Atlanta", segmentName: "Roatan" }
+    );
+    assert.ok(n.includes("Leg: Utila -> Roatan"));
+    assert.ok(!n.includes("Home ->"));
+    assert.ok(n.includes("Est."));
+  });
+
+  it("keeps full route for first leg (no previous segment)", () => {
+    const r = "ATL -> SPS -> Utila";
+    const n = transportNotesFromSuggestion(
+      { route: r, estimatedCost: "$600" },
+      { prevCity: "", homeCity: "Atlanta", segmentName: "Utila" }
+    );
+    assert.ok(n.includes(r));
+  });
+});
+
 describe("findSuggestionForSegment", () => {
   const rows = [
-    { phaseIndex: 0, phaseName: "Alpha", transport: { route: "A?B" } },
+    { phaseIndex: 0, phaseName: "Alpha", transport: { route: "A to B" } },
     { phaseIndex: 1, phaseName: "Wrong AI label", stay: { recommendation: "Hostel" } },
   ];
 
@@ -70,6 +96,6 @@ describe("findSuggestionForSegment", () => {
 
   it("falls back to phaseName string match", () => {
     const s = findSuggestionForSegment(rows, "Alpha", -1);
-    assert.equal(s?.transport?.route, "A?B");
+    assert.equal(s?.transport?.route, "A to B");
   });
 });
