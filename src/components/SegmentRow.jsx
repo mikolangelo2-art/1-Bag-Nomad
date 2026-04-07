@@ -10,7 +10,7 @@ import ProgDots from './ProgDots';
 
 const TC = TRIP_CATEGORY_COLORS;
 
-function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenChange,onSegmentTap,suggestion,suggestionsLoading}) {
+function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenChange,onSegmentTap,suggestion,suggestionsLoading,prevCity="",homeCity=""}) {
   const isMobile=useMobile();
   const segKey=`${phaseId}-${segment.id}`;
   const [open,setOpen]=useState(false);
@@ -141,7 +141,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
           </div>
         </div>
       )}
-      {open&&<SegmentDetails phaseId={phaseId} segment={segment} intelSnippet={intelSnippet} status={status} onStatusChange={saveStatus} suggestion={suggestion} suggestionsLoading={suggestionsLoading}/>}
+      {open&&<SegmentDetails phaseId={phaseId} segment={segment} intelSnippet={intelSnippet} status={status} onStatusChange={saveStatus} suggestion={suggestion} suggestionsLoading={suggestionsLoading} prevCity={prevCity} homeCity={homeCity}/>}
       {isCancelled&&!open&&(
         <div style={{padding:"6px 16px 8px 20px",display:"flex",gap:10,alignItems:"center"}}>
           <span style={{fontSize:11,color:"rgba(136,136,136,0.7)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flex:1,letterSpacing:1}}>✕ CANCELLED</span>

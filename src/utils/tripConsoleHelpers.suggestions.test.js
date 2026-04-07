@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   getSuggestionsTripId,
   flatPhaseIndexForSegment,
+  prevSegmentNameForSeg,
   findSuggestionForSegment,
   transportNotesFromSuggestion,
   transportSuggestionEstimateHint,
@@ -56,6 +57,22 @@ describe("flatPhaseIndexForSegment", () => {
 
   it("returns -1 when unknown", () => {
     assert.equal(flatPhaseIndexForSegment({ id: "99a" }, phases), -1);
+  });
+});
+
+describe("prevSegmentNameForSeg", () => {
+  const segPhases = [
+    { id: "p1", segments: [{ id: "s1", name: "Alpha" }, { id: "s2", name: "Beta" }] },
+    { id: "p2", segments: [{ id: "s3", name: "Gamma" }] },
+  ];
+
+  it("returns empty for first segment in trip", () => {
+    assert.equal(prevSegmentNameForSeg({ id: "s1" }, segPhases), "");
+  });
+
+  it("returns previous segment name in flat order", () => {
+    assert.equal(prevSegmentNameForSeg({ id: "s2" }, segPhases), "Alpha");
+    assert.equal(prevSegmentNameForSeg({ id: "s3" }, segPhases), "Beta");
   });
 });
 

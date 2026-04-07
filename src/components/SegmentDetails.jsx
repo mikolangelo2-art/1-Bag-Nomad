@@ -5,8 +5,9 @@ import { fD } from '../utils/dateHelpers';
 import { loadSeg, saveSeg } from '../utils/storageHelpers';
 import { detectMode, findSuggestionForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion, transportSuggestionEstimateHint } from '../utils/tripConsoleHelpers';
 import SDF from './SDF';
+import CityInput from './CityInput';
 
-function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatusChange,suggestion:suggestionProp,suggestionsLoading}) {
+function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatusChange,suggestion:suggestionProp,suggestionsLoading,prevCity="",homeCity=""}) {
   const isMobile=useMobile();
   const key=`${phaseId}-${segment.id}`;
   const blank={transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
@@ -34,13 +35,21 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
   const [dismissed,setDismissedSD]=useState(()=>loadDismissed());
   const isDismSD=(type)=>!!dismissed[`${dismissKey}_${type}`];
   const dismissSD=(type)=>{const d={...dismissed,[`${dismissKey}_${type}`]:true};setDismissedSD(d);saveDismissed(d);};
-  const acceptTransportSD=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",transportNotesFromSuggestion(t,{prevCity:"",homeCity:"",segmentName:segment.name}));dismissSD('transport');};
+  const acceptTransportSD=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("from",(prevCity||homeCity||"").trim());uT("to",(segment.name||"").trim());uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",transportNotesFromSuggestion(t,{prevCity,homeCity,segmentName:segment.name}));dismissSD('transport');};
   const acceptStaySD=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismissSD('stay');};
   const acceptActivitySD=(a,suggestionIdx=null)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');const row={name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()};if(suggestionIdx!=null)row.suggestionActivityIdx=suggestionIdx;setDet(d=>({...d,activities:[...d.activities,row]}));};
   async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}
   const CATS=[{id:"transport",icon:"✈️",label:"TRANSPORT",a:DIVE_CYAN,w:CYAN_WASH},{id:"stay",icon:"🏠",label:"STAY",a:SURF_GREEN,w:GREEN_WASH},{id:"activities",icon:"🎯",label:"ACTIVITIES",a:CULTURE_GOLD,w:GOLD_04},{id:"food",icon:"🍽️",label:"FOOD",a:EXPLORATION_ORANGE,w:ORANGE_WASH},{id:"misc",icon:"💸",label:"MISC",a:NATURE_PURPLE,w:PURPLE_WASH},{id:"intel",icon:"🔭",label:"INTEL",a:MOTO_RED,w:RED_04}];
   const done={transport:!!(det.transport.mode||det.transport.cost),stay:!!(det.stay.name||det.stay.cost),activities:det.activities.length>0,food:!!(det.food.dailyBudget),misc:det.misc.length>0,intel:!!(intelSnippet?.tagline||det.intel.notes)};
   const ac=CATS.find(c=>c.id===cat);
+  const prevStop=(prevCity||"").trim();
+  const homeStop=(homeCity||"").trim();
+  const thisStop=(segment.name||"").trim();
+  const plannedLegFrom=prevStop||homeStop||"Trip start";
+  const plannedLegTo=thisStop||"This stop";
+  const tripFieldLabel={fontSize:isMobile?10:12,color:"rgba(0,229,255,0.75)",letterSpacing:1.2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,opacity:0.92};
+  const cityInStyle={background:"rgba(0,0,0,0.55)",border:"1px solid rgba(255,255,255,0.22)",borderRadius:6,color:"#FFF",fontSize:isMobile?12:14,padding:isMobile?"4px 7px":"5px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",maxWidth:"100%",boxSizing:"border-box",lineHeight:1.6};
+  const legChipStyle={padding:"4px 9px",borderRadius:6,border:"1px solid rgba(0,229,255,0.35)",background:"rgba(0,229,255,0.06)",color:"rgba(0,229,255,0.88)",fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",minHeight:28};
   return(
     <div style={{borderTop:"1px solid rgba(0,229,255,0.06)"}}>
       {/* Status banner — lock notice or LOCK BOOKING button */}
@@ -70,10 +79,14 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
           {cat==="transport"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:7}}>
             {suggestion?.transport&&!isDismSD('transport')&&!det.transport.mode&&!det.transport.from&&<div style={suggestionCardStyle}>
               <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
-              <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{suggestion.transport.route}</div>
+              <div style={{fontSize:13,fontWeight:700,color:'#FFD93D',marginBottom:6,lineHeight:1.45,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
+                This leg: {plannedLegFrom} → {plannedLegTo}
+                <span style={{color:'rgba(255,245,220,0.45)',fontWeight:600}}> · </span>
+                Est. {suggestion.transport.estimatedCost}
+              </div>
+              {suggestion.transport.route?<div style={{fontSize:12,color:'rgba(255,255,255,0.36)',lineHeight:1.5,marginBottom:5,whiteSpace:'pre-wrap'}}>{suggestion.transport.route}</div>:null}
               <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:3}}>{suggestion.transport.duration}</div>
-              <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {suggestion.transport.estimatedCost}</div>
-              <div style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',lineHeight:1.45,marginBottom:6}}>{transportSuggestionEstimateHint({prevCity:"",segmentName:segment.name})}</div>
+              <div style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',lineHeight:1.45,marginBottom:6}}>{transportSuggestionEstimateHint({prevCity,segmentName:segment.name})}</div>
               {suggestion.transport.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:8}}>{suggestion.transport.notes}</div>}
               <div style={disclaimerStyle}>⚡ Estimates — actual prices vary when booked</div>
               <div style={{display:'flex',gap:6}}>
@@ -88,8 +101,23 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
             <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:8}}>
               <SDF label="MODE" value={det.transport.mode} onChange={v=>uT("mode",v)} placeholder="Flight / Ferry / Car..." accent="#00E5FF"/>
               <SDF label="COST ($)" type="number" value={det.transport.cost} onChange={v=>uT("cost",v)} placeholder="0" accent="#00E5FF"/>
-              <SDF label="FROM" value={det.transport.from} onChange={v=>uT("from",v)} placeholder="Departure" accent="#00E5FF"/>
-              <SDF label="TO" value={det.transport.to} onChange={v=>uT("to",v)} placeholder="Arrival" accent="#00E5FF"/>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:8,marginTop:6}}>
+              <div style={{display:"flex",flexDirection:"column",gap:isMobile?2:3}}>
+                <div style={tripFieldLabel}>FROM</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:5,alignItems:"center"}}>
+                  {prevStop?<button type="button" onClick={()=>uT("from",prevStop)} style={legChipStyle}>Use previous stop</button>:null}
+                  {homeStop&&(!prevStop||homeStop.toLowerCase()!==prevStop.toLowerCase())?<button type="button" onClick={()=>uT("from",homeStop)} style={legChipStyle}>{prevStop?"Trip departure (home)":"Use trip departure"}</button>:null}
+                </div>
+                <CityInput accent="cyan" value={det.transport.from} onChange={v=>uT("from",v)} placeholder="City, region, or airport" style={cityInStyle}/>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:isMobile?2:3}}>
+                <div style={tripFieldLabel}>TO</div>
+                {thisStop?<div style={{display:"flex",flexWrap:"wrap",gap:5}}><button type="button" onClick={()=>uT("to",thisStop)} style={legChipStyle}>This stop: {thisStop}</button></div>:null}
+                <CityInput accent="cyan" value={det.transport.to} onChange={v=>uT("to",v)} placeholder="City, region, or airport" style={cityInStyle}/>
+              </div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:8,marginTop:6}}>
               <SDF label="DEPART (TIME OR DATE)" value={det.transport.depTime} onChange={v=>uT("depTime",v)} placeholder="e.g. 08:30 or Sep 26" accent="#00E5FF"/>
               <SDF label="ARRIVE (TIME OR DATE)" value={det.transport.arrTime} onChange={v=>uT("arrTime",v)} placeholder="e.g. 11:45 or Sep 26" accent="#00E5FF"/>
             </div>

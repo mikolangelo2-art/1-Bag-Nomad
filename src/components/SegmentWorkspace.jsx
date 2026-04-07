@@ -5,6 +5,7 @@ import { fmt, fD } from '../utils/dateHelpers';
 import { loadSeg, saveSeg } from '../utils/storageHelpers';
 import { detectMode, findSuggestionForSegment, flatPhaseIndexForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion, transportSuggestionEstimateHint } from '../utils/tripConsoleHelpers';
 import SDF from './SDF';
+import CityInput from './CityInput';
 import WorldMapBackground from './WorldMapBackground';
 
 function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,intelSnippet,onBack,onBackToExpedition,suggestion:suggestionProp,suggestionsLoading,homeCity="",prevCity="",allPhases=[]}) {
@@ -73,6 +74,31 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   useEffect(()=>{if(hasT)setPlanningOwn(false);},[hasT]);
   useEffect(()=>{if(!det.transport.from&&!det.transport.to&&!det.transport.mode&&!det.transport.cost){const d={...dismissed};delete d[`${dismissKey}_transport`];setDismissed(d);saveDismissed(d);}},[det.transport.from,det.transport.to,det.transport.mode,det.transport.cost]);
   const hasS=det.stay?.name?.length>0;
+  const prevStop=(prevCity||"").trim();
+  const homeStop=(homeCity||"").trim();
+  const thisStop=(segment.name||"").trim();
+  const plannedLegFrom=prevStop||homeStop||"Trip start";
+  const plannedLegTo=thisStop||"This stop";
+  const tripFieldLabel={fontSize:isMobile?11:13,color:"rgba(0,229,255,0.75)",letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,opacity:0.92};
+  const cityInStyle={background:"rgba(0,0,0,0.55)",border:"1px solid rgba(255,255,255,0.22)",borderRadius:6,color:"#FFF",fontSize:isMobile?12:15,padding:isMobile?"4px 7px":"5px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",maxWidth:"100%",boxSizing:"border-box",lineHeight:1.6};
+  const legChipStyle={padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.35)",background:"rgba(0,229,255,0.06)",color:"rgba(0,229,255,0.88)",fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",minHeight:32};
+  const transportFromToGrid=(forManual)=><>
+    <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10}}>
+      <div style={{display:'flex',flexDirection:'column',gap:isMobile?2:3}}>
+        <div style={tripFieldLabel}>FROM</div>
+        <div style={{display:'flex',flexWrap:'wrap',gap:6,alignItems:'center'}}>
+          {prevStop?<button type="button" onClick={()=>uT("from",prevStop)} style={legChipStyle}>Use previous stop</button>:null}
+          {homeStop&&(!prevStop||homeStop.toLowerCase()!==prevStop.toLowerCase())?<button type="button" onClick={()=>uT("from",homeStop)} style={legChipStyle}>{prevStop?"Trip departure (home)":"Use trip departure"}</button>:null}
+        </div>
+        <CityInput accent="cyan" value={det.transport.from} onChange={v=>uT("from",v)} placeholder="City, region, or airport" style={cityInStyle} onFocus={()=>forManual&&setTransportFocused(true)} onBlur={()=>forManual&&setTransportFocused(false)}/>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:isMobile?2:3}}>
+        <div style={tripFieldLabel}>TO</div>
+        {thisStop?<div style={{display:'flex',flexWrap:'wrap',gap:6}}><button type="button" onClick={()=>uT("to",thisStop)} style={legChipStyle}>This stop: {thisStop}</button></div>:null}
+        <CityInput accent="cyan" value={det.transport.to} onChange={v=>uT("to",v)} placeholder="City, region, or airport" style={cityInStyle} onFocus={()=>forManual&&setTransportFocused(true)} onBlur={()=>forManual&&setTransportFocused(false)}/>
+      </div>
+    </div>
+  </>;
   const TABS=[{id:"transport",label:"TRAVEL",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:isMobile?"ACTS":"ACTIVITIES",icon:"🎯",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"budget",label:"BUDGET",icon:"💰"},{id:"calendar",label:isMobile?"CAL":"CALENDAR",icon:"📅"},{id:"docs",label:"DOCS",icon:"📋"}];
   return(
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:300,background:'#120A04',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
@@ -115,9 +141,13 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
           {suggestion?.transport&&!isDism('transport')&&!hasT&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
             <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
-            <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{suggestion.transport.route}</div>
+            <div style={{fontSize:14,fontWeight:700,color:'#FFD93D',marginBottom:8,lineHeight:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
+              This leg: {plannedLegFrom} → {plannedLegTo}
+              <span style={{color:'rgba(255,245,220,0.45)',fontWeight:600}}> · </span>
+              Est. {suggestion.transport.estimatedCost}
+            </div>
+            {suggestion.transport.route?<div style={{fontSize:13,color:'rgba(255,255,255,0.36)',lineHeight:1.55,marginBottom:6,whiteSpace:'pre-wrap'}}>{suggestion.transport.route}</div>:null}
             <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:4}}>{suggestion.transport.duration}</div>
-            <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. {suggestion.transport.estimatedCost}</div>
             <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.42)',lineHeight:1.5,marginBottom:6}}>{transportSuggestionEstimateHint({prevCity,segmentName:segment.name})}</div>
             {suggestion.transport.bestTiming&&<div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:4}}>{suggestion.transport.bestTiming}</div>}
             {suggestion.transport.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:12}}>{suggestion.transport.notes}</div>}
@@ -149,8 +179,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10}}>
               <SDF label="MODE" value={det.transport.mode} onChange={v=>uT("mode",v)} placeholder="Flight / Ferry / Car..." accent="#00E5FF"/>
               <SDF label="COST ($)" type="number" value={det.transport.cost} onChange={v=>uT("cost",v)} placeholder="0" accent="#00E5FF"/>
-              <SDF label="FROM" value={det.transport.from} onChange={v=>uT("from",v)} placeholder="Departure city" accent="#00E5FF"/>
-              <SDF label="TO" value={det.transport.to} onChange={v=>uT("to",v)} placeholder="Arrival city" accent="#00E5FF"/>
+            </div>
+            {transportFromToGrid(false)}
+            <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10,marginTop:10}}>
               <SDF label="DEPART (TIME OR DATE)" value={det.transport.depTime} onChange={v=>uT("depTime",v)} placeholder="e.g. 08:30 AM or Sep 26" accent="#00E5FF"/>
               <SDF label="ARRIVE (TIME OR DATE)" value={det.transport.arrTime} onChange={v=>uT("arrTime",v)} placeholder="e.g. 11:45 AM or Sep 26" accent="#00E5FF"/>
             </div>
@@ -163,9 +194,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10}}>
               <SDF label="MODE" value={det.transport.mode} onChange={v=>uT("mode",v)} placeholder="Flight / Ferry / Car..." accent="#00E5FF"/>
               <SDF label="COST ($)" type="number" value={det.transport.cost} onChange={v=>uT("cost",v)} placeholder="0" accent="#00E5FF"/>
-              <SDF label="FROM" value={det.transport.from} onChange={v=>uT("from",v)} placeholder="Departure city" accent="#00E5FF" onFocus={()=>setTransportFocused(true)} onBlur={()=>setTransportFocused(false)}/>
-              <SDF label="TO" value={det.transport.to} onChange={v=>uT("to",v)} placeholder="Arrival city" accent="#00E5FF" onFocus={()=>setTransportFocused(true)} onBlur={()=>setTransportFocused(false)}/>
             </div>
+            {transportFromToGrid(true)}
             {(transportEstLoading||transportEst)&&<div style={{padding:'8px 12px',marginTop:8,borderRadius:8,background:'rgba(255,159,67,0.04)',border:'1px solid rgba(255,159,67,0.12)',display:'flex',alignItems:'center',gap:8}}>
               {transportEstLoading?<span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.60)',letterSpacing:1}}>✦ Estimating...</span>
               :transportEst&&<span onClick={()=>{if(transportEst.estimate)uT("cost",transportEst.estimate.replace(/[^0-9]/g,'').slice(0,6));}} style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:0.5,cursor:'pointer'}}>✦ Est. {transportEst.estimate}{transportEst.note?` — ${transportEst.note}`:""} <span style={{color:'#FF9F43',textDecoration:'underline'}}>use</span></span>}

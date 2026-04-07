@@ -39,6 +39,16 @@ export function flatPhaseIndexForSegment(segment, allPhases) {
   });
 }
 
+/** Previous segment name in expedition order (segPhases from toSegPhases), or "". */
+export function prevSegmentNameForSeg(segment, segPhases) {
+  if (!segment?.id || !Array.isArray(segPhases)) return "";
+  const allSegs = segPhases.flatMap((p) => p?.segments || []);
+  const idx = allSegs.findIndex((s) => s && String(s.id) === String(segment.id));
+  if (idx <= 0) return "";
+  const prev = allSegs[idx - 1];
+  return (prev?.name && String(prev.name).trim()) || "";
+}
+
 function suggestionRowHasPayload(row) {
   return !!(row && (row.transport || row.stay || (row.activities && row.activities.length) || row.food));
 }
