@@ -4,7 +4,7 @@ import { askAI } from '../utils/aiHelpers';
 import { fmt, fD, formatSegmentCardDateHeader } from '../utils/dateHelpers';
 import { loadSeg, saveSeg } from '../utils/storageHelpers';
 import { returnToLogCopy } from '../utils/microcopy';
-import { detectMode, findSuggestionForSegment, flatPhaseIndexForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion, transportSuggestionEstimateHint, parseTransportEstimateToCostDigits, suggestionRowHasPayload } from '../utils/tripConsoleHelpers';
+import { detectMode, findSuggestionForSegment, flatPhaseIndexForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion, transportSuggestionEstimateHint, parseTransportEstimateToCostDigits, suggestionRowHasPayload, isRowEmpty } from '../utils/tripConsoleHelpers';
 import SDF from './SDF';
 import CityInput from './CityInput';
 import WorldMapBackground from './WorldMapBackground';
@@ -30,7 +30,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const isMobile=useMobile();
   const key=`${phaseId}-${segment.id}`;
   const blank={transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
-  const [det,setDet]=useState(()=>{const a=loadSeg();const base=a[key]||blank;const stay={...base.stay};if(!(String(stay.checkin||"").trim())&&segment?.arrival)stay.checkin=segment.arrival;if(!(String(stay.checkout||"").trim())&&segment?.departure)stay.checkout=segment.departure;return{...base,stay};});
+  const [det,setDet]=useState(()=>{const a=loadSeg();const base=a[key]?{...blank,...a[key]}:blank;const stay={...base.stay};if(!(String(stay.checkin||"").trim())&&segment?.arrival)stay.checkin=segment.arrival;if(!(String(stay.checkout||"").trim())&&segment?.departure)stay.checkout=segment.departure;return{...base,stay};});
   const [tab,setTab]=useState("transport");
   const [editingTransport,setEditingTransport]=useState(false);
   const [planningOwn,setPlanningOwn]=useState(false);
@@ -48,7 +48,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const transportEstTimer=useRef(null);
   const fetchTransportEst=useCallback(()=>{
     const from=det.transport.from,to=det.transport.to,mode=det.transport.mode;
-    if(!from||!to)return;
+    if(isRowEmpty(from)||isRowEmpty(to))return;
     if(transportEstTimer.current)clearTimeout(transportEstTimer.current);
     transportEstTimer.current=setTimeout(async()=>{
       setTransportEstLoading(true);
@@ -59,7 +59,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
       setTransportEstLoading(false);
     },1000);
   },[det.transport.from,det.transport.to,det.transport.mode]);
-  useEffect(()=>{if(det.transport.from&&det.transport.to)fetchTransportEst();},[det.transport.from,det.transport.to,det.transport.mode]);
+  useEffect(()=>{if(!isRowEmpty(det.transport.from)&&!isRowEmpty(det.transport.to))fetchTransportEst();},[det.transport.from,det.transport.to,det.transport.mode]);
   const [nAct,setNAct]=useState({name:"",date:"",cost:"",transit:"",link:""});
   const [aiLoad,setAiLoad]=useState(false);
   const [saveFlash,setSaveFlash]=useState(false);
@@ -98,8 +98,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   async function loadDocs(){if(docsData||docsLoading)return;setDocsLoading(true);try{const raw=await askAI(`Travel advisor. Destination:${segment.name},${segment.country}. Home:USA. Return JSON only:{"visa":{"required":true,"details":"","cost":""},"health":{"required":[],"recommended":[],"notes":""},"money":{"currency":"","tips":"","warning":""},"connectivity":{"tips":""},"safety":{"level":"low","notes":""},"customs":{"tips":""},"emergency":{"police":"","ambulance":"","embassy":""}}`,800);const m=raw.match(/\{[\s\S]*\}/);if(m){const d=JSON.parse(m[0]);setDocsData(d);localStorage.setItem(`1bn_docs_${phaseId}_v1`,JSON.stringify(d));}}catch(e){}setDocsLoading(false);}
   useEffect(()=>{window.scrollTo(0,0);},[]);
   useEffect(()=>{setPlanningOwnStay(false);setShowStayResuggest(false);setShowFoodResuggest(false);},[key]);
-  useEffect(()=>{const a=loadSeg();const base=a[key]||blank;const stay={...base.stay};if(!(String(stay.checkin||"").trim())&&segment?.arrival)stay.checkin=segment.arrival;if(!(String(stay.checkout||"").trim())&&segment?.departure)stay.checkout=segment.departure;setDet({...base,stay});},[key]);
-  useEffect(()=>{if(isFirst.current){isFirst.current=false;return;}const a=loadSeg();const ex=a[key]||{};a[key]={...ex,...det,status:ex.status||'planning',statusUpdatedAt:ex.statusUpdatedAt||null,changes:ex.changes||[]};saveSeg(a);setSaveFlash(true);if(saveFlashRef.current)clearTimeout(saveFlashRef.current);saveFlashRef.current=setTimeout(()=>setSaveFlash(false),2000);},[det]);
+  useEffect(()=>{const a=loadSeg();const base=a[key]?{...blank,...a[key]}:blank;const stay={...base.stay};if(!(String(stay.checkin||"").trim())&&segment?.arrival)stay.checkin=segment.arrival;if(!(String(stay.checkout||"").trim())&&segment?.departure)stay.checkout=segment.departure;setDet({...base,stay});},[key]);
+  useEffect(()=>{if(isFirst.current){isFirst.current=false;return;}const a=loadSeg();const ex=a[key]||{};const merged={...ex,...det,status:ex.status||'planning',statusUpdatedAt:ex.statusUpdatedAt||null,changes:ex.changes||[]};if(isRowEmpty(merged.transport))delete merged.transport;if(isRowEmpty(merged.stay))delete merged.stay;if(isRowEmpty(merged.food))delete merged.food;a[key]=merged;saveSeg(a);setSaveFlash(true);if(saveFlashRef.current)clearTimeout(saveFlashRef.current);saveFlashRef.current=setTimeout(()=>setSaveFlash(false),2000);},[det]);
   const uT=(f,v)=>setDet(d=>({...d,transport:{...d.transport,[f]:v}}));
   const uS=(f,v)=>setDet(d=>({...d,stay:{...d.stay,[f]:v}}));
   const uF=(f,v)=>setDet(d=>({...d,food:{...d.food,[f]:v}}));
@@ -121,15 +121,16 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const acceptStay=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');};
   const acceptActivity=(a,suggestionIdx=null)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');const row={name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()};if(suggestionIdx!=null)row.suggestionActivityIdx=suggestionIdx;setDet(d=>({...d,activities:[...d.activities,row]}));};
   // Leg endpoints set: show transport card + EDIT; keep planning form visible until then (avoid unmounting MODE/COST on first cost digit).
-  const transportLegLocked=(!transportFocused)&&(!!(det.transport?.from&&det.transport?.to));
+  const transportEndpointsLocked=!isRowEmpty(det.transport?.from)&&!isRowEmpty(det.transport?.to);
+  const transportLegLocked=(!transportFocused)&&transportEndpointsLocked;
   // A2 Travel: hide transport suggestion only when from+to locked (not on mode+cost alone — avoids layout jump).
-  const hideTransportSuggestion=(!transportFocused)&&(!!(det.transport?.from&&det.transport?.to));
+  const hideTransportSuggestion=transportLegLocked;
   useEffect(()=>{if(transportLegLocked)setPlanningOwn(false);},[transportLegLocked]);
-  useEffect(()=>{if(!det.transport.from&&!det.transport.to&&!det.transport.mode&&!det.transport.cost){const d={...dismissed};delete d[`${dismissKey}_transport`];setDismissed(d);saveDismissed(d);}},[det.transport.from,det.transport.to,det.transport.mode,det.transport.cost]);
+  useEffect(()=>{if(!isRowEmpty({from:det.transport?.from,to:det.transport?.to,mode:det.transport?.mode,cost:det.transport?.cost}))return;const d={...dismissed};delete d[`${dismissKey}_transport`];setDismissed(d);saveDismissed(d);},[det.transport.from,det.transport.to,det.transport.mode,det.transport.cost]);
   const stayNameTrim=(det.stay?.name||"").trim();
   const hasS=stayNameTrim.length>0;
   const stayCostNum=Number(String(det.stay?.cost??"").replace(/[^0-9.]/g,""))||0;
-  const hasStaySecondaryField=!!(det.stay?.checkin&&det.stay?.checkout)||stayCostNum>0||(det.stay?.link||"").trim().length>0||(det.stay?.notes||"").trim().length>0;
+  const hasStaySecondaryField=(!isRowEmpty(det.stay?.checkin)&&!isRowEmpty(det.stay?.checkout))||stayCostNum>0||(det.stay?.link||"").trim().length>0||(det.stay?.notes||"").trim().length>0;
   const showStayAccommodationCard=hasS&&hasStaySecondaryField&&!stayFocused;
   const prevStop=(prevCity||"").trim();
   const homeStop=(homeCity||"").trim();
@@ -511,7 +512,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <div style={{marginTop:14}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code..." accent="#FFD93D" multiline/></div>
         </div>}
         {/* FOOD */}
-        {tab==="food"&&(()=>{const hasFood=!!(det.food?.dailyBudget&&String(det.food.dailyBudget).trim());const showFoodSummary=hasFood&&!editingFood&&!foodFocused&&!showFoodResuggest;const showFoodSuggestionCard=!!(suggestion?.food&&(showFoodResuggest||(!hasFood&&!isDism('food'))));const showFoodManual=!showFoodSummary&&!showFoodSuggestionCard&&!(suggestionsLoading&&!suggestion);return(<div style={{padding:0}} onFocus={()=>setFoodFocused(true)} onBlur={(e)=>{if(!e.currentTarget.contains(e.relatedTarget))setFoodFocused(false);}}>
+        {tab==="food"&&(()=>{const hasFood=!isRowEmpty(det.food?.dailyBudget);const showFoodSummary=hasFood&&!editingFood&&!foodFocused&&!showFoodResuggest;const showFoodSuggestionCard=!!(suggestion?.food&&(showFoodResuggest||(!hasFood&&!isDism('food'))));const showFoodManual=!showFoodSummary&&!showFoodSuggestionCard&&!(suggestionsLoading&&!suggestion);return(<div style={{padding:0}} onFocus={()=>setFoodFocused(true)} onBlur={(e)=>{if(!e.currentTarget.contains(e.relatedTarget))setFoodFocused(false);}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
@@ -552,10 +553,10 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           {showFoodManual&&<>
           <div style={{display:'flex',gap:10,alignItems:'flex-end',marginBottom:10,flexWrap:isMobile?'wrap':'nowrap'}}>
             <div style={{flex:1,minWidth:0}}><SDF label="DAILY FOOD BUDGET ($)" type="number" value={det.food.dailyBudget} onChange={v=>uF("dailyBudget",v)} placeholder="e.g. 45" accent="#FF9F43"/></div>
-            {!!(det.food.dailyBudget&&String(det.food.dailyBudget).trim())&&<button type="button" onClick={()=>{if(typeof document!=="undefined")document.activeElement?.blur();setFoodFocused(false);setEditingFood(false);}} style={{padding:'8px 14px',borderRadius:6,border:'1px solid rgba(255,159,67,0.30)',background:'none',color:'rgba(255,159,67,0.70)',fontSize:12,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:600,whiteSpace:'nowrap',height:34,flexShrink:0}}>SAVE</button>}
+            {hasFood&&<button type="button" onClick={()=>{if(typeof document!=="undefined")document.activeElement?.blur();setFoodFocused(false);setEditingFood(false);}} style={{padding:'8px 14px',borderRadius:6,border:'1px solid rgba(255,159,67,0.30)',background:'none',color:'rgba(255,159,67,0.70)',fontSize:12,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:600,whiteSpace:'nowrap',height:34,flexShrink:0}}>SAVE</button>}
             <button type="button" onClick={aiFood} disabled={aiLoad} style={{padding:'8px 14px',borderRadius:6,border:'1px solid rgba(255,159,67,0.3)',background:'rgba(255,159,67,0.05)',color:'rgba(255,159,67,0.8)',fontSize:12,cursor:aiLoad?'wait':'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:600,whiteSpace:'nowrap',height:34,flexShrink:0}}>{aiLoad?"✦...":"✦ CO-ARCH EST"}</button>
           </div>
-          {det.food.dailyBudget&&<div style={{display:'flex',justifyContent:'space-between',padding:'10px 14px',background:'rgba(255,159,67,0.05)',border:'1px solid rgba(255,159,67,0.16)',borderRadius:8,marginBottom:10}}>
+          {hasFood&&<div style={{display:'flex',justifyContent:'space-between',padding:'10px 14px',background:'rgba(255,159,67,0.05)',border:'1px solid rgba(255,159,67,0.16)',borderRadius:8,marginBottom:10}}>
             <span style={{fontSize:13,color:'rgba(255,255,255,0.60)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{segment.nights} nights × ${det.food.dailyBudget}/day</span>
             <span style={{fontSize:14,fontWeight:600,color:'rgba(255,217,61,0.85)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
           </div>}
@@ -587,9 +588,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           const trimActLines=(lines)=>{let out=lines;const max=320;const j=out.join(' · ');if(j.length<=max)return out;const acc=[];let n=0;for(const p of out){if(n+(p.length+3)>max)break;acc.push(p);n+=p.length+3;}return acc.length?acc:[`${j.slice(0,max)}…`];};
           const actLines=actParts.length>1?trimActLines(actParts):null;
           const activitiesSnap=actParts.length<=1?(actParts[0]||''):'';
-          const db=det.food?.dailyBudget;const foodSnap=db?`${segment.nights}n × $${db}/day`:'';
+          const db=det.food?.dailyBudget;const foodSnap=!isRowEmpty(db)?`${segment.nights}n × $${db}/day`:'';
           const miscSnap=det.misc.map(m=>(m.name||'').trim()).filter(Boolean).join(' · ').slice(0,120);
-          const budgetRows=[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hideTransportSuggestion,snap:transportSnap},{icon:'🏨',label:'STAY',cost:sCost,has:hasS,snap:hasS?staySnap:''},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0,snap:activitiesSnap,snapLines:actLines},{icon:'🍜',label:'FOOD',cost:fCost,has:!!db,snap:foodSnap},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0,snap:miscSnap}];
+          const budgetRows=[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hideTransportSuggestion,snap:transportSnap},{icon:'🏨',label:'STAY',cost:sCost,has:hasS,snap:hasS?staySnap:''},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0,snap:activitiesSnap,snapLines:actLines},{icon:'🍜',label:'FOOD',cost:fCost,has:!isRowEmpty(db),snap:foodSnap},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0,snap:miscSnap}];
           return(
           <div style={{padding:0}}>
             <div style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12,textAlign:'left'}}>PHASE BUDGET</div>

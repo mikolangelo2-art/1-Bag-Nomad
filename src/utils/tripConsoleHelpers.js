@@ -28,6 +28,20 @@ export function getSuggestionsTripId(td) {
   return sig ? `1bn:${sig.slice(0, 100)}` : "";
 }
 
+/** True if null/undefined, whitespace-only string, empty array, or object whose values are all empty (recursive). */
+export function isRowEmpty(row) {
+  if (row == null) return true;
+  if (typeof row === "string") return row.trim().length === 0;
+  if (typeof row === "number" || typeof row === "boolean") return false;
+  if (Array.isArray(row)) return row.length === 0 || row.every(isRowEmpty);
+  if (typeof row === "object") {
+    const keys = Object.keys(row);
+    if (keys.length === 0) return true;
+    return keys.every((k) => isRowEmpty(row[k]));
+  }
+  return true;
+}
+
 /** Index in tripData.phases for this UI segment (ids from toSegPhases: String(phase.id) + "a"). */
 export function flatPhaseIndexForSegment(segment, allPhases) {
   if (!segment?.id || !Array.isArray(allPhases)) return -1;

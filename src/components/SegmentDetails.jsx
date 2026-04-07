@@ -3,7 +3,7 @@ import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fD } from '../utils/dateHelpers';
 import { loadSeg, saveSeg } from '../utils/storageHelpers';
-import { detectMode, findSuggestionForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion, transportSuggestionEstimateHint } from '../utils/tripConsoleHelpers';
+import { detectMode, findSuggestionForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion, transportSuggestionEstimateHint, isRowEmpty } from '../utils/tripConsoleHelpers';
 import SDF from './SDF';
 import CityInput from './CityInput';
 
@@ -11,7 +11,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
   const isMobile=useMobile();
   const key=`${phaseId}-${segment.id}`;
   const blank={transport:{mode:"",from:"",to:"",depTime:"",arrTime:"",cost:"",notes:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
-  const [det,setDet]=useState(()=>{const a=loadSeg();return a[key]||blank;});
+  const [det,setDet]=useState(()=>{const a=loadSeg();return a[key]?{...blank,...a[key]}:blank;});
   const [cat,setCat]=useState(null);
   const [aiLoad,setAiLoad]=useState(false);
   const [nAct,setNAct]=useState({name:"",date:"",cost:"",transit:"",link:""});
@@ -21,7 +21,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
   const saveFlashRef=useRef(null);
   const isFirstRender=useRef(true);
   // Save form data without overwriting status/history fields managed by SegmentRow
-  useEffect(()=>{if(isFirstRender.current){isFirstRender.current=false;return;}const a=loadSeg();const ex=a[key]||{};a[key]={...ex,...det,status:ex.status||'planning',statusUpdatedAt:ex.statusUpdatedAt||null,changes:ex.changes||[]};saveSeg(a);setSaveFlash(true);if(saveFlashRef.current)clearTimeout(saveFlashRef.current);saveFlashRef.current=setTimeout(()=>setSaveFlash(false),2000);},[det]);
+  useEffect(()=>{if(isFirstRender.current){isFirstRender.current=false;return;}const a=loadSeg();const ex=a[key]||{};const merged={...ex,...det,status:ex.status||'planning',statusUpdatedAt:ex.statusUpdatedAt||null,changes:ex.changes||[]};if(isRowEmpty(merged.transport))delete merged.transport;if(isRowEmpty(merged.stay))delete merged.stay;if(isRowEmpty(merged.food))delete merged.food;a[key]=merged;saveSeg(a);setSaveFlash(true);if(saveFlashRef.current)clearTimeout(saveFlashRef.current);saveFlashRef.current=setTimeout(()=>setSaveFlash(false),2000);},[det]);
   const uT=(f,v)=>setDet(d=>({...d,transport:{...d.transport,[f]:v}}));
   const uS=(f,v)=>setDet(d=>({...d,stay:{...d.stay,[f]:v}}));
   const uF=(f,v)=>setDet(d=>({...d,food:{...d.food,[f]:v}}));
@@ -38,7 +38,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
   const acceptTransportSD=(t)=>{const mode=detectMode(t.route);if(mode)uT("mode",mode);uT("from",(prevCity||homeCity||"").trim());uT("to",(segment.name||"").trim());uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",transportNotesFromSuggestion(t,{prevCity,homeCity,segmentName:segment.name}));dismissSD('transport');};
   const acceptStaySD=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismissSD('stay');};
   const acceptActivitySD=(a,suggestionIdx=null)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');const row={name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()};if(suggestionIdx!=null)row.suggestionActivityIdx=suggestionIdx;setDet(d=>({...d,activities:[...d.activities,row]}));};
-  async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const n=r.replace(/\D/g,"");if(n)uF("dailyBudget",n);setAiLoad(false);}
+  async function aiFood(){setAiLoad(true);const r=await askAI(`Daily food budget USD solo traveler ${segment.name}. Number only.`,20);const nums=(r.match(/\d+/g)||[]).map(Number).filter(x=>x>0&&x<500);let n="";if(nums.length===1)n=String(nums[0]);else if(nums.length>=2)n=String(Math.round((nums[0]+nums[1])/2));if(n)uF("dailyBudget",n);setAiLoad(false);}
   const CATS=[{id:"transport",icon:"✈️",label:"TRANSPORT",a:DIVE_CYAN,w:CYAN_WASH},{id:"stay",icon:"🏠",label:"STAY",a:SURF_GREEN,w:GREEN_WASH},{id:"activities",icon:"🎯",label:"ACTIVITIES",a:CULTURE_GOLD,w:GOLD_04},{id:"food",icon:"🍽️",label:"FOOD",a:EXPLORATION_ORANGE,w:ORANGE_WASH},{id:"misc",icon:"💸",label:"MISC",a:NATURE_PURPLE,w:PURPLE_WASH},{id:"intel",icon:"🔭",label:"INTEL",a:MOTO_RED,w:RED_04}];
   const done={transport:!!(det.transport.mode||det.transport.cost),stay:!!(det.stay.name||det.stay.cost),activities:det.activities.length>0,food:!!(det.food.dailyBudget),misc:det.misc.length>0,intel:!!(intelSnippet?.tagline||det.intel.notes)};
   const ac=CATS.find(c=>c.id===cat);
@@ -77,7 +77,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
       {cat&&ac&&(
         <div style={{background:ac.w,borderTop:`1px solid ${ac.a}15`,animation:"slideOpen 0.40s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
           {cat==="transport"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:7}}>
-            {suggestion?.transport&&!isDismSD('transport')&&!det.transport.mode&&!det.transport.from&&<div style={suggestionCardStyle}>
+            {suggestion?.transport&&!isDismSD('transport')&&<div style={suggestionCardStyle}>
               <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
               <div style={{fontSize:13,fontWeight:700,color:'#FFD93D',marginBottom:6,lineHeight:1.45,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
                 This leg: {plannedLegFrom} → {plannedLegTo}
@@ -124,7 +124,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
             <SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="Flight number, booking ref..." accent="#00E5FF" multiline/>
           </div>}
           {cat==="stay"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:5}}>
-            {suggestion?.stay&&!isDismSD('stay')&&!det.stay.name&&<div style={suggestionCardStyle}>
+            {suggestion?.stay&&!isDismSD('stay')&&<div style={suggestionCardStyle}>
               <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
               <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{suggestion.stay.recommendation}</div>
               <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:3}}>{suggestion.stay.type}</div>
