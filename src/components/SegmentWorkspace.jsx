@@ -362,29 +362,34 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           const staySnap=stayNm?`${stayNm} · ${segment.nights}n`:`${segment.nights}n`;
           const actSnip=(a)=>{const n=(a.name||'').trim();const c=parseFloat(a.cost);const has$=Number.isFinite(c)&&c>0;if(has$&&n)return`${fmt(c)} · ${n}`;if(has$)return fmt(c);return n;};
           const actParts=det.activities.map(actSnip).filter(Boolean);
-          let activitiesSnap=actParts.join(' · ');
-          if(activitiesSnap.length>260)activitiesSnap=`${activitiesSnap.slice(0,257)}…`;
+          const trimActLines=(lines)=>{let out=lines;const max=320;const j=out.join(' · ');if(j.length<=max)return out;const acc=[];let n=0;for(const p of out){if(n+(p.length+3)>max)break;acc.push(p);n+=p.length+3;}return acc.length?acc:[`${j.slice(0,max)}…`];};
+          const actLines=actParts.length>1?trimActLines(actParts):null;
+          const activitiesSnap=actParts.length<=1?(actParts[0]||''):'';
           const db=det.food?.dailyBudget;const foodSnap=db?`${segment.nights}n × $${db}/day`:'';
           const miscSnap=det.misc.map(m=>(m.name||'').trim()).filter(Boolean).join(' · ').slice(0,120);
-          const budgetRows=[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hasT,snap:transportSnap},{icon:'🏨',label:'STAY',cost:sCost,has:hasS,snap:hasS?staySnap:''},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0,snap:activitiesSnap},{icon:'🍜',label:'FOOD',cost:fCost,has:!!db,snap:foodSnap},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0,snap:miscSnap}];
+          const budgetRows=[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hasT,snap:transportSnap},{icon:'🏨',label:'STAY',cost:sCost,has:hasS,snap:hasS?staySnap:''},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0,snap:activitiesSnap,snapLines:actLines},{icon:'🍜',label:'FOOD',cost:fCost,has:!!db,snap:foodSnap},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0,snap:miscSnap}];
           return(
           <div style={{padding:0}}>
-            <div style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12}}>PHASE BUDGET</div>
-            <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{segment.name}</div>
-            <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:16}}>{segment.nights} Nights · Budget: {fmt(budget)}</div>
-            {budgetRows.map(r=>(
+            <div style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12,textAlign:'left'}}>PHASE BUDGET</div>
+            <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4,textAlign:'left'}}>{segment.name}</div>
+            <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:16,textAlign:'left'}}>{segment.nights} Nights · Budget: {fmt(budget)}</div>
+            {budgetRows.map(r=>{
+              const snapStyle={fontSize:isMobile?16:18,fontFamily:"'Fraunces',serif",fontStyle:'italic',fontWeight:500,color:'rgba(255,245,220,0.90)',marginTop:7,lineHeight:1.55,wordBreak:'break-word',letterSpacing:'0.01em',textShadow:'0 1px 10px rgba(0,0,0,0.35)',textAlign:'left'};
+              return(
               <div key={r.label} style={{display:'flex',alignItems:'flex-start',gap:isMobile?8:12,padding:isMobile?'14px 0':'15px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-                <span style={{width:isMobile?30:36,fontSize:isMobile?22:24,flexShrink:0,lineHeight:1.2}}>{r.icon}</span>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:isMobile?15:17,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.90)',letterSpacing:isMobile?0.8:1.2,fontWeight:700}}>{r.label}</div>
-                  {r.snap&&<div style={{fontSize:isMobile?16:18,fontFamily:"'Fraunces',serif",fontStyle:'italic',fontWeight:500,color:'rgba(255,245,220,0.90)',marginTop:7,lineHeight:1.55,wordBreak:'break-word',letterSpacing:'0.01em',textShadow:'0 1px 10px rgba(0,0,0,0.35)'}}>{r.snap}</div>}
+                <span style={{width:isMobile?30:36,fontSize:isMobile?22:24,flexShrink:0,lineHeight:1.2,textAlign:'left'}}>{r.icon}</span>
+                <div style={{flex:1,minWidth:0,textAlign:'left'}}>
+                  <div style={{fontSize:isMobile?15:17,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.90)',letterSpacing:isMobile?0.8:1.2,fontWeight:700,textAlign:'left'}}>{r.label}</div>
+                  {r.snapLines&&r.snapLines.length>0&&<div style={{marginTop:7}}>{r.snapLines.map((line,i)=><div key={i} style={{...snapStyle,marginTop:i?10:0,display:'flex',gap:10,alignItems:'baseline'}}><span style={{flexShrink:0,color:'rgba(255,217,61,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,lineHeight:1,fontStyle:'normal',fontWeight:700}}>●</span><span style={{flex:1,minWidth:0}}>{line}</span></div>)}</div>}
+                  {r.snap&&!r.snapLines?.length&&<div style={snapStyle}>{r.snap}</div>}
                 </div>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',flexShrink:0,gap:5}}>
                   <span style={{fontSize:isMobile?16:18,fontWeight:700,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>{r.cost>0?fmt(r.cost):'—'}</span>
                   <span style={{fontSize:isMobile?12:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,color:r.has?'#69F0AE':'rgba(255,255,255,0.60)',letterSpacing:0.5,whiteSpace:'nowrap'}}>{r.has?'✓ Added':'—'}</span>
                 </div>
               </div>
-            ))}
+              );
+            })}
             <div style={{display:'flex',justifyContent:'space-between',padding:'14px 0 6px',borderTop:'1px solid rgba(255,255,255,0.12)',marginTop:4}}>
               <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.65)',letterSpacing:1}}>TOTAL PLANNED</span>
               <span style={{fontSize:15,fontWeight:700,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{fmt(total)}</span>
