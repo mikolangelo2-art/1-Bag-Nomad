@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { fmt, fD } from '../utils/dateHelpers';
-import { findSuggestionForSegment } from '../utils/tripConsoleHelpers';
+import { findSuggestionForSegment, flatPhaseIndexForSegment } from '../utils/tripConsoleHelpers';
 import SegmentRow from './SegmentRow';
 import SegmentWorkspace from './SegmentWorkspace';
 import WorldMapBackground from './WorldMapBackground';
@@ -64,7 +64,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       </div>
       </div>
     </div>
-    {activeSegment&&(()=>{const allSegs=segPhases.flatMap(p=>p.segments);const segIdx=allSegs.findIndex(s=>s.id===activeSegment.id);const prev=segIdx>0?allSegs[segIdx-1]:null;return <SegmentWorkspace segment={activeSegment} phaseId={phase.id} phaseName={phase.name} phaseFlag={phase.flag} intelSnippet={intelData?.[activeSegment.name]} onBack={()=>setActiveSegment(null)} onBackToExpedition={()=>{setActiveSegment(null);onBack();}} suggestion={findSuggestionForSegment(segmentSuggestions, activeSegment.name)} suggestionsLoading={suggestionsLoading} homeCity={homeCity} prevCity={prev?.name||""} allPhases={allPhases}/>;})()}
+    {activeSegment&&(()=>{const allSegs=segPhases.flatMap(p=>p.segments);const segIdx=allSegs.findIndex(s=>s.id===activeSegment.id);const prev=segIdx>0?allSegs[segIdx-1]:null;const segFlatIdx=flatPhaseIndexForSegment(activeSegment,allPhases);return <SegmentWorkspace segment={activeSegment} phaseId={phase.id} phaseName={phase.name} phaseFlag={phase.flag} intelSnippet={intelData?.[activeSegment.name]} onBack={()=>setActiveSegment(null)} onBackToExpedition={()=>{setActiveSegment(null);onBack();}} suggestion={findSuggestionForSegment(segmentSuggestions, activeSegment.name, segFlatIdx)} suggestionsLoading={suggestionsLoading} homeCity={homeCity} prevCity={prev?.name||""} allPhases={allPhases}/>;})()}
     </>
   );
 }

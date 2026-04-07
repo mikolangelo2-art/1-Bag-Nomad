@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "test:suggestions": "node --test src/utils/tripConsoleHelpers.suggestions.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

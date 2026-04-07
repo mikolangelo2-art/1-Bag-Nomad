@@ -3,7 +3,7 @@ import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fmt, fD } from '../utils/dateHelpers';
 import { loadSeg, saveSeg } from '../utils/storageHelpers';
-import { detectMode, findSuggestionForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle } from '../utils/tripConsoleHelpers';
+import { detectMode, findSuggestionForSegment, flatPhaseIndexForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle } from '../utils/tripConsoleHelpers';
 import SDF from './SDF';
 import WorldMapBackground from './WorldMapBackground';
 
@@ -42,11 +42,12 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const saveFlashRef=useRef(null);
   const isFirst=useRef(true);
   const [status,setStatus]=useState(()=>{const d=loadSeg()[key];return d?.status||'planning';});
-  // Resolve suggestion: use prop if available, otherwise look up by segment name from localStorage
+  // Resolve suggestion: use prop if available, otherwise look up from localStorage (index + name)
   const suggestion = (()=>{
     if(suggestionProp) return suggestionProp;
     const all = loadSuggestionsFromStorage();
-    return findSuggestionForSegment(all, segment.name);
+    const idx = flatPhaseIndexForSegment(segment, allPhases);
+    return findSuggestionForSegment(all, segment.name, idx);
   })();
   const dismissKey = segment.name || `${phaseId}`;
   const caFromArch=(()=>{const fp=(allPhases||[]).find(p=>p.type!=="Return"&&p.name===segment.name&&(!segment.country||p.country===segment.country));return fp?.caActivities?.filter(a=>a&&(a.name||a.title))||[];})();

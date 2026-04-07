@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { fmt, fD } from '../utils/dateHelpers';
 import { loadSeg } from '../utils/storageHelpers';
-import { findSuggestionForSegment, STATUS_CFG } from '../utils/tripConsoleHelpers';
+import { findSuggestionForSegment, flatPhaseIndexForSegment, STATUS_CFG } from '../utils/tripConsoleHelpers';
 import SegmentRow from './SegmentRow';
 import BottomSheet from './BottomSheet';
 
-function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions,suggestionsLoading}) {
+function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions,suggestionsLoading,allPhases=[]}) {
   const isMobile=useMobile();
 
   // ── Return Trip variant — title row mirrors destination cards (centered name) ──
@@ -100,7 +100,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
         <div style={{paddingTop:4,paddingBottom:20}}>
           <div style={{padding:'10px 16px 6px',fontSize:11,color:'rgba(255,255,255,0.3)',letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
           {phase.segments.map((seg,i)=>(
-            <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onAskOpenChange={setAnyAskOpen} suggestion={findSuggestionForSegment(allSuggestions, seg.name)} suggestionsLoading={suggestionsLoading}/>
+            <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onAskOpenChange={setAnyAskOpen} suggestion={findSuggestionForSegment(allSuggestions, seg.name, flatPhaseIndexForSegment(seg, allPhases))} suggestionsLoading={suggestionsLoading}/>
           ))}
         </div>
       </BottomSheet>}
@@ -134,7 +134,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
             <div style={{width:4,height:4,borderRadius:"50%",background:phase.color,flexShrink:0}}/>
             <span style={{fontSize:11,color:`${phase.color}cc`,letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,whiteSpace:"nowrap"}}>{phase.segments.length} SEGMENT{phase.segments.length>1?"S":""} · TAP TO EXPAND PLANNING TABS</span>
           </div>
-          {phase.segments.map((seg,i)=><SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} suggestion={findSuggestionForSegment(allSuggestions, seg.name)} suggestionsLoading={suggestionsLoading}/>)}
+          {phase.segments.map((seg,i)=><SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} suggestion={findSuggestionForSegment(allSuggestions, seg.name, flatPhaseIndexForSegment(seg, allPhases))} suggestionsLoading={suggestionsLoading}/>)}
         </div>
       )}
     </div>

@@ -14,13 +14,63 @@ export const DISMISS_KEY = "1bn_dismissed_suggestions";
 export const loadDismissed = () => { try { return JSON.parse(localStorage.getItem(DISMISS_KEY) || "{}"); } catch(e) { return {}; } };
 export const saveDismissed = d => { try { localStorage.setItem(DISMISS_KEY, JSON.stringify(d)); } catch(e) {} };
 
+// ── Trip id for suggestion cache (must match generate + localStorage) ──
+export function getSuggestionsTripId(td) {
+  if (!td || !Array.isArray(td.phases) || td.phases.length === 0) return "";
+  const tn = (td.tripName && String(td.tripName).trim()) || "";
+  if (tn) return tn.slice(0, 60);
+  const vision = (td.vision && String(td.vision).trim()) || (td.visionNarrative && String(td.visionNarrative).trim()) || "";
+  if (vision) return vision.slice(0, 60);
+  const sig = td.phases
+    .filter((p) => p && p.type !== "Return")
+    .map((p) => `${p.id ?? ""}:${(p.name || p.destination || "").slice(0, 24)}`)
+    .join("|");
+  return sig ? `1bn:${sig.slice(0, 100)}` : "";
+}
+
+/** Index in tripData.phases for this UI segment (ids from toSegPhases: String(phase.id) + "a"). */
+export function flatPhaseIndexForSegment(segment, allPhases) {
+  if (!segment?.id || !Array.isArray(allPhases)) return -1;
+  const sid = String(segment.id);
+  return allPhases.findIndex((p) => {
+    if (!p) return false;
+    const pid = String(p.id);
+    return sid === `${pid}a` || sid === pid;
+  });
+}
+
+function suggestionRowHasPayload(row) {
+  return !!(row && (row.transport || row.stay || (row.activities && row.activities.length) || row.food));
+}
+
 // ── Suggestion Matching ───────────────────────────────────────
-export function findSuggestionForSegment(suggestions, segmentName) {
-  if (!suggestions || !segmentName) return null;
+export function findSuggestionForSegment(suggestions, segmentName, flatPhaseIndex = -1) {
+  if (!suggestions || !Array.isArray(suggestions)) return null;
+
+  const pickByPhaseIndex = (idx) => {
+    if (!Number.isInteger(idx) || idx < 0) return null;
+    let row = suggestions.find((s) => Number(s.phaseIndex) === idx);
+    if (row && suggestionRowHasPayload(row)) return row;
+    row = suggestions.find((s) => Number(s.phaseIndex) === idx + 1);
+    if (row && suggestionRowHasPayload(row)) return row;
+    if (idx < suggestions.length) {
+      row = suggestions[idx];
+      if (suggestionRowHasPayload(row)) return row;
+    }
+    return null;
+  };
+
+  const byIndex = pickByPhaseIndex(flatPhaseIndex);
+  if (byIndex) return byIndex;
+
+  if (!segmentName) return null;
   const name = segmentName.toLowerCase();
-  return suggestions.find(s => s?.phaseName?.toLowerCase() === name)
-    || suggestions.find(s => s?.phaseName?.toLowerCase()?.includes(name))
-    || suggestions.find(s => name.includes(s?.phaseName?.toLowerCase()?.split(',')[0]?.trim()))
+  return suggestions.find((s) => s?.phaseName?.toLowerCase() === name)
+    || suggestions.find((s) => {
+      const pn = s?.phaseName?.toLowerCase();
+      return pn && pn.includes(name);
+    })
+    || suggestions.find((s) => name.includes(s?.phaseName?.toLowerCase()?.split(",")[0]?.trim()))
     || null;
 }
 

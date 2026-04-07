@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, memo } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
 import WorldMapBackground from './components/WorldMapBackground';
 import posthog from "posthog-js";
 import { DIVE_CYAN, SURF_GREEN, CULTURE_GOLD, EXPLORATION_ORANGE, NATURE_PURPLE, MOTO_RED, TREK_TEAL, LIGHT_BLUE, TECH_BLUE, PARCHMENT, LIGHT_GRAY, WHITE, BG_PAGE, BG_DARK, BG_DARK_TRIP, BG_PAGE_LEGACY, BLACK_OVERLAY, BG_DREAM_GRADIENT, BG_TRIP_GRADIENT, BG_PACK_GRADIENT, PARCHMENT_08, PARCHMENT_06, PARCHMENT_55, PARCHMENT_20, BURNT_ORANGE_35, BURNT_ORANGE_50, DARK_BURNT_52, CYAN_10, CYAN_25, CYAN_30, CYAN_35, CYAN_40, CYAN_60, CYAN_90, ORANGE_15, ORANGE_25, ORANGE_40, ORANGE_65, ORANGE_90, GOLD_04, GOLD_20, GOLD_35, GOLD_50, GOLD_60, GOLD_65, RED_04, RED_10, RED_40, WHITE_04, WHITE_08, WHITE_15, WHITE_22, WHITE_50, WHITE_60, GREEN_WASH, PURPLE_WASH, CYAN_WASH, ORANGE_WASH, TRIP_CATEGORY_COLORS, CAT_DOT_COLORS, PILL_COLORS, PALETTE_8, BAG_COLORS, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS, EXPENSE_CAT_COLORS, urgencyColor } from './constants/colors';
@@ -9,7 +9,7 @@ import { TI, SEG_KEY, loadSeg, saveSeg, COACH_KEY, loadCoach, saveCoach, ONBOARD
 import { askAI, parseJSON } from './utils/aiHelpers';
 import { GOAL_PRESETS, QUICK_ACTIONS } from './constants/dreamData';
 import { COUNTRY_FLAGS, toSegPhases } from './utils/tripHelpers';
-import { STATUS_CFG, STATUS_NEXT, SUGGEST_KEY, DISMISS_KEY, ACTIVITY_ICONS, SEG_TYPE_TO_ACT, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, loadDismissed, saveDismissed, findSuggestionForSegment, loadSuggestionsFromStorage, detectMode, buildSegmentSuggestionsPrompt, getPhaseActivityIcon } from './utils/tripConsoleHelpers';
+import { STATUS_CFG, STATUS_NEXT, SUGGEST_KEY, DISMISS_KEY, ACTIVITY_ICONS, SEG_TYPE_TO_ACT, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, loadDismissed, saveDismissed, findSuggestionForSegment, loadSuggestionsFromStorage, detectMode, buildSegmentSuggestionsPrompt, getPhaseActivityIcon, getSuggestionsTripId } from './utils/tripConsoleHelpers';
 import { useMobile } from './hooks/useMobile';
 import SharegoodLogo from './components/SharegoodLogo';
 import BottomSheet from './components/BottomSheet';
@@ -356,27 +356,26 @@ export default function App() {
   });
   useEffect(()=>{try{if(tripData)localStorage.setItem("1bn_tripData_v5",JSON.stringify(tripData));}catch(e){};},[tripData]);
 
-  // Load or generate segment suggestions when tripData changes
+  const suggestionsTripId=useMemo(()=>getSuggestionsTripId(tripData),[tripData]);
+
+  // Load or generate segment suggestions when trip identity / phase count changes
   useEffect(()=>{
-    if(!tripData?.tripName||!tripData?.phases?.length)return;
-    // Check for existing suggestions
+    if(!suggestionsTripId||!tripData?.phases?.length)return;
     try{
       const saved=localStorage.getItem(SUGGEST_KEY);
       if(saved){
         const parsed=JSON.parse(saved);
-        if(parsed.tripId&&parsed.tripId!=="undefined"&&parsed.tripId===tripData.tripName&&parsed.suggestions?.length){
-          console.log('[1BN] Loaded existing suggestions for:',tripData.tripName);
+        if(parsed.tripId&&parsed.tripId!=="undefined"&&parsed.tripId===suggestionsTripId&&parsed.suggestions?.length){
+          console.log('[1BN] Loaded existing suggestions for tripId:',suggestionsTripId);
           setSegmentSuggestions(parsed.suggestions);
           return;
         }
-        // Clear stale/mismatched entries
         localStorage.removeItem(SUGGEST_KEY);
       }
     }catch(e){localStorage.removeItem(SUGGEST_KEY);}
-    // Generate fresh suggestions
-    console.log('[1BN] Triggering suggestion generation for:',tripData.tripName,'phases:',tripData.phases.length);
+    console.log('[1BN] Triggering suggestion generation for tripId:',suggestionsTripId,'phases:',tripData.phases.length);
     generateSegmentSuggestions(tripData);
-  },[tripData?.tripName]);
+  },[suggestionsTripId,tripData?.phases?.length]);
 
   async function fetchSuggestionsChunk(td, phasesSlice, startIndex){
     try{
@@ -398,7 +397,7 @@ export default function App() {
 
   async function generateSegmentSuggestions(td){
     if(!td||!td.phases?.length){console.warn('[1BN] Suggestions skipped — no phases');return;}
-    const tripId=String(td.tripName||td.vision||"expedition").slice(0,60);
+    const tripId=getSuggestionsTripId(td)||String(td.tripName||td.vision||"expedition").slice(0,60);
     const phases=td.phases||[];
     const count=phases.length;
     console.log('[1BN] === GENERATING SUGGESTIONS ===');
