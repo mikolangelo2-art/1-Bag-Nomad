@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
-import { fmt, fD } from '../utils/dateHelpers';
+import { fmt, fD, formatSegmentCardDateHeader } from '../utils/dateHelpers';
 import { loadSeg, saveSeg } from '../utils/storageHelpers';
-import { detectMode, findSuggestionForSegment, flatPhaseIndexForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion, transportSuggestionEstimateHint, parseTransportEstimateToCostDigits } from '../utils/tripConsoleHelpers';
+import { detectMode, findSuggestionForSegment, flatPhaseIndexForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, transportNotesFromSuggestion, transportSuggestionEstimateHint, parseTransportEstimateToCostDigits, suggestionRowHasPayload } from '../utils/tripConsoleHelpers';
 import SDF from './SDF';
 import CityInput from './CityInput';
 import WorldMapBackground from './WorldMapBackground';
@@ -48,16 +48,25 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const saveFlashRef=useRef(null);
   const isFirst=useRef(true);
   const [status,setStatus]=useState(()=>{const d=loadSeg()[key];return d?.status||'planning';});
-  const suggestionWsKey=`${phaseId}:${segment?.id ?? ""}:${segment?.name ?? ""}`;
+  const suggestionWsKey=`${phaseId}:${segment?.id ?? ""}`;
   const suggestionFromMemo=useMemo(()=>{
-    if(suggestionProp) return suggestionProp;
     const all=loadSuggestionsFromStorage();
     const idx=flatPhaseIndexForSegment(segment,allPhases);
-    return findSuggestionForSegment(all,segment.name,idx);
+    const stored=findSuggestionForSegment(all,segment.name,idx);
+    if(!suggestionProp)return stored;
+    if(!stored)return suggestionProp;
+    return{
+      ...stored,
+      ...suggestionProp,
+      food:suggestionProp.food??stored.food,
+      stay:suggestionProp.stay??stored.stay,
+      transport:suggestionProp.transport??stored.transport,
+      activities:(suggestionProp.activities&&suggestionProp.activities.length)?suggestionProp.activities:(stored.activities||[]),
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps -- segment id+name only; whole `segment` ref often changes without semantic change
   },[suggestionProp,phaseId,segment?.id,segment?.name,allPhases]);
   const suggestionStashRef=useRef({k:"",sug:null});
-  if(suggestionFromMemo) suggestionStashRef.current={k:suggestionWsKey,sug:suggestionFromMemo};
+  if(suggestionFromMemo&&suggestionRowHasPayload(suggestionFromMemo)) suggestionStashRef.current={k:suggestionWsKey,sug:suggestionFromMemo};
   const suggestion=suggestionFromMemo||(suggestionStashRef.current.k===suggestionWsKey?suggestionStashRef.current.sug:null);
   const dismissKey = segment.name || `${phaseId}`;
   const caFromArch=(()=>{const fp=(allPhases||[]).find(p=>p.type!=="Return"&&p.name===segment.name&&(!segment.country||p.country===segment.country));return fp?.caActivities?.filter(a=>a&&(a.name||a.title))||[];})();
@@ -108,6 +117,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const thisStop=(segment.name||"").trim();
   const plannedLegFrom=prevStop||homeStop||"Trip start";
   const plannedLegTo=thisStop||"This stop";
+  const fromLegChips=!!(prevStop||(homeStop&&(!prevStop||homeStop.toLowerCase()!==prevStop.toLowerCase())));
+  const toLegChips=!!thisStop;
+  const segmentCardDateHeader=formatSegmentCardDateHeader(segment.arrival,segment.departure,segment.nights);
   const tripFieldLabel={fontSize:isMobile?11:13,color:"rgba(0,229,255,0.75)",letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,opacity:0.92};
   const cityInStyle={background:"rgba(0,0,0,0.55)",border:"1px solid rgba(255,255,255,0.22)",borderRadius:6,color:"#FFF",fontSize:isMobile?12:15,padding:isMobile?"4px 7px":"5px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",maxWidth:"100%",boxSizing:"border-box",lineHeight:1.6};
   const legChipStyle={padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.35)",background:"rgba(0,229,255,0.06)",color:"rgba(0,229,255,0.88)",fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",minHeight:32};
@@ -115,7 +127,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
     <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:10}}>
       <div style={{display:'flex',flexDirection:'column',gap:isMobile?2:3}}>
         <div style={tripFieldLabel}>FROM</div>
-        <div style={{display:'flex',flexWrap:'wrap',gap:6,alignItems:'center'}}>
+        <div style={{display:'flex',flexWrap:'wrap',gap:6,alignItems:'center',minHeight:toLegChips&&!fromLegChips?32:undefined}}>
           {prevStop?<button type="button" onClick={()=>uT("from",prevStop)} style={legChipStyle}>Use previous stop</button>:null}
           {homeStop&&(!prevStop||homeStop.toLowerCase()!==prevStop.toLowerCase())?<button type="button" onClick={()=>uT("from",homeStop)} style={legChipStyle}>{prevStop?"Trip departure (home)":"Use trip departure"}</button>:null}
         </div>
@@ -162,6 +174,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
       </div>
       {/* Tab content */}
       <div key={tab} style={{border:'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(0,8,20,0.85)',padding:'16px 14px',margin:'12px 0',minHeight:300,textAlign:'left',animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+        {(tab==="transport"||tab==="stay"||tab==="activities"||tab==="food")&&!!segmentCardDateHeader&&<div style={{textAlign:'center',margin:'0 0 14px',padding:'0 8px 12px',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
+          <div style={{fontSize:isMobile?12:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.52)',letterSpacing:0.35,lineHeight:1.45}}>{segmentCardDateHeader}</div>
+        </div>}
         {/* TRANSPORT */}
         {tab==="transport"&&<div style={{padding:0}}>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
@@ -273,7 +288,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <button type="button" onClick={()=>setEditingStay(e=>!e)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28}}>{editingStay?'DONE':'EDIT'}</button>
             </div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{det.stay.name}</div>
-            {(()=>{const ci=(det.stay.checkin||segment.arrival||"").trim();const co=(det.stay.checkout||segment.departure||"").trim();const n=Number(segment.nights);const parts=[];if(ci)parts.push(`Check-in ${fD(ci)}`);if(co)parts.push(`Check-out ${fD(co)}`);if(Number.isFinite(n)&&n>0)parts.push(`${n} nights`);if(parts.length===0)return null;return <div style={{fontSize:13,color:'#FF9F43',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:4}}>{parts.join(" · ")}</div>;})()}
             {det.stay.cost&&<div style={{fontSize:13,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. ${det.stay.cost}</div>}
             {det.stay.notes&&!editingStay&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,color:'rgba(255,255,255,0.60)',marginTop:6,lineHeight:1.5,whiteSpace:'pre-line'}}>{det.stay.notes.length>140?det.stay.notes.slice(0,140)+'...':det.stay.notes}</div>}
             {det.stay.link&&<a href={det.stay.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:4}}>{det.stay.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}

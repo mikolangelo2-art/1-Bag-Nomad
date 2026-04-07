@@ -49,7 +49,7 @@ export function prevSegmentNameForSeg(segment, segPhases) {
   return (prev?.name && String(prev.name).trim()) || "";
 }
 
-function suggestionRowHasPayload(row) {
+export function suggestionRowHasPayload(row) {
   return !!(row && (row.transport || row.stay || (row.activities && row.activities.length) || row.food));
 }
 
