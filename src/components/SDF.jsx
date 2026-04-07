@@ -1,6 +1,8 @@
 import { useMobile } from "../hooks/useMobile";
 import DatePickerInput from "./DatePickerInput";
 
+const DECIMAL_TYPING = /^\d*\.?\d*$/;
+
 function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00E5FF",onFocus,onBlur}) {
   const mob=useMobile();
   const safe=value??"";
@@ -13,6 +15,7 @@ function SDF({label,value,onChange,placeholder,type="text",multiline,accent="#00
       <div style={{fontSize:mob?11:13,color:"rgba(212,180,120,0.92)",letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,opacity:0.92}}>{label}</div>
       {multiline?<textarea value={safe} onClick={stopClick} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={1} style={s} onFocus={onF} onBlur={onB}/>
       :type==="date"?<div style={{width:"100%"}}><DatePickerInput value={safe} onChange={onChange} style={s} onFocus={onF} onBlur={onB} aria-label={label}/></div>
+      :type==="number"?<input type="text" inputMode="decimal" value={safe} onClick={stopClick} onChange={e=>{const v=e.target.value;if(v===""||DECIMAL_TYPING.test(v))onChange(v);}} placeholder={placeholder} style={s} onFocus={onF} onBlur={onB}/>
       :<input type={type} value={safe} onClick={stopClick} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s} onFocus={onF} onBlur={onB}/>}
     </div>
   );

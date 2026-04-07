@@ -271,7 +271,7 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
               </button>
             ))}
           </div>
-          {(budgetMode==="rough"||budgetMode==="strict")&&<div style={{marginTop:10,display:"flex",flexDirection:"column",gap:5}}><div className="f-label">{budgetMode==="strict"?"MAX BUDGET ($)":"ROUGH BUDGET ($)"}</div><input className="f-input" type="number" value={budgetAmount} onChange={e=>setBudgetAmount(e.target.value)} placeholder={budgetMode==="strict"?"e.g. 15000":"e.g. 20000"}/></div>}
+          {(budgetMode==="rough"||budgetMode==="strict")&&<div style={{marginTop:10,display:"flex",flexDirection:"column",gap:5}}><div className="f-label">{budgetMode==="strict"?"MAX BUDGET ($)":"ROUGH BUDGET ($)"}</div><input className="f-input" type="text" inputMode="decimal" value={budgetAmount??""} onClick={e=>e.stopPropagation()} onChange={e=>{const v=e.target.value;if(v===""||/^\d*\.?\d*$/.test(v))setBudgetAmount(v);}} placeholder={budgetMode==="strict"?"e.g. 15000":"e.g. 20000"}/></div>}
         </div>
         <button className={"launch-btn "+(loading?"loading":canLaunch?"on":"off")} onClick={handleReveal} style={{minHeight:54,cursor:loading?"wait":canLaunch?"pointer":"default",margin:isMobile?"0 12px":0,width:isMobile?"calc(100% - 24px)":undefined}}>
           {loading?"✨  BUILDING YOUR EXPEDITION...":"🚀  BUILD MY EXPEDITION"}
