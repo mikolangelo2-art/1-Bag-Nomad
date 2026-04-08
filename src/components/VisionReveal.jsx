@@ -32,6 +32,7 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
   async function refine(){
     if(!refineInput.trim()||loading)return;
     setLoading(true);const msg=refineInput;setRefineInput("");
+    const highlightRefinedGuide="one specific moment drawn from this refined vision — name the place, the time of day, the experience. Not 'an unforgettable moment' — the actual moment. Example: 'Sunrise from the roof of Riad Kniza before the call to prayer, Marrakech still dark below.'";
     // Preserve return phase — re-attach after refine regardless of what AI returns
     const savedReturn=vd.phases?.find(p=>p.type==="Return")||null;
     const hasBudget=data.budgetMode!=="dream"&&data.budgetAmount&&Number(data.budgetAmount)>0;
@@ -65,7 +66,7 @@ User's refinement: "${msg}"
 
 Reshape the vision to honor this request. Keep the same structure — change the flavor.
 Return ONLY valid JSON:
-{"narrative":"2-3 vivid sentences reflecting the refined vision","vibe":"3 words · separated","phases":[{"destination":"City","country":"Country","nights":NUMBER,"type":"Type","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":${totalNights},"totalBudget":${hasBudget?data.budgetAmount:'0'},"countries":NUMBER,"highlight":"most exciting moment in refined vision"}`,1800,0.4);
+{"narrative":"2-3 vivid sentences reflecting the refined vision","vibe":"3 words · separated","phases":[{"destination":"City","country":"Country","nights":NUMBER,"type":"Type","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":${totalNights},"totalBudget":${hasBudget?data.budgetAmount:'0'},"countries":NUMBER,"highlight":"${highlightRefinedGuide}"}`,1800,0.4);
       const parsed=parseJSON(raw);
       // Hard enforcement: lock budget and duration even if AI drifts
       if(parsed&&parsed.phases?.length){
