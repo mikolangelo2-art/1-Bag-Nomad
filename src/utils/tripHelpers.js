@@ -34,3 +34,27 @@ export function toSegPhases(phases=[]) {
     };
   });
 }
+
+/** Derived planned spend for a segmented phase (country group): sum of segment details, never persisted. */
+export function computePhasePlannedSpend(phase, allSegD) {
+  const out = { total: 0, transport: 0, stay: 0, activities: 0, food: 0 };
+  const store = allSegD && typeof allSegD === "object" ? allSegD : {};
+  const pid = phase?.id;
+  const segments = phase?.segments;
+  if (pid == null || !Array.isArray(segments)) return out;
+  for (const seg of segments) {
+    const d = store[`${pid}-${seg.id}`] || {};
+    const t = Number(d.transport?.cost) || 0;
+    const s = Number(d.stay?.cost) || 0;
+    let a = 0;
+    for (const act of d.activities || []) a += Number(act?.cost) || 0;
+    const nights = Number(seg.nights) || 0;
+    const f = (Number(d.food?.dailyBudget) || 0) * nights;
+    out.transport += t;
+    out.stay += s;
+    out.activities += a;
+    out.food += f;
+  }
+  out.total = out.transport + out.stay + out.activities + out.food;
+  return out;
+}
