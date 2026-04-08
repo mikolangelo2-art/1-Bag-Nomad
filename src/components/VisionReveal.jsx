@@ -33,6 +33,12 @@ function VisionReveal({data,onBuild,onBack,freshMount}) {
     if(!refineInput.trim()||loading)return;
     setLoading(true);const msg=refineInput;setRefineInput("");
     const highlightRefinedGuide="one specific moment drawn from this refined vision — name the place, the time of day, the experience. Not 'an unforgettable moment' — the actual moment. Example: 'Sunrise from the roof of Riad Kniza before the call to prayer, Marrakech still dark below.'";
+    const narrativeRulesRefine=`NARRATIVE RULES — non-negotiable:
+- Sentence 1: The emotional truth of what this trip is about. What the traveler will feel and why it matters to them personally. Mirror their own language back if possible.
+- Sentence 2: Name the specific. A real place, a real moment, a real sensation — not "beautiful scenery" or "local culture." The medina at dawn. The seaplane at first light. The ryokan where Basho once slept.
+- Sentence 3: The transformation. Who is this traveler when they return? What will they know or feel that they don't now?
+- NEVER use: "unforgettable," "breathtaking," "world-class," "hidden gems," "local culture," "unique experience"
+- ALWAYS name: a specific place, a specific time of day, or a specific physical sensation`;
     // Preserve return phase — re-attach after refine regardless of what AI returns
     const savedReturn=vd.phases?.find(p=>p.type==="Return")||null;
     const hasBudget=data.budgetMode!=="dream"&&data.budgetAmount&&Number(data.budgetAmount)>0;
@@ -65,8 +71,11 @@ ${data.travelerProfile?`Traveler: ${data.travelerProfile.group==='couple'?'Coupl
 User's refinement: "${msg}"
 
 Reshape the vision to honor this request. Keep the same structure — change the flavor.
+
+${narrativeRulesRefine}
+
 Return ONLY valid JSON:
-{"narrative":"2-3 vivid sentences reflecting the refined vision","vibe":"3 words · separated","phases":[{"destination":"City","country":"Country","nights":NUMBER,"type":"Type","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":${totalNights},"totalBudget":${hasBudget?data.budgetAmount:'0'},"countries":NUMBER,"highlight":"${highlightRefinedGuide}"}`,1800,0.4);
+{"narrative":"Exactly 3 sentences following NARRATIVE RULES above.","vibe":"3 words · separated","phases":[{"destination":"City","country":"Country","nights":NUMBER,"type":"Type","why":"one sentence","flag":"🌍","budget":NUMBER}],"totalNights":${totalNights},"totalBudget":${hasBudget?data.budgetAmount:'0'},"countries":NUMBER,"highlight":"${highlightRefinedGuide}"}`,1800,0.4);
       const parsed=parseJSON(raw);
       // Hard enforcement: lock budget and duration even if AI drifts
       if(parsed&&parsed.phases?.length){
