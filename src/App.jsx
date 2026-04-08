@@ -205,8 +205,8 @@ input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.45)!important;
 .cta-build-btn:hover{transform:translateY(-2px);animation:none}
 .build-root{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#120A04;min-height:100vh;color:#FFF;display:flex;flex-direction:column}
 .mc-root{font-family:'Inter',system-ui,-apple-system,sans-serif;background:radial-gradient(ellipse at 50% 0%,rgba(0,229,255,0.06) 0%,transparent 55%) no-repeat fixed,#000C18;min-height:100vh;color:#FFF;display:flex;flex-direction:column}
-.mc-tab{background:none;border:none;cursor:pointer;padding:9px 12px;font-size:11px;letter-spacing:2px;white-space:nowrap;color:#FFF;border-bottom:2px solid transparent;transition:all 0.30s cubic-bezier(0.25,0.46,0.45,0.94);font-family:'Inter',system-ui,-apple-system,sans-serif;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
-.mc-tab.active{color:#00E5FF;border-bottom-color:#00E5FF}
+.mc-tab{background:none;border:none;cursor:pointer;padding:9px 12px;font-size:11px;letter-spacing:2px;white-space:nowrap;color:rgba(232,220,200,0.72);border-bottom:2px solid transparent;transition:all 0.30s cubic-bezier(0.25,0.46,0.45,0.94);font-family:'Inter',system-ui,-apple-system,sans-serif;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
+.mc-tab.active{color:#E8DCC8;border-bottom-color:#00E5FF}
 .mc-content{padding:14px 22px;overflow-y:auto;flex:1;min-height:0}
 .intel-section{background:rgba(255,255,255,0.04);border:1px solid rgba(232,220,200,0.08);border-radius:8px;padding:11px;margin-bottom:10px}
 .intel-section-label{font-size:12px;letter-spacing:2px;margin-bottom:7px}
