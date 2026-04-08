@@ -5,7 +5,7 @@ export const GOAL_PRESETS = [
   {id:"creator",icon:"🎥",label:"Document the Journey",desc:"Vlog, photograph, tell the story"},
   {id:"adventurer",icon:"🥾",label:"Wild & Off-Grid",desc:"Trek, climb, explore the unknown"},
   {id:"moto",icon:"🏍️",label:"Moto Explorer",desc:"Two wheels, open roads, borderless freedom"},
-  {id:"golfer",icon:"⛳",label:"Golf Traveler",desc:"World-class courses, exclusive destinations"},
+  {id:"golfer",icon:"⛳",label:"Golf Traveler",desc:"Legendary courses, private access, and the quiet of a fairway at dawn"},
   {id:"custom",icon:"✨",label:"My Own Vision",desc:"I know what I want — let me describe it"},
 ];
 
