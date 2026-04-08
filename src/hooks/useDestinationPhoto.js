@@ -42,6 +42,7 @@ function readCache(cacheKey) {
 /**
  * Fetches one landscape photo per (destination, category); caches in localStorage.
  * category: "food" | "stay" | or activity-specific string for "{destination} {category}".
+ * Calls /api/unsplash (Vercel serverless) so the access key stays server-side.
  */
 export function useDestinationPhoto(destination, category) {
   const query = useMemo(
@@ -53,8 +54,6 @@ export function useDestinationPhoto(destination, category) {
     [destination, category]
   );
   const cached = useMemo(() => readCache(cacheKey), [cacheKey]);
-  const key = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
-  console.log("[1BN] Unsplash key present:", !!key);
 
   const [net, setNet] = useState({
     forKey: null,
@@ -64,15 +63,11 @@ export function useDestinationPhoto(destination, category) {
   });
 
   useEffect(() => {
-    if (!query || cached || !key) return undefined;
+    if (!query || cached) return undefined;
 
     let cancelled = false;
     const k = cacheKey;
-    const apiUrl = `https://api.unsplash.com/photos/random?query=${encodeURIComponent(
-      query
-    )}&orientation=landscape&client_id=${encodeURIComponent(key)}`;
-    const safeUrl = apiUrl.replace(/client_id=[^&]+/, "client_id=***");
-    console.log("[1BN] Unsplash fetch URL:", safeUrl);
+    const apiUrl = `/api/unsplash?query=${encodeURIComponent(query)}&orientation=landscape`;
 
     fetch(apiUrl)
       .then((res) => {
@@ -114,12 +109,12 @@ export function useDestinationPhoto(destination, category) {
     return () => {
       cancelled = true;
     };
-  }, [query, cacheKey, cached, key]);
+  }, [query, cacheKey, cached]);
 
   const netMatches = net.forKey === cacheKey && net.done;
   const url = cached?.url ?? (netMatches ? net.url : null);
   const htmlLink = cached?.htmlLink ?? (netMatches ? net.htmlLink : null);
-  const ready = !query || !!cached || !key || netMatches;
+  const ready = !query || !!cached || netMatches;
 
   return { url, htmlLink, ready };
 }
