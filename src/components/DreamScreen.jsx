@@ -34,7 +34,7 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
   const [showAllInterests,setShowAllInterests]=useState(false);
   useEffect(()=>{if(date&&(returnDate===undefined||returnDate===""))setReturnDate(date);},[date,returnDate]);
   useEffect(()=>{
-    const ts=[setTimeout(()=>setHeroPhase(1),400),setTimeout(()=>setHeroPhase(2),1200),setTimeout(()=>setHeroPhase(3),2100),setTimeout(()=>setHeroPhase(4),3000)];
+    const ts=[setTimeout(()=>setHeroPhase(1),400),setTimeout(()=>setHeroPhase(2),1200),setTimeout(()=>setHeroPhase(3),2100)];
     return()=>ts.forEach(clearTimeout);
   },[]);
   const GENERATION_HINTS=["Reading your vision...","Mapping your expedition...","Building your blueprint...","Calculating your budget...","Crafting your narrative...","Selecting your destinations..."];
@@ -214,10 +214,9 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
             {heroPhase>=2&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?28:38,fontWeight:300,color:"#FFF",lineHeight:1.15,letterSpacing:1,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>starts now.</div>}
             {heroPhase>=3&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?30:44,fontWeight:300,fontStyle:"italic",color:"#FFD93D",lineHeight:1.2,marginTop:10,letterSpacing:3,animation:"slideUp 0.8s cubic-bezier(0.22,1,0.36,1) both",textShadow:"0 0 24px rgba(0,120,255,0.25)"}}>Let's go.</div>}
           </div>
-          {heroPhase>=4&&<p style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:16,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.75)",lineHeight:1.6,marginTop:12,animation:"fadeUp 0.8s ease both"}}>Every expedition starts with a feeling — tell me what's driving yours.</p>}
         </div>
         <div style={{marginBottom:13,padding:0,width:"100%",minWidth:0,boxSizing:"border-box"}}>
-          <div className="sec-label">WHAT'S <span style={{color:"#FFD93D",fontWeight:900}}>YOUR</span> VISION?</div>
+          <p style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:17,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.82)",lineHeight:1.55,margin:"0 0 12px",animation:"fadeUp 0.8s ease 0.15s both",textAlign:"center",padding:isMobile?"0 8px":0,maxWidth:640,marginLeft:"auto",marginRight:"auto"}}>Every expedition starts with a feeling — tell me what&apos;s driving yours.</p>
           <div className="vision-textarea-wrap">
           <textarea className="vision-ta" style={{animation:focused?"none":"visionGlow 3.5s ease-in-out infinite",wordBreak:'break-word',overflowWrap:'break-word',whiteSpace:'pre-wrap'}} value={vision} onClick={e=>e.stopPropagation()} onChange={e=>{if(vision.length===0&&e.target.value.length>0)posthog.capture("vision_started");setVision(e.target.value);}} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder={"Speak from the heart. Don\u2019t say where you want to go \u2014 say how you want to FEEL. The reefs you need to dive. The city you need to disappear into. The road that\u2019s been calling you. The version of yourself you\u2019re chasing. The more passion you pour in, the more magic your co-architect returns."} rows={isMobile?8:9}/>
           </div>
