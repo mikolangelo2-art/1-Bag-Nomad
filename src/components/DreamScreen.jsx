@@ -204,7 +204,7 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
       <div className="dream-glow"/>
       <DreamHeader step={1}/>
       <div className="dream-content">
-        <div style={{textAlign:"center",marginBottom:isMobile?20:28,animation:"fadeUp 0.6s ease",padding:isMobile?"0 12px":0}}>
+        <div style={{textAlign:"center",marginBottom:isMobile?20:28,animation:"fadeUp 0.6s ease"}}>
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:14}}>
             <SharegoodLogo size={isMobile?148:168} animate={true} logoState={logoState} glowColor={loading?"rgba(0,229,255,0.7)":"rgba(0,229,255,0.3)"} opacity={loading?1:0.92}/>
             {loading&&<div key={retryMsg||hintIdx} style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:retryMsg?"rgba(255,217,61,0.75)":"rgba(255,159,67,0.65)",marginTop:10,animation:"hintFade 2.5s ease forwards",textAlign:"center",letterSpacing:0.5}}>{retryMsg||GENERATION_HINTS[hintIdx]}</div>}
@@ -216,7 +216,7 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
           </div>
         </div>
         <div style={{marginBottom:13,padding:0,width:"100%",minWidth:0,boxSizing:"border-box"}}>
-          <p style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:17,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.82)",lineHeight:1.55,margin:"0 0 12px",animation:"fadeUp 0.8s ease 0.15s both",textAlign:"center",padding:isMobile?"0 8px":0,maxWidth:640,marginLeft:"auto",marginRight:"auto"}}>Every expedition starts with a feeling — tell me what&apos;s driving yours.</p>
+          <p style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:17,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.82)",lineHeight:1.55,margin:"0 0 12px",animation:"fadeUp 0.8s ease 0.15s both",textAlign:"center",maxWidth:640,marginLeft:"auto",marginRight:"auto"}}>Every expedition starts with a feeling — tell me what&apos;s driving yours.</p>
           <div className="vision-textarea-wrap">
           <textarea className="vision-ta" style={{animation:focused?"none":"visionGlow 3.5s ease-in-out infinite",wordBreak:'break-word',overflowWrap:'break-word',whiteSpace:'pre-wrap'}} value={vision} onClick={e=>e.stopPropagation()} onChange={e=>{if(vision.length===0&&e.target.value.length>0)posthog.capture("vision_started");setVision(e.target.value);}} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} placeholder={"Speak from the heart. Don\u2019t say where you want to go \u2014 say how you want to FEEL. The reefs you need to dive. The city you need to disappear into. The road that\u2019s been calling you. The version of yourself you\u2019re chasing. The more passion you pour in, the more magic your co-architect returns."} rows={isMobile?8:9}/>
           </div>
@@ -260,15 +260,15 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
             </div>
           </div>
         </div>
-        <div className="sec-label" style={{padding:isMobile?"0 14px":0}}>EXPEDITION DETAILS</div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22,padding:isMobile?"0 14px":0}}>
+        <div className="sec-label">EXPEDITION DETAILS</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22}}>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onClick={e=>e.stopPropagation()} onChange={e=>setTripName(e.target.value)} placeholder="MY GRAND EXPEDITION" style={{textTransform:"uppercase",borderColor:"rgba(0,229,255,0.72)",boxShadow:"0 0 14px rgba(0,229,255,0.18),0 0 32px rgba(0,229,255,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><CityInput className="f-input" value={city} onChange={v=>setCity(v)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{width:"100%",overflow:"clip",boxSizing:"border-box"}}><DatePickerInput className="f-input" value={date} onChange={setDate} style={{width:"100%",boxSizing:"border-box",fontSize:16,display:"block",borderColor:"rgba(105,240,174,0.72)",boxShadow:"0 0 14px rgba(105,240,174,0.18),0 0 32px rgba(105,240,174,0.07)"}} aria-label="Target start date" buttonStyle={{border:"1px solid rgba(105,240,174,0.35)",background:"rgba(105,240,174,0.12)"}}/></div></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div key={`return-${date}`} style={{width:"100%",overflow:"clip",boxSizing:"border-box"}}><DatePickerInput className="f-input" value={returnDate||date} min={date||undefined} onChange={setReturnDate} style={{width:"100%",boxSizing:"border-box",fontSize:16,display:"block",borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}} aria-label="Return date" buttonStyle={{border:"1px solid rgba(255,217,61,0.35)",background:"rgba(255,217,61,0.10)"}}/></div><div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.65)",marginTop:3}}>optional · open-ended</div>{date&&returnDate&&(()=>{const d0=new Date(date+"T12:00:00"),d1=new Date(returnDate+"T12:00:00");const n=Math.round((d1-d0)/86400000);return n>0?<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,255,255,0.55)",marginTop:4}}>{n} nights</div>:null;})()}</div>
         </div>
 
-        <div style={{marginBottom:22,padding:isMobile?"0 14px":0}}>
+        <div style={{marginBottom:22}}>
           <div className="f-label" style={{marginBottom:10}}>BUDGET APPROACH</div>
           <div style={{display:"flex",flexDirection:"column",gap:7}}>
             {[{id:"dream",icon:"💭",label:"Build the dream",sub:"We'll figure budget later",accent:"#FF9F43"},{id:"rough",icon:"💰",label:"I have a rough number",sub:"Give me a ballpark",accent:"#FFD93D"},{id:"strict",icon:"🎯",label:"Keep it under...",sub:"I have a firm limit",accent:"#A29BFE"}].map(b=>(
@@ -283,11 +283,11 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
           </div>
           {(budgetMode==="rough"||budgetMode==="strict")&&<div style={{marginTop:10,display:"flex",flexDirection:"column",gap:5}}><div className="f-label">{budgetMode==="strict"?"MAX BUDGET ($)":"ROUGH BUDGET ($)"}</div><input className="f-input" type="text" inputMode="decimal" value={budgetAmount??""} onClick={e=>e.stopPropagation()} onChange={e=>{const v=e.target.value;if(v===""||/^\d*\.?\d*$/.test(v))setBudgetAmount(v);}} placeholder={budgetMode==="strict"?"e.g. 15000":"e.g. 20000"}/></div>}
         </div>
-        <button className={"launch-btn "+(loading?"loading":canLaunch?"on":"off")} onClick={handleReveal} style={{minHeight:54,cursor:loading?"wait":canLaunch?"pointer":"default",margin:isMobile?"0 12px":0,width:isMobile?"calc(100% - 24px)":undefined}}>
+        <button className={"launch-btn "+(loading?"loading":canLaunch?"on":"off")} onClick={handleReveal} style={{minHeight:54,cursor:loading?"wait":canLaunch?"pointer":"default"}}>
           {loading?"✨  BUILDING YOUR EXPEDITION...":"🚀  BUILD MY EXPEDITION"}
         </button>
         {loadError&&<div style={{marginTop:12,padding:"10px 14px",borderRadius:8,background:"rgba(255,107,107,0.1)",border:"1px solid rgba(255,107,107,0.3)",textAlign:"center",fontSize:15,color:"#FF6B6B",letterSpacing:1}}>Connection issue — tap to try again</div>}
-        <div style={{textAlign:"center",marginTop:30,paddingTop:20,borderTop:"1px solid rgba(0,229,255,0.1)",padding:isMobile?"20px 12px 0":"20px 0 0"}}>
+        <div style={{textAlign:"center",marginTop:30,paddingTop:20,borderTop:"1px solid rgba(0,229,255,0.1)"}}>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,217,61,0.4)",letterSpacing:2}}>Dream Big. Travel Light.</div>
           <div style={{fontSize:15,color:"rgba(255,255,255,0.15)",letterSpacing:3,marginTop:5}}>A SHAREGOOD COMPANY</div>
           <button onClick={onLoadDemo} style={{marginTop:16,background:"none",border:"1px solid rgba(0,229,255,0.2)",borderRadius:8,color:"rgba(0,229,255,0.5)",fontSize:15,padding:"10px 16px",cursor:"pointer",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",width:"100%",minHeight:44,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>

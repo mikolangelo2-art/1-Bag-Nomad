@@ -31,7 +31,7 @@ function HomecomingScreen({tripData,onPlanNext}) {
     <div style={{position:"fixed",inset:0,zIndex:9999,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",animation:"fadeIn 0.40s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
       <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 20%,#281400 0%,#160a00 30%,#090400 60%,#030100 100%)",zIndex:1}}/>
       <div style={{position:"absolute",top:"-10%",left:"50%",transform:"translateX(-50%)",width:700,height:400,background:"radial-gradient(ellipse,rgba(255,159,67,0.22) 0%,rgba(255,217,61,0.06) 45%,transparent 70%)",pointerEvents:"none",zIndex:2}}/>
-      <div style={{position:"absolute",inset:0,zIndex:3,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:isMobile?24:40,paddingBottom:"calc(40px + env(safe-area-inset-bottom))",overflowY:"auto"}}>
+      <div style={{position:"absolute",inset:0,zIndex:3,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:isMobile?"24px 12px":40,paddingBottom:isMobile?"calc(28px + env(safe-area-inset-bottom))":"calc(40px + env(safe-area-inset-bottom))",overflowY:"auto",boxSizing:"border-box"}}>
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",width:"100%",maxWidth:520,gap:isMobile?18:24}}>
           {/* Spinning logo */}
           <div style={{position:"relative",marginBottom:4}}>

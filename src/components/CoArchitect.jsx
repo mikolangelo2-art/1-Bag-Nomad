@@ -173,7 +173,7 @@ RULES:
           </div>
         ))}
       </div>
-      <div style={{display:"flex",alignItems:"center",gap:12,padding:"8px 14px",background:"rgba(255,255,255,0.02)",borderBottom:"1px solid #111D2A",flexShrink:0}}>
+      <div style={{display:"flex",alignItems:"center",gap:12,padding:isMobile?"8px 12px":"8px 14px",background:"rgba(255,255,255,0.02)",borderBottom:"1px solid #111D2A",flexShrink:0}}>
         <span style={{fontSize:isMobile?9:11,fontWeight:700,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"rgba(255,255,255,0.4)",letterSpacing:2}}>DEPARTURE</span>
         <div style={{flex:1,minWidth:0,maxWidth:isMobile?"100%":220}}><DatePickerInput value={startDate} onChange={setStartDate} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.18)",borderRadius:6,color:"rgba(0,229,255,0.85)",fontSize:isMobile?13:14,padding:"3px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",colorScheme:"dark"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.5)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.10)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.18)";e.target.style.boxShadow="none";}} aria-label="Departure date" buttonStyle={{border:"1px solid rgba(0,229,255,0.28)",background:"rgba(0,229,255,0.08)"}}/></div>
         <span style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.35)",marginLeft:"auto",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{totalNights}n</span>
@@ -183,7 +183,7 @@ RULES:
       </div>}
       <div style={{display:"flex",flex:1,overflow:"hidden",minHeight:0,...(isMobile?{flexDirection:"column"}:{})}}>
         {(!isMobile||mobileTab==="itinerary")&&(
-          <div style={{width:"42%",overflowY:"auto",padding:12,...(isMobile?{maxHeight:"none",width:"100%",padding:"12px 16px"}:{})}}>
+          <div style={{width:"42%",overflowY:"auto",padding:12,...(isMobile?{maxHeight:"none",width:"100%",padding:"12px 12px"}:{})}}>
             <div style={{fontSize:15,color:"rgba(255,255,255,0.85)",letterSpacing:3,marginBottom:6}}>YOUR ITINERARY · TAP TO EDIT</div>
             {(()=>{
               const bAmt=Number(data.budgetAmount)||0;
@@ -228,23 +228,23 @@ RULES:
         )}
         {(!isMobile||mobileTab==="chat")&&(
           <div style={{flex:1,display:"flex",flexDirection:"column",borderRight:isMobile?"none":"1px solid #111D2A",...(isMobile?{flex:1,borderTop:"1px solid #111D2A"}:{})}}>
-            <div style={{padding:isMobile?"5px 16px 5px":"6px 11px 5px",borderBottom:"1px solid #111D2A",fontSize:isMobile?10:13,fontWeight:600,color:"rgba(196,87,30,0.7)",letterSpacing:isMobile?2:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>{data.isRevision?"✏️ REVISE YOUR EXPEDITION":"✦ CO-ARCHITECT"}</div>
-            <div style={{flex:1,overflowY:"auto",padding:isMobile?"6px 16px 16px":"6px 20px 20px",display:"flex",flexDirection:"column",gap:10}}>
+            <div style={{padding:isMobile?"5px 12px 5px":"6px 11px 5px",borderBottom:"1px solid #111D2A",fontSize:isMobile?10:13,fontWeight:600,color:"rgba(196,87,30,0.7)",letterSpacing:isMobile?2:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>{data.isRevision?"✏️ REVISE YOUR EXPEDITION":"✦ CO-ARCHITECT"}</div>
+            <div style={{flex:1,overflowY:"auto",padding:isMobile?"6px 12px 16px":"6px 20px 20px",display:"flex",flexDirection:"column",gap:10}}>
               {chat.map((msg,i)=>(
                 <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",flexDirection:msg.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>
                   <div style={{width:22,height:22,borderRadius:"50%",background:msg.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{msg.role==="ai"?"✨":"👤"}</div>
                   {msg.isWelcome
                     ?<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"2px 0 6px",width:"100%"}}><div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:16,fontWeight:500,fontStyle:"normal",color:"rgba(245,240,232,0.95)",textAlign:"center",letterSpacing:0.3,lineHeight:1.45}}>{"Welcome, I'm your 1 Bag Nomad trip Co-Architect."}</div></div>
-                    :<div style={{background:msg.role==="ai"?"rgba(255,217,61,0.10)":"rgba(255,255,255,0.05)",border:msg.role==="ai"?"1.5px solid rgba(255,200,100,0.45)":`1px solid rgba(255,255,255,0.08)`,borderRadius:12,padding:msg.role==="ai"?(isMobile?"14px 16px":"18px 20px"):"10px 14px",fontSize:msg.role==="ai"?(isMobile?14:17):13,fontFamily:msg.role==="ai"?"'Fraunces',serif":"'Inter',system-ui,-apple-system,sans-serif",fontStyle:msg.role==="ai"?"italic":"normal",fontWeight:msg.role==="ai"?400:400,color:msg.role==="ai"?"#FAF6EF":"#FFF",lineHeight:msg.role==="ai"?(isMobile?1.58:1.68):1.5,maxWidth:isMobile?"100%":"92%",boxShadow:msg.role==="ai"?"inset 0 1px 0 rgba(255,255,255,0.06)":"none",textShadow:msg.role==="ai"?"0 1px 2px rgba(0,0,0,0.35)":"none"}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>}
+                    :<div style={{background:msg.role==="ai"?"rgba(255,217,61,0.10)":"rgba(255,255,255,0.05)",border:msg.role==="ai"?"1.5px solid rgba(255,200,100,0.45)":`1px solid rgba(255,255,255,0.08)`,borderRadius:12,padding:msg.role==="ai"?(isMobile?"14px 12px":"18px 20px"):"10px 14px",fontSize:msg.role==="ai"?(isMobile?14:17):13,fontFamily:msg.role==="ai"?"'Fraunces',serif":"'Inter',system-ui,-apple-system,sans-serif",fontStyle:msg.role==="ai"?"italic":"normal",fontWeight:msg.role==="ai"?400:400,color:msg.role==="ai"?"#FAF6EF":"#FFF",lineHeight:msg.role==="ai"?(isMobile?1.58:1.68):1.5,maxWidth:isMobile?"100%":"92%",boxShadow:msg.role==="ai"?"inset 0 1px 0 rgba(255,255,255,0.06)":"none",textShadow:msg.role==="ai"?"0 1px 2px rgba(0,0,0,0.35)":"none"}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>}
                 </div>
               ))}
               {loading&&<div style={{display:"flex",gap:6,animation:"msgIn 0.25s ease"}}><div style={{width:20,height:20,borderRadius:"50%",background:"#A9461D",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>✨</div><div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",padding:"4px 0"}}>thinking...</div></div>}
               <div ref={chatEnd}/>
             </div>
-            <div style={{padding:isMobile?"10px 16px":"10px",paddingRight:isMobile?80:10,borderTop:"1px solid #111D2A",display:"flex",gap:5,flexWrap:isMobile?"nowrap":"wrap",overflowX:"auto",flexShrink:0}}>
+            <div style={{padding:isMobile?"10px 12px":"10px",paddingRight:isMobile?72:10,borderTop:"1px solid #111D2A",display:"flex",gap:5,flexWrap:isMobile?"nowrap":"wrap",overflowX:"auto",flexShrink:0}}>
               {QUICK_ACTIONS.map(a=><button type="button" key={a} onClick={()=>setInput(a)} style={{background:"rgba(169,70,29,0.18)",border:"1px solid rgba(255,217,61,0.35)",borderRadius:20,padding:isMobile?"6px 12px":"7px 14px",fontSize:isMobile?11:15,fontWeight:700,color:"#FFD93D",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:isMobile?32:36}}>{a}</button>)}
             </div>
-            <div style={{padding:isMobile?"8px 16px":"8px 10px",borderTop:"1px solid #111D2A",display:"flex",gap:7,flexShrink:0}}>
+            <div style={{padding:isMobile?"8px 12px":"8px 10px",borderTop:"1px solid #111D2A",display:"flex",gap:7,flexShrink:0}}>
               <input style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",minHeight:44,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} value={input} onChange={e=>setInput(e.target.value)} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();sendMsg();}}} placeholder="Now let's dial it in — what are you thinking?" onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
               <button type="button" style={{background:"rgba(169,70,29,0.2)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:8,color:"#FFD93D",fontSize:15,padding:"8px 11px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={sendMsg}>↑</button>
             </div>

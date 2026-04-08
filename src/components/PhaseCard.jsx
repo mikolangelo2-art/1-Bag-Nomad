@@ -16,7 +16,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
       :{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:600,color:"#E8DCC8",textAlign:"center"};
     return(
     <div style={{borderRadius:13,border:"1px solid rgba(148,163,184,0.30)",borderTop:"1px solid rgba(203,213,225,0.42)",background:"rgba(0,8,20,0.35)",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)",overflow:"hidden",boxShadow:"inset 0 1px 0 rgba(255,255,255,0.05)",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`,opacity:0.80}}>
-      <div style={{padding:isMobile?"16px 16px":"14px 16px",borderLeft:"3px solid rgba(148,163,184,0.52)"}}>
+      <div style={{padding:isMobile?"16px 12px":"14px 16px",borderLeft:"3px solid rgba(148,163,184,0.52)"}}>
         <div style={{display:"flex",alignItems:"center",gap:isMobile?8:8,marginBottom:6,width:"100%"}}>
           {isMobile?<div style={{width:30,flexShrink:0}} aria-hidden />:<div style={{width:22,height:22,flexShrink:0}} aria-hidden />}
           <span style={{fontSize:isMobile?20:14,lineHeight:1,flexShrink:0}}>{phase.flag||"🏠"}</span>
@@ -59,7 +59,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
       <div className="tap-scale" onClick={()=>onTap?onTap(phase):setSheetOpen(true)}
         onMouseOver={e=>{e.currentTarget.style.background='rgba(10,7,5,0.62)';e.currentTarget.style.border='1.5px solid rgba(0,229,255,0.48)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.5),inset 0 1px 0 rgba(232,220,200,0.11),inset 1px 0 0 rgba(0,229,255,0.18),inset -1px 0 0 rgba(0,229,255,0.18),inset 0 -1px 0 rgba(0,229,255,0.10)';}}
         onMouseOut={e=>{e.currentTarget.style.background='rgba(10,7,5,0.50)';e.currentTarget.style.border='1.5px solid rgba(0,229,255,0.30)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(232,220,200,0.07),inset 1px 0 0 rgba(0,229,255,0.15),inset -1px 0 0 rgba(0,229,255,0.15),inset 0 -1px 0 rgba(0,229,255,0.08)';}}
-        style={{display:'flex',flexDirection:'column',padding:'18px 16px',background:'rgba(10,7,5,0.50)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',border:'1.5px solid rgba(0,229,255,0.30)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(232,220,200,0.07),inset 1px 0 0 rgba(0,229,255,0.15),inset -1px 0 0 rgba(0,229,255,0.15),inset 0 -1px 0 rgba(0,229,255,0.08)',animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*0.07}s both`}}>
+        style={{display:'flex',flexDirection:'column',padding:'18px 12px',background:'rgba(10,7,5,0.50)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',border:'1.5px solid rgba(0,229,255,0.30)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(232,220,200,0.07),inset 1px 0 0 rgba(0,229,255,0.15),inset -1px 0 0 rgba(0,229,255,0.15),inset 0 -1px 0 rgba(0,229,255,0.08)',animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*0.07}s both`}}>
         {/* Row 1: badge + flag + name + budget */}
         <div style={{display:'flex',alignItems:'center',gap:8,width:'100%',overflow:'hidden'}}>
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
@@ -79,7 +79,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
       </div>
       {!onTap&&<BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500} hideClose={anyAskOpen}>
         {/* Sheet header */}
-        <div style={{padding:'16px 16px 14px',borderBottom:'1px solid rgba(255,255,255,0.12)'}}>
+        <div style={{padding:'16px 12px 14px',borderBottom:'1px solid rgba(255,255,255,0.12)'}}>
           <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
             <div style={{width:32,height:32,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}52`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>{phase.id}</div>
             <span style={{fontSize:28,lineHeight:1}}>{phase.flag}</span>
@@ -101,7 +101,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
         </div>
         {/* Segments */}
         <div style={{paddingTop:4,paddingBottom:20}}>
-          <div style={{padding:'10px 16px 6px',fontSize:11,color:'rgba(255,255,255,0.3)',letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
+          <div style={{padding:'10px 12px 6px',fontSize:11,color:'rgba(255,255,255,0.3)',letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
           {phase.segments.map((seg,i)=>(
             <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onAskOpenChange={setAnyAskOpen} suggestion={findSuggestionForSegment(allSuggestions, seg.name, flatPhaseIndexForSegment(seg, allPhases))} suggestionsLoading={suggestionsLoading} prevCity={prevSegmentNameForSeg(seg, segPhases)} homeCity={homeCity}/>
           ))}

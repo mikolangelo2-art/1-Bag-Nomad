@@ -18,7 +18,7 @@ function CircularRing({value,max,label,sublabel,color,unit}) {
   const pct=Math.min(value/max,1);
   const dash=pct*circ,gap=circ-dash;
   return(
-    <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',padding:'16px 8px'}}>
+    <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',padding:'14px 12px'}}>
       <svg width="130" height="130" viewBox="0 0 130 130">
         <defs>
           <filter id={`glow-${color.replace('#','')}`} x="-50%" y="-50%" width="200%" height="200%">
@@ -62,7 +62,7 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
   if(isMobile) return(
     <>
       <div className="tap-scale" onClick={()=>setEditOpen(true)}
-        style={{display:'flex',alignItems:'center',minHeight:56,padding:'0 16px',borderBottom:isLast?'none':'1px solid rgba(232,220,200,0.05)',gap:12,background:'transparent'}}>
+        style={{display:'flex',alignItems:'center',minHeight:56,padding:'0 12px',borderBottom:isLast?'none':'1px solid rgba(232,220,200,0.05)',gap:12,background:'transparent'}}>
         <button onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:34,height:34,borderRadius:8,border:`1.5px solid ${item.owned?'#69F0AE':'rgba(255,255,255,0.15)'}`,background:item.owned?'rgba(105,240,174,0.1)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flexShrink:0,transition:'all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
           {item.owned&&<span style={{color:'#69F0AE',fontSize:15,fontWeight:900,lineHeight:1}}>✓</span>}
         </button>
@@ -293,7 +293,7 @@ Return ONLY a JSON array:
     const pct=catItems.length>0?Math.round((ownedInCat/catItems.length)*100):0;
     return(
       <div onClick={()=>{setActiveCategory(cat);setPackView('category');}}
-        style={{background:'rgba(255,255,255,0.015)',border:`1.5px solid rgba(255,255,255,0.16)`,borderTop:`1.5px solid ${cat.color}65`,borderRadius:12,padding:'14px 16px',marginBottom:8,cursor:'pointer',display:'flex',flexDirection:'column',gap:8,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}
+        style={{background:'rgba(255,255,255,0.015)',border:`1.5px solid rgba(255,255,255,0.16)`,borderTop:`1.5px solid ${cat.color}65`,borderRadius:12,padding:isMobile?'14px 12px':'14px 16px',marginBottom:8,cursor:'pointer',display:'flex',flexDirection:'column',gap:8,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}
         onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,0.035)'}
         onMouseOut={e=>e.currentTarget.style.background='rgba(255,255,255,0.015)'}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
@@ -324,19 +324,19 @@ Return ONLY a JSON array:
     return(
       <div style={{display:'flex',flexDirection:'column',flex:1,overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
         {/* Header */}
-        <div style={{display:'flex',alignItems:'center',padding:'16px',gap:12,borderBottom:'1px solid rgba(255,255,255,0.08)',flexShrink:0,background:'rgba(10,4,0,0.95)',position:'sticky',top:0,zIndex:10}}>
+        <div style={{display:'flex',alignItems:'center',padding:isMobile?'12px':'16px',gap:12,borderBottom:'1px solid rgba(255,255,255,0.08)',flexShrink:0,background:'rgba(10,4,0,0.95)',position:'sticky',top:0,zIndex:10}}>
           <button onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:22,cursor:'pointer',padding:'0 8px 0 0',lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>‹ <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,fontWeight:700,opacity:0.90}}>PACK LIST</span></button>
           <span style={{fontSize:18}}>{cat.icon}</span>
           <span style={{flex:1,fontSize:16,fontWeight:600,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{cat.label}</span>
           <span style={{fontSize:12,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{ownedInCat}/{catItems.length}</span>
         </div>
         {/* Subheader */}
-        <div style={{display:'flex',gap:16,padding:'10px 16px',borderBottom:'1px solid rgba(255,255,255,0.06)',flexShrink:0}}>
+        <div style={{display:'flex',gap:16,padding:isMobile?'10px 12px':'10px 16px',borderBottom:'1px solid rgba(255,255,255,0.06)',flexShrink:0}}>
           <span style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}><span style={{color:cat.color,fontWeight:700}}>{catW.toFixed(1)}{unit}</span> total weight</span>
           {catCost>0&&<span style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}><span style={{color:'#FFD93D',fontWeight:700}}>${catCost.toLocaleString()}</span> total cost</span>}
         </div>
         {/* Item list */}
-        <div style={{flex:1,padding:'8px 16px 24px'}}>
+        <div style={{flex:1,padding:isMobile?'8px 12px 24px':'8px 16px 24px'}}>
           {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1} {...rowProps}/>)}
           {catItems.length===0&&<div style={{textAlign:'center',padding:'40px 0'}}><div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,159,67,0.45)'}}>No items yet. Add one below.</div></div>}
           <div style={{marginTop:12,display:'flex',justifyContent:'center'}}>
@@ -424,7 +424,7 @@ Return ONLY a JSON array:
       {!isFullscreen&&pp&&(()=>{
         const getClimateAdvisory=(climate,season)=>{const map={'tropical-hot':{dry:{label:'Tropical',advice:'Pack light — reef-safe sunscreen essential'},wet:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'},default:{label:'Tropical',advice:'Pack light, breathable fabrics only'}},'tropical-wet':{default:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'}},'temperate-cool':{default:{label:'Temperate',advice:'Layer up — mornings cold, afternoons warm'}},'cold-alpine':{default:{label:'Alpine Cold',advice:'Warm layers essential — windproof shell critical'}},'mediterranean':{default:{label:'Mediterranean',advice:'Light clothing + one smart dinner outfit'}},'desert-hot':{default:{label:'Desert',advice:'UV protection critical — cover up at midday'}},'varied':{default:{label:'Mixed Climate',advice:'Pack for range — layers are your friend'}}};return map[climate]?.[season]||map[climate]?.default||{label:'Varied',advice:'Check conditions per destination'};};
         const ca=pp.climate?getClimateAdvisory(pp.climate,pp.season):null;
-        return <div style={{padding:"6px 16px",background:"rgba(255,159,67,0.04)",borderBottom:"1px solid rgba(255,159,67,0.12)",overflow:"hidden"}}>
+        return <div style={{padding:isMobile?"6px 12px":"6px 16px",background:"rgba(255,159,67,0.04)",borderBottom:"1px solid rgba(255,159,67,0.12)",overflow:"hidden"}}>
           <div style={{display:"flex",alignItems:"center",gap:6}}>
             <span style={{fontSize:11,color:"rgba(255,159,67,0.7)",flexShrink:0}}>✦</span>
             <span style={{fontSize:isMobile?11:12,color:"rgba(255,255,255,0.70)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Built for: {tripData.tripName||"Your Trip"} · {totalNights}n · {pp.tripType}{coupleMode?" · for 2":""}</span>
@@ -451,7 +451,7 @@ Return ONLY a JSON array:
         ))}
       </div>
       {/* Need to Buy pill (retained as a standalone shortcut) */}
-      {packTab==="pack"&&packView==="dashboard"&&<div data-coach="pack-filters" style={{display:"flex",padding:"8px 16px",borderBottom:"1px solid rgba(169,70,29,0.2)",background:"rgba(10,4,0,0.8)",flexShrink:0}}>
+      {packTab==="pack"&&packView==="dashboard"&&<div data-coach="pack-filters" style={{display:"flex",padding:isMobile?"8px 12px":"8px 16px",borderBottom:"1px solid rgba(169,70,29,0.2)",background:"rgba(10,4,0,0.8)",flexShrink:0}}>
         <button onClick={()=>setFilterCat(f=>f==="needtobuy"?"all":"needtobuy")} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 16px",borderRadius:20,border:"1px solid "+(filterCat==="needtobuy"?"rgba(255,107,107,0.85)":"rgba(255,107,107,0.25)"),background:filterCat==="needtobuy"?"rgba(255,107,107,0.18)":"transparent",cursor:"pointer",whiteSpace:"nowrap",minHeight:34,boxShadow:filterCat==="needtobuy"?"0 0 10px rgba(255,107,107,0.30)":"none",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
           <span style={{fontSize:13}}>{filterCat==="needtobuy"?"←":"🛒"}</span>
           <span style={{fontSize:11,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.6)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:filterCat==="needtobuy"?700:400,letterSpacing:1}}>{filterCat==="needtobuy"?"ALL ITEMS":"NEED TO BUY"}</span>
@@ -465,7 +465,7 @@ Return ONLY a JSON array:
         </>
       )}
       {packTab==="pack"&&packView==="dashboard"&&(
-        <div style={{overflowY:"auto",flex:1,padding:"12px 16px 32px"}}>
+        <div style={{overflowY:"auto",flex:1,padding:isMobile?"12px 12px 32px":"12px 16px 32px",boxSizing:"border-box"}}>
           {filterCat==="needtobuy"?(()=>{
             const unowned=[...items].filter(i=>!i.owned).sort((a,b)=>(parseFloat(b.cost)||0)-(parseFloat(a.cost)||0));
             const total=unowned.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
@@ -536,7 +536,7 @@ Return ONLY a JSON array:
         </div>
       )}
       {packTab==="tailor"&&(
-        <div style={{overflowY:"auto",flex:1,padding:"12px 16px"}}>
+        <div style={{overflowY:"auto",flex:1,padding:isMobile?"12px 12px":"12px 16px",boxSizing:"border-box"}}>
           <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.15),rgba(255,217,61,0.05))",border:"1px solid rgba(169,70,29,0.35)",borderRadius:12,marginBottom:16,overflow:"hidden"}}>
             <button onClick={()=>{const next=!packBriefCollapsed;setPackBriefCollapsed(next);if(next)try{localStorage.setItem(briefKey,"1");}catch(e){}}} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"none",border:"none",cursor:"pointer"}}>
               <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#FF9F43",letterSpacing:2,fontWeight:700}}>✦ CO-ARCHITECT PACK BRIEF</div>
@@ -628,7 +628,7 @@ Return ONLY a JSON array:
         </div>
       )}
       {packTab==="weight"&&(
-        <div style={{overflowY:"auto",flex:1,padding:"12px 16px"}}>
+        <div style={{overflowY:"auto",flex:1,padding:isMobile?"12px 12px":"12px 16px",boxSizing:"border-box"}}>
           <div style={{display:"flex",justifyContent:"flex-end",marginBottom:14}}>
             <button onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:15,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:6,padding:"7px 16px",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:700}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
           </div>
@@ -660,7 +660,7 @@ Return ONLY a JSON array:
           })}
         </div>
       )}
-      {(()=>{try{return localStorage.getItem("1bn_hide_all_tips")!=="1";}catch(e){return true;}})()&&<div style={{padding:"12px 16px",textAlign:"center"}}><button onClick={()=>{try{localStorage.setItem("1bn_hide_all_tips","1");}catch(e){}setShowCoach(false);setShowOnboard(false);setPackExplainerDismissed(true);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.50)",fontSize:11,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,padding:"6px 12px"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.65)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.50)"}>Hide all tips</button></div>}
+      {(()=>{try{return localStorage.getItem("1bn_hide_all_tips")!=="1";}catch(e){return true;}})()&&<div style={{padding:isMobile?"12px 12px":"12px 16px",textAlign:"center"}}><button onClick={()=>{try{localStorage.setItem("1bn_hide_all_tips","1");}catch(e){}setShowCoach(false);setShowOnboard(false);setPackExplainerDismissed(true);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.50)",fontSize:11,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,padding:"6px 12px"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.65)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.50)"}>Hide all tips</button></div>}
       {isMobile&&!isFullscreen&&packView==="dashboard"&&<div style={{height:"calc(64px + env(safe-area-inset-bottom))"}}/>}
       {isMobile&&!isFullscreen&&<BottomNav activeTab="pack" onTab={t=>{if(t==="pack")return;if(onGoToTab)onGoToTab(t);else onExpedition();}}/>}
       </div>
