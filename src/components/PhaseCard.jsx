@@ -6,7 +6,7 @@ import { findSuggestionForSegment, flatPhaseIndexForSegment, prevSegmentNameForS
 import SegmentRow from './SegmentRow';
 import BottomSheet from './BottomSheet';
 
-function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions,suggestionsLoading,allPhases=[],segPhases=[],homeCity=""}) {
+function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions,suggestionsLoading,allPhases=[],segPhases=[],homeCity="",plannedOverBudget=false}) {
   const isMobile=useMobile();
 
   // ── Return Trip variant — title row mirrors destination cards (centered name) ──
@@ -67,7 +67,10 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
             <span style={{fontSize:20,lineHeight:1}}>{phase.flag}</span>
           </div>
           <div style={{flex:1,fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:500,color:'#E8DCC8',lineHeight:1.1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',minWidth:0}}>{phase.name}</div>
-          <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:700,color:'#FFD93D',whiteSpace:'nowrap',flexShrink:0}}>{fmt(phase.totalBudget)}</div>
+          <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
+            {plannedOverBudget&&<span style={{fontSize:10,fontWeight:700,letterSpacing:0.5,color:'#FF6B6B',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>⚠ OVER</span>}
+            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:700,color:'#FFD93D',whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</div>
+          </div>
         </div>
         {/* Row 2: date + nights/dives */}
         <div style={{display:'flex',alignItems:'center',gap:6,marginTop:5,paddingLeft:38,overflow:'hidden',width:'100%'}}>
@@ -116,6 +119,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
           <span style={{fontSize:14,flexShrink:0}}>{phase.flag}</span>
           <span style={{flex:1,fontSize:15,fontWeight:600,color:"#E8DCC8",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",transition:"color 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>{phase.name}</span>
           {isNow&&<span style={{fontSize:9,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:20,padding:"2px 8px",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>ACTIVE</span>}
+          {plannedOverBudget&&<span style={{fontSize:9,fontWeight:700,letterSpacing:0.5,color:"#FF6B6B",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",flexShrink:0}}>⚠ OVER</span>}
           <span style={{fontSize:15,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",flexShrink:0}}>{fmt(phase.totalBudget)}</span>
           <span style={{fontSize:14,color:"rgba(255,255,255,0.30)",flexShrink:0}}>›</span>
         </div>
