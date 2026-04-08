@@ -103,34 +103,111 @@ export function loadSuggestionsFromStorage() {
 }
 
 // ── Transport Mode Detection ──────────────────────────────────
-export function detectMode(route) {
-  if (!route) return '';
-  const r = route.toLowerCase();
-  if (r.includes('flight') || r.includes('airline') || r.includes('airport') || r.includes('→') && (r.includes('air') || r.includes('united') || r.includes('american') || r.includes('delta') || r.includes('jetblue'))) return 'Flight';
-  if (r.includes('ferry') || r.includes('boat')) return 'Boat/Ferry';
-  if (r.includes('bus') || r.includes('shuttle') || r.includes('coach')) return 'Bus/Shuttle';
-  if (r.includes('train') || r.includes('rail')) return 'Train';
-  if (r.includes('drive') || r.includes('car') || r.includes('rental')) return 'Car/Drive';
-  return '';
+function routeHasLegArrow(route) {
+  return /→|–|—|->/.test(String(route || ""));
 }
 
-/** Stronger mode inference for Co-Architect route strings; falls back to leg-shaped routes as Flight when unambiguous. */
+/**
+ * Infer MODE from Co-Architect route copy. Priority: Train > Ferry > Bus > Car > Flight.
+ * Case-insensitive; phrases are substring checks; short tokens (AVE, ICE, DB) use word boundaries.
+ */
 export function inferTransportMode(route) {
-  const fromDetect = detectMode(route);
-  if (fromDetect) return fromDetect;
-  const raw = String(route || '');
+  const raw = String(route || "");
   const r = raw.toLowerCase();
-  if (/shinkansen|bullet train|high-speed rail|railjet|eurostar|\btgv\b|tramway|streetcar|\bjr\b/.test(r)) return 'Train';
-  if (/subway|\bmetro\b|underground|monorail|cable car|seaplane/.test(r)) return 'Train';
-  if (/water taxi|catamaran/.test(r)) return 'Boat/Ferry';
-  if (/uber|lyft|\btaxi\b|rideshare|pedicab/.test(r)) return 'Car/Drive';
-  if (/on foot|walking tour|hike to/.test(r)) return 'Car/Drive';
-  if (/→|–|—|->/.test(raw)) {
-    if (/\bferry\b|\bcruise\b|\bboat\b/.test(r)) return 'Boat/Ferry';
-    if (/\btrain\b|\brail\b|\bshuttle\b/.test(r)) return 'Train';
-    return 'Flight';
+  if (!r.trim()) return "";
+
+  const trainPhraseHit = [
+    "high-speed rail",
+    "high speed rail",
+    "high-speed train",
+    "high speed train",
+    "alfa pendular",
+    "eurostar",
+    "shinkansen",
+    "frecciarossa",
+    "thalys",
+    "italo",
+    "pendolino",
+    "renfe",
+    "sncf",
+    "deutsche bahn",
+    "amtrak",
+    "light rail",
+    "bullet train",
+    "railjet",
+    "railroad",
+    "railway",
+    "streetcar",
+    "tramway",
+    "commuter rail",
+    "regional rail",
+    "urban rail",
+    "overnight sleeper",
+    "sleeper train",
+    "trans-siberian",
+    "cable car",
+    "seaplane",
+  ].some((p) => r.includes(p));
+
+  const trainWordHit =
+    /\b(train|subway|tram|underground|monorail|metro)\b/.test(r) ||
+    /(?<!t)rail\b/.test(r) ||
+    /\b(tgv|ice|ave|jr|db|iryo|ouigo|obb|cfl|sbb)\b/i.test(raw);
+
+  if (trainPhraseHit || trainWordHit) return "Train";
+
+  const ferryPhraseHit = [
+    "ferry",
+    "catamaran",
+    "hydrofoil",
+    "seajets",
+    "blue star",
+    "water taxi",
+  ].some((p) => r.includes(p));
+  if (ferryPhraseHit || /\b(cruise|boat)\b/.test(r)) return "Boat/Ferry";
+
+  const busPhraseHit = [
+    "flixbus",
+    "national express",
+    "greyhound",
+    "megabus",
+  ].some((p) => r.includes(p));
+  if (busPhraseHit || /\b(bus|shuttle|coach)\b/.test(r)) return "Bus/Shuttle";
+
+  if (
+    /\b(uber|lyft|rideshare|pedicab)\b/.test(r) ||
+    /\btaxi\b/.test(r) ||
+    /\b(rental car|car rental|road trip)\b/.test(r) ||
+    /\b(drive|driving)\b/.test(r) ||
+    /\bcar\b/.test(r) ||
+    /on foot|walking tour|hike to/.test(r)
+  )
+    return "Car/Drive";
+
+  if (
+    /\b(flight|airline|airport|layover)\b/.test(r) ||
+    /\b(american airlines|united airlines|delta air|jetblue|lufthansa|emirates)\b/.test(r)
+  )
+    return "Flight";
+
+  if (
+    routeHasLegArrow(raw) &&
+    /\b(united|american|delta|jetblue)\b/.test(r)
+  )
+    return "Flight";
+
+  if (routeHasLegArrow(raw)) {
+    if (/\bferry\b|\bcruise\b|\bboat\b/.test(r)) return "Boat/Ferry";
+    if (/\btrain\b|(?<!t)rail\b/.test(r)) return "Train";
+    if (/\bshuttle\b/.test(r)) return "Bus/Shuttle";
+    return "Flight";
   }
-  return '';
+
+  return "";
+}
+
+export function detectMode(route) {
+  return inferTransportMode(route);
 }
 
 // ── Suggestion Card Styles ────────────────────────────────────

@@ -8,6 +8,7 @@ import {
   transportNotesFromSuggestion,
   transportSuggestionEstimateHint,
   parseTransportEstimateToCostDigits,
+  inferTransportMode,
 } from "./tripConsoleHelpers.js";
 
 describe("getSuggestionsTripId", () => {
@@ -128,6 +129,35 @@ describe("transportSuggestionEstimateHint", () => {
     assert.ok(mid.includes("Utila"));
     assert.ok(mid.includes("Roatan"));
     assert.ok(mid.toLowerCase().includes("leg"));
+  });
+});
+
+describe("inferTransportMode", () => {
+  it("prefers Train for European rail / AVE / Alfa Pendular (repro-style prose, no arrow)", () => {
+    assert.equal(
+      inferTransportMode(
+        "Lisbon Oriente to Sevilla-Santa Justa via CP Alfa Pendular to Madrid then AVE high-speed rail"
+      ),
+      "Train"
+    );
+  });
+
+  it("returns Flight when airport / flight keywords present", () => {
+    assert.equal(
+      inferTransportMode("SFO to NRT direct flight on JL"),
+      "Flight"
+    );
+  });
+
+  it("returns Boat/Ferry when ferry appears in description", () => {
+    assert.equal(
+      inferTransportMode("Athens to Santorini via ferry"),
+      "Boat/Ferry"
+    );
+  });
+
+  it("returns Flight for arrow leg with no other mode signals (ambiguous fallback)", () => {
+    assert.equal(inferTransportMode("City A → City B"), "Flight");
   });
 });
 
