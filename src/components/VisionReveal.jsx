@@ -145,14 +145,14 @@ Return ONLY valid JSON:
                 const c=TC[p.type]||"#FFD93D";
                 return(<div key={i} className="phase-row" style={{borderLeftColor:c,background:`linear-gradient(90deg,${c}08,#0C1520)`,animation:`phaseIn 0.4s ease ${i*.07}s both`}}>
                   <div style={{width:22,height:22,borderRadius:"50%",background:`${c}18`,border:`1px solid ${c}44`,color:c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,flexShrink:0,marginTop:1}}>{i+1}</div>
-                  <div style={{flex:1}}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?15:17,fontWeight:400,fontStyle:"italic",color:"rgba(255,245,220,0.94)",lineHeight:1.48,marginBottom:8,letterSpacing:"0.01em",textWrap:"balance",overflowWrap:"break-word",wordBreak:"break-word"}}>{p.why}</div>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2,flexWrap:"wrap"}}>
-                      <span style={{fontSize:14,fontWeight:600,color:"#FFF"}}>{p.flag||"🌍"} {p.destination}</span>
+                      <span style={{fontSize:isMobile?12:13,fontWeight:600,color:"rgba(255,255,255,0.92)",letterSpacing:0.3}}>{p.flag||"🌍"} {p.destination}</span>
                       <span style={{fontSize:11,color:c}}>{TI[p.type]||"✈️"} {p.type}</span>
-                      <span style={{fontSize:13,color:"rgba(255,255,255,0.82)",marginLeft:"auto"}}>🌙 {p.nights}n</span>
+                      <span style={{fontSize:isMobile?12:13,color:"rgba(255,255,255,0.82)",marginLeft:"auto"}}>🌙 {p.nights}n</span>
                     </div>
-                    <div style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.80)",marginBottom:3,letterSpacing:0.5}}>{p.country}</div>
-                    <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.88)",lineHeight:1.5}}>{p.why}</div>
+                    <div style={{fontSize:isMobile?12:13,fontWeight:500,color:"rgba(255,255,255,0.72)",marginBottom:0,letterSpacing:0.4}}>{p.country}</div>
                   </div>
                 </div>);
               })}
