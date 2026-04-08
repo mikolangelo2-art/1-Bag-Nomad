@@ -6,7 +6,7 @@ import { fmt, daysBetween } from '../utils/dateHelpers';
 import { urgencyColor } from '../constants/colors';
 import { loadSeg, saveSeg, loadCoach, loadOnboard, loadReturn, saveReturn, TI } from '../utils/storageHelpers';
 import { STATUS_CFG, STATUS_NEXT } from '../utils/tripConsoleHelpers';
-import { toSegPhases } from '../utils/tripHelpers';
+import { toSegPhases, computePhasePlannedSpend } from '../utils/tripHelpers';
 import ConsoleHeader from './ConsoleHeader';
 import BottomNav from './BottomNav';
 import CoachOverlay from './CoachOverlay';
@@ -83,7 +83,8 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
 
   const heroStats=[{label:"DEPARTS IN",value:daysToDepart,unit:"DAYS",color:"#FFD93D",glow:"rgba(255,217,61,0.35)"},{label:"NIGHTS",value:totalNights,unit:"NIGHTS",color:"#E8DCC8",glow:"rgba(232,220,200,0.2)"},...(totalDives>0?[{label:"DIVES",value:totalDives,unit:"DIVES",color:"#00E5FF",glow:"rgba(0,229,255,0.4)"}]:[]),{label:"BUDGET",value:fmt(totalBudget),unit:"TOTAL",color:"#FFD93D",glow:"rgba(255,217,61,0.35)"}];
   const TABS=[{id:"next",label:"🗺️ EXPEDITION"},{id:"budget",label:"💰 BUDGET"},{id:"book",label:"🗓 TIMELINE"},{id:"intel",label:"🔭 INTEL"},{id:"blueprint",label:isMobile?"✦":"✦ BLUEPRINT"}];
-  const {changedSegs,cancelledSegs}=(()=>{const allSeg=loadSeg();const cs=[],xs=[];segPhases.forEach(p=>p.segments.forEach(s=>{const d=allSeg[`${p.id}-${s.id}`]||{};const st=d.status||'planning';if(st==='changed')cs.push({phase:p,seg:s});if(st==='cancelled')xs.push({phase:p,seg:s});}));return{changedSegs:cs,cancelledSegs:xs};})();
+  const allSegD=loadSeg();
+  const {changedSegs,cancelledSegs}=(()=>{const cs=[],xs=[];segPhases.forEach(p=>p.segments.forEach(s=>{const d=allSegD[`${p.id}-${s.id}`]||{};const st=d.status||'planning';if(st==='changed')cs.push({phase:p,seg:s});if(st==='cancelled')xs.push({phase:p,seg:s});}));return{changedSegs:cs,cancelledSegs:xs};})();
 
   return(
     <div className="mc-root" style={{animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
@@ -156,7 +157,6 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           </div>
         </div>}
         {isMobile?(()=>{
-          const allSegD=loadSeg();
           let totalSegs=0,filledSegs=0;
           segPhases.forEach(p=>p.segments.forEach(s=>{totalSegs++;const d=allSegD[`${p.id}-${s.id}`]||{};if(d.transport?.mode||d.transport?.cost||d.stay?.name||d.stay?.cost||(d.activities?.length||0)>0)filledSegs++;}));
           const readPct=totalSegs>0?Math.round((filledSegs/totalSegs)*100):0;
@@ -305,7 +305,12 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
             );})()}
             {flatPhases.map(phase=>{
               const budget=phase.budget||phase.cost||0;
-              const pct=(budget/Math.max(...flatPhases.map(p=>p.budget||p.cost||0)))*100;
+              let rowPhaseSpend=null;
+              for(const sp of segPhases){const seg=sp.segments.find(s=>s.id===`${phase.id}a`);if(seg){rowPhaseSpend={id:sp.id,segments:[seg]};break;}}
+              const plannedSpend=rowPhaseSpend?computePhasePlannedSpend(rowPhaseSpend,allSegD).total:0;
+              const pct=budget>0?(plannedSpend/budget)*100:0;
+              const barW=Math.min(pct,100);
+              const barGrad=pct>100?`linear-gradient(90deg,#FF6B6B88,#FF6B6B)`: `linear-gradient(90deg,${phase.color}88,${phase.color})`;
               return(
                 <div key={phase.id} style={{background:"rgba(0,8,20,0.5)",border:"1px solid rgba(0,229,255,0.08)",borderRadius:8,padding:"9px 13px",borderLeft:"3px solid "+phase.color,marginBottom:6}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
@@ -315,8 +320,8 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
                     </div>
                     <span style={{fontSize:15,fontWeight:900,color:phase.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0,marginLeft:8}}>{fmt(budget)}</span>
                   </div>
-                  <div style={{height:6,background:"rgba(255,255,255,0.05)",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${phase.color}88,${phase.color})`,borderRadius:3,transition:"width 0.6s ease"}}/></div>
-                  <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}><div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.5)"}}>{fmt(Math.round(budget/Math.max(phase.nights,1)))}/night</div><div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.4)"}}>{Math.round(pct)}% of max</div></div>
+                  <div style={{height:6,background:"rgba(255,255,255,0.05)",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",width:barW+"%",background:barGrad,borderRadius:3,transition:"width 0.6s ease"}}/></div>
+                  <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}><div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.5)"}}>{fmt(Math.round(budget/Math.max(phase.nights,1)))}/night</div><div style={{fontSize:isMobile?11:13,color:pct>100?"#FF6B6B":"rgba(255,255,255,0.4)"}}>{Math.round(pct)}% allocated</div></div>
                 </div>
               );
             })}
