@@ -18,7 +18,7 @@ import PhaseDetailPage from './PhaseDetailPage';
 import Timeline from './Timeline';
 import IntelMap from './IntelMap';
 
-function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading,onUpdateTripData}) {
+function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading,onUpdateTripData,onTripAmbientContextChange}) {
   const isMobile=useMobile();
   const [tab,setTab]=useState(initialTab);
   const [intelMapActive,setIntelMapActive]=useState(false);
@@ -32,6 +32,14 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   const [showCoach,setShowCoach]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadCoach().trip;});
   const [showOnboard,setShowOnboard]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadOnboard().trip;});
   const [phaseDetailView,setPhaseDetailView]=useState(null);
+  const [caWorkspaceSegment,setCaWorkspaceSegment]=useState(null);
+  useEffect(()=>{if(!phaseDetailView)setCaWorkspaceSegment(null);},[phaseDetailView]);
+  useEffect(()=>{
+    if(!onTripAmbientContextChange)return;
+    if(!phaseDetailView){onTripAmbientContextChange({screen:"trip-console",phase:null,segment:null,tab:null});return;}
+    if(caWorkspaceSegment){onTripAmbientContextChange({screen:"segment-workspace",phase:phaseDetailView,segment:caWorkspaceSegment,tab:null});}
+    else{onTripAmbientContextChange({screen:"phase-detail",phase:phaseDetailView,segment:null,tab:null});}
+  },[phaseDetailView,caWorkspaceSegment,onTripAmbientContextChange]);
   const [warningFlags,setWarningFlags]=useState(()=>{try{const s=localStorage.getItem('1bn_warnings_v1');return s?JSON.parse(s):[];}catch(e){return[];}});
   useEffect(()=>{try{localStorage.setItem('1bn_warnings_v1',JSON.stringify(warningFlags));}catch(e){}},[warningFlags]);
   const dismissWarning=(idx)=>setWarningFlags(f=>f.filter((_,i)=>i!==idx));
@@ -89,7 +97,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
   return(
     <div className="mc-root" style={{animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
       <WorldMapBackground phases={tripData.phases||[]} activeCountry={phaseDetailView?.country} departureCity={depInput}/>
-      {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} homeCity={tripData.departureCity||tripData.city||""} segPhases={segPhases} warningFlags={warningFlags} onDismissWarning={dismissWarning} allPhases={tripData.phases||[]}/>}
+      {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} homeCity={tripData.departureCity||tripData.city||""} segPhases={segPhases} warningFlags={warningFlags} onDismissWarning={dismissWarning} allPhases={tripData.phases||[]} onAmbientSegmentChange={setCaWorkspaceSegment}/>}
       {showOnboard&&<OnboardCard storageKey="trip" ctaLabel="✦ ENTER MY EXPEDITION" onDismiss={()=>setShowOnboard(false)}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,letterSpacing:4,color:"rgba(0,229,255,0.75)",marginBottom:10}}>TRIP CONSOLE</div>

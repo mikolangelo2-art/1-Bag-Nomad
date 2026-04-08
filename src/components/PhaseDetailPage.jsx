@@ -8,7 +8,7 @@ import SegmentRow from './SegmentRow';
 import SegmentWorkspace from './SegmentWorkspace';
 import WorldMapBackground from './WorldMapBackground';
 
-function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsLoading,homeCity="",segPhases=[],warningFlags=[],onDismissWarning,allPhases=[]}) {
+function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsLoading,homeCity="",segPhases=[],warningFlags=[],onDismissWarning,allPhases=[],onAmbientSegmentChange}) {
   const isMobile=useMobile();
   const [activeSegment,setActiveSegment]=useState(null);
   useEffect(()=>{window.scrollTo(0,0);},[]);
@@ -19,6 +19,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       return()=>clearTimeout(t);
     }
   },[hintVisible]);
+  useEffect(()=>{onAmbientSegmentChange?.(activeSegment);},[activeSegment,onAmbientSegmentChange]);
   const allSegD=loadSeg();
   const plannedBreakdown=computePhasePlannedSpend(phase,allSegD);
   const plannedSpend=plannedBreakdown.total;
