@@ -159,6 +159,7 @@ RULES:
     return{tripName:data.tripName||"My Expedition",startDate,departureCity:data.city||"",vision:data.vision,visionNarrative:visionData.narrative,visionHighlight:visionData.highlight,goalLabel,
       budgetBreakdown:visionData.budgetBreakdown||null,travelerProfile:data.travelerProfile||null,packProfile:visionData.packProfile||null,
       phases:[...destPhases,returnPhaseHandoff],
+      budgetCap:(data.budgetMode!=="dream"&&Number(data.budgetAmount)>0)?Number(data.budgetAmount):0,
       totalNights,totalBudget:totalCost+(returnPhaseHandoff.budget||0),totalDives:items.filter(i=>i.type==="Dive").reduce((s,i)=>s+Math.floor(coerceNightsVal(i.nights)*1.5),0)};
   }
   return(
