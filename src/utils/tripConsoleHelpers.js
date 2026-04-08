@@ -240,6 +240,8 @@ TRANSPORT ROUTE + COST: The route string may describe the full path for context.
 
 For each phase: transport route+cost, stay name+cost, 2 activities+costs, food budget.
 
+STAY RULE: stay.recommendation MUST describe the specific property you named in stay.suggestions[0] — its actual character, price tier, and 1-2 distinctive features of that exact property. Do NOT use destination-generic descriptors. Do NOT write "traditional ryokan" unless the property actually is a ryokan. Do NOT write "boutique riad" unless the property actually is a riad. If you name a modern luxury hotel, describe that modern luxury hotel as it actually is. Property-specific, never destination-themed. Return ONLY the fields in the schema below — do not add extra fields like "type".
+
 Return ONLY JSON:
 {"phases":[{"phaseIndex":${offset},"phaseName":"...","transport":{"route":"...","estimatedCost":"$X-X","notes":"..."},"stay":{"recommendation":"...","suggestions":["Name1","Name2"],"estimatedNightly":"$X/night","estimatedTotal":"$X-X","notes":"..."},"activities":[{"name":"...","provider":"...","estimatedCost":"$X","notes":"..."}],"food":{"dailyBudget":"$X-X/day","recommendations":["..."],"notes":"..."}}]}
 

@@ -328,7 +328,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           {suggestion?.stay&&!isDism('stay')&&!showStayAccommodationCard&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
             <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{suggestion.stay.recommendation}</div>
-            <div style={{fontSize:14,color:'rgba(255,255,255,0.75)',marginBottom:8,lineHeight:1.45}}>{suggestion.stay.type}</div>
             {suggestion.stay.suggestions?.length>0&&<div style={{marginBottom:10}}>
               <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',letterSpacing:2,marginBottom:6,lineHeight:1.4}}>SELECT PROPERTY</div>
               {suggestion.stay.suggestions.map((prop,pi)=><div key={`stay-pick-${pi}-${String(prop).slice(0,48)}`} onClick={()=>setSelectedStayProp(prop)} style={{border:selectedStayProp===prop?'1px solid rgba(255,159,67,0.60)':'1px solid rgba(255,255,255,0.12)',borderRadius:8,padding:'10px 14px',marginBottom:6,cursor:'pointer',fontSize:13,color:selectedStayProp===prop?'#FF9F43':'rgba(255,255,255,0.75)',background:selectedStayProp===prop?'rgba(255,159,67,0.08)':'transparent',transition:'all 0.20s'}}>{prop}</div>)}
@@ -356,7 +355,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {!editingStay&&suggestion?.stay&&<CollapsibleSuggestion summaryCard confirmMessage="Replace your saved stay with this Co-Architect suggestion?" onSwitchToSuggestion={()=>{const s=suggestion.stay;const name=selectedStayProp||s.suggestions?.[0]||"";const alts=(s.suggestions||[]).filter(p=>p!==name);if(name)uS("name",name);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');}}>
               <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
               <div style={{fontSize:14,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{suggestion.stay.recommendation}</div>
-              <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',marginBottom:8,lineHeight:1.45}}>{suggestion.stay.type}</div>
               <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:6,lineHeight:1.45}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
               {suggestion.stay.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontStyle:'italic',marginBottom:8,lineHeight:1.5}}>{suggestion.stay.notes}</div>}
               <div style={disclaimerReadable}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
@@ -369,7 +367,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           {showStayAccommodationCard&&showStayResuggest&&suggestion?.stay&&<div className="sg-suggestion-card" style={suggestionCardStyle}>
             <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{suggestion.stay.recommendation}</div>
-            <div style={{fontSize:14,color:'rgba(255,255,255,0.75)',marginBottom:8,lineHeight:1.45}}>{suggestion.stay.type}</div>
             {suggestion.stay.suggestions?.length>0&&<div style={{marginBottom:10}}>
               <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',letterSpacing:2,marginBottom:6,lineHeight:1.4}}>SELECT PROPERTY</div>
               {suggestion.stay.suggestions.map((prop,pi)=><div key={`stay-resug-${pi}-${String(prop).slice(0,48)}`} onClick={()=>setSelectedStayProp(prop)} style={{border:selectedStayProp===prop?'1px solid rgba(255,159,67,0.60)':'1px solid rgba(255,255,255,0.12)',borderRadius:8,padding:'10px 14px',marginBottom:6,cursor:'pointer',fontSize:13,color:selectedStayProp===prop?'#FF9F43':'rgba(255,255,255,0.75)',background:selectedStayProp===prop?'rgba(255,159,67,0.08)':'transparent',transition:'all 0.20s'}}>{prop}</div>)}
@@ -415,7 +412,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {suggestion?.stay&&(isDism('stay')||planningOwnStay)&&<CollapsibleSuggestion>
               <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
               <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:6}}>{suggestion.stay.recommendation}</div>
-              <div style={{fontSize:14,color:'rgba(255,255,255,0.75)',marginBottom:8,lineHeight:1.45}}>{suggestion.stay.type}</div>
               {suggestion.stay.suggestions?.length>0&&<div style={{marginBottom:10}}>
                 <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',letterSpacing:2,marginBottom:6,lineHeight:1.4}}>SELECT PROPERTY</div>
                 {suggestion.stay.suggestions.map((prop,pi)=><div key={`stay-plan-${pi}-${String(prop).slice(0,48)}`} onClick={()=>setSelectedStayProp(prop)} style={{border:selectedStayProp===prop?'1px solid rgba(255,159,67,0.60)':'1px solid rgba(255,255,255,0.12)',borderRadius:8,padding:'10px 14px',marginBottom:6,cursor:'pointer',fontSize:13,color:selectedStayProp===prop?'#FF9F43':'rgba(255,255,255,0.75)',background:selectedStayProp===prop?'rgba(255,159,67,0.08)':'transparent',transition:'all 0.20s'}}>{prop}</div>)}
