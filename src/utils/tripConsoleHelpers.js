@@ -229,7 +229,7 @@ export function buildSegmentSuggestionsPrompt(tripData, travelerProfile, phasesS
   const home = tripData.departureCity || tripData.city || 'Home';
   const style = travelerProfile?.style || 'Independent';
   const group = travelerProfile?.group || 'Solo';
-  return `Travel advisor. ${group} ${style} traveler from ${home}. Budget: $${tripData.totalBudget||'flexible'}.
+  return `Co-architect. You know this traveler: ${group}, ${style} style, departing from ${home}. You've already seen their vision. Now build suggestions that reflect it — specific properties, named routes, real operators. Not 'a local restaurant' — the restaurant. Not 'a scenic route' — the route. Budget: $${tripData.totalBudget||'flexible'}.
 
 PHASES:
 ${phases.map((p, i) => {const globalIdx=offset+i;const from=globalIdx===0?home:(i===0?(tripData.phases[offset-1]?.name||tripData.phases[offset-1]?.destination||'Previous'):(phases[i-1].name||phases[i-1].destination||'Previous'));return `${globalIdx+1}. FROM ${from} → ${p.name||p.destination||p.city}, ${p.country} | ${p.arrival}→${p.departure} | ${p.nights}n | $${p.budget||p.cost}`;}).join('\n')}
