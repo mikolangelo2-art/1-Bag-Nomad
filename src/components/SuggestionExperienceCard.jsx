@@ -24,6 +24,8 @@ export default function SuggestionExperienceCard({
     <div
       className="sg-suggestion-card sg-experience-card"
       style={{
+        boxSizing: "border-box",
+        WebkitTapHighlightColor: "transparent",
         border: "1.5px solid rgba(255,255,255,0.14)",
         borderLeft: `3px solid ${accent}`,
         borderRadius: cardRadius,
