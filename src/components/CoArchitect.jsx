@@ -52,7 +52,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   function fmtD(d){return d.toLocaleDateString("en-US",{month:"short",day:"numeric"});}
   async function genInsight(){
     setLoading(true);
-    const res=await askAI(`Co-architect. Goal:"${goalLabel}". Vision:"${data.vision}". ${data.budgetMode!=="dream"?"Budget: "+data.budgetAmount:"No budget."} Items:${JSON.stringify(items.map(i=>({destination:i.destination,type:i.type,nights:i.nights})))} One sentence excitement. ONE clarifying question. Max 3 sentences.`,350,0.7);
+    const res=await askAI(`Co-architect. Goal:"${goalLabel}". Vision:"${data.vision}". ${data.budgetMode!=="dream"?"Budget: "+data.budgetAmount:"No budget."} Items:${JSON.stringify(items.map(i=>({destination:i.destination,type:i.type,nights:i.nights})))} Open with one sentence of genuine enthusiasm about a specific detail of their trip (do not prefix with a label like "Excitement:" — start directly with the substance). Then ONE clarifying question. Max 3 sentences total.`,350,0.7);
     setChat(p=>[...p,{role:"ai",text:res}]);setLoading(false);
   }
   async function sendMsg(){
