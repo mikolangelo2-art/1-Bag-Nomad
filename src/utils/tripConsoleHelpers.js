@@ -114,6 +114,25 @@ export function detectMode(route) {
   return '';
 }
 
+/** Stronger mode inference for Co-Architect route strings; falls back to leg-shaped routes as Flight when unambiguous. */
+export function inferTransportMode(route) {
+  const fromDetect = detectMode(route);
+  if (fromDetect) return fromDetect;
+  const raw = String(route || '');
+  const r = raw.toLowerCase();
+  if (/shinkansen|bullet train|high-speed rail|railjet|eurostar|\btgv\b|tramway|streetcar|\bjr\b/.test(r)) return 'Train';
+  if (/subway|\bmetro\b|underground|monorail|cable car|seaplane/.test(r)) return 'Train';
+  if (/water taxi|catamaran/.test(r)) return 'Boat/Ferry';
+  if (/uber|lyft|\btaxi\b|rideshare|pedicab/.test(r)) return 'Car/Drive';
+  if (/on foot|walking tour|hike to/.test(r)) return 'Car/Drive';
+  if (/→|–|—|->/.test(raw)) {
+    if (/\bferry\b|\bcruise\b|\bboat\b/.test(r)) return 'Boat/Ferry';
+    if (/\btrain\b|\brail\b|\bshuttle\b/.test(r)) return 'Train';
+    return 'Flight';
+  }
+  return '';
+}
+
 // ── Suggestion Card Styles ────────────────────────────────────
 export const suggestionCardStyle = {
   border: '1.5px solid rgba(255,255,255,0.14)',
