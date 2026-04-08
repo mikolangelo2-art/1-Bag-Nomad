@@ -218,7 +218,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
       </div>}
       {/* Tab bar */}
       {!isMobile&&(
-        <div style={{display:"flex",borderBottom:"1px solid rgba(232,220,200,0.06)",background:"rgba(0,15,35,0.95)",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch",position:intelMapActive?"fixed":"relative",top:intelMapActive?0:"auto",left:intelMapActive?0:"auto",right:intelMapActive?0:"auto",width:"100%",zIndex:100}}>
+        <div style={{display:"flex",boxSizing:"border-box",borderTop:"1px solid rgba(0,229,255,0.14)",borderBottom:"1px solid rgba(0,229,255,0.38)",background:"rgba(0,15,35,0.95)",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch",position:intelMapActive?"fixed":"relative",top:intelMapActive?0:"auto",left:intelMapActive?0:"auto",right:intelMapActive?0:"auto",width:"100%",zIndex:100}}>
           <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)",border:"none",borderRight:"1px solid rgba(0,229,255,0.2)",cursor:"pointer",flexShrink:0,color:"#00E5FF"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.22)"} onMouseOut={e=>e.currentTarget.style.background=isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)"}>
             <span style={{fontSize:15,lineHeight:1,textShadow:"0 0 10px rgba(0,229,255,0.9)"}}>{isFullscreen?"⊡":"⛶"}</span>
             <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
