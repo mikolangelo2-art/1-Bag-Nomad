@@ -23,7 +23,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   const [returnPhaseData]=useState(()=>(visionData.phases||[]).find(p=>p.type==="Return")||null);
   const [items,setItems]=useState(()=>(visionData.phases||[]).filter(p=>p.type!=="Return").map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:p.budget||estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8],why:p.why||"",caActivities:Array.isArray(p.caActivities)?p.caActivities.slice():[]})));
   const [startDate,setStartDate]=useState(data.date||"2026-09-16");
-  const [chat,setChat]=useState([{role:"ai",text:data.isRevision?"Welcome back — let's revise your expedition. ✏️\n\nYour itinerary is loaded. Tell me what you'd like to change.":"Welcome — I'm your expedition co-architect. ✨\n\nYour vision is incredible and I'm genuinely excited to help you build it.",isWelcome:true}]);
+  const [chat,setChat]=useState([{role:"ai",text:data.isRevision?"Welcome back — let's revise your expedition. ✏️\n\nYour itinerary is loaded. Tell me what you'd like to change.":"Welcome — I'm your 1 Bag Nomad co-architect. ✨\n\nYour vision is incredible and I'm genuinely excited to help you build it.",isWelcome:true}]);
   const [input,setInput]=useState("");
   const [loading,setLoading]=useState(false);
   const [editingId,setEditingId]=useState(null);
