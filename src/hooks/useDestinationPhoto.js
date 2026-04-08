@@ -53,7 +53,8 @@ export function useDestinationPhoto(destination, category) {
     [destination, category]
   );
   const cached = useMemo(() => readCache(cacheKey), [cacheKey]);
-  const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+  const key = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+  console.log("[1BN] Unsplash key present:", !!key);
 
   const [net, setNet] = useState({
     forKey: null,
@@ -63,13 +64,15 @@ export function useDestinationPhoto(destination, category) {
   });
 
   useEffect(() => {
-    if (!query || cached || !accessKey) return undefined;
+    if (!query || cached || !key) return undefined;
 
     let cancelled = false;
     const k = cacheKey;
     const apiUrl = `https://api.unsplash.com/photos/random?query=${encodeURIComponent(
       query
-    )}&orientation=landscape&client_id=${encodeURIComponent(accessKey)}`;
+    )}&orientation=landscape&client_id=${encodeURIComponent(key)}`;
+    const safeUrl = apiUrl.replace(/client_id=[^&]+/, "client_id=***");
+    console.log("[1BN] Unsplash fetch URL:", safeUrl);
 
     fetch(apiUrl)
       .then((res) => {
@@ -96,7 +99,8 @@ export function useDestinationPhoto(destination, category) {
           htmlLink,
         });
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("[1BN] Unsplash fetch error:", err);
         if (!cancelled) {
           setNet({
             forKey: k,
@@ -110,13 +114,12 @@ export function useDestinationPhoto(destination, category) {
     return () => {
       cancelled = true;
     };
-  }, [query, cacheKey, cached, accessKey]);
+  }, [query, cacheKey, cached, key]);
 
   const netMatches = net.forKey === cacheKey && net.done;
   const url = cached?.url ?? (netMatches ? net.url : null);
   const htmlLink = cached?.htmlLink ?? (netMatches ? net.htmlLink : null);
-  const ready = !query || !!cached || !accessKey || netMatches;
+  const ready = !query || !!cached || !key || netMatches;
 
   return { url, htmlLink, ready };
 }
-// unsplash key loaded
