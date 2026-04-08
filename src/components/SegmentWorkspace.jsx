@@ -42,6 +42,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const [editingTransport,setEditingTransport]=useState(false);
   const [planningOwn,setPlanningOwn]=useState(false);
   const [transportFocused,setTransportFocused]=useState(false);
+  const [transportConfirmed,setTransportConfirmed]=useState(false);
   const [editingStay,setEditingStay]=useState(false);
   const [selectedStayProp,setSelectedStayProp]=useState("");
   const [showStayResuggest,setShowStayResuggest]=useState(false);
@@ -123,13 +124,16 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
       setAiLoad(false);
     }
   }
-  const acceptTransport=(t)=>{let mode=inferTransportMode(t.route);if(!mode&&/→|–|—|->/.test(String(t.route||"")))mode="Flight";if(mode)uT("mode",mode);uT("from",prevCity||homeCity||"");uT("to",segment.name||"");uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",transportNotesFromSuggestion(t,{prevCity,homeCity,segmentName:segment.name}));dismiss('transport');};
-  const clearTransport=()=>{setDet(d=>({...d,transport:{mode:"",from:"",to:"",departDate:"",departTime:"",arriveDate:"",arriveTime:"",depTime:"",arrTime:"",cost:"",notes:"",link:""}}));const nd={...dismissed};delete nd[`${dismissKey}_transport`];setDismissed(nd);saveDismissed(nd);setEditingTransport(false);setPlanningOwn(false);};
+  const acceptTransport=(t)=>{let mode=inferTransportMode(t.route);if(!mode&&/→|–|—|->/.test(String(t.route||"")))mode="Flight";if(mode)uT("mode",mode);uT("from",prevCity||homeCity||"");uT("to",segment.name||"");uT("cost",(t.estimatedCost||"").split('-')[0].replace(/[^0-9]/g,''));uT("notes",transportNotesFromSuggestion(t,{prevCity,homeCity,segmentName:segment.name}));dismiss('transport');setTransportConfirmed(true);};
+  const clearTransport=()=>{setDet(d=>({...d,transport:{mode:"",from:"",to:"",departDate:"",departTime:"",arriveDate:"",arriveTime:"",depTime:"",arrTime:"",cost:"",notes:"",link:""}}));const nd={...dismissed};delete nd[`${dismissKey}_transport`];setDismissed(nd);saveDismissed(nd);setEditingTransport(false);setPlanningOwn(false);setTransportConfirmed(false);};
+  const saveManualTransport=()=>{const hasEndpoints=!isRowEmpty(det.transport?.from)&&!isRowEmpty(det.transport?.to);if(!hasEndpoints)return;if(transportEst&&!det.transport.cost){const d=parseTransportEstimateToCostDigits(transportEst.estimate);if(d)uT("cost",d);}setTransportConfirmed(true);setTransportFocused(false);};
+  // Auto-confirm on mount if a previously-saved leg already has endpoints (preserve legacy data).
+  useEffect(()=>{if(!isRowEmpty(det.transport?.from)&&!isRowEmpty(det.transport?.to)&&(det.transport?.mode||det.transport?.cost||det.transport?.notes))setTransportConfirmed(true);/* eslint-disable-next-line */},[]);
   const acceptStay=(s)=>{const primary=s.suggestions?.[0]||"";const alts=s.suggestions?.slice(1)||[];if(primary)uS("name",primary);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');};
   const acceptActivity=(a,suggestionIdx=null)=>{const sentences=(a.notes||"").split(/(?<=[.!?])\s+/);const brief=sentences[0]||"";const tipText=sentences.slice(1).join(' ');const row={name:a.name,brief,tip:tipText,date:"",cost:(a.estimatedCost||"").match(/\d+/)?.[0]||"",notes:`${a.provider||""}${tipText?`\n${tipText}`:""}`,provider:a.provider||"",id:Date.now()+Math.random()};if(suggestionIdx!=null)row.suggestionActivityIdx=suggestionIdx;setDet(d=>({...d,activities:[...d.activities,row]}));};
   // Leg endpoints set: show transport card + EDIT; keep planning form visible until then (avoid unmounting MODE/COST on first cost digit).
   const transportEndpointsLocked=!isRowEmpty(det.transport?.from)&&!isRowEmpty(det.transport?.to);
-  const transportLegLocked=(!transportFocused)&&transportEndpointsLocked;
+  const transportLegLocked=(!transportFocused)&&transportEndpointsLocked&&transportConfirmed;
   // A2 Travel: hide transport suggestion only when from+to locked (not on mode+cost alone — avoids layout jump).
   const hideTransportSuggestion=transportLegLocked;
   const travelSummaryDateLine=formatTravelLegDates(det.transport);
@@ -313,6 +317,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {transportDateTimeGrid}
             <div style={{marginTop:10}}><SDF label="BOOKING LINK" value={det.transport.link||""} onChange={v=>uT("link",v)} placeholder="https://..." accent="#00E5FF"/></div>
             <div style={{marginTop:8}}><SDF label="NOTES" value={det.transport.notes} onChange={v=>uT("notes",v)} placeholder="e.g. 1) Flight AA… 2) Shuttle to pier 3) Utila ferry — refs & costs per leg" accent="#00E5FF" multiline/></div>
+            {(()=>{const ready=!isRowEmpty(det.transport?.from)&&!isRowEmpty(det.transport?.to);return <button type="button" disabled={!ready} onClick={saveManualTransport} style={{marginTop:12,width:'100%',padding:'12px',borderRadius:8,border:'1px solid '+(ready?'rgba(0,229,255,0.45)':'rgba(255,255,255,0.10)'),background:ready?'rgba(0,229,255,0.12)':'rgba(255,255,255,0.03)',color:ready?'#00E5FF':'rgba(255,255,255,0.30)',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1.5,cursor:ready?'pointer':'not-allowed',minHeight:44}}>SAVE TRANSPORT</button>;})()}
             {suggestion?.transport&&isDism('transport')&&<CollapsibleSuggestion>
               <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
               <div style={{fontSize:14,fontWeight:700,color:'#FFD93D',marginBottom:8,lineHeight:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>This leg: {plannedLegFrom} → {plannedLegTo}<span style={{color:'rgba(255,245,220,0.45)',fontWeight:600}}> · </span>Est. {suggestion.transport.estimatedCost}</div>
