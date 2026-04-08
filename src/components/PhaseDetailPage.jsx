@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { fmt, fD } from '../utils/dateHelpers';
 import { findSuggestionForSegment, flatPhaseIndexForSegment, prevSegmentNameForSeg } from '../utils/tripConsoleHelpers';
+import { computePhasePlannedSpend } from '../utils/tripHelpers';
+import { loadSeg } from '../utils/storageHelpers';
 import SegmentRow from './SegmentRow';
 import SegmentWorkspace from './SegmentWorkspace';
 import WorldMapBackground from './WorldMapBackground';
@@ -17,6 +19,14 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       return()=>clearTimeout(t);
     }
   },[hintVisible]);
+  const allSegD=loadSeg();
+  const plannedBreakdown=computePhasePlannedSpend(phase,allSegD);
+  const plannedSpend=plannedBreakdown.total;
+  const phaseCap=Number(phase.totalBudget)||0;
+  const allocPct=phaseCap>0?Math.round((plannedSpend/phaseCap)*100):0;
+  const barFillPct=Math.min(allocPct,100);
+  const spendOverCap=phaseCap>0&&plannedSpend>phaseCap;
+  const barColor=spendOverCap?'#FF6B6B':'#FFD93D';
   return(
     <>
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:'#120A04',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
@@ -35,6 +45,15 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
         {isMobile&&<span style={{flex:1,fontSize:18,fontWeight:500,color:'#FFFFFF',fontFamily:"'Fraunces',serif"}}>{phase.name}</span>}
         {!isMobile&&<div style={{flex:1}}/>}
         <span style={{fontSize:14,fontWeight:700,color:'#FFD93D',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{fmt(phase.totalBudget)}</span>
+      </div>
+      <div style={{padding:'8px 0 10px',borderBottom:'1px solid rgba(0,229,255,0.08)'}}>
+        <div style={{height:6,background:'rgba(255,255,255,0.06)',borderRadius:3,overflow:'hidden',marginBottom:8}}>
+          <div style={{height:'100%',width:`${barFillPct}%`,background:barColor,borderRadius:3,transition:'width 0.5s ease'}}/>
+        </div>
+        <div style={{display:'flex',flexWrap:'wrap',alignItems:'center',justifyContent:'space-between',gap:8}}>
+          <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.75)'}}>{fmt(plannedSpend)} / {fmt(phase.totalBudget)} · {allocPct}%</span>
+          {spendOverCap&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm over budget on the ${phase?.name||'this'} phase. Can you suggest alternatives that fit within my ${fmt(phase.totalBudget)} phase budget?`}}))} style={{background:'rgba(255,217,61,0.12)',border:'1px solid rgba(255,217,61,0.35)',borderRadius:8,color:'#FFD93D',fontSize:11,fontWeight:600,padding:'6px 12px',cursor:'pointer',letterSpacing:0.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Ask Co-Architect for alternatives</button>}
+        </div>
       </div>
       {/* First-visit breadcrumb hint */}
       {hintVisible&&<div style={{fontSize:11,letterSpacing:'0.12em',color:'rgba(0,229,255,0.35)',padding:'6px 0 0',textAlign:'center',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>TAP ‹ TO RETURN TO EXPEDITION</div>}
