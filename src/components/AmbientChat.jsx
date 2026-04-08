@@ -18,11 +18,11 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
     :scr==="segment-workspace"?`You are the Co-Architect. User is planning: Segment: ${currentSegment?.name||"unknown"}. Dates: ${currentSegment?.arrival||""} to ${currentSegment?.departure||""}. Nights: ${currentSegment?.nights||0}. Current tab: ${currentTab||"overview"}. Help fill in details for this specific segment. Be concise.`
     :scr==="pack-console"?`You are the Co-Architect and packing strategist. User is packing for ${tripData?.tripName||"their expedition"} — ${tripData?.totalNights||0} nights across ${[...new Set(phases.map(p=>p.country))].length} countries. Help them pack light and smart. Be concise.`
     :`You are the Co-Architect travel assistant for 1 Bag Nomad. Help the user with their expedition planning. Be concise and warm.`;
-  const openLine=scr==="trip-console"?"Your expedition is taking shape. What would you like to refine?"
-    :scr==="phase-detail"?`${currentPhase?.name||"This phase"} — what would you like to know?`
-    :scr==="segment-workspace"?`Planning ${currentSegment?.name||"this segment"}. How can I help?`
-    :scr==="pack-console"?"Let's make sure you're packing light. What do you need?"
-    :"Your Co-Architect is here. What's on your mind?";
+  const openLine=scr==="trip-console"?"Your expedition is taking shape — I can see it coming together. What do you want to dial in next?"
+    :scr==="phase-detail"?`${currentPhase?.name||"This phase"} is next. What do you want to figure out first — how to get there, where to stay, or what to do?`
+    :scr==="segment-workspace"?`${currentSegment?.name||"This segment"} — let's make this one count. What are you working on?`
+    :scr==="pack-console"?"One bag. Let's make sure everything in it earns its place. What do you need to think through?"
+    :"Your Co-Architect is here. What's pulling at you?";
   const subtitle=scr==="phase-detail"?currentPhase?.name?.toUpperCase():scr==="segment-workspace"?currentSegment?.name?.toUpperCase():scr==="pack-console"?"PACK CONSOLE":tripData?.tripName?.toUpperCase()||"";
   const send=async()=>{if(!input.trim()||loading)return;const userMsg=input;setInput("");const newMsgs=[...msgs,{role:"user",text:userMsg}];setMsgs(newMsgs);setLoading(true);try{const history=newMsgs.map(m=>`${m.role==="user"?"User":"Co-Architect"}: ${m.text}`).join("\n");const response=await askAI(`${ctx}\n\nConversation:\n${history}\n\nCo-Architect:`,800);setMsgs([...newMsgs,{role:"ai",text:response}]);}catch(e){setMsgs([...newMsgs,{role:"ai",text:"I'm having trouble connecting. Try again in a moment."}]);}setLoading(false);};
   const parseMarkdown=(text)=>{if(!text)return null;const parts=text.split(/(\*\*[^*]+\*\*)/g);return parts.map((part,i)=>{if(part.startsWith('**')&&part.endsWith('**'))return <strong key={i} style={{fontWeight:600,color:'#FFD93D'}}>{part.slice(2,-2)}</strong>;return <span key={i}>{part}</span>;});};
