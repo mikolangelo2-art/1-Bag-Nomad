@@ -135,6 +135,14 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const travelSummaryDateLine=formatTravelLegDates(det.transport);
   const transportCostModeParts=(()=>{const p=[];if(!travelSummaryDateLine){const dpt=(det.transport.departTime||det.transport.depTime||"").trim();const arv=(det.transport.arriveTime||det.transport.arrTime||"").trim();if(dpt)p.push(`Depart ${dpt}`);if(arv)p.push(`Arrive ${arv}`);}if(det.transport.cost)p.push(`Est. $${det.transport.cost}`);if(det.transport.mode&&det.transport.from)p.push(det.transport.mode);return p;})();
   useEffect(()=>{if(transportLegLocked)setPlanningOwn(false);},[transportLegLocked]);
+  const transportCommittedRef=useRef(null);
+  const wasTransportLegLockedRef=useRef(false);
+  useEffect(()=>{
+    if(transportLegLocked&&!wasTransportLegLockedRef.current){
+      requestAnimationFrame(()=>{transportCommittedRef.current?.scrollIntoView({behavior:"smooth",block:"nearest",inline:"nearest"});});
+    }
+    wasTransportLegLockedRef.current=transportLegLocked;
+  },[transportLegLocked]);
   useEffect(()=>{if(!isRowEmpty({from:det.transport?.from,to:det.transport?.to,mode:det.transport?.mode,cost:det.transport?.cost}))return;const d={...dismissed};delete d[`${dismissKey}_transport`];setDismissed(d);saveDismissed(d);},[det.transport.from,det.transport.to,det.transport.mode,det.transport.cost]);
   const stayNameTrim=(det.stay?.name||"").trim();
   const hasS=stayNameTrim.length>0;
@@ -245,7 +253,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <button type="button" onClick={()=>{dismiss('transport');setPlanningOwn(true);}} style={dismissBtnStyle}>PLAN MY OWN</button>
             </div>
           </div>}
-          {transportLegLocked&&<div style={{border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:14,background:'rgba(0,229,255,0.06)',padding:'18px 20px',marginBottom:14,display:'flex',flexDirection:'column'}}>
+          {transportLegLocked&&<div ref={transportCommittedRef} style={{border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:14,background:'rgba(0,229,255,0.06)',padding:'18px 20px',marginBottom:14,display:'flex',flexDirection:'column'}}>
             <div style={{flex:1,minHeight:0}}>
             <div style={{display:'flex',alignItems:'center',marginBottom:10}}>
               <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,flex:1}}>✈️ TRANSPORT</span>
