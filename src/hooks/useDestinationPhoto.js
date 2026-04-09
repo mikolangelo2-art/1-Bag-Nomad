@@ -1,6 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 
-const LS_PREFIX = "1bn_unsplash_v1_";
+/**
+ * Mirror vision-sequence logic: specific, then cultural, then regional.
+ * Never default to category-generic macros; bias queries toward scene, street, exterior, plaza.
+ */
+const LS_PREFIX = "1bn_unsplash_v2_";
 
 function slugPart(s) {
   return String(s || "")
@@ -18,13 +22,94 @@ export function unsplashCacheKey(destination, category) {
   return `${LS_PREFIX}${d}__${c}`;
 }
 
-export function buildUnsplashQuery(destination, category) {
+function normalizeCountry(country) {
+  return String(country || "").trim();
+}
+
+function localeHints(destination, country) {
+  return `${String(destination || "")} ${normalizeCountry(country)}`.toLowerCase();
+}
+
+function isIberian(destination, country) {
+  return /\b(spain|espa\u00f1a|portugal|spanish|portuguese|andalus|seville|sevilla|lisbon|lisboa|madrid|barcelona|valencia|granada|c[o\u00f3]rdoba|oporto|porto|gibraltar)\b/i.test(
+    localeHints(destination, country)
+  );
+}
+
+function isCaribbeanOrAndes(destination, country) {
+  return /\b(jamaica|kingston|caribbean|belize|cuba|dominican|haiti|barbados|trinidad|medell[i\u00ed]n|colombia|cartagena|bogot[a\u00e1]|quito|peru|ecuador)\b/i.test(
+    localeHints(destination, country)
+  );
+}
+
+/** Session 43+ activity cleaner: strip filler; keep up to 3 words. */
+export function cleanActivityCategory(category) {
+  return String(category || "")
+    .trim()
+    .replace(/\b(tour|trip|day|with|and|the|a|an|of|to|at|in|for|full|private|guided)\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .slice(0, 3)
+    .join(" ");
+}
+
+function dedupeQueries(queries) {
+  const seen = new Set();
+  const out = [];
+  for (const q of queries) {
+    const n = String(q).trim().toLowerCase();
+    if (!n || seen.has(n)) continue;
+    seen.add(n);
+    out.push(String(q).trim());
+  }
+  return out;
+}
+
+/**
+ * Ordered list: try each until Unsplash returns an image (handled in the hook).
+ * Tier 1 = place-specific experience; tier 2 = cultural / old town; tier 3 = country.
+ */
+export function buildUnsplashQueryTiers(destination, category, country) {
   const d = String(destination || "").trim();
-  if (!d) return "";
-  if (category === "food") return `${d} food`;
-  if (category === "stay") return `${d} accommodation`;
-  const extra = String(category || "").trim();
-  return extra ? `${d} ${extra}` : d;
+  if (!d) return [];
+  const co = normalizeCountry(country);
+  const tiers = [];
+
+  if (category === "food") {
+    if (isIberian(d, co)) {
+      tiers.push(`${d} tapas bar market street scene`);
+    } else if (isCaribbeanOrAndes(d, co)) {
+      tiers.push(`${d} street food market outdoor scene`);
+    } else {
+      tiers.push(`${d} restaurant terrace dining street scene`);
+    }
+    tiers.push(`${d} old town plaza street`, `${d} skyline golden hour city`);
+    if (co) tiers.push(`${co} architecture travel`);
+    return dedupeQueries(tiers);
+  }
+
+  if (category === "stay") {
+    tiers.push(
+      `${d} boutique hotel courtyard rooftop exterior`,
+      `${d} hotel lobby interior courtyard`,
+      `${d} old town street evening`
+    );
+    if (co) tiers.push(`${co} historic city architecture`);
+    return dedupeQueries(tiers);
+  }
+
+  const activityClean = cleanActivityCategory(category);
+  if (activityClean) tiers.push(`${d} ${activityClean}`);
+  tiers.push(`${d} old town street scene`, `${d} plaza skyline golden hour`);
+  if (co) tiers.push(`${co} landscape travel`);
+  return dedupeQueries(tiers);
+}
+
+/** Primary query only (compat / debugging). */
+export function buildUnsplashQuery(destination, category, country) {
+  const tiers = buildUnsplashQueryTiers(destination, category, country);
+  return tiers[0] || "";
 }
 
 function readCache(cacheKey) {
@@ -40,14 +125,13 @@ function readCache(cacheKey) {
 }
 
 /**
- * Fetches one landscape photo per (destination, category); caches in localStorage.
- * category: "food" | "stay" | or activity-specific string for "{destination} {category}".
- * Calls /api/unsplash (Vercel serverless) so the access key stays server-side.
+ * Fetches via /api/unsplash; tries query tiers until one returns a photo.
+ * @param {string} [country] optional; improves tier-3 regional fallback.
  */
-export function useDestinationPhoto(destination, category) {
-  const query = useMemo(
-    () => buildUnsplashQuery(destination, category),
-    [destination, category]
+export function useDestinationPhoto(destination, category, country) {
+  const queryTiers = useMemo(
+    () => buildUnsplashQueryTiers(destination, category, country),
+    [destination, category, country]
   );
   const cacheKey = useMemo(
     () => unsplashCacheKey(destination, category),
@@ -63,58 +147,64 @@ export function useDestinationPhoto(destination, category) {
   });
 
   useEffect(() => {
-    if (!query || cached) return undefined;
+    if (!queryTiers.length || cached) return undefined;
 
     let cancelled = false;
     const k = cacheKey;
-    const apiUrl = `/api/unsplash?query=${encodeURIComponent(query)}&orientation=landscape`;
 
-    fetch(apiUrl)
-      .then((res) => {
-        if (!res.ok) throw new Error(String(res.status));
-        return res.json();
-      })
-      .then((data) => {
+    (async () => {
+      for (const q of queryTiers) {
         if (cancelled) return;
-        const imgUrl = data?.urls?.regular || data?.urls?.small || null;
-        const htmlLink =
-          data?.links?.html ||
-          "https://unsplash.com/?utm_source=1bag_nomad&utm_medium=referral";
-        if (imgUrl && k) {
-          try {
-            localStorage.setItem(k, JSON.stringify({ url: imgUrl, htmlLink }));
-          } catch {
-            /* quota */
+        try {
+          const res = await fetch(
+            `/api/unsplash?query=${encodeURIComponent(q)}&orientation=landscape`
+          );
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (cancelled) return;
+          const imgUrl = data?.urls?.regular || data?.urls?.small || null;
+          const htmlLink =
+            data?.links?.html ||
+            "https://unsplash.com/?utm_source=1bag_nomad&utm_medium=referral";
+          if (imgUrl) {
+            if (k) {
+              try {
+                localStorage.setItem(k, JSON.stringify({ url: imgUrl, htmlLink }));
+              } catch {
+                /* quota */
+              }
+            }
+            setNet({
+              forKey: k,
+              done: true,
+              url: imgUrl,
+              htmlLink,
+            });
+            return;
           }
+        } catch (err) {
+          console.error("[1BN] Unsplash fetch error:", err);
         }
+      }
+      if (!cancelled) {
         setNet({
           forKey: k,
           done: true,
-          url: imgUrl,
-          htmlLink,
+          url: null,
+          htmlLink: null,
         });
-      })
-      .catch((err) => {
-        console.error("[1BN] Unsplash fetch error:", err);
-        if (!cancelled) {
-          setNet({
-            forKey: k,
-            done: true,
-            url: null,
-            htmlLink: null,
-          });
-        }
-      });
+      }
+    })();
 
     return () => {
       cancelled = true;
     };
-  }, [query, cacheKey, cached]);
+  }, [queryTiers, cacheKey, cached]);
 
   const netMatches = net.forKey === cacheKey && net.done;
   const url = cached?.url ?? (netMatches ? net.url : null);
   const htmlLink = cached?.htmlLink ?? (netMatches ? net.htmlLink : null);
-  const ready = !query || !!cached || netMatches;
+  const ready = !queryTiers.length || !!cached || netMatches;
 
   return { url, htmlLink, ready };
 }
