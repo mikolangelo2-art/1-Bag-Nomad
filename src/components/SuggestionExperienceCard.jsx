@@ -7,6 +7,7 @@ export default function SuggestionExperienceCard({
   categoryLabel,
   title,
   descriptor,
+  descriptorFontSize = 14,
   middle,
   priceLine,
   priceSubline,
@@ -126,7 +127,7 @@ export default function SuggestionExperienceCard({
         {descriptor ? (
           <div
             style={{
-              fontSize: 15,
+              fontSize: descriptorFontSize,
               fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
               color: heroUrl ? "rgba(255,255,255,0.94)" : "rgba(255,255,255,0.78)",
               lineHeight: 1.45,

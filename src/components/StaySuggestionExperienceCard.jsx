@@ -114,6 +114,7 @@ export function StaySuggestionExperienceCard({
       categoryLabel="ACCOMMODATION"
       title={title}
       descriptor={descriptor}
+      descriptorFontSize={15}
       middle={middle}
       priceLine={priceLine}
       priceSubline={priceSubline}
