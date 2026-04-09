@@ -105,7 +105,7 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 @keyframes amberPulse{0%,100%{opacity:0.2;transform:scale(1)}50%{opacity:0.8;transform:scale(1.12)}}
 @keyframes shimmer{0%,100%{opacity:0.5}50%{opacity:1}}
 @keyframes shimmerBar{0%{background-position:200% 0}100%{background-position:-200% 0}}
-@keyframes visionGlow{0%,100%{box-shadow:0 0 32px rgba(255,159,67,0.14),inset 0 0 14px rgba(255,159,67,0.05)}50%{box-shadow:0 0 40px rgba(255,159,67,0.2),inset 0 0 18px rgba(255,159,67,0.07)}}
+@keyframes visionGlow{0%,100%{box-shadow:0 0 0 1px rgba(255,159,67,0.12),0 0 28px rgba(255,159,67,0.2),0 0 52px rgba(255,159,67,0.08),inset 0 0 16px rgba(255,159,67,0.06)}50%{box-shadow:0 0 0 1px rgba(255,159,67,0.18),0 0 36px rgba(255,159,67,0.26),0 0 68px rgba(255,159,67,0.11),inset 0 0 18px rgba(255,159,67,0.08)}}
 @keyframes msgIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 @keyframes logoPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 @keyframes ambientGlow{0%,100%{opacity:0.5}50%{opacity:0.9}}
@@ -181,8 +181,8 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 .g-desc{font-size:12px;line-height:1.5}
 .g-card.off .g-desc{color:rgba(255,255,255,0.78)}.g-card.on .g-desc{color:rgba(201,160,76,0.82)}
 .vision-textarea-wrap{width:100%;min-width:0;display:block;box-sizing:border-box}
-.vision-ta{width:100%;max-width:100%;min-width:0;box-sizing:border-box;display:block;background:rgba(255,159,67,0.03)!important;border:1px solid rgba(255,255,255,0.1)!important;border-left:4px solid rgba(255,159,67,0.85)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Inter',system-ui,-apple-system,sans-serif;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.3s,box-shadow 0.3s;margin-bottom:6px;word-break:normal;overflow-wrap:break-word;white-space:pre-wrap;box-shadow:0 0 32px rgba(255,159,67,0.14),inset 0 0 14px rgba(255,159,67,0.05)}
-.vision-ta::placeholder{font-family:'Playfair Display',serif;font-style:italic;font-weight:300;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.28);letter-spacing:0.01em}.vision-ta:focus{border:1px solid rgba(255,255,255,0.14)!important;border-left:4px solid rgba(255,159,67,1)!important;animation:none!important;box-shadow:0 0 36px rgba(255,159,67,0.22),inset 0 0 16px rgba(255,159,67,0.08)}
+.vision-ta{width:100%;max-width:100%;min-width:0;box-sizing:border-box;display:block;background:rgba(255,159,67,0.03)!important;border:4px solid rgba(255,159,67,0.85)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Inter',system-ui,-apple-system,sans-serif;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.3s,box-shadow 0.3s;margin-bottom:6px;word-break:normal;overflow-wrap:break-word;white-space:pre-wrap;box-shadow:0 0 0 1px rgba(255,159,67,0.12),0 0 28px rgba(255,159,67,0.2),0 0 52px rgba(255,159,67,0.08),inset 0 0 16px rgba(255,159,67,0.06)}
+.vision-ta::placeholder{font-family:'Playfair Display',serif;font-style:italic;font-weight:300;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.28);letter-spacing:0.01em}.vision-ta:focus{border:4px solid rgba(255,159,67,1)!important;animation:none!important;box-shadow:0 0 0 1px rgba(255,159,67,0.2),0 0 36px rgba(255,159,67,0.28),0 0 64px rgba(255,159,67,0.12),inset 0 0 18px rgba(255,159,67,0.09)}
 .f-label{font-size:13px;color:rgba(255,159,67,0.88);letter-spacing:0.10em}
 .f-input{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.30);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Inter',system-ui,-apple-system,sans-serif;outline:none;width:100%;box-sizing:border-box;transition:border-color 0.2s,box-shadow 0.2s}
 .f-input:focus{border-color:rgba(255,159,67,0.65);box-shadow:0 0 0 2px rgba(255,159,67,0.15),0 0 20px rgba(255,159,67,0.1)}.f-input::placeholder{color:rgba(255,255,255,0.40)}
