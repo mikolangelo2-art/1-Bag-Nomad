@@ -37,18 +37,7 @@ import PhaseDetailPage from './components/PhaseDetailPage';
 import PhaseCard from './components/PhaseCard';
 import MissionConsole from './components/MissionConsole';
 
-// Initialize PostHog — only in production
-if (typeof window !== "undefined") {
-  posthog.init("phc_O9hQZjy2VLHhAPuZPFhQeZTfAtXnXKfZh39qWZS966u", {
-    api_host: "https://us.i.posthog.com",
-    person_profiles: "identified_only",
-    capture_pageview: true,
-    capture_pageleave: true,
-    loaded: (ph) => {
-      if (window.location.hostname === "localhost") ph.opt_out_capturing();
-    }
-  });
-}
+// PostHog: initialized in src/posthogInit.js (imported from main.jsx)
 // ╔══════════════════════════════════════════════════════════════╗
 // ║  1 BAG NOMAD — v5_r4                                        ║
 // ║  Merged: v5 + TripConsoleSandbox · March 23 2026            ║
