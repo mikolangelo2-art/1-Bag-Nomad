@@ -1,4 +1,8 @@
 import SuggestionExperienceCard from "./SuggestionExperienceCard";
+import {
+  dismissBtnStyleOnHero,
+  stayBlurbForSelection,
+} from "../utils/tripConsoleHelpers";
 
 const STAY_ACCENT = "#69F0AE";
 const STAY_DISCLAIMER =
@@ -27,7 +31,8 @@ export function StaySuggestionExperienceCard({
   let descriptor;
   if (propsList.length > 0) {
     title = primaryName || `${segName} \u00B7 stays`;
-    descriptor = (s?.recommendation || "").trim() || null;
+    const blurb = stayBlurbForSelection(s, primaryName).trim();
+    descriptor = blurb || null;
   } else {
     title = (s?.recommendation || "").trim() || `${segName} \u00B7 stays`;
     descriptor = null;
@@ -101,6 +106,8 @@ export function StaySuggestionExperienceCard({
     ? { width: "100%", minHeight: 44 }
     : { flex: 1, minWidth: 120, minHeight: 44 };
 
+  const dismissMerged = heroUrl ? dismissBtnStyleOnHero : dismissBtnStyle;
+
   return (
     <SuggestionExperienceCard
       accent={STAY_ACCENT}
@@ -119,7 +126,7 @@ export function StaySuggestionExperienceCard({
       <button type="button" onClick={onUseThisStay} style={{ ...acceptBtnStyle, ...ctaFlex }}>
         USE THIS STAY
       </button>
-      <button type="button" onClick={onPlanMyOwn} style={{ ...dismissBtnStyle, ...ctaFlex }}>
+      <button type="button" onClick={onPlanMyOwn} style={{ ...dismissMerged, ...ctaFlex }}>
         {planMyOwnLabel}
       </button>
       {extraActions}

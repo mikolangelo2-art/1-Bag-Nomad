@@ -1,5 +1,6 @@
 import { useDestinationPhoto } from "../hooks/useDestinationPhoto";
 import SuggestionExperienceCard from "./SuggestionExperienceCard";
+import { dismissBtnStyleOnHero } from "../utils/tripConsoleHelpers";
 
 const ACT_ACCENT = "#FFD93D";
 const DEFAULT_ACT_DISCLAIMER =
@@ -33,6 +34,9 @@ export function ActivitySuggestionExperienceCard({
     ? { width: "100%", minHeight: 44 }
     : { flex: 1, minWidth: 120, minHeight: 44 };
 
+  const dismissMerged =
+    photo.ready && photo.url ? dismissBtnStyleOnHero : dismissBtnStyle;
+
   return (
     <SuggestionExperienceCard
       accent={ACT_ACCENT}
@@ -52,7 +56,7 @@ export function ActivitySuggestionExperienceCard({
         + ADD TO PLAN
       </button>
       {showSkip && onSkip ? (
-        <button type="button" onClick={onSkip} style={{ ...dismissBtnStyle, ...ctaFlex }}>
+        <button type="button" onClick={onSkip} style={{ ...dismissMerged, ...ctaFlex }}>
           SKIP
         </button>
       ) : null}

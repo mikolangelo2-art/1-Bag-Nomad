@@ -260,6 +260,43 @@ export const dismissBtnStyle = {
   cursor: 'pointer'
 };
 
+/** Ghost CTA on full-bleed photos — PLAN MY OWN / SKIP stay legible. */
+export const dismissBtnStyleOnHero = {
+  ...dismissBtnStyle,
+  border: '1px solid rgba(255,255,255,0.48)',
+  color: 'rgba(255,255,255,0.94)',
+  background: 'rgba(10,7,5,0.58)',
+  textShadow: '0 1px 3px rgba(0,0,0,0.85)',
+};
+
+/**
+ * Models sometimes emit literal "\\u00B7" in JSON strings instead of a middle dot.
+ */
+export function sanitizeAiDisplayText(s) {
+  return String(s || "").replace(/\\u([0-9a-fA-F]{4})/g, (_, h) =>
+    String.fromCharCode(parseInt(h, 16))
+  );
+}
+
+/** Blurb for the selected property; uses stay.recommendations[i] when present. */
+export function stayBlurbForSelection(stay, selectedName) {
+  const props = stay?.suggestions || [];
+  const name = (selectedName || props[0] || "").trim();
+  const idx = props.findIndex((p) => p === name);
+  const i = idx >= 0 ? idx : 0;
+  const arr = Array.isArray(stay?.recommendations) ? stay.recommendations : [];
+  const fromArr = arr[i] != null ? String(arr[i]).trim() : "";
+  if (fromArr) return sanitizeAiDisplayText(fromArr);
+  if (i === 0 && stay?.recommendation) return sanitizeAiDisplayText(String(stay.recommendation).trim());
+  const primary = (props[0] || "").trim();
+  if (primary && name && primary !== name) {
+    return sanitizeAiDisplayText(
+      `${name} is listed as an alternative to ${primary}. The long blurb in this suggestion describes ${primary}; confirm ${name} on your own before booking.`
+    );
+  }
+  return sanitizeAiDisplayText(String(stay?.recommendation || "").trim());
+}
+
 /**
  * Whole dollars for the transport cost field from an AI estimate like "$2000-5000".
  * Uses the low end of a range (same idea as acceptTransport split on '-').
@@ -336,10 +373,10 @@ TRANSPORT ROUTE + COST: The route string may describe the full path for context.
 
 For each phase: transport route+cost, stay name+cost, 2 activities+costs, food budget.
 
-STAY RULE: stay.recommendation MUST describe the specific property you named in stay.suggestions[0] — its actual character, price tier, and 1-2 distinctive features of that exact property. Do NOT use destination-generic descriptors. Do NOT write "traditional ryokan" unless the property actually is a ryokan. Do NOT write "boutique riad" unless the property actually is a riad. If you name a modern luxury hotel, describe that modern luxury hotel as it actually is. Property-specific, never destination-themed. Return ONLY the fields in the schema below — do not add extra fields like "type".
+STAY RULE: stay.suggestions lists named properties in preference order. stay.recommendation MUST describe ONLY stay.suggestions[0] (character, price tier, 1-2 distinctive features). stay.recommendations MUST be a JSON array with the SAME length as stay.suggestions: recommendations[i] is 1-2 sentences describing ONLY stay.suggestions[i] (same specificity rule). For a single property, recommendations can be one element matching recommendation. Never use destination-generic filler. Do NOT write "traditional ryokan" unless the property is a ryokan. Return ONLY the fields in the schema — no extra keys.
 
 Return ONLY JSON:
-{"phases":[{"phaseIndex":${offset},"phaseName":"...","transport":{"route":"...","estimatedCost":"$X-X","notes":"..."},"stay":{"recommendation":"...","suggestions":["Name1","Name2"],"estimatedNightly":"$X/night","estimatedTotal":"$X-X","notes":"..."},"activities":[{"name":"...","provider":"...","estimatedCost":"$X","notes":"..."}],"food":{"dailyBudget":"$X-X/day","recommendations":["..."],"notes":"..."}}]}
+{"phases":[{"phaseIndex":${offset},"phaseName":"...","transport":{"route":"...","estimatedCost":"$X-X","notes":"..."},"stay":{"recommendation":"...","recommendations":["Blurb for suggestions[0]","Blurb for suggestions[1]"],"suggestions":["Name1","Name2"],"estimatedNightly":"$X/night","estimatedTotal":"$X-X","notes":"..."},"activities":[{"name":"...","provider":"...","estimatedCost":"$X","notes":"..."}],"food":{"dailyBudget":"$X-X/day","recommendations":["..."],"notes":"..."}}]}
 
 JSON only. No markdown. No preamble.`;
 }
