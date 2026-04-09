@@ -7,6 +7,7 @@ const DEFAULT_ACT_DISCLAIMER =
 
 export function ActivitySuggestionExperienceCard({
   segmentName,
+  segmentCountry = "",
   activity,
   isMobile,
   onAdd,
@@ -19,7 +20,8 @@ export function ActivitySuggestionExperienceCard({
   const name = (activity?.name || activity?.title || "").trim() || "Activity";
   const photo = useDestinationPhoto(
     segmentName,
-    name === "Activity" ? "sightseeing" : name
+    name === "Activity" ? "sightseeing" : name,
+    segmentCountry
   );
   const provider = (activity?.provider || "").trim();
   const notes = (activity?.notes || activity?.brief || "").trim();

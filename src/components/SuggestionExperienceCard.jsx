@@ -134,7 +134,6 @@ export default function SuggestionExperienceCard({
               overflow: isMobile ? "visible" : "hidden",
               textOverflow: isMobile ? "clip" : "ellipsis",
             }}
-            title={descriptor}
           >
             {descriptor}
           </div>
