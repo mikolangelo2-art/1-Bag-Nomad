@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
  * Mirror vision-sequence logic: specific, then cultural, then regional.
  * Never default to category-generic macros; bias queries toward scene, street, exterior, plaza.
  */
-const LS_PREFIX = "1bn_unsplash_v3_";
+const LS_PREFIX = "1bn_unsplash_v4_";
 
 function slugPart(s) {
   return String(s || "")
