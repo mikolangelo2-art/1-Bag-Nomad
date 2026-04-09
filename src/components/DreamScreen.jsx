@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import posthog from "posthog-js";
+import { BG_DREAM_GRADIENT } from '../constants/colors';
 import { useMobile } from '../hooks/useMobile';
 import { askAI, parseJSON } from '../utils/aiHelpers';
 import SharegoodLogo from './SharegoodLogo';
@@ -199,7 +200,7 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
   }
   if(visionData) return <VisionReveal data={visionData} onBuild={vd=>onGoGen(visionData,vd)} onBack={()=>{setVisionData(null);setLoading(false);}} freshMount={true}/>;
   return (
-    <div className="dream-root">
+    <div className="dream-root" style={{ background: BG_DREAM_GRADIENT, backgroundAttachment: "fixed" }}>
       <WorldMapBackground dream/>
       <div className="dream-glow"/>
       <DreamHeader step={1}/>

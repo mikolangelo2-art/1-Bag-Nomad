@@ -18,7 +18,10 @@ export const BG_DARK         = "rgba(18,18,18,0.96)";
 export const BG_DARK_TRIP    = "rgba(23,27,32,0.94)";
 export const BG_PAGE_LEGACY  = "#0A0705";
 export const BLACK_OVERLAY   = "rgba(0,0,0,0.55)";
-export const BG_DREAM_GRADIENT = "radial-gradient(ellipse at 50% 0%, rgba(166,123,91,0.12) 0%, transparent 58%), #121212";
+/** Dream Console base only — do not use for Trip/Pack shells */
+export const BG_DREAM = "#0A0705";
+export const BG_DREAM_GRADIENT =
+  "radial-gradient(ellipse at 50% 0%, rgba(169,70,29,0.15) 0%, transparent 60%), #0A0705";
 export const BG_TRIP_GRADIENT  = "radial-gradient(ellipse at 50% 0%, rgba(0,229,255,0.06) 0%, transparent 55%), #171b20";
 export const BG_PACK_GRADIENT  = "radial-gradient(ellipse at 50% 0%, rgba(201,160,76,0.07) 0%, transparent 55%), #121212";
 
