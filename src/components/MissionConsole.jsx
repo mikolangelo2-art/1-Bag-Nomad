@@ -18,7 +18,7 @@ import PhaseDetailPage from './PhaseDetailPage';
 import Timeline from './Timeline';
 import IntelMap from './IntelMap';
 
-function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading,onUpdateTripData,onTripAmbientContextChange}) {
+function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading,onUpdateTripData,onTripAmbientContextChange}) {
   const isMobile=useMobile();
   const [tab,setTab]=useState(initialTab);
   const [intelMapActive,setIntelMapActive]=useState(false);
@@ -137,7 +137,30 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
       {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:isMobile?"rgba(0,8,16,0.10)":"linear-gradient(180deg,rgba(21,15,10,0.98),rgba(21,15,10,0.99))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden",zIndex:1}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(232,220,200,0.02) 0%,transparent 60%)",pointerEvents:"none"}}/>
         {tripData.tripName&&<div style={{marginBottom:isMobile?8:12,position:"relative"}}>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?16:24,fontWeight:400,fontStyle:"italic",color:"#F8F5F0",lineHeight:1.12,letterSpacing:"0.02em"}}>{tripData.tripName}</div>
+          <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:8}}>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?16:24,fontWeight:400,fontStyle:"italic",color:"#F8F5F0",lineHeight:1.12,letterSpacing:"0.02em"}}>{tripData.tripName}</div>
+            {tripData.isDemo&&typeof onExitDemo==="function"&&(
+              <button
+                type="button"
+                onClick={()=>onExitDemo()}
+                style={{
+                  background:"transparent",
+                  border:"1px solid rgba(255,255,255,0.12)",
+                  borderRadius:12,
+                  padding:"4px 10px",
+                  fontSize:10,
+                  color:"rgba(255,255,255,0.40)",
+                  fontFamily:"'Inter',system-ui,-apple-system,sans-serif",
+                  letterSpacing:"0.06em",
+                  cursor:"pointer",
+                  marginLeft:isMobile?0:8,
+                  flexShrink:0,
+                }}
+              >
+                ← exit demo
+              </button>
+            )}
+          </div>
           {!isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:2,marginTop:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{[...new Set(flatPhases.map(p=>p.country))].join(" · ")}</div>}
           <div style={{marginTop:5,display:"flex",alignItems:"center",gap:6}}>
             {editingDep?(

@@ -243,6 +243,7 @@ const MICHAEL_EXPEDITION = {
 
 /** Compact demo for beta empty state — same phase shape as MICHAEL_EXPEDITION / handleLaunch */
 const BETA_DEMO_EXPEDITION = {
+  isDemo: true,
   tripName: "The Japanese Feast & Caribbean Dive",
   startDate: "2026-06-01",
   departureCity: "Los Angeles, CA",
@@ -583,6 +584,10 @@ export default function App() {
     setTripData(null);setScreen("dream");setAppData(null);setSegmentSuggestions(null);
     try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem(SUGGEST_KEY);localStorage.removeItem(DISMISS_KEY);}catch(e){}
   }
+  function handleExitDemo() {
+    setTripData(null);
+    setScreen("dream");
+  }
   function handleHomecoming(){setScreen("homecoming");}
   function handlePlanNext(){
     const name=tripData?.tripName||"my expedition";
@@ -608,9 +613,9 @@ export default function App() {
           }}
         />
       )}
-      {(screen==="console"||prevScreen==="console") && hasTrip && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} onUpdateTripData={(updates)=>setTripData(d=>({...d,...updates}))} onTripAmbientContextChange={setTripAmbientCtx}/></div>}
+      {(screen==="console"||prevScreen==="console") && hasTrip && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onExitDemo={handleExitDemo} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} onUpdateTripData={(updates)=>setTripData(d=>({...d,...updates}))} onTripAmbientContextChange={setTripAmbientCtx}/></div>}
       {(screen==="pack"||prevScreen==="pack") && tripData && hasTrip && <div style={{position:prevScreen==="pack"||slideDir?"fixed":"relative",inset:prevScreen==="pack"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="pack"?0:1,animation:prevScreen==="pack"?(slideDir==="right"?"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="pack"&&slideDir?(slideDir==="left"?"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><PackConsole tripData={tripData} onExpedition={()=>slideScreen("console")} onGoToTab={t=>{setPendingTab(t||"next");slideScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen}/></div>}
-      <AmbientChat screen={screen==="pack"?"pack-console":screen==="console"?tripAmbientCtx.screen:screen} tripData={tripData} currentPhase={screen==="console"?tripAmbientCtx.phase:null} currentSegment={screen==="console"?tripAmbientCtx.segment:null} currentTab={screen==="console"?tripAmbientCtx.tab:null}/>
+      <AmbientChat screen={screen==="pack"?"pack-console":screen==="console"&&!hasTrip?"dream":screen==="console"?tripAmbientCtx.screen:screen} tripData={tripData} currentPhase={screen==="console"?tripAmbientCtx.phase:null} currentSegment={screen==="console"?tripAmbientCtx.segment:null} currentTab={screen==="console"?tripAmbientCtx.tab:null}/>
       {hasTrip && (screen === "console" || screen === "pack") && (
         <button
           type="button"
