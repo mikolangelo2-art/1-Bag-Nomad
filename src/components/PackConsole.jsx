@@ -12,6 +12,24 @@ import { TI, loadCoach, loadOnboard } from '../utils/storageHelpers';
 import { BAG_COLORS, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS, BG_PACK_GRADIENT } from '../constants/colors';
 import { buildTripPack, getDefaultPack, mapPackItemsWithVolumes } from '../utils/packHelpers';
 
+const STORAGE_PACK_EXPANDED = "1bn_pack_expanded";
+function loadPackExpandedCats() {
+  try {
+    const s = localStorage.getItem(STORAGE_PACK_EXPANDED);
+    if (!s) return {};
+    const p = JSON.parse(s);
+    if (Array.isArray(p)) return Object.fromEntries(p.map((id) => [id, true]));
+    if (p && typeof p === "object") return p;
+  } catch (e) {}
+  return {};
+}
+function persistPackExpandedCats(obj) {
+  try {
+    const ids = Object.keys(obj).filter((id) => obj[id]);
+    localStorage.setItem(STORAGE_PACK_EXPANDED, JSON.stringify(ids));
+  } catch (e) {}
+}
+
 // ── CircularRing (pack-only) ─────────────────────────────────
 function CircularRing({value,max,label,sublabel,color,unit}) {
   const r=54,circ=2*Math.PI*r;
@@ -58,7 +76,24 @@ function getPackBrief(pp,tripData){
 function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned,updateItem,removeItem,wM,unit,BAGS,BAG_C}) {
   const [open,setOpen]=useState(false);
   const [editOpen,setEditOpen]=useState(false);
-  useEffect(()=>{onEditOpenChange?.(editOpen);},[editOpen]);
+  const [draftName,setDraftName]=useState(()=>item.name??"");
+  const [draftWeight,setDraftWeight]=useState(()=>String(item.weight??""));
+  const [draftCost,setDraftCost]=useState(()=>String(item.cost??""));
+  const [draftVolume,setDraftVolume]=useState(()=>String(item.volume??""));
+  useEffect(()=>{
+    setDraftName(item.name??"");
+    setDraftWeight(String(item.weight??""));
+    setDraftCost(String(item.cost??""));
+    setDraftVolume(String(item.volume??""));
+  },[item.id]);
+  useEffect(()=>{onEditOpenChange?.(editOpen);},[editOpen,onEditOpenChange]);
+  const flushMobileDrafts=()=>{
+    if(String(item.name??"")!==String(draftName))updateItem(item.id,"name",draftName);
+    if(String(item.weight??"")!==String(draftWeight))updateItem(item.id,"weight",draftWeight);
+    if(String(item.cost??"")!==String(draftCost))updateItem(item.id,"cost",draftCost);
+    if(String(item.volume??"")!==String(draftVolume))updateItem(item.id,"volume",draftVolume);
+  };
+  const closeEditSheet=()=>{flushMobileDrafts();setEditOpen(false);};
   if(isMobile) return(
     <>
       <div className="tap-scale" onClick={()=>setEditOpen(true)}
@@ -78,17 +113,17 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
           <span style={{fontSize:18,color:'rgba(255,255,255,0.18)'}}>›</span>
         </div>
       </div>
-      <BottomSheet open={editOpen} onClose={()=>setEditOpen(false)} zIndex={600}>
+      <BottomSheet open={editOpen} onClose={closeEditSheet} zIndex={600}>
         <div style={{padding:'16px 16px 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
           <div style={{fontSize:10,color:`${catColor}99`,letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:8}}>EDIT ITEM</div>
-          <input value={item.name} onChange={e=>updateItem(item.id,'name',e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:9,color:'#FFF',fontSize:14,padding:'10px 13px',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:'none',transition:'border-color 0.2s,box-shadow 0.2s'}} placeholder="Item name" onFocus={e=>{e.target.style.borderColor='rgba(255,159,67,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(255,159,67,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';}}/>
+          <input value={draftName} onChange={e=>setDraftName(e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:9,color:'#FFF',fontSize:14,padding:'10px 13px',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:'none',transition:'border-color 0.2s,box-shadow 0.2s'}} placeholder="Item name" onFocus={e=>{e.target.style.borderColor='rgba(255,159,67,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(255,159,67,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';if(String(item.name??"")!==String(draftName))updateItem(item.id,"name",draftName);}}/>
         </div>
         <div style={{padding:'14px 16px',display:'flex',flexDirection:'column',gap:12,textAlign:'left'}}>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
-            {[{label:'WT (lbs)',f:'weight'},{label:'COST ($)',f:'cost'},{label:'VOL (L)',f:'volume'}].map(({label,f})=>(
-              <div key={f}>
+            {[{label:'WT (lbs)',draft:draftWeight,setDraft:setDraftWeight,field:'weight'},{label:'COST ($)',draft:draftCost,setDraft:setDraftCost,field:'cost'},{label:'VOL (L)',draft:draftVolume,setDraft:setDraftVolume,field:'volume'}].map(({label,draft,setDraft,field})=>(
+              <div key={field}>
                 <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{label}</div>
-                <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:7,color:'#c9a04c',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",transition:'border-color 0.2s,box-shadow 0.2s'}} onFocus={e=>{e.target.style.borderColor='rgba(255,159,67,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(255,159,67,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';}}/>
+                <input value={draft} onChange={e=>setDraft(e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:7,color:'#c9a04c',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",transition:'border-color 0.2s,box-shadow 0.2s'}} onFocus={e=>{e.target.style.borderColor='rgba(255,159,67,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(255,159,67,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';if(String(item[field]??"")!==String(draft))updateItem(item.id,field,draft);}}/>
               </div>
             ))}
           </div>
@@ -134,10 +169,10 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
       </div>
       {open&&(
         <div style={{padding:"12px 16px 16px 44px",background:"rgba(0,0,0,0.25)",borderTop:`1px solid ${catColor}15`,animation:"slideOpen 0.40s cubic-bezier(0.25,0.46,0.45,0.94)",display:"flex",flexDirection:"column",gap:10}}>
-          <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:7,color:"#FFF",fontSize:12,padding:"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} placeholder="Item name" onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
+          <input value={draftName} onChange={e=>setDraftName(e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:7,color:"#FFF",fontSize:12,padding:"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} placeholder="Item name" onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";if(String(item.name??"")!==String(draftName))updateItem(item.id,"name",draftName);}}/>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-            {[{label:"WT (lbs)",f:"weight"},{label:"COST ($)",f:"cost"},{label:"VOL (L)",f:"volume"}].map(({label,f})=>(
-              <div key={f}><div style={{fontSize:9,color:"rgba(255,159,67,0.65)",letterSpacing:1,marginBottom:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{label}</div><input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:5,color:"#c9a04c",fontSize:12,padding:"6px 8px",outline:"none",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/></div>
+            {[{label:"WT (lbs)",draft:draftWeight,setDraft:setDraftWeight,field:"weight"},{label:"COST ($)",draft:draftCost,setDraft:setDraftCost,field:"cost"},{label:"VOL (L)",draft:draftVolume,setDraft:setDraftVolume,field:"volume"}].map(({label,draft,setDraft,field})=>(
+              <div key={field}><div style={{fontSize:9,color:"rgba(255,159,67,0.65)",letterSpacing:1,marginBottom:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{label}</div><input value={draft} onChange={e=>setDraft(e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:5,color:"#c9a04c",fontSize:12,padding:"6px 8px",outline:"none",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";if(String(item[field]??"")!==String(draft))updateItem(item.id,field,draft);}}/></div>
             ))}
           </div>
           <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
@@ -149,6 +184,182 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Category Tile (module scope — stable identity vs nested in PackConsole) ─
+function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }) {
+  const catItems = itemsForCat(cat.id);
+  const ownedInCat = catItems.filter((i) => i.owned).length;
+  const catW = catItems.reduce((s, i) => s + (parseFloat(i.weight) || 0), 0) * wM;
+  const needCount = catItems.filter((i) => !i.owned).length;
+  const needCost = catItems.filter((i) => !i.owned).reduce((s, i) => s + (parseFloat(i.cost) || 0), 0);
+  const pct = catItems.length > 0 ? Math.round((ownedInCat / catItems.length) * 100) : 0;
+  return (
+    <div
+      onClick={() => onSelectCategory(cat)}
+      style={{
+        background: "rgba(255,255,255,0.015)",
+        border: `1.5px solid rgba(255,255,255,0.16)`,
+        borderTop: `1.5px solid ${cat.color}65`,
+        borderRadius: 12,
+        padding: isMobile ? "14px 12px" : "14px 16px",
+        marginBottom: 8,
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        animation: `fadeUp 0.3s ease ${idx * 0.05}s both`,
+      }}
+      onMouseOver={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.035)")}
+      onMouseOut={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.015)")}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <span style={{ fontSize: 24 }}>{cat.icon}</span>
+        <span
+          style={{
+            flex: 1,
+            fontSize: 14,
+            fontWeight: 600,
+            color: "#F8F5F0",
+            letterSpacing: "0.06em",
+            fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+          }}
+        >
+          {cat.label.toUpperCase()}
+        </span>
+        <span style={{ fontSize: 14, fontWeight: 700, color: cat.color }}>{pct}%</span>
+        <span style={{ fontSize: 14, color: "rgba(255,255,255,0.30)", marginLeft: 6 }}>›</span>
+      </div>
+      <div style={{ display: "flex", gap: 12, fontSize: 14, color: "rgba(255,255,255,0.45)", fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>
+        <span>{catItems.length} items</span>
+        <span>·</span>
+        <span style={{ color: cat.color }}>
+          {catW.toFixed(1)}
+          {unit}
+        </span>
+        <span style={{ marginLeft: "auto", color: "#c9a04c" }}>
+          {needCount > 0 ? `$${Math.round(needCost)} still needed` : "✓ all owned"}
+        </span>
+      </div>
+      <div style={{ height: 3, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
+        <div
+          style={{
+            height: "100%",
+            width: `${pct}%`,
+            background: `linear-gradient(90deg,${cat.color}66,${cat.color})`,
+            borderRadius: 2,
+            transition: "width 0.5s ease",
+            boxShadow: `0 0 8px ${cat.color}90`,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── Category Detail (module scope — avoids remount on parent re-render) ─────
+function CategoryDetailPage({ cat, onBack, catItems, isMobile, rowProps, addItemToCat }) {
+  const ownedInCat = catItems.filter((i) => i.owned).length;
+  const wM = rowProps.wM;
+  const unit = rowProps.unit;
+  const catW = catItems.reduce((s, i) => s + (parseFloat(i.weight) || 0), 0) * wM;
+  const catCost = catItems.reduce((s, i) => s + (parseFloat(i.cost) || 0), 0);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, overflowY: "auto", animation: "slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          padding: isMobile ? "12px" : "16px",
+          gap: 12,
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          flexShrink: 0,
+          background: "rgba(10,4,0,0.95)",
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+        }}
+      >
+        <button
+          onClick={onBack}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#FF9F43",
+            fontSize: 22,
+            cursor: "pointer",
+            padding: "0 8px 0 0",
+            lineHeight: 1,
+            minWidth: 32,
+            minHeight: 44,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+          }}
+        >
+          ‹{" "}
+          <span style={{ fontSize: 13, fontFamily: "'Inter',system-ui,-apple-system,sans-serif", letterSpacing: 2, fontWeight: 700, opacity: 0.9 }}>PACK LIST</span>
+        </button>
+        <span style={{ fontSize: 18 }}>{cat.icon}</span>
+        <span style={{ flex: 1, fontSize: 16, fontWeight: 600, color: "#FFFFFF", fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>{cat.label}</span>
+        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>
+          {ownedInCat}/{catItems.length}
+        </span>
+      </div>
+      <div style={{ display: "flex", gap: 16, padding: isMobile ? "10px 12px" : "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", flexShrink: 0 }}>
+        <span style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>
+          <span style={{ color: cat.color, fontWeight: 700 }}>
+            {catW.toFixed(1)}
+            {unit}
+          </span>{" "}
+          total weight
+        </span>
+        {catCost > 0 && (
+          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>
+            <span style={{ color: "#c9a04c", fontWeight: 700 }}>${catCost.toLocaleString()}</span> total cost
+          </span>
+        )}
+      </div>
+      <div style={{ flex: 1, padding: isMobile ? "8px 12px 24px" : "8px 16px 24px" }}>
+        {catItems.map((item, i) => (
+          <PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i === catItems.length - 1} {...rowProps} />
+        ))}
+        {catItems.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px 0" }}>
+            <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 14, fontStyle: "italic", color: "rgba(255,159,67,0.45)" }}>No items yet. Add one below.</div>
+          </div>
+        )}
+        <div style={{ marginTop: 12, display: "flex", justifyContent: "center" }}>
+          <button
+            onClick={() => addItemToCat(cat.id)}
+            style={{
+              padding: "10px 32px",
+              borderRadius: 20,
+              border: `1px dashed ${cat.color}55`,
+              background: "transparent",
+              color: `${cat.color}88`,
+              fontSize: 12,
+              cursor: "pointer",
+              fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+              letterSpacing: 1.5,
+              fontWeight: 700,
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = `${cat.color}12`;
+              e.currentTarget.style.color = cat.color;
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = `${cat.color}88`;
+            }}
+          >
+            + ADD ITEM
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -185,7 +396,8 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const itemCats=[...new Set(items.map(i=>i.cat))];
   const CATS=enabledCats?ALL_CATS.filter(c=>enabledCats.includes(c.id)):ALL_CATS.filter(c=>itemCats.includes(c.id));
   const [filterCat,setFilterCat]=useState("all");
-  const [openCats,setOpenCats]=useState({});
+  const [openCats,setOpenCats]=useState(loadPackExpandedCats);
+  const setOpenCatsPersist=(updater)=>{setOpenCats((prev)=>{const next=typeof updater==="function"?updater(prev):updater;persistPackExpandedCats(next);return next;});};
   const [unit,setUnit]=useState("lbs");
   const [expandedItem,setExpandedItem]=useState(null);
   const [resetConfirm,setResetConfirm]=useState(false);
@@ -228,8 +440,8 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const toggleOwned=id=>setItems(p=>p.map(it=>it.id===id?{...it,owned:!it.owned,status:it.owned?"needed":"owned"}:it));
   const removeItem=id=>setItems(p=>p.filter(it=>it.id!==id));
   const updateItem=(id,f,v)=>setItems(p=>p.map(it=>it.id===id?{...it,[f]:v}:it));
-  const addItemToCat=cat=>{setItems(p=>[...p,{id:Date.now(),name:"New Item",cat,weight:"0",cost:"0",volume:"0",owned:false,bag:"Backpack",status:"needed"}]);setOpenCats(o=>({...o,[cat]:true}));};
-  const toggleCat=id=>setOpenCats(o=>({...o,[id]:!o[id]}));
+  const addItemToCat=cat=>{setItems(p=>[...p,{id:Date.now(),name:"New Item",cat,weight:"0",cost:"0",volume:"0",owned:false,bag:"Backpack",status:"needed"}]);setOpenCatsPersist(o=>({...o,[cat]:true}));};
+  const toggleCat=id=>setOpenCatsPersist(o=>({...o,[id]:!o[id]}));
 
   // filter logic
   const visibleCats=filterCat==="all"?CATS:CATS.filter(c=>c.id===filterCat);
@@ -281,71 +493,7 @@ Return ONLY a JSON array:
 
   // shared props for PackItemRow
   const rowProps={isMobile,toggleOwned,updateItem,removeItem,wM,unit,BAGS,BAG_C};
-
-  // ─── Category Tile ─────────────────────────────────────────────
-  function CatCard({cat,idx}) {
-    const catItems=itemsForCat(cat.id);
-    const ownedInCat=catItems.filter(i=>i.owned).length;
-    const catW=catItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM;
-    const catCost=catItems.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
-    const needCount=catItems.filter(i=>!i.owned).length;
-    const needCost=catItems.filter(i=>!i.owned).reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
-    const pct=catItems.length>0?Math.round((ownedInCat/catItems.length)*100):0;
-    return(
-      <div onClick={()=>{setActiveCategory(cat);setPackView('category');}}
-        style={{background:'rgba(255,255,255,0.015)',border:`1.5px solid rgba(255,255,255,0.16)`,borderTop:`1.5px solid ${cat.color}65`,borderRadius:12,padding:isMobile?'14px 12px':'14px 16px',marginBottom:8,cursor:'pointer',display:'flex',flexDirection:'column',gap:8,animation:`fadeUp 0.3s ease ${idx*0.05}s both`}}
-        onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,0.035)'}
-        onMouseOut={e=>e.currentTarget.style.background='rgba(255,255,255,0.015)'}>
-        <div style={{display:'flex',alignItems:'center',gap:10}}>
-          <span style={{fontSize:24}}>{cat.icon}</span>
-          <span style={{flex:1,fontSize:14,fontWeight:600,color:'#F8F5F0',letterSpacing:'0.06em',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{cat.label.toUpperCase()}</span>
-          <span style={{fontSize:14,fontWeight:700,color:cat.color}}>{pct}%</span>
-          <span style={{fontSize:14,color:'rgba(255,255,255,0.30)',marginLeft:6}}>›</span>
-        </div>
-        <div style={{display:'flex',gap:12,fontSize:14,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
-          <span>{catItems.length} items</span>
-          <span>·</span>
-          <span style={{color:cat.color}}>{catW.toFixed(1)}{unit}</span>
-          <span style={{marginLeft:'auto',color:'#c9a04c'}}>{needCount>0?`$${Math.round(needCost)} still needed`:'✓ all owned'}</span>
-        </div>
-        <div style={{height:3,background:'rgba(255,255,255,0.08)',borderRadius:2,overflow:'hidden'}}>
-          <div style={{height:'100%',width:`${pct}%`,background:`linear-gradient(90deg,${cat.color}66,${cat.color})`,borderRadius:2,transition:'width 0.5s ease',boxShadow:`0 0 8px ${cat.color}90`}}/>
-        </div>
-      </div>
-    );
-  }
-
-  // ─── Category Detail Page ──────────────────────────────────────
-  function CategoryDetailPage({cat,onBack}) {
-    const catItems=itemsForCat(cat.id);
-    const ownedInCat=catItems.filter(i=>i.owned).length;
-    const catW=catItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM;
-    const catCost=catItems.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
-    return(
-      <div style={{display:'flex',flexDirection:'column',flex:1,overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
-        {/* Header */}
-        <div style={{display:'flex',alignItems:'center',padding:isMobile?'12px':'16px',gap:12,borderBottom:'1px solid rgba(255,255,255,0.08)',flexShrink:0,background:'rgba(10,4,0,0.95)',position:'sticky',top:0,zIndex:10}}>
-          <button onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:22,cursor:'pointer',padding:'0 8px 0 0',lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>‹ <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,fontWeight:700,opacity:0.90}}>PACK LIST</span></button>
-          <span style={{fontSize:18}}>{cat.icon}</span>
-          <span style={{flex:1,fontSize:16,fontWeight:600,color:'#FFFFFF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{cat.label}</span>
-          <span style={{fontSize:12,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{ownedInCat}/{catItems.length}</span>
-        </div>
-        {/* Subheader */}
-        <div style={{display:'flex',gap:16,padding:isMobile?'10px 12px':'10px 16px',borderBottom:'1px solid rgba(255,255,255,0.06)',flexShrink:0}}>
-          <span style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}><span style={{color:cat.color,fontWeight:700}}>{catW.toFixed(1)}{unit}</span> total weight</span>
-          {catCost>0&&<span style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}><span style={{color:'#c9a04c',fontWeight:700}}>${catCost.toLocaleString()}</span> total cost</span>}
-        </div>
-        {/* Item list */}
-        <div style={{flex:1,padding:isMobile?'8px 12px 24px':'8px 16px 24px'}}>
-          {catItems.map((item,i)=><PackItemRow key={item.id} item={item} catColor={cat.color} isLast={i===catItems.length-1} {...rowProps}/>)}
-          {catItems.length===0&&<div style={{textAlign:'center',padding:'40px 0'}}><div style={{fontFamily:"'Playfair Display',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,159,67,0.45)'}}>No items yet. Add one below.</div></div>}
-          <div style={{marginTop:12,display:'flex',justifyContent:'center'}}>
-            <button onClick={()=>addItemToCat(cat.id)} style={{padding:'10px 32px',borderRadius:20,border:`1px dashed ${cat.color}55`,background:'transparent',color:`${cat.color}88`,fontSize:12,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1.5,fontWeight:700}} onMouseOver={e=>{e.currentTarget.style.background=`${cat.color}12`;e.currentTarget.style.color=cat.color;}} onMouseOut={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color=`${cat.color}88`;}}>+ ADD ITEM</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const selectCategory=(cat)=>{setActiveCategory(cat);setPackView("category");};
 
   return(
     <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",background:BG_PACK_GRADIENT,minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
@@ -443,7 +591,7 @@ Return ONLY a JSON array:
           <span style={{fontSize:isMobile?9:13,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
         </button>
         {[{id:"pack",label:isMobile?"PACK":"PACK LIST",emoji:"🎒"},{id:"tailor",label:"TAILOR",emoji:"✦"},{id:"weight",label:isMobile?"WEIGHT":"BREAKDOWN",emoji:"⚖️"}].map(t=>(
-          <button key={t.id} onClick={()=>{setPackTab(t.id);if(t.id!=="pack"){setPackView('dashboard');setActiveCategory(null);}}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",position:"relative"}}>
+          <button key={t.id} onClick={()=>setPackTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",position:"relative"}}>
             {t.emoji&&<span style={{fontSize:isMobile?12:15,lineHeight:1}}>{t.emoji}</span>}
             <span style={{fontSize:isMobile?9:13,letterSpacing:isMobile?1:1,fontWeight:700,whiteSpace:"nowrap"}}>{t.label}</span>
             {t.id==="tailor"&&suggestions.length>0&&<div style={{position:"absolute",top:6,right:"20%",width:7,height:7,borderRadius:"50%",background:"#4D9FFF",boxShadow:"0 0 8px #4D9FFF"}}/>}
@@ -460,7 +608,7 @@ Return ONLY a JSON array:
       {/* Main content */}
       {packTab==="pack"&&packView==="category"&&activeCategory&&(
         <>
-          <CategoryDetailPage cat={activeCategory} onBack={()=>{setPackView('dashboard');setActiveCategory(null);}}/>
+          <CategoryDetailPage cat={activeCategory} onBack={()=>{setPackView('dashboard');setActiveCategory(null);}} catItems={items.filter(i=>i.cat===activeCategory.id)} isMobile={isMobile} rowProps={rowProps} addItemToCat={addItemToCat}/>
           {isMobile&&<div style={{height:"calc(64px + env(safe-area-inset-bottom))"}}/>}
         </>
       )}
@@ -514,7 +662,7 @@ Return ONLY a JSON array:
               </div>
               <button onClick={()=>{setPackExplainerDismissed(true);try{localStorage.setItem("1bn_pack_explainer_v1","1");}catch(e){}}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.8)",fontSize:14,cursor:"pointer",padding:"0 4px",flexShrink:0,lineHeight:1}}>✕</button>
             </div>}
-            {CATS.map((cat,i)=>i===0?<div key={cat.id} data-coach="pack-first-cat"><CatCard cat={cat} idx={i}/></div>:<CatCard key={cat.id} cat={cat} idx={i}/>)}
+            {CATS.map((cat,i)=>i===0?<div key={cat.id} data-coach="pack-first-cat"><CatCard cat={cat} idx={i} isMobile={isMobile} itemsForCat={itemsForCat} wM={wM} unit={unit} onSelectCategory={selectCategory}/></div>:<CatCard key={cat.id} cat={cat} idx={i} isMobile={isMobile} itemsForCat={itemsForCat} wM={wM} unit={unit} onSelectCategory={selectCategory}/>)}
             {pp&&<>
               <button onClick={()=>setShowAddCats(o=>!o)} style={{width:"100%",padding:"10px 14px",marginTop:4,borderRadius:10,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.02)",color:"rgba(255,255,255,0.4)",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",cursor:"pointer",letterSpacing:1,textAlign:"center",minHeight:40}}>＋ Add gear categories</button>
               {showAddCats&&<div style={{marginTop:8,padding:"10px 14px",background:"rgba(0,8,20,0.6)",border:"1px solid rgba(255,159,67,0.2)",borderRadius:10}}>
