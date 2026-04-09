@@ -20,7 +20,10 @@ export default function SuggestionExperienceCard({
   const nameFs = isMobile ? 18 : 20;
   const cardRadius = 14;
   const cardMinH = heroUrl ? (isMobile ? 320 : 380) : undefined;
-  const txtSh = heroUrl ? "0 1px 2px rgba(0,0,0,0.92), 0 2px 18px rgba(0,0,0,0.48)" : undefined;
+  const txtSh = heroUrl ? "0 1px 3px rgba(0,0,0,0.95), 0 2px 22px rgba(0,0,0,0.55)" : undefined;
+  const whisperSh = heroUrl
+    ? "0 1px 3px rgba(0,0,0,0.98), 0 2px 16px rgba(0,0,0,0.75), 0 0 1px rgba(0,0,0,1)"
+    : undefined;
 
   return (
     <div
@@ -68,11 +71,11 @@ export default function SuggestionExperienceCard({
               pointerEvents: "none",
               background: `linear-gradient(
                 180deg,
-                rgba(10,7,5,0.12) 0%,
-                rgba(10,7,5,0.22) 22%,
-                rgba(10,7,5,0.52) 45%,
-                rgba(10,7,5,0.78) 68%,
-                rgba(10,7,5,0.88) 100%
+                rgba(10,7,5,0.18) 0%,
+                rgba(10,7,5,0.32) 20%,
+                rgba(10,7,5,0.58) 42%,
+                rgba(10,7,5,0.82) 65%,
+                rgba(10,7,5,0.9) 100%
               )`,
             }}
           />
@@ -87,6 +90,9 @@ export default function SuggestionExperienceCard({
           display: "flex",
           flexDirection: "column",
           padding: "16px 16px 18px",
+          background: heroUrl
+            ? "linear-gradient(90deg, rgba(10,7,5,0.82) 0%, rgba(10,7,5,0.62) 48%, rgba(10,7,5,0.22) 100%)"
+            : undefined,
         }}
       >
         <div
@@ -122,7 +128,7 @@ export default function SuggestionExperienceCard({
             style={{
               fontSize: 14,
               fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-              color: "rgba(255,255,255,0.78)",
+              color: heroUrl ? "rgba(255,255,255,0.94)" : "rgba(255,255,255,0.78)",
               lineHeight: 1.45,
               marginBottom: 10,
               whiteSpace: isMobile ? "normal" : "nowrap",
@@ -135,7 +141,24 @@ export default function SuggestionExperienceCard({
           </div>
         ) : null}
 
-        {middle ? <div style={{ textShadow: txtSh }}>{middle}</div> : null}
+        {middle ? (
+          <div
+            style={
+              heroUrl
+                ? {
+                    textShadow: txtSh,
+                    padding: "12px 14px",
+                    marginBottom: 6,
+                    borderRadius: 10,
+                    background: "rgba(10,7,5,0.76)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                  }
+                : { textShadow: txtSh }
+            }
+          >
+            {middle}
+          </div>
+        ) : null}
 
         {priceLine ? (
           <div
@@ -173,10 +196,14 @@ export default function SuggestionExperienceCard({
               fontFamily: "'Fraunces',serif",
               fontSize: 13,
               fontStyle: "italic",
-              color: "rgba(255,159,67,0.72)",
+              color: heroUrl ? "rgba(255,248,235,0.96)" : "rgba(255,159,67,0.72)",
               lineHeight: 1.5,
               marginBottom: disclaimer ? 8 : 10,
-              textShadow: txtSh,
+              textShadow: heroUrl ? whisperSh : txtSh,
+              padding: heroUrl ? "10px 12px" : undefined,
+              borderRadius: heroUrl ? 8 : undefined,
+              background: heroUrl ? "rgba(10,7,5,0.72)" : undefined,
+              border: heroUrl ? "1px solid rgba(255,255,255,0.07)" : undefined,
             }}
           >
             {whisper}
@@ -188,7 +215,7 @@ export default function SuggestionExperienceCard({
             style={{
               fontSize: 11,
               fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-              color: "rgba(255,255,255,0.42)",
+              color: heroUrl ? "rgba(255,255,255,0.62)" : "rgba(255,255,255,0.42)",
               lineHeight: 1.5,
               marginBottom: heroLink ? 6 : 12,
               textShadow: txtSh,

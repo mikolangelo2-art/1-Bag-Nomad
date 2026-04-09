@@ -16,7 +16,7 @@ import { useDestinationPhoto } from '../hooks/useDestinationPhoto';
 function parseFoodRecLine(s) {
   const t = String(s || "").trim();
   if (!t) return { name: "", desc: "" };
-  const seps = [" \u00B7 ", " \u2014 ", " \u2013 ", " - ", " | "];
+  const seps = [" \u00B7 ", " \u2014 ", " \u2013 ", " for ", " - ", " | "];
   for (const sep of seps) {
     const i = t.indexOf(sep);
     if (i > 0) return { name: t.slice(0, i).trim(), desc: t.slice(i + sep.length).trim() };
@@ -36,13 +36,26 @@ function foodRecDedupeKey(r) {
     .replace(/\s+/g, " ");
 }
 
+/** Venue + dish (after parseFoodRecLine); catches duplicate "Mercado X for Y" lines that differ only in hidden chars. */
+function foodRecSemanticDedupeKey(r) {
+  const { name, desc } = parseFoodRecLine(String(r).trim());
+  const n = foodRecDedupeKey(name);
+  const d = foodRecDedupeKey(desc);
+  if (!desc) return foodRecDedupeKey(r);
+  return `${n}::${d}`;
+}
+
 function dedupeFoodRecommendations(raw) {
-  const seen = new Set();
+  const seenFull = new Set();
+  const seenSem = new Set();
   const out = [];
   for (const r of raw || []) {
     const k = foodRecDedupeKey(r);
-    if (!k || seen.has(k)) continue;
-    seen.add(k);
+    if (!k || seenFull.has(k)) continue;
+    const sem = foodRecSemanticDedupeKey(r);
+    if (seenSem.has(sem)) continue;
+    seenFull.add(k);
+    seenSem.add(sem);
     out.push(String(r).trim());
   }
   return out;
@@ -78,7 +91,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const destCountry=(segment?.country||"").trim();
   const foodPhoto=useDestinationPhoto(dest,"food",destCountry);
   const stayPhoto=useDestinationPhoto(dest,"stay",destCountry);
-  const stayLockedHeroH=isMobile?140:160;
   const stayLockedCardRadius=14;
   const key=`${phaseId}-${segment.id}`;
   const blank={transport:{mode:"",from:"",to:"",departDate:"",departTime:"",arriveDate:"",arriveTime:"",depTime:"",arrTime:"",cost:"",notes:"",link:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
@@ -385,13 +397,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
           {suggestion?.stay&&!isDism('stay')&&!showStayAccommodationCard&&<StaySuggestionExperienceCard suggestion={suggestion.stay} segment={segment} selectedStayProp={selectedStayProp} setSelectedStayProp={setSelectedStayProp} heroUrl={stayPhoto.ready?stayPhoto.url:null} heroLink={stayPhoto.htmlLink} isMobile={isMobile} acceptBtnStyle={acceptBtnStyle} dismissBtnStyle={dismissBtnStyle} onUseThisStay={()=>{const s=suggestion.stay;const name=selectedStayProp||s.suggestions?.[0]||"";const alts=(s.suggestions||[]).filter(p=>p!==name);if(name)uS("name",name);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');}} onPlanMyOwn={()=>{dismiss('stay');setPlanningOwnStay(true);}}/>}
-          {showStayAccommodationCard&&!showStayResuggest&&<div style={{border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:stayLockedCardRadius,background:'rgba(0,229,255,0.06)',overflow:'hidden',marginBottom:14,display:'flex',flexDirection:'column'}}>
-            {stayPhoto.ready&&stayPhoto.url?<div style={{position:'relative',width:'100%',height:stayLockedHeroH,background:'#0A0705'}}>
-              <img src={stayPhoto.url} alt="" loading="lazy" decoding="async" style={{width:'100%',height:stayLockedHeroH,objectFit:'cover',display:'block',borderRadius:`${stayLockedCardRadius}px ${stayLockedCardRadius}px 0 0`}}/>
-              <div aria-hidden style={{position:'absolute',left:0,right:0,bottom:0,height:'55%',background:'linear-gradient(to top, rgba(0,4,12,0.85) 0%, transparent 100%)',pointerEvents:'none',borderRadius:`${stayLockedCardRadius}px ${stayLockedCardRadius}px 0 0`}}/>
-              {stayPhoto.htmlLink?<a href={stayPhoto.htmlLink} target="_blank" rel="noopener noreferrer" style={{position:'absolute',right:10,bottom:8,fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.40)',textDecoration:'none',zIndex:2}}>Photo: Unsplash</a>:null}
-            </div>:null}
-            <div style={{padding:'18px 20px',display:'flex',flexDirection:'column'}}>
+          {showStayAccommodationCard&&!showStayResuggest&&<div style={{position:'relative',border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:stayLockedCardRadius,background:stayPhoto.ready&&stayPhoto.url?'transparent':'rgba(0,229,255,0.06)',overflow:'hidden',marginBottom:14,display:'flex',flexDirection:'column',minHeight:stayPhoto.ready&&stayPhoto.url?(isMobile?300:340):undefined}}>
+            {stayPhoto.ready&&stayPhoto.url?<><img src={stayPhoto.url} alt="" loading="lazy" decoding="async" style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',display:'block',zIndex:0,filter:'brightness(1.08) contrast(1.04)'}}/><div aria-hidden style={{position:'absolute',inset:0,zIndex:1,pointerEvents:'none',background:'linear-gradient(180deg, rgba(10,7,5,0.14) 0%, rgba(10,7,5,0.28) 25%, rgba(10,7,5,0.62) 55%, rgba(10,7,5,0.86) 100%)'}}/></>:null}
+            <div style={{position:'relative',zIndex:2,padding:'18px 20px',display:'flex',flexDirection:'column',flex:1,background:stayPhoto.ready&&stayPhoto.url?'linear-gradient(90deg, rgba(10,7,5,0.88) 0%, rgba(10,7,5,0.55) 52%, rgba(10,7,5,0.18) 100%)':'transparent'}}>
             <div style={{flex:1,minHeight:0}}>
             <div style={{display:'flex',alignItems:'center',marginBottom:10}}>
               <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,flex:1}}>🏨 ACCOMMODATION</span>
@@ -402,6 +410,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {det.stay.cost&&<div style={{fontSize:13,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. ${det.stay.cost}</div>}
             {det.stay.notes&&!editingStay&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,color:'rgba(255,255,255,0.60)',marginTop:6,lineHeight:1.5,whiteSpace:'pre-line'}}>{det.stay.notes.length>140?det.stay.notes.slice(0,140)+'...':det.stay.notes}</div>}
             {det.stay.link&&<a href={det.stay.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:4}}>{det.stay.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
+            {stayPhoto.ready&&stayPhoto.htmlLink&&!editingStay&&<div style={{textAlign:'right',marginTop:8}}><a href={stayPhoto.htmlLink} target="_blank" rel="noopener noreferrer" style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.48)',textDecoration:'none'}}>Photo: Unsplash</a></div>}
             </div>
             {!editingStay&&suggestion?.stay&&<CollapsibleSuggestion summaryCard confirmMessage="Replace your saved stay with this Co-Architect suggestion?" onSwitchToSuggestion={()=>{const s=suggestion.stay;const name=selectedStayProp||s.suggestions?.[0]||"";const alts=(s.suggestions||[]).filter(p=>p!==name);if(name)uS("name",name);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${s.recommendation||""}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');}}>
               <div style={suggestionHeaderReadable}>✦ CO-ARCHITECT SUGGESTION</div>
