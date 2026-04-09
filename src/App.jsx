@@ -374,19 +374,20 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
         style={{
           background: "transparent",
           border: "none",
-          color: "rgba(255,255,255,0.28)",
+          color: "rgba(255,245,220,0.48)",
           fontFamily: "'Inter',system-ui,sans-serif",
-          fontSize: 12,
-          letterSpacing: "0.04em",
+          fontSize: 16,
+          fontWeight: 500,
+          letterSpacing: "0.05em",
           cursor: "pointer",
-          padding: "8px 16px",
+          padding: "12px 20px",
           transition: "color 0.2s ease",
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = "rgba(255,255,255,0.55)";
+          e.currentTarget.style.color = "rgba(255,200,120,0.85)";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.color = "rgba(255,255,255,0.28)";
+          e.currentTarget.style.color = "rgba(255,245,220,0.48)";
         }}
       >
         or explore a demo expedition →
