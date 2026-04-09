@@ -252,6 +252,156 @@ const MICHAEL_EXPEDITION = {
   ],
 };
 
+/** Compact demo for beta empty state — same phase shape as MICHAEL_EXPEDITION / handleLaunch */
+const BETA_DEMO_EXPEDITION = {
+  tripName: "Sample Expedition",
+  startDate: "",
+  departureCity: "Los Angeles, CA",
+  vision:
+    "A journey through ancient temples, world-class dive sites, and street food markets that change how you see food forever.",
+  visionNarrative:
+    "A journey through ancient temples, world-class dive sites, and street food markets that change how you see food forever.",
+  visionHighlight: "Temple mornings in Tokyo and reef afternoons in Utila.",
+  goalLabel: "Exploration",
+  totalNights: 17,
+  totalBudget: 3600,
+  totalDives: 0,
+  phases: [
+    {
+      id: 1,
+      name: "Tokyo",
+      flag: "🇯🇵",
+      country: "Japan",
+      color: "#FF9F43",
+      type: "Culture",
+      nights: 7,
+      budget: 2200,
+      cost: 2200,
+      diveCount: 0,
+      arrival: "",
+      departure: "",
+    },
+    {
+      id: 2,
+      name: "Utila",
+      flag: "🇭🇳",
+      country: "Honduras",
+      color: "#00E5FF",
+      type: "Dive",
+      nights: 10,
+      budget: 1400,
+      cost: 1400,
+      diveCount: 8,
+      arrival: "",
+      departure: "",
+    },
+  ],
+};
+
+function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        background:
+          "radial-gradient(ellipse at 50% 0%, rgba(169,70,29,0.15) 0%, transparent 60%), #0A0705",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "40px 24px",
+        textAlign: "center",
+        gap: 24,
+        boxSizing: "border-box",
+      }}
+    >
+      <img
+        src="/1bn-logo.png"
+        alt="1 Bag Nomad"
+        style={{ width: 80, height: 80, borderRadius: "50%", marginBottom: 8, objectFit: "contain" }}
+        onError={(e) => {
+          e.target.style.display = "none";
+        }}
+      />
+      <div>
+        <div
+          style={{
+            fontFamily: "'Playfair Display',Georgia,serif",
+            fontSize: "clamp(22px, 5vw, 32px)",
+            fontWeight: 300,
+            color: "rgba(255,245,220,0.95)",
+            lineHeight: 1.3,
+            marginBottom: 10,
+          }}
+        >
+          Your first expedition
+          <br />
+          is waiting.
+        </div>
+        <div
+          style={{
+            fontFamily: "'Playfair Display',Georgia,serif",
+            fontSize: 16,
+            fontStyle: "italic",
+            color: "rgba(255,159,67,0.65)",
+          }}
+        >
+          Every journey starts with a feeling.
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={onStartDreaming}
+        style={{
+          background: "linear-gradient(135deg, #A9461D, #C4571E)",
+          border: "none",
+          borderRadius: 14,
+          padding: "16px 44px",
+          color: "#fff",
+          fontFamily: "'Inter',system-ui,sans-serif",
+          fontSize: 15,
+          fontWeight: 600,
+          letterSpacing: "0.04em",
+          cursor: "pointer",
+          boxShadow: "0 0 32px rgba(169,70,29,0.35)",
+          transition: "transform 0.2s ease",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "scale(1.03)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "scale(1)";
+        }}
+      >
+        ✦ Start Dreaming
+      </button>
+      <button
+        type="button"
+        onClick={onTryDemo}
+        style={{
+          background: "transparent",
+          border: "none",
+          color: "rgba(255,255,255,0.28)",
+          fontFamily: "'Inter',system-ui,sans-serif",
+          fontSize: 12,
+          letterSpacing: "0.04em",
+          cursor: "pointer",
+          padding: "8px 16px",
+          transition: "color 0.2s ease",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = "rgba(255,255,255,0.55)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = "rgba(255,255,255,0.28)";
+        }}
+      >
+        or explore a demo expedition →
+      </button>
+    </div>
+  );
+}
+
 // ─── Default Pack (compact) ───────────────────────────────────────
 // getDefaultPack, fixPackItemVolume, mapPackItemsWithVolumes — imported from packHelpers.js
 
@@ -347,10 +497,11 @@ export default function App() {
       }
       const t=localStorage.getItem("1bn_tripData_v5");if(t){const p=JSON.parse(t);if(p?.phases?.length>0)return p;}
     }catch(e){}
-    return MICHAEL_EXPEDITION;
+    return null;
   });
   useEffect(()=>{try{if(tripData)localStorage.setItem("1bn_tripData_v5",JSON.stringify(tripData));}catch(e){};},[tripData]);
 
+  const hasTrip=useMemo(()=>Boolean(tripData?.phases?.length>0),[tripData?.phases?.length]);
   const suggestionsTripId=useMemo(()=>getSuggestionsTripId(tripData),[tripData]);
 
   // Load or generate segment suggestions when trip identity / phase count changes
@@ -437,7 +588,7 @@ export default function App() {
     setAppData({...revData,isRevision:true});setScreen("coarchitect");
   }
   function handleNewTrip(){
-    setScreen("dream");setAppData(null);setSegmentSuggestions(null);
+    setTripData(null);setScreen("dream");setAppData(null);setSegmentSuggestions(null);
     try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem(SUGGEST_KEY);localStorage.removeItem(DISMISS_KEY);}catch(e){}
   }
   function handleHomecoming(){setScreen("homecoming");}
@@ -445,7 +596,7 @@ export default function App() {
     const name=tripData?.tripName||"my expedition";
     setPrefilledVision(`I just completed ${name}. Now I want to `);
     try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");}catch(e){}
-    setAppData(null);setScreen("dream");
+    setTripData(null);setAppData(null);setScreen("dream");
   }
 
   return(
@@ -456,9 +607,52 @@ export default function App() {
       {screen==="coarchitect" && appData && <CoArchitect data={appData} visionData={appData.visionData} onLaunch={appData.isRevision?handleReviseLaunch:handleLaunch} onBack={()=>setScreen(appData.isRevision?"console":"dream")}/>}
       {screen==="handoff"     && tripData && <HandoffScreen tripData={tripData} onComplete={handleHandoffComplete}/>}
       {screen==="homecoming"  && tripData && <HomecomingScreen tripData={tripData} onPlanNext={handlePlanNext}/>}
-      {(screen==="console"||prevScreen==="console") && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} onUpdateTripData={(updates)=>setTripData(d=>({...d,...updates}))} onTripAmbientContextChange={setTripAmbientCtx}/></div>}
-      {(screen==="pack"||prevScreen==="pack") && <div style={{position:prevScreen==="pack"||slideDir?"fixed":"relative",inset:prevScreen==="pack"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="pack"?0:1,animation:prevScreen==="pack"?(slideDir==="right"?"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="pack"&&slideDir?(slideDir==="left"?"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><PackConsole tripData={tripData} onExpedition={()=>slideScreen("console")} onGoToTab={t=>{setPendingTab(t||"next");slideScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen}/></div>}
+      {(screen==="console"||prevScreen==="console") && !hasTrip && (
+        <BetaEmptyTripState
+          onStartDreaming={() => setScreen("dream")}
+          onTryDemo={() => {
+            setTripData(BETA_DEMO_EXPEDITION);
+            setScreen("console");
+          }}
+        />
+      )}
+      {(screen==="console"||prevScreen==="console") && hasTrip && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} onUpdateTripData={(updates)=>setTripData(d=>({...d,...updates}))} onTripAmbientContextChange={setTripAmbientCtx}/></div>}
+      {(screen==="pack"||prevScreen==="pack") && tripData && hasTrip && <div style={{position:prevScreen==="pack"||slideDir?"fixed":"relative",inset:prevScreen==="pack"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="pack"?0:1,animation:prevScreen==="pack"?(slideDir==="right"?"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="pack"&&slideDir?(slideDir==="left"?"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><PackConsole tripData={tripData} onExpedition={()=>slideScreen("console")} onGoToTab={t=>{setPendingTab(t||"next");slideScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen}/></div>}
       <AmbientChat screen={screen==="pack"?"pack-console":screen==="console"?tripAmbientCtx.screen:screen} tripData={tripData} currentPhase={screen==="console"?tripAmbientCtx.phase:null} currentSegment={screen==="console"?tripAmbientCtx.segment:null} currentTab={screen==="console"?tripAmbientCtx.tab:null}/>
+      {hasTrip && (screen === "console" || screen === "pack") && (
+        <button
+          type="button"
+          onClick={() => window.open("https://tally.so", "_blank", "noopener,noreferrer")}
+          style={{
+            position: "fixed",
+            bottom: "calc(env(safe-area-inset-bottom, 0px) + 72px)",
+            right: 16,
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            borderRadius: 20,
+            padding: "6px 14px",
+            fontSize: 11,
+            color: "rgba(255,255,255,0.35)",
+            fontFamily: "Inter, system-ui, sans-serif",
+            letterSpacing: "0.06em",
+            cursor: "pointer",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            zIndex: 890,
+            transition: "color 0.2s ease",
+            userSelect: "none",
+            textTransform: "lowercase",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "rgba(255,255,255,0.65)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "rgba(255,255,255,0.35)";
+          }}
+        >
+          feedback
+        </button>
+      )}
     </>
   );
 }
