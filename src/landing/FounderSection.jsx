@@ -3,7 +3,7 @@ import { Reveal } from "./Reveal.jsx";
 export function FounderSection() {
   return (
     <section className="lp-section lp-founder-section">
-      <Reveal>
+      <Reveal variant="subtle">
         <div>
           <h3 className="lp-serif" style={{ fontSize: "clamp(1.35rem, 3vw, 1.75rem)", fontWeight: 700, color: "var(--lp-gold-bright)", marginBottom: 20, lineHeight: 1.3 }}>
             Built by a traveler, for travelers.
@@ -40,7 +40,7 @@ export function FounderSection() {
           </div>
         </div>
       </Reveal>
-      <Reveal delay={120}>
+      <Reveal delay={120} variant="subtle">
         <div className="lp-founder-visual" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ position: "relative", width: 180, height: 180 }}>
             <span

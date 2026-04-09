@@ -1,6 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 
-export function Reveal({ children, className = "", delay = 0, as: Tag = "div", style, ...rest }) {
+const motionClass = {
+  default: "",
+  subtle: "lp-reveal--subtle",
+  whisper: "lp-reveal--whisper",
+};
+
+export function Reveal({
+  children,
+  className = "",
+  delay = 0,
+  as: Tag = "div",
+  style,
+  variant = "default",
+  duration = "normal",
+  threshold = 0.12,
+  rootMargin = "0px 0px -8% 0px",
+  ...rest
+}) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -14,18 +31,20 @@ export function Reveal({ children, className = "", delay = 0, as: Tag = "div", s
           ob.unobserve(el);
         }
       },
-      { threshold: 0.12, rootMargin: "0px 0px -5% 0px" }
+      { threshold, rootMargin }
     );
     ob.observe(el);
     return () => {
       ob.disconnect();
       if (timeoutId) window.clearTimeout(timeoutId);
     };
-  }, [delay]);
+  }, [delay, threshold, rootMargin]);
+  const motion = motionClass[variant] ?? "";
+  const slow = duration === "slow" ? "lp-reveal--slow" : "";
   return (
     <Tag
       ref={ref}
-      className={`lp-reveal ${visible ? "lp-reveal--visible" : ""} ${className}`.trim()}
+      className={`lp-reveal ${motion} ${slow} ${visible ? "lp-reveal--visible" : ""} ${className}`.trim()}
       style={style}
       {...rest}
     >

@@ -13,8 +13,8 @@ const FEATURES = [
 
 export function FeaturesSection() {
   return (
-    <section className="lp-section lp-features" style={{ padding: "80px 24px", maxWidth: 900, margin: "0 auto", background: "#1a1a1a" }}>
-      <Reveal>
+    <section className="lp-section lp-band-features">
+      <Reveal variant="subtle">
         <p
           className="lp-sans"
           style={{
@@ -23,7 +23,7 @@ export function FeaturesSection() {
             color: "rgba(201,160,76,0.75)",
             textAlign: "center",
             textTransform: "uppercase",
-            marginBottom: 40,
+            margin: "0 0 clamp(2rem, 5vw, 2.75rem)",
           }}
         >
           What makes it different
@@ -31,7 +31,7 @@ export function FeaturesSection() {
       </Reveal>
       <div className="lp-features-grid">
         {FEATURES.map((f, i) => (
-          <Reveal key={f.title} delay={i * 80}>
+          <Reveal key={f.title} delay={60 + i * 70} variant="subtle">
             <div className="lp-card" style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}>
               <div style={{ fontSize: 22, marginBottom: 10 }}>{f.icon}</div>
               <div className="lp-sans" style={{ fontSize: 15, fontWeight: 700, letterSpacing: "0.06em", color: "rgba(248,245,240,0.9)", marginBottom: 8 }}>

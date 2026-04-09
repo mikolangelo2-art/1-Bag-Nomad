@@ -4,31 +4,32 @@ const STAR = String.fromCodePoint(0x2726);
 
 export function DemoSection({ onPlay }) {
   return (
-    <section className="lp-section" style={{ padding: "80px 24px", textAlign: "center", background: "#1a1a1a" }}>
-      <Reveal>
-        <p
-          className="lp-sans"
-          style={{
-            fontSize: 12,
-            letterSpacing: "0.28em",
-            color: "rgba(201,160,76,0.75)",
-            textTransform: "uppercase",
-            marginBottom: 32,
-          }}
-        >
-          {`${STAR} SEE IT IN ACTION`}
-        </p>
-      </Reveal>
-      <Reveal delay={100}>
-        <button type="button" className="lp-demo-play" onClick={onPlay} aria-label="Play demo video">
-          <span style={{ fontSize: 36, color: "#c9a04c", marginLeft: 6 }}>{"\u25B6"}</span>
-        </button>
-      </Reveal>
-      <Reveal delay={200}>
-        <p className="lp-serif" style={{ fontSize: 16, fontStyle: "italic", fontWeight: 300, color: "rgba(248,245,240,0.45)" }}>
-          {"Demo coming soon \u2014 follow the journey"}
-        </p>
-      </Reveal>
+    <section className="lp-section lp-demo-section">
+      <div className="lp-demo-inner">
+        <Reveal variant="subtle" rootMargin="0px 0px -6% 0px">
+          <p className="lp-demo-eyebrow lp-sans">{`${STAR} SEE IT IN ACTION`}</p>
+        </Reveal>
+
+        <Reveal delay={90} variant="default" duration="slow" rootMargin="0px 0px -5% 0px">
+          <div className="lp-demo-frame">
+            <div className="lp-demo-frame__poster" aria-hidden />
+            <div className="lp-demo-frame__wash" aria-hidden />
+            <div className="lp-demo-frame__vignette" aria-hidden />
+            <div className="lp-demo-frame__grain" aria-hidden />
+            <button type="button" className="lp-demo-play-btn" onClick={onPlay} aria-label="Play demo video">
+              <span className="lp-demo-play-btn__ring" aria-hidden />
+              <svg className="lp-demo-play-btn__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <path d="M9 7.5v9l7.5-4.5L9 7.5z" fill="currentColor" />
+              </svg>
+            </button>
+          </div>
+        </Reveal>
+
+        <Reveal delay={180} variant="whisper">
+          <p className="lp-demo-tagline lp-serif">{"Demo coming soon \u2014 follow the journey"}</p>
+          <p className="lp-demo-duration lp-sans">Approx. 60\u201390 sec overview</p>
+        </Reveal>
+      </div>
     </section>
   );
 }

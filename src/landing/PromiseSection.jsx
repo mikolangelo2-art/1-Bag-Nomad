@@ -2,17 +2,8 @@ import { Reveal } from "./Reveal.jsx";
 
 export function PromiseSection() {
   return (
-    <section
-      className="lp-section"
-      style={{
-        background: "var(--lp-bg)",
-        padding: "60px 24px",
-        textAlign: "center",
-        borderTop: "1px solid rgba(201,160,76,0.12)",
-        borderBottom: "1px solid rgba(201,160,76,0.12)",
-      }}
-    >
-      <Reveal>
+    <section className="lp-section lp-band-promise">
+      <Reveal variant="whisper" duration="slow">
         <p
           className="lp-serif"
           style={{
@@ -28,7 +19,7 @@ export function PromiseSection() {
           The 1 Bag Nomad Promise
         </p>
       </Reveal>
-      <Reveal delay={120}>
+      <Reveal delay={140} duration="slow" variant="subtle">
         <h2
           className="lp-serif"
           style={{

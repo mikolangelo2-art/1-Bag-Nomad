@@ -15,19 +15,7 @@ function trackCta(location) {
 
 export function FinalCTASection() {
   return (
-    <footer
-      className="lp-section lp-final-cta"
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        padding: "40px 24px",
-        background: "radial-gradient(ellipse 80% 50% at 50% 60%, rgba(169,70,29,0.06) 0%, transparent 60%), var(--lp-bg)",
-      }}
-    >
+    <footer className="lp-section lp-final-cta">
       <Reveal>
         <div className="lp-serif" style={{ fontSize: "clamp(2rem, 6vw, 3.25rem)", fontWeight: 900, color: "var(--lp-gold-bright)", letterSpacing: "0.06em", lineHeight: 1.15, marginBottom: 4 }}>
           DREAM BIG.

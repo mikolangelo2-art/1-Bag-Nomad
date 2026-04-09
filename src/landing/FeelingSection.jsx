@@ -18,19 +18,10 @@ const BLOCKS = [
 export function FeelingSection() {
   let revealIndex = 0;
   return (
-    <section
-      className="lp-section"
-      style={{
-        padding: "100px 24px",
-        maxWidth: 720,
-        margin: "0 auto",
-        textAlign: "center",
-        background: "radial-gradient(ellipse 70% 50% at 50% 50%, rgba(201,160,76,0.06) 0%, transparent 60%), #1a1a1a",
-      }}
-    >
+    <section className="lp-section lp-band-feeling">
       {BLOCKS.map((block) => {
         if (block.spacer) {
-          return <div key={block.key} style={{ height: 12, marginBottom: 8 }} />;
+          return <div key={block.key} className="lp-feeling-spacer" />;
         }
         const i = revealIndex++;
         const color = block.gold
@@ -40,8 +31,9 @@ export function FeelingSection() {
             : "rgba(248,245,240,0.8)";
         const weight = block.gold ? 400 : 300;
         const marginBottom = block.breakAfter ? 32 : 8;
+        const variant = block.gold ? "default" : "subtle";
         return (
-          <Reveal key={block.key} delay={i * 120}>
+          <Reveal key={block.key} delay={i * 110} variant={variant} rootMargin="0px 0px -6% 0px">
             <p
               className="lp-serif"
               style={{

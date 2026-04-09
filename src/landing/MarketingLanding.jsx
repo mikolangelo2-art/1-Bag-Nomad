@@ -16,6 +16,8 @@ export default function MarketingLanding() {
   }, []);
 
   useEffect(() => {
+    const root = document.documentElement;
+    root.classList.add("lp-marketing");
     document.title = "1 Bag Nomad \u2014 Dream Big. Travel Light.";
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
@@ -29,6 +31,7 @@ export default function MarketingLanding() {
     } catch {
       /* ignore */
     }
+    return () => root.classList.remove("lp-marketing");
   }, []);
 
   return (
