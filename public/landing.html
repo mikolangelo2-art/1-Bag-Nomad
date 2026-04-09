@@ -23,7 +23,20 @@
     /* ── HERO ── */
     .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;position:relative;background:radial-gradient(ellipse at 50% 30%,rgba(169,70,29,0.08) 0%,transparent 60%),#150F0A}
     .hero::before{content:'';position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(255,159,67,0.06) 0%,transparent 70%);pointer-events:none}
-    .hero-logo{width:80px;height:80px;margin-bottom:32px;animation:logoFloat 4s ease-in-out infinite;position:relative;z-index:1}
+    .hero-logo-wrap{position:relative;z-index:1;margin-bottom:clamp(28px,5vw,40px)}
+    .hero-logo{
+      width:clamp(160px,36vw,280px);
+      height:clamp(160px,36vw,280px);
+      max-width:min(280px,92vw);
+      max-height:min(280px,92vw);
+      object-fit:contain;
+      animation:logoFloat 4s ease-in-out infinite;
+      position:relative;
+      z-index:1;
+      filter:drop-shadow(0 0 32px rgba(255,217,61,0.38)) drop-shadow(0 6px 28px rgba(0,0,0,0.6));
+      -webkit-backface-visibility:hidden;
+      backface-visibility:hidden;
+    }
     .hero-headline{font-size:42px;letter-spacing:2px;margin-bottom:8px;line-height:1.2;position:relative;z-index:1}
     .hero-headline .bold{font-weight:900;color:#FFD93D}
     .hero-headline .light{font-weight:100;font-style:italic;color:rgba(255,255,255,0.92);font-size:38px}
@@ -41,7 +54,17 @@
     .scroll-chevron svg path{filter:drop-shadow(0 0 6px rgba(255,217,61,0.6))}
 
     /* ── THE FEELING ── */
-    .feeling{padding:100px 24px;max-width:720px;margin:0 auto;text-align:center;background:#1A1208}
+    .feeling{padding:clamp(56px,10vw,100px) clamp(16px,4vw,28px);background:#150F0A}
+    .feeling-inner{
+      max-width:720px;
+      margin:0 auto;
+      text-align:center;
+      background:#1A1208;
+      border:1px solid rgba(255,159,67,0.28);
+      border-radius:18px;
+      padding:clamp(48px,9vw,96px) clamp(22px,5vw,44px);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,0.05),0 28px 100px rgba(0,0,0,0.45);
+    }
     .feeling-line{font-size:26px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.80);line-height:2.0;margin-bottom:8px}
     .feeling-line.gold{color:#FFD93D;font-weight:400}
     .feeling-line.break{margin-bottom:32px}
@@ -103,7 +126,7 @@
 
     /* ── MOBILE ── */
     @media(max-width:768px){
-      .hero-logo{width:60px;height:60px}
+      .hero-logo{width:clamp(132px,48vw,220px);height:clamp(132px,48vw,220px);max-width:min(220px,90vw);max-height:min(220px,90vw)}
       .hero-headline{font-size:22px;white-space:nowrap}
       .hero-headline .light{font-size:20px}
       .hero-headline .sep{margin:0 8px}
@@ -112,6 +135,7 @@
       .hero-buttons{flex-direction:column;width:100%;max-width:320px}
       .hero-buttons button,.hero-buttons a{width:100%;text-align:center}
       .feeling-line{font-size:20px}
+      .feeling-inner{padding:clamp(36px,8vw,64px) clamp(18px,4vw,28px);border-radius:14px}
       .how-grid{grid-template-columns:1fr}
       .how-title{font-size:24px}
       .founder-section{grid-template-columns:1fr;text-align:center}
@@ -130,7 +154,9 @@
 
 <!-- SECTION 1: HERO -->
 <section class="hero">
-  <img src="/1bn-logo.png" alt="1 Bag Nomad" class="hero-logo"/>
+  <div class="hero-logo-wrap">
+    <img src="/1bn-logo.png" alt="1 Bag Nomad" class="hero-logo" width="280" height="280" decoding="async" fetchpriority="high"/>
+  </div>
   <div class="hero-headline">
     <span class="bold">DREAM BIG</span><span class="sep">|</span><span class="light">travel light</span>
   </div>
@@ -152,6 +178,7 @@
 
 <!-- SECTION 2: THE FEELING -->
 <section class="feeling">
+  <div class="feeling-inner">
   <p class="feeling-line fade-in">Real travel begins with a feeling.</p>
   <p class="feeling-line fade-in spacer">&nbsp;</p>
   <p class="feeling-line fade-in">A reef you need to dive.</p>
@@ -164,6 +191,7 @@
   <p class="feeling-line fade-in">But that's not how real travel begins.</p>
   <p class="feeling-line fade-in spacer">&nbsp;</p>
   <p class="feeling-line fade-in gold">Your ultimate travel journey starts right here, right now.</p>
+  </div>
 </section>
 
 <!-- SECTION 3: HOW IT WORKS -->
