@@ -243,14 +243,14 @@ const MICHAEL_EXPEDITION = {
 
 /** Compact demo for beta empty state — same phase shape as MICHAEL_EXPEDITION / handleLaunch */
 const BETA_DEMO_EXPEDITION = {
-  tripName: "Sample Expedition",
-  startDate: "",
+  tripName: "The Japanese Feast & Caribbean Dive",
+  startDate: "2026-06-01",
   departureCity: "Los Angeles, CA",
   vision:
-    "A journey through ancient temples, world-class dive sites, and street food markets that change how you see food forever.",
+    "Michelin temples and dawn tuna auctions in Tokyo, then crystalline Caribbean reefs on Utila. Food as meditation. Diving as freedom.",
   visionNarrative:
-    "A journey through ancient temples, world-class dive sites, and street food markets that change how you see food forever.",
-  visionHighlight: "Temple mornings in Tokyo and reef afternoons in Utila.",
+    "Michelin temples and dawn tuna auctions in Tokyo, then crystalline Caribbean reefs on Utila. Food as meditation. Diving as freedom.",
+  visionHighlight: "Tokyo omakase nights, Tsukiji before sunrise, then wall dives off Utila.",
   goalLabel: "Exploration",
   totalNights: 17,
   totalBudget: 3600,
@@ -267,8 +267,8 @@ const BETA_DEMO_EXPEDITION = {
       budget: 2200,
       cost: 2200,
       diveCount: 0,
-      arrival: "",
-      departure: "",
+      arrival: "2026-06-01",
+      departure: "2026-06-08",
     },
     {
       id: 2,
@@ -281,8 +281,8 @@ const BETA_DEMO_EXPEDITION = {
       budget: 1400,
       cost: 1400,
       diveCount: 8,
-      arrival: "",
-      departure: "",
+      arrival: "2026-06-08",
+      departure: "2026-06-18",
     },
   ],
 };
@@ -291,14 +291,17 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
   return (
     <div
       style={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         background:
           "radial-gradient(ellipse at 50% 0%, rgba(169,70,29,0.15) 0%, transparent 60%), #0A0705",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "40px 24px",
+        paddingTop: "max(60px, 10vh)",
+        paddingBottom: "max(40px, 8vh)",
+        paddingLeft: 24,
+        paddingRight: 24,
         textAlign: "center",
         gap: 24,
         boxSizing: "border-box",
@@ -307,7 +310,7 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
       <img
         src="/1bn-logo.png"
         alt="1 Bag Nomad"
-        style={{ width: 80, height: 80, borderRadius: "50%", marginBottom: 8, objectFit: "contain" }}
+        style={{ width: 110, height: 110, borderRadius: "50%", marginBottom: 8, objectFit: "contain" }}
         onError={(e) => {
           e.target.style.display = "none";
         }}
@@ -316,8 +319,8 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
         <div
           style={{
             fontFamily: "'Playfair Display',Georgia,serif",
-            fontSize: "clamp(22px, 5vw, 32px)",
-            fontWeight: 300,
+            fontSize: "clamp(28px, 6vw, 42px)",
+            fontWeight: 200,
             color: "rgba(255,245,220,0.95)",
             lineHeight: 1.3,
             marginBottom: 10,
@@ -330,7 +333,7 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
         <div
           style={{
             fontFamily: "'Playfair Display',Georgia,serif",
-            fontSize: 16,
+            fontSize: 18,
             fontStyle: "italic",
             color: "rgba(255,159,67,0.65)",
           }}
@@ -344,11 +347,11 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
         style={{
           background: "linear-gradient(135deg, #A9461D, #C4571E)",
           border: "none",
-          borderRadius: 14,
-          padding: "16px 44px",
+          borderRadius: 16,
+          padding: "18px 56px",
           color: "#fff",
           fontFamily: "'Inter',system-ui,sans-serif",
-          fontSize: 15,
+          fontSize: 17,
           fontWeight: 600,
           letterSpacing: "0.04em",
           cursor: "pointer",
@@ -615,7 +618,7 @@ export default function App() {
           style={{
             position: "fixed",
             bottom: "calc(env(safe-area-inset-bottom, 0px) + 72px)",
-            right: 16,
+            left: 16,
             background: "rgba(255,255,255,0.05)",
             border: "1px solid rgba(255,255,255,0.10)",
             borderRadius: 20,
