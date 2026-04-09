@@ -71,10 +71,10 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
           <SharegoodLogo size={isMobile?30:42} opacity={0.88} glowColor={logoGlow} animationState="idle"/>
           <div style={{textAlign:"center"}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:18,fontWeight:500,color:"#FFF",letterSpacing:3,lineHeight:1}}>1 Bag Nomad</div>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?14:18,fontWeight:500,color:"#FFF",letterSpacing:3,lineHeight:1}}>1 Bag Nomad</div>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:4,marginTop:3}}>
               <div style={{width:3,height:3,borderRadius:"50%",background:dot,boxShadow:`0 0 6px ${dot}`}}/>
-              <div style={{fontFamily:"'Fraunces',serif",fontWeight:300,fontStyle:"italic",fontSize:isMobile?8:10,color:sub,letterSpacing:1.5}}>Sharegood Co.</div>
+              <div style={{fontFamily:"'Playfair Display',serif",fontWeight:300,fontStyle:"italic",fontSize:isMobile?8:10,color:sub,letterSpacing:1.5}}>Sharegood Co.</div>
             </div>
           </div>
         </div>
@@ -90,9 +90,9 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
       {/* Tagline bar */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:isMobile?10:28,padding:isMobile?"10px 14px":"14px 32px",borderTop:`1px solid ${bc}`,border:'1px solid rgba(255,159,67,0.35)',borderTopColor:'rgba(255,159,67,0.55)',borderRadius:isMobile?8:0,margin:isMobile?'0 8px':0,background:`linear-gradient(90deg,transparent,${isDream?"rgba(32,15,0,0.75)":isTrip?"rgba(0,20,45,0.65)":"rgba(40,16,0,0.65)"},transparent)`,boxShadow:'inset 0 1px 0 rgba(255,159,67,0.40),inset 0 -1px 0 rgba(255,159,67,0.08)',position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"80%",height:80,background:`radial-gradient(ellipse,${radial} 0%,transparent 70%)`,pointerEvents:"none"}}/>
-        <div style={{fontFamily:"'Fraunces',serif",fontSize:dbSize,fontWeight:isMobile?400:dbWeight,color:dbColor,letterSpacing:isMobile?0:7,lineHeight:1,whiteSpace:"nowrap",textShadow:isDream?"0 0 32px rgba(255,217,61,0.7),0 0 64px rgba(169,70,29,0.4)":"none",position:"relative",textTransform:"uppercase"}}>Dream Big</div>
+        <div style={{fontFamily:"'Playfair Display',serif",fontSize:dbSize,fontWeight:isMobile?400:dbWeight,color:dbColor,letterSpacing:isMobile?0:7,lineHeight:1,whiteSpace:"nowrap",textShadow:isDream?"0 0 32px rgba(255,217,61,0.7),0 0 64px rgba(169,70,29,0.4)":"none",position:"relative",textTransform:"uppercase"}}>Dream Big</div>
         <div style={{width:1,height:isMobile?22:30,background:`linear-gradient(180deg,transparent,${divLine},transparent)`,flexShrink:0}}/>
-        <div style={{fontFamily:"'Fraunces',serif",fontSize:tlSize,fontWeight:isPack?300:100,fontStyle:"italic",color:tlColor,letterSpacing:isMobile?0:8,lineHeight:1,whiteSpace:"nowrap",position:"relative",textShadow:tlShadow}}>travel light</div>
+        <div style={{fontFamily:"'Playfair Display',serif",fontSize:tlSize,fontWeight:isPack?300:100,fontStyle:"italic",color:tlColor,letterSpacing:isMobile?0:8,lineHeight:1,whiteSpace:"nowrap",position:"relative",textShadow:tlShadow}}>travel light</div>
       </div>
       {children}
     </div>
@@ -104,7 +104,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
           </div>
           <div style={{textAlign:"center"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:4}}>
-              <div style={{fontFamily:"'Fraunces',serif",fontSize:20,fontWeight:700,fontStyle:"italic",color:"#FFF",letterSpacing:1}}>1 Bag Nomad</div>
+              <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,fontStyle:"italic",color:"#FFF",letterSpacing:1}}>1 Bag Nomad</div>
               <div style={{padding:"2px 8px",borderRadius:12,background:"rgba(255,217,61,0.15)",border:"1px solid rgba(255,217,61,0.4)",fontSize:9,fontWeight:700,letterSpacing:2,color:"#FFD93D",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>PRO</div>
             </div>
             <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1}}>explorer@1bagnomad.com</div>

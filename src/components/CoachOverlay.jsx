@@ -52,7 +52,7 @@ function CoachOverlay({steps,storageKey,accentColor="#00E5FF",onDismiss}) {
       {/* Tooltip */}
       <div style={tipStyle} onClick={e=>e.stopPropagation()}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?14:16,fontWeight:700,fontStyle:"italic",color:"#FFD93D"}}>{s.title}</div>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?14:16,fontWeight:700,fontStyle:"italic",color:"#FFD93D"}}>{s.title}</div>
           <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{step+1}/{steps.length}</div>
         </div>
         <div style={{fontSize:isMobile?11:12,color:"rgba(255,255,255,0.65)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.7,marginBottom:14}}>{s.body}</div>

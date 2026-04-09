@@ -182,12 +182,12 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
           const ring = document.createElement('div');
           ring.style.cssText = `position:relative;width:${sz}px;height:${sz}px;border-radius:50%;border:2px solid rgba(232,220,200,0.85);background:rgba(232,220,200,0.12);box-shadow:0 0 8px rgba(232,220,200,0.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;`;
           const innerDot = document.createElement('div');
-          innerDot.style.cssText = `width:4px;height:4px;border-radius:50%;background:#E8DCC8;flex-shrink:0;`;
+          innerDot.style.cssText = `width:4px;height:4px;border-radius:50%;background:#F8F5F0;flex-shrink:0;`;
           ring.appendChild(innerDot);
 
           const depLabel = document.createElement('div');
           depLabel.textContent = depCity.toUpperCase();
-          depLabel.style.cssText = `color:#E8DCC8;font-family:Inter,sans-serif;font-size:9px;font-weight:700;white-space:nowrap;background:rgba(10,7,5,0.85);padding:2px 5px;border-radius:3px;pointer-events:none;letter-spacing:1px;opacity:0.8;`;
+          depLabel.style.cssText = `color:#F8F5F0;font-family:Inter,sans-serif;font-size:9px;font-weight:700;white-space:nowrap;background:rgba(22,22,22,0.88);padding:2px 5px;border-radius:3px;pointer-events:none;letter-spacing:1px;opacity:0.8;`;
 
           depEl.appendChild(ring);
           depEl.appendChild(depLabel);
@@ -316,7 +316,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
           filter: "drop-shadow(0 0 20px rgba(0,229,255,0.4))",
         }}>🌍</div>
         <div style={{
-          fontFamily: "'Fraunces',serif",
+          fontFamily: "'Playfair Display',serif",
           fontSize: 18,
           fontWeight: 300,
           fontStyle: "italic",

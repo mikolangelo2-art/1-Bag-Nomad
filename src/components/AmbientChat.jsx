@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
+import { BG_PAGE } from '../constants/colors';
 import SharegoodLogo from './SharegoodLogo';
 
 function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab}) {
@@ -36,7 +37,7 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
     </div>}
     {open&&<>
       <div onClick={()=>setOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.4)",zIndex:1000}}/>
-      <div style={{position:"fixed",bottom:0,left:0,right:0,height:"65vh",background:"#120A04",borderTop:"1px solid rgba(255,217,61,0.3)",borderRadius:"20px 20px 0 0",zIndex:1001,display:"flex",flexDirection:"column",animation:"drawerSlideUp 400ms cubic-bezier(0.25,0.46,0.45,0.94)"}}>
+      <div style={{position:"fixed",bottom:0,left:0,right:0,height:"65vh",background:BG_PAGE,borderTop:"1px solid rgba(232,185,35,0.28)",borderRadius:"20px 20px 0 0",zIndex:1001,display:"flex",flexDirection:"column",animation:"drawerSlideUp 400ms cubic-bezier(0.25,0.46,0.45,0.94)",boxShadow:"0 -12px 48px rgba(0,0,0,0.4), 0 0 60px rgba(232,185,35,0.08)"}}>
         <div style={{padding:"16px 20px 12px",borderBottom:"1px solid rgba(255,255,255,0.08)",display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexShrink:0}}>
           <div><div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,159,67,0.85)",letterSpacing:3}}>✦ CO-ARCHITECT</div>{subtitle&&<div style={{fontSize:11,color:"rgba(255,255,255,0.3)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,marginTop:3}}>{subtitle}</div>}</div>
           <button onClick={()=>setOpen(false)} style={{color:"rgba(255,255,255,0.4)",background:"none",border:"none",fontSize:20,cursor:"pointer",minWidth:44,minHeight:44,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
@@ -44,11 +45,11 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
         <div style={{flex:1,overflowY:"auto",padding:"16px 20px",display:"flex",flexDirection:"column",gap:12,minHeight:0,background:"rgba(255,255,255,0.06)"}}>
           {msgs.length===0&&<div style={{position:"relative",flex:1,display:"flex",alignItems:"center",justifyContent:"center",minHeight:200}}>
             <img src="/1bn-logo.png" style={{position:"absolute",width:"60%",maxWidth:200,opacity:0.06,pointerEvents:"none"}} alt=""/>
-            <div style={{position:"relative",zIndex:1,textAlign:"center",padding:"0 20px",maxWidth:420,margin:"0 auto",fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:400,color:"rgba(232,220,200,0.95)",fontSize:isMobile?18:20,lineHeight:1.65,textShadow:"0 1px 2px rgba(0,0,0,0.35)"}}>{openLine}</div>
+            <div style={{position:"relative",zIndex:1,textAlign:"center",padding:"0 20px",maxWidth:420,margin:"0 auto",fontFamily:"'Playfair Display',serif",fontStyle:"italic",fontWeight:400,color:"rgba(232,220,200,0.95)",fontSize:isMobile?18:20,lineHeight:1.65,textShadow:"0 1px 2px rgba(0,0,0,0.35)"}}>{openLine}</div>
           </div>}
           {msgs.map((m,i)=><div key={i} style={{display:"flex",gap:8,flexDirection:m.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>
             <div style={{width:22,height:22,borderRadius:"50%",background:m.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{m.role==="ai"?"✦":"·"}</div>
-            <div style={{borderRadius:12,padding:m.role==="ai"?"14px 16px":"10px 14px",fontSize:m.role==="ai"?15:13,fontFamily:m.role==="ai"?"'Fraunces',serif":"'Inter',system-ui,-apple-system,sans-serif",fontStyle:"normal",color:"#FFF",lineHeight:m.role==="ai"?1.6:1.7,maxWidth:"85%",background:m.role==="ai"?"rgba(255,159,67,0.06)":"rgba(255,255,255,0.06)",border:m.role==="ai"?"1px solid rgba(255,159,67,0.25)":"1px solid rgba(255,255,255,0.08)"}}>{m.role==="ai"?parseMarkdown(m.text):m.text}</div>
+            <div style={{borderRadius:12,padding:m.role==="ai"?"14px 16px":"10px 14px",fontSize:m.role==="ai"?15:13,fontFamily:m.role==="ai"?"'Playfair Display',serif":"'Inter',system-ui,-apple-system,sans-serif",fontStyle:"normal",color:"#FFF",lineHeight:m.role==="ai"?1.6:1.7,maxWidth:"85%",background:m.role==="ai"?"rgba(255,159,67,0.06)":"rgba(255,255,255,0.06)",border:m.role==="ai"?"1px solid rgba(255,159,67,0.25)":"1px solid rgba(255,255,255,0.08)"}}>{m.role==="ai"?parseMarkdown(m.text):m.text}</div>
           </div>)}
           {loading&&<div style={{display:"flex",gap:6,animation:"msgIn 0.25s ease"}}><div style={{width:22,height:22,borderRadius:"50%",background:"#A9461D",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>✦</div><div style={{fontSize:13,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",padding:"4px 0"}}>thinking...</div></div>}
           <div ref={endRef}/>

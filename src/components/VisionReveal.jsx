@@ -126,7 +126,7 @@ Return ONLY valid JSON:
         <div className="narrative-card">
           <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"90%",height:"130%",background:"radial-gradient(ellipse,rgba(169,70,29,0.22) 0%,transparent 68%)",pointerEvents:"none"}}/>
           <div style={{fontSize:15,color:"#C4571E",letterSpacing:3,marginBottom:12,position:"relative"}}>✦ YOUR EXPEDITION VISION</div>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:400,fontStyle:"italic",color:"rgba(255,245,220,0.96)",lineHeight:1.8,position:"relative",minHeight:80,letterSpacing:"0.01em",textShadow:"0 1px 12px rgba(0,0,0,0.4)"}}>"{narrative}{!narrativeDone&&<span className="hero-cursor">|</span>}"</div>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:400,fontStyle:"italic",color:"rgba(255,245,220,0.96)",lineHeight:1.8,position:"relative",minHeight:80,letterSpacing:"0.01em",textShadow:"0 1px 12px rgba(0,0,0,0.4)"}}>"{narrative}{!narrativeDone&&<span className="hero-cursor">|</span>}"</div>
           {narrativeDone&&<div style={{display:"flex",gap:7,flexWrap:"wrap",marginTop:14,position:"relative"}}>{(vd.vibe||"").split(" · ").filter(Boolean).map((w,i)=><span key={i} className="vibe-tag">{w}</span>)}</div>}
         </div>
         {showStats&&(
@@ -136,7 +136,7 @@ Return ONLY valid JSON:
             ))}
           </div>
         )}
-        {narrativeDone&&vd.highlight&&<div style={{background:"rgba(0,229,255,0.04)",border:"1px solid rgba(0,229,255,0.18)",borderRadius:11,padding:"10px 12px",marginBottom:18}}><div style={{fontSize:12,color:"#00E5FF",letterSpacing:2.5,marginBottom:7,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>⚡ EXPEDITION HIGHLIGHT</div><div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.7,opacity:0.90}}>{vd.highlight}</div></div>}
+        {narrativeDone&&vd.highlight&&<div style={{background:"rgba(0,229,255,0.04)",border:"1px solid rgba(0,229,255,0.18)",borderRadius:11,padding:"10px 12px",marginBottom:18}}><div style={{fontSize:12,color:"#00E5FF",letterSpacing:2.5,marginBottom:7,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>⚡ EXPEDITION HIGHLIGHT</div><div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.7,opacity:0.90}}>{vd.highlight}</div></div>}
         {showPhases&&(
           <div style={{animation:"fadeUp 0.5s ease"}}>
             <div style={{fontSize:15,color:"rgba(255,159,67,0.8)",letterSpacing:4,marginBottom:12,paddingBottom:7,borderBottom:"1px solid rgba(169,70,29,0.2)"}}>YOUR EXPEDITION PHASES</div>
@@ -146,7 +146,7 @@ Return ONLY valid JSON:
                 return(<div key={i} className="phase-row" style={{borderLeftColor:c,background:`linear-gradient(90deg,${c}08,#0C1520)`,animation:`phaseIn 0.4s ease ${i*.07}s both`}}>
                   <div style={{width:22,height:22,borderRadius:"50%",background:`${c}18`,border:`1px solid ${c}44`,color:c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,flexShrink:0,marginTop:1}}>{i+1}</div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?15:17,fontWeight:400,fontStyle:"italic",color:"rgba(255,245,220,0.94)",lineHeight:1.48,marginBottom:8,letterSpacing:"0.01em",textWrap:"balance",overflowWrap:"break-word",wordBreak:"break-word"}}>{p.why}</div>
+                    <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?15:17,fontWeight:400,fontStyle:"italic",color:"rgba(255,245,220,0.94)",lineHeight:1.48,marginBottom:8,letterSpacing:"0.01em",textWrap:"balance",overflowWrap:"break-word",wordBreak:"break-word"}}>{p.why}</div>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2,flexWrap:"wrap"}}>
                       <span style={{fontSize:isMobile?12:13,fontWeight:600,color:"rgba(255,255,255,0.92)",letterSpacing:0.3}}>{p.flag||"🌍"} {p.destination}</span>
                       <span style={{fontSize:11,color:c}}>{TI[p.type]||"✈️"} {p.type}</span>
@@ -173,7 +173,7 @@ Return ONLY valid JSON:
                         <div key={c.key} style={{display:"flex",alignItems:"center",padding:"7px 0",gap:8}}>
                           <span style={{fontSize:14,width:22,textAlign:"center",flexShrink:0}}>{c.icon}</span>
                           <span style={{fontSize:isMobile?12:14,color:"rgba(255,255,255,0.75)",fontWeight:600,width:isMobile?90:110,flexShrink:0}}>{c.label}</span>
-                          <span style={{flex:1,fontSize:isMobile?11:13,fontFamily:"'Fraunces',serif",fontStyle:"italic",color:"rgba(255,255,255,0.45)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.note||""}</span>
+                          <span style={{flex:1,fontSize:isMobile?11:13,fontFamily:"'Playfair Display',serif",fontStyle:"italic",color:"rgba(255,255,255,0.45)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.note||""}</span>
                           <span style={{fontSize:isMobile?13:15,fontWeight:700,color:"#FFD93D",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0,marginLeft:8}}>~{fmt(val)}</span>
                         </div>
                       );})}
@@ -187,7 +187,7 @@ Return ONLY valid JSON:
                       {bd.routingNote&&(
                         <div style={{marginTop:10,borderLeft:"2px solid rgba(255,159,67,0.4)",paddingLeft:10}}>
                           <div style={{fontSize:11,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:3}}>✦ WHY THIS ROUTE</div>
-                          <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?12:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.6}}>{bd.routingNote}</div>
+                          <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?12:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.6}}>{bd.routingNote}</div>
                         </div>
                       )}
                     </div>
@@ -204,7 +204,7 @@ Return ONLY valid JSON:
               </div>
             </div>
             <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.1),rgba(255,217,61,0.04))",border:"1px solid rgba(169,70,29,0.4)",borderRadius:16,padding:22,textAlign:"center"}}>
-              <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:20,fontWeight:300,color:"#FFF",marginBottom:6,lineHeight:1.3}}>This is your <em style={{color:"#FFD93D"}}>expedition.</em></div>
+              <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?13:20,fontWeight:300,color:"#FFF",marginBottom:6,lineHeight:1.3}}>This is your <em style={{color:"#FFD93D"}}>expedition.</em></div>
               <div style={{fontSize:15,color:"rgba(255,255,255,0.88)",letterSpacing:1,marginBottom:20,lineHeight:1.8}}>Does this feel right? Refine above until it does.<br/>When your gut says yes — it's time to build.</div>
               <button className="cta-build-btn" style={{minHeight:52,opacity:launching?0.7:1}} onClick={()=>{if(!launching){setLaunching(true);onBuild(vd);}}}>
                 {launching?"✨  Building...":"✅  YES — BUILD THIS EXPEDITION"}

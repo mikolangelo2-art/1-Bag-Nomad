@@ -98,9 +98,9 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, d
     const coords = phaseList.map(p=>EXPEDITION_COORDS[p.country]).filter(Boolean);
     const activeCoord = activeCountry ? EXPEDITION_COORDS[activeCountry] : null;
     const isMobileMap = typeof window!=='undefined' && window.innerWidth < 480;
-    const geoFill = dream ? '#E8DCC8' : isPack ? '#FF9F43' : '#E8DCC8';
+    const geoFill = dream ? '#F8F5F0' : isPack ? '#FF9F43' : '#F8F5F0';
     const geoFillOp = dream ? 0.04 : isPack ? 0.035 : (isMobileMap ? 0.08 : 0.06);
-    const geoStroke = dream ? '#E8DCC8' : isPack ? '#FF9F43' : '#00E5FF';
+    const geoStroke = dream ? '#F8F5F0' : isPack ? '#FF9F43' : '#00E5FF';
     const geoStrokeOp = dream ? 0.03 : isPack ? 0.08 : (isMobileMap ? 0.22 : 0.18);
 
     // Departure city coord — handles full airlabs strings like "Phoenix Sky Harbor International Airport, US"
@@ -142,8 +142,8 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, d
           })}
           {depCoord&&(
             <Marker coordinates={depCoord}>
-              <circle r={9} fill="none" stroke="#E8DCC8" strokeWidth={1.2} strokeOpacity={0.55} className="dep-ring"/>
-              <circle r="2.5" fill="#E8DCC8" fillOpacity={0.85}/>
+              <circle r={9} fill="none" stroke="#F8F5F0" strokeWidth={1.2} strokeOpacity={0.55} className="dep-ring"/>
+              <circle r="2.5" fill="#F8F5F0" fillOpacity={0.85}/>
             </Marker>
           )}
           {phaseList.map((phase,i)=>{

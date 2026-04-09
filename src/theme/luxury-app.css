@@ -1,0 +1,95 @@
+/**
+ * Global quiet-luxury application layer: grain, type rhythm, tactile hovers.
+ */
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--lux-bg-main);
+  color: var(--lux-text-primary);
+  font-family: var(--lux-font-body);
+  font-size: var(--lux-text-body-lg);
+  line-height: var(--lux-lh-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle film grain - low contrast, full viewport */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483000;
+  opacity: var(--lux-grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* Premium defaults for interactive surfaces */
+button,
+[role="button"],
+.tap-scale,
+.g-card,
+.phase-row,
+.sg-suggestion-card,
+.sg-experience-card {
+  transition:
+    transform var(--lux-duration) var(--lux-ease-smooth),
+    box-shadow var(--lux-duration) var(--lux-ease-smooth),
+    border-color var(--lux-duration) var(--lux-ease-smooth),
+    background var(--lux-duration) var(--lux-ease-smooth),
+    color var(--lux-duration) var(--lux-ease-smooth),
+    filter var(--lux-duration) var(--lux-ease-smooth);
+}
+
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--lux-glow-gold-35);
+  outline-offset: 3px;
+}
+
+/* Cards / rows: gentle lift + gold wash on hover (where not overridden) */
+.g-card.off:hover,
+.phase-row:hover {
+  box-shadow: var(--lux-shadow-gold-card);
+}
+
+.mc-tab {
+  transition:
+    color var(--lux-duration) var(--lux-ease-smooth),
+    border-color var(--lux-duration) var(--lux-ease-smooth),
+    transform var(--lux-duration) var(--lux-ease-smooth) !important;
+}
+
+.mc-tab:hover:not(.active) {
+  color: var(--lux-text-primary);
+  transform: translateY(-1px);
+}
+
+.launch-btn.on:hover,
+.cta-build-btn:hover {
+  box-shadow:
+    0 0 36px var(--lux-glow-gold-30),
+    0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--lux-bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(248, 245, 240, 0.14);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(232, 185, 35, 0.35);
+}

@@ -42,8 +42,8 @@ function HomecomingScreen({tripData,onPlanNext}) {
           </div>
           {/* You did it. */}
           <div style={{textAlign:"center",opacity:ph>=1?1:0,transform:ph>=1?"translateY(0)":"translateY(20px)",transition:"opacity 0.7s ease,transform 0.7s ease"}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?40:56,fontWeight:900,color:"#FFD93D",textShadow:"0 0 50px rgba(255,217,61,0.45)",lineHeight:1,marginBottom:6}}>You did it.</div>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:16,fontWeight:300,fontStyle:"italic",color:"rgba(255,159,67,0.65)",letterSpacing:1}}>{name}</div>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?40:56,fontWeight:900,color:"#FFD93D",textShadow:"0 0 50px rgba(255,217,61,0.45)",lineHeight:1,marginBottom:6}}>You did it.</div>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?13:16,fontWeight:300,fontStyle:"italic",color:"rgba(255,159,67,0.65)",letterSpacing:1}}>{name}</div>
           </div>
           {/* Stats */}
           <div style={{...fade(0.1),display:"flex",justifyContent:"center",gap:isMobile?18:32,flexWrap:"wrap"}}>
@@ -55,11 +55,11 @@ function HomecomingScreen({tripData,onPlanNext}) {
             ))}
           </div>
           {/* Vision narrative */}
-          {narrative&&<div style={{...fade(0.4),textAlign:"center",fontFamily:"'Fraunces',serif",fontSize:isMobile?12:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,217,61,0.6)",lineHeight:1.75,borderLeft:"2px solid rgba(255,217,61,0.18)",paddingLeft:14,maxWidth:440}}>"{narrative.slice(0,160)}{narrative.length>160?"...":""}"</div>}
+          {narrative&&<div style={{...fade(0.4),textAlign:"center",fontFamily:"'Playfair Display',serif",fontSize:isMobile?12:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,217,61,0.6)",lineHeight:1.75,borderLeft:"2px solid rgba(255,217,61,0.18)",paddingLeft:14,maxWidth:440}}>"{narrative.slice(0,160)}{narrative.length>160?"...":""}"</div>}
           {/* Dream Big tagline */}
           <div style={{...fade3(0),textAlign:"center"}}>
             <div style={{width:60,height:1,background:"linear-gradient(90deg,transparent,rgba(255,217,61,0.35),transparent)",margin:"0 auto 16px"}}/>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?15:19,fontWeight:700,WebkitTextFillColor:"transparent",background:"linear-gradient(90deg,#FFD93D 25%,#FFF 45%,#FF9F43 55%,#FFD93D 75%)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",animation:"shimmerOnce 2.5s ease forwards",letterSpacing:2}}>Dream Big. Travel Light.</div>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?15:19,fontWeight:700,WebkitTextFillColor:"transparent",background:"linear-gradient(90deg,#FFD93D 25%,#FFF 45%,#FF9F43 55%,#FFD93D 75%)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",animation:"shimmerOnce 2.5s ease forwards",letterSpacing:2}}>Dream Big. Travel Light.</div>
           </div>
           {/* Buttons */}
           <div style={{...fade3(0.15),display:"flex",flexDirection:isMobile?"column":"row",gap:10,width:"100%",maxWidth:400}}>

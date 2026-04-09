@@ -111,7 +111,7 @@ export default function SuggestionExperienceCard({
         </div>
         <div
           style={{
-            fontFamily: "'Fraunces',serif",
+            fontFamily: "'Playfair Display',serif",
             fontSize: nameFs,
             fontWeight: 500,
             color: "#FFFFFF",
@@ -193,7 +193,7 @@ export default function SuggestionExperienceCard({
         {whisper ? (
           <div
             style={{
-              fontFamily: "'Fraunces',serif",
+              fontFamily: "'Playfair Display',serif",
               fontSize: 13,
               fontStyle: "italic",
               color: heroUrl ? "rgba(255,248,235,0.96)" : "rgba(255,159,67,0.72)",

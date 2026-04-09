@@ -4,6 +4,7 @@ import { fmt, fD } from '../utils/dateHelpers';
 import { findSuggestionForSegment, flatPhaseIndexForSegment, prevSegmentNameForSeg } from '../utils/tripConsoleHelpers';
 import { computePhasePlannedSpend } from '../utils/tripHelpers';
 import { loadSeg } from '../utils/storageHelpers';
+import { BG_PAGE } from '../constants/colors';
 import SegmentRow from './SegmentRow';
 import SegmentWorkspace from './SegmentWorkspace';
 import WorldMapBackground from './WorldMapBackground';
@@ -30,7 +31,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
   const barColor=spendOverCap?'#FF6B6B':'#FFD93D';
   return(
     <>
-    <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:'#120A04',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+    <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:BG_PAGE,overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
       <WorldMapBackground phases={allPhases} activeCountry={phase.country} departureCity={homeCity||""}/>
       <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box',position:'relative',zIndex:1}}>
       {/* Header */}
@@ -43,7 +44,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
           <span style={{color:'rgba(255,255,255,0.85)',letterSpacing:1}}>{phase.name.toUpperCase()}</span>
         </div>}
         {isMobile&&<span style={{fontSize:20}}>{phase.flag}</span>}
-        {isMobile&&<span style={{flex:1,fontSize:18,fontWeight:500,color:'#FFFFFF',fontFamily:"'Fraunces',serif"}}>{phase.name}</span>}
+        {isMobile&&<span style={{flex:1,fontSize:18,fontWeight:500,color:'#FFFFFF',fontFamily:"'Playfair Display',serif"}}>{phase.name}</span>}
         {!isMobile&&<div style={{flex:1}}/>}
         <span style={{fontSize:14,fontWeight:700,color:'#FFD93D',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{fmt(phase.totalBudget)}</span>
       </div>
@@ -68,7 +69,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       {warningFlags.filter(w=>w.phaseIndex===phase.id-1).map((w,wi)=>(
         <div key={wi} style={{border:'1.5px solid rgba(255,200,0,0.40)',borderRadius:12,background:'rgba(255,200,0,0.06)',padding:'14px 16px',margin:'8px 0',animation:'fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) both'}}>
           <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,200,0,0.70)',letterSpacing:2,marginBottom:6}}>⚠️ {w.type==='date_conflict'?'DATE CONFLICT':'SEASONAL NOTICE'}</div>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:'italic',color:'rgba(255,255,255,0.85)',lineHeight:1.6,marginBottom:4}}>{w.message}</div>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontStyle:'italic',color:'rgba(255,255,255,0.85)',lineHeight:1.6,marginBottom:4}}>{w.message}</div>
           {w.suggestion&&<div style={{fontSize:12,color:'rgba(255,200,0,0.60)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:10}}>{w.suggestion}</div>}
           <div style={{display:'flex',gap:8}}>
             {w.dismissible&&<button onClick={()=>onDismissWarning?.(warningFlags.indexOf(w))} style={{padding:'8px 14px',borderRadius:8,border:'1px solid rgba(255,200,0,0.30)',background:'transparent',color:'rgba(255,200,0,0.60)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",cursor:'pointer',fontWeight:600,letterSpacing:1}}>DISMISS</button>}

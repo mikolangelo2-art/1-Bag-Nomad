@@ -12,8 +12,8 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
   // ── Return Trip variant — title row mirrors destination cards (centered name) ──
   if(phase?.type==="Return"){
     const retTitle=isMobile
-      ?{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:500,color:"#E8DCC8",lineHeight:1.1,textAlign:"center"}
-      :{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:600,color:"#E8DCC8",textAlign:"center"};
+      ?{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:500,color:"#F8F5F0",lineHeight:1.1,textAlign:"center"}
+      :{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:600,color:"#F8F5F0",textAlign:"center"};
     return(
     <div style={{borderRadius:13,border:"1px solid rgba(148,163,184,0.30)",borderTop:"1px solid rgba(203,213,225,0.42)",background:"rgba(0,8,20,0.35)",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)",overflow:"hidden",boxShadow:"inset 0 1px 0 rgba(255,255,255,0.05)",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`,opacity:0.80}}>
       <div style={{padding:isMobile?"16px 12px":"14px 16px",borderLeft:"3px solid rgba(148,163,184,0.52)"}}>
@@ -28,7 +28,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
           </div>
         </div>
         <div style={{fontSize:isMobile?13:14,fontWeight:500,color:"rgba(232,220,200,0.72)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",textAlign:"center",lineHeight:1.45,paddingLeft:isMobile?8:0,paddingRight:isMobile?8:0}}>Home to {phase.name||phase.destination}</div>
-        {phase.why&&<div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?13:13,fontStyle:"italic",color:"rgba(148,163,184,0.62)",lineHeight:1.5,marginTop:6,textAlign:"center"}}>{phase.why}</div>}
+        {phase.why&&<div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?13:13,fontStyle:"italic",color:"rgba(148,163,184,0.62)",lineHeight:1.5,marginTop:6,textAlign:"center"}}>{phase.why}</div>}
       </div>
     </div>
     );
@@ -66,7 +66,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
             <div style={{width:24,height:24,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}52`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>{phase.id}</div>
             <span style={{fontSize:20,lineHeight:1}}>{phase.flag}</span>
           </div>
-          <div style={{flex:1,fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:500,color:'#E8DCC8',lineHeight:1.1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',minWidth:0}}>{phase.name}</div>
+          <div style={{flex:1,fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:500,color:'#F8F5F0',lineHeight:1.1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',minWidth:0}}>{phase.name}</div>
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
             {plannedOverBudget&&<span style={{fontSize:10,fontWeight:700,letterSpacing:0.5,color:'#FF6B6B',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>⚠ OVER</span>}
             <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:700,color:'#FFD93D',whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</div>
@@ -84,7 +84,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
             <div style={{width:32,height:32,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}52`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>{phase.id}</div>
             <span style={{fontSize:28,lineHeight:1}}>{phase.flag}</span>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontFamily:"'Fraunces',serif",fontSize:24,fontWeight:300,color:'#E8DCC8',lineHeight:1.1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{phase.name}</div>
+              <div style={{fontFamily:"'Playfair Display',serif",fontSize:24,fontWeight:300,color:'#F8F5F0',lineHeight:1.1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{phase.name}</div>
               <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,color:'rgba(255,255,255,0.42)',marginTop:3}}>{fD(phase.arrival)} – {fD(phase.departure)}</div>
             </div>
           </div>
@@ -93,7 +93,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
             {phase.totalDives>0&&<span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,fontWeight:700,color:'#00E5FF'}}>🤿{phase.totalDives}</span>}
             <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:700,color:'#FFD93D',marginLeft:'auto'}}>{fmt(phase.totalBudget)}</span>
           </div>
-          {phase.note&&<div style={{fontFamily:"'Fraunces',serif",fontSize:17,fontWeight:400,fontStyle:'italic',color:'rgba(255,245,220,0.92)',lineHeight:1.72,paddingLeft:42,marginTop:10,borderLeft:'2px solid rgba(255,217,61,0.22)',marginLeft:40,letterSpacing:'0.02em',textShadow:'0 1px 14px rgba(0,0,0,0.45)'}}>{phase.note}</div>}
+          {phase.note&&<div style={{fontFamily:"'Playfair Display',serif",fontSize:17,fontWeight:400,fontStyle:'italic',color:'rgba(255,245,220,0.92)',lineHeight:1.72,paddingLeft:42,marginTop:10,borderLeft:'2px solid rgba(255,217,61,0.22)',marginLeft:40,letterSpacing:'0.02em',textShadow:'0 1px 14px rgba(0,0,0,0.45)'}}>{phase.note}</div>}
           {pct>0&&<div style={{marginTop:10,paddingLeft:42,display:'flex',alignItems:'center',gap:8}}>
             <div style={{height:2,background:'rgba(255,255,255,0.06)',borderRadius:2,overflow:'hidden',width:80}}><div style={{height:'100%',width:pct+'%',background:`linear-gradient(90deg,${phase.color}55,${phase.color})`,borderRadius:2,transition:'width 0.60s cubic-bezier(0.25,0.46,0.45,0.94)'}}/></div>
             <span style={{fontSize:11,color:'rgba(255,255,255,0.3)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{pct}% PLANNED</span>
@@ -117,13 +117,13 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
           <div style={{width:22,height:22,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}52`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>{phase.id}</div>
           <span style={{fontSize:14,flexShrink:0}}>{phase.flag}</span>
-          <span style={{flex:1,fontSize:15,fontWeight:600,color:"#E8DCC8",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",transition:"color 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>{phase.name}</span>
+          <span style={{flex:1,fontSize:15,fontWeight:600,color:"#F8F5F0",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",transition:"color 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>{phase.name}</span>
           {isNow&&<span style={{fontSize:9,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:20,padding:"2px 8px",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>ACTIVE</span>}
           {plannedOverBudget&&<span style={{fontSize:9,fontWeight:700,letterSpacing:0.5,color:"#FF6B6B",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",flexShrink:0}}>⚠ OVER</span>}
           <span style={{fontSize:15,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",flexShrink:0}}>{fmt(phase.totalBudget)}</span>
           <span style={{fontSize:14,color:"rgba(255,255,255,0.30)",flexShrink:0}}>›</span>
         </div>
-        {phase.note&&<div style={{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:400,fontStyle:"italic",color:"rgba(255,245,220,0.93)",lineHeight:1.68,paddingLeft:28,paddingRight:8,marginBottom:10,marginTop:4,letterSpacing:"0.02em",textShadow:"0 1px 16px rgba(0,0,0,0.5),0 0 24px rgba(255,217,61,0.06)"}}>{phase.note}</div>}
+        {phase.note&&<div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:400,fontStyle:"italic",color:"rgba(255,245,220,0.93)",lineHeight:1.68,paddingLeft:28,paddingRight:8,marginBottom:10,marginTop:4,letterSpacing:"0.02em",textShadow:"0 1px 16px rgba(0,0,0,0.5),0 0 24px rgba(255,217,61,0.06)"}}>{phase.note}</div>}
         <div style={{display:"flex",alignItems:"center",gap:8,paddingLeft:28,flexWrap:"nowrap"}}>
           <span style={{fontSize:15,color:"rgba(255,255,255,0.62)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,whiteSpace:"nowrap"}}>{fD(phase.arrival)}–{fD(phase.departure)}</span>
           <span style={{fontSize:15,color:phase.color,fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>🌙{phase.totalNights} Nights</span>

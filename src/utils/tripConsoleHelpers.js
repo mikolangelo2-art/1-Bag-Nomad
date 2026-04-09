@@ -1,7 +1,7 @@
 // ── Status Config ─────────────────────────────────────────────
 export const STATUS_CFG={
   planning:  {label:"PLANNING",  icon:"✏️", color:"#FF9F43"},
-  confirmed: {label:"CONFIRMED", icon:"✓",  color:"#E8DCC8"},
+  confirmed: {label:"CONFIRMED", icon:"✓",  color:"#F8F5F0"},
   booked:    {label:"BOOKED",    icon:"🔒", color:"#69F0AE"},
   changed:   {label:"CHANGED",   icon:"⚠️",color:"#FF6B6B"},
   cancelled: {label:"CANCELLED", icon:"✕",  color:"#888888"},
@@ -212,9 +212,10 @@ export function detectMode(route) {
 
 // ── Suggestion Card Styles ────────────────────────────────────
 export const suggestionCardStyle = {
-  border: '1.5px solid rgba(255,255,255,0.14)',
-  borderRadius: '14px',
-  background: 'rgba(255,159,67,0.09)',
+  border: '1px solid rgba(232,185,35,0.18)',
+  borderRadius: '16px',
+  background: 'rgba(44,44,44,0.55)',
+  boxShadow: '0 0 0 1px rgba(232,185,35,0.06), 0 12px 36px rgba(0,0,0,0.35), 0 0 40px rgba(232,185,35,0.12)',
   padding: '18px',
   marginBottom: '18px',
   textAlign: 'left',
@@ -242,7 +243,7 @@ export const acceptBtnStyle = {
   flex: 1, padding: '10px',
   background: 'rgba(255,159,67,0.20)',
   border: '1px solid rgba(255,159,67,0.50)',
-  borderRadius: '8px',
+  borderRadius: '14px',
   color: '#FF9F43',
   fontSize: '12px',
   fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
@@ -253,7 +254,7 @@ export const dismissBtnStyle = {
   padding: '10px 14px',
   background: 'transparent',
   border: '1px solid rgba(255,255,255,0.12)',
-  borderRadius: '8px',
+  borderRadius: '14px',
   color: 'rgba(255,255,255,0.45)',
   fontSize: '12px',
   fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
@@ -265,7 +266,7 @@ export const dismissBtnStyleOnHero = {
   ...dismissBtnStyle,
   border: '1px solid rgba(255,255,255,0.48)',
   color: 'rgba(255,255,255,0.94)',
-  background: 'rgba(10,7,5,0.58)',
+  background: 'rgba(22,22,22,0.72)',
   textShadow: '0 1px 3px rgba(0,0,0,0.85)',
 };
 
