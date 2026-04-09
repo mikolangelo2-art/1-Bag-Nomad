@@ -126,7 +126,7 @@ export default function SuggestionExperienceCard({
         {descriptor ? (
           <div
             style={{
-              fontSize: 14,
+              fontSize: 15,
               fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
               color: heroUrl ? "rgba(255,255,255,0.94)" : "rgba(255,255,255,0.78)",
               lineHeight: 1.45,
@@ -194,9 +194,9 @@ export default function SuggestionExperienceCard({
           <div
             style={{
               fontFamily: "'Playfair Display',serif",
-              fontSize: 13,
+              fontSize: 15,
               fontStyle: "italic",
-              color: heroUrl ? "rgba(255,248,235,0.96)" : "rgba(255,159,67,0.72)",
+              color: heroUrl ? "rgba(255,248,235,0.78)" : "rgba(255,159,67,0.78)",
               lineHeight: 1.5,
               marginBottom: disclaimer ? 8 : 10,
               textShadow: heroUrl ? whisperSh : txtSh,
