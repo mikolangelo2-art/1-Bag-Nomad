@@ -587,7 +587,7 @@ export default function App() {
   }
   function handleExitDemo() {
     setTripData(null);
-    setScreen("dream");
+    setScreen("console");
   }
   function handleHomecoming(){setScreen("homecoming");}
   function handlePlanNext(){
@@ -600,7 +600,7 @@ export default function App() {
   return(
     <>
       <style>{CSS}</style>
-      {screen==="dream"       && <DreamScreen onGoGen={handleGoGen} onLoadDemo={handleLoadDemo} prefilledVision={prefilledVision}/>}
+      {screen==="dream"       && <DreamScreen onGoGen={handleGoGen} onLoadDemo={handleLoadDemo} prefilledVision={prefilledVision} onBackToWelcome={() => setScreen("console")}/>}
       {screen==="gen"         && <GenerationScreen onComplete={handleGenComplete}/>}
       {screen==="coarchitect" && appData && <CoArchitect data={appData} visionData={appData.visionData} onLaunch={appData.isRevision?handleReviseLaunch:handleLaunch} onBack={()=>setScreen(appData.isRevision?"console":"dream")}/>}
       {screen==="handoff"     && tripData && <HandoffScreen tripData={tripData} onComplete={handleHandoffComplete}/>}

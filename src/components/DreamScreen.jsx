@@ -9,7 +9,7 @@ import VisionReveal from './VisionReveal';
 import CityInput from './CityInput';
 import DatePickerInput from './DatePickerInput';
 
-function DreamScreen({onGoGen,onLoadDemo,prefilledVision=""}) {
+function DreamScreen({onGoGen,onLoadDemo,prefilledVision="",onBackToWelcome}) {
   const isMobile=useMobile();
   const [vision,setVision]=useState(prefilledVision);
   const [tripName,setTripName]=useState("");
@@ -204,6 +204,30 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
       <div className="dream-glow"/>
       <DreamHeader step={1}/>
       <div className="dream-content">
+        {typeof onBackToWelcome==="function"&&(
+          <div style={{width:"100%",maxWidth:720,margin:"0 auto 12px",display:"flex",justifyContent:"flex-start"}}>
+            <button
+              type="button"
+              onClick={()=>onBackToWelcome()}
+              style={{
+                background:"transparent",
+                border:"none",
+                padding:"8px 4px",
+                cursor:"pointer",
+                fontFamily:"'Inter',system-ui,-apple-system,sans-serif",
+                fontSize:isMobile?13:14,
+                fontWeight:500,
+                letterSpacing:"0.06em",
+                color:"rgba(255,217,61,0.72)",
+                textDecoration:"underline",
+                textUnderlineOffset:4,
+                textAlign:"left",
+              }}
+            >
+              ← Back to welcome
+            </button>
+          </div>
+        )}
         <div style={{textAlign:"center",marginBottom:isMobile?20:28,animation:"fadeUp 0.6s ease"}}>
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:14}}>
             <SharegoodLogo size={isMobile?148:168} animate={true} logoState={logoState} glowColor={loading?"rgba(0,229,255,0.7)":"rgba(0,229,255,0.3)"} opacity={loading?1:0.92}/>
