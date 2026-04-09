@@ -623,29 +623,40 @@ export default function App() {
           onClick={() => window.open("https://tally.so", "_blank", "noopener,noreferrer")}
           style={{
             position: "fixed",
-            bottom: "calc(env(safe-area-inset-bottom, 0px) + 72px)",
+            bottom: "calc(env(safe-area-inset-bottom, 0px) + " + (tripData?.isDemo ? "82" : "72") + "px)",
             left: 16,
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            borderRadius: 20,
-            padding: "6px 14px",
-            fontSize: 11,
-            color: "rgba(255,255,255,0.35)",
+            background: tripData?.isDemo ? "rgba(201,160,76,0.12)" : "rgba(255,255,255,0.05)",
+            border: tripData?.isDemo ? "1px solid rgba(201,160,76,0.48)" : "1px solid rgba(255,255,255,0.10)",
+            borderRadius: tripData?.isDemo ? 24 : 20,
+            padding: tripData?.isDemo ? "12px 22px" : "6px 14px",
+            fontSize: tripData?.isDemo ? 14 : 11,
+            fontWeight: tripData?.isDemo ? 600 : 400,
+            color: tripData?.isDemo ? "rgba(248,245,220,0.75)" : "rgba(255,255,255,0.35)",
             fontFamily: "Inter, system-ui, sans-serif",
-            letterSpacing: "0.06em",
+            letterSpacing: tripData?.isDemo ? "0.1em" : "0.06em",
             cursor: "pointer",
             backdropFilter: "blur(8px)",
             WebkitBackdropFilter: "blur(8px)",
             zIndex: 890,
-            transition: "color 0.2s ease",
+            transition: "color 0.2s ease, border-color 0.2s ease, background 0.2s ease",
             userSelect: "none",
             textTransform: "lowercase",
+            minHeight: tripData?.isDemo ? 48 : undefined,
+            boxShadow: tripData?.isDemo ? "0 0 32px rgba(201,160,76,0.2)" : undefined,
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = "rgba(255,255,255,0.65)";
+            e.currentTarget.style.color = tripData?.isDemo ? "rgba(255,230,180,0.95)" : "rgba(255,255,255,0.65)";
+            if (tripData?.isDemo) {
+              e.currentTarget.style.borderColor = "rgba(201,160,76,0.6)";
+              e.currentTarget.style.background = "rgba(201,160,76,0.16)";
+            }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = "rgba(255,255,255,0.35)";
+            e.currentTarget.style.color = tripData?.isDemo ? "rgba(248,245,220,0.75)" : "rgba(255,255,255,0.35)";
+            if (tripData?.isDemo) {
+              e.currentTarget.style.borderColor = "rgba(201,160,76,0.4)";
+              e.currentTarget.style.background = "rgba(201,160,76,0.1)";
+            }
           }}
         >
           feedback

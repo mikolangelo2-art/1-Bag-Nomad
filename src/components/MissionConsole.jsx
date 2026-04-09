@@ -144,18 +144,24 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                 type="button"
                 onClick={()=>onExitDemo()}
                 style={{
-                  background:"transparent",
-                  border:"1px solid rgba(255,255,255,0.12)",
-                  borderRadius:12,
-                  padding:"4px 10px",
-                  fontSize:10,
-                  color:"rgba(255,255,255,0.40)",
+                  background:"rgba(201,160,76,0.1)",
+                  border:"1px solid rgba(201,160,76,0.45)",
+                  borderRadius:16,
+                  padding:isMobile?"10px 16px":"10px 20px",
+                  fontSize:isMobile?13:14,
+                  fontWeight:600,
+                  color:"rgba(252,248,235,0.92)",
                   fontFamily:"'Inter',system-ui,-apple-system,sans-serif",
-                  letterSpacing:"0.06em",
+                  letterSpacing:"0.09em",
                   cursor:"pointer",
-                  marginLeft:isMobile?0:8,
+                  marginLeft:isMobile?0:10,
                   flexShrink:0,
+                  minHeight:isMobile?44:46,
+                  boxShadow:"0 0 28px rgba(201,160,76,0.18)",
+                  transition:"border-color 0.2s ease, background 0.2s ease, color 0.2s ease",
                 }}
+                onMouseEnter={(e)=>{e.currentTarget.style.borderColor="rgba(201,160,76,0.55)";e.currentTarget.style.background="rgba(201,160,76,0.14)";}}
+                onMouseLeave={(e)=>{e.currentTarget.style.borderColor="rgba(201,160,76,0.38)";e.currentTarget.style.background="rgba(201,160,76,0.08)";}}
               >
                 ← exit demo
               </button>

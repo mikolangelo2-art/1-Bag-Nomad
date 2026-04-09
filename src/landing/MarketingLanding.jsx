@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from "react";
 import posthog from "posthog-js";
+import WorldMapBackground from "../components/WorldMapBackground.jsx";
 import "./landing.css";
 import { HeroSection } from "./HeroSection.jsx";
 import { FeelingSection } from "./FeelingSection.jsx";
@@ -36,18 +37,21 @@ export default function MarketingLanding() {
 
   return (
     <div className="lp-root lp-sans">
-      <div id="lp-hero">
-        <HeroSection onWatchDemo={scrollToDemo} />
+      <WorldMapBackground phases={[]} />
+      <div className="lp-content-stack">
+        <div id="lp-hero">
+          <HeroSection onWatchDemo={scrollToDemo} />
+        </div>
+        <FeelingSection />
+        <HowItWorksSection />
+        <PromiseSection />
+        <div id="lp-demo">
+          <DemoSection onPlay={scrollToDemo} />
+        </div>
+        <FounderSection />
+        <FeaturesSection />
+        <FinalCTASection />
       </div>
-      <FeelingSection />
-      <HowItWorksSection />
-      <PromiseSection />
-      <div id="lp-demo">
-        <DemoSection onPlay={scrollToDemo} />
-      </div>
-      <FounderSection />
-      <FeaturesSection />
-      <FinalCTASection />
     </div>
   );
 }
