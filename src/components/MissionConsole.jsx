@@ -18,7 +18,7 @@ import PhaseDetailPage from './PhaseDetailPage';
 import Timeline from './Timeline';
 import IntelMap from './IntelMap';
 
-function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading,onUpdateTripData,onTripAmbientContextChange}) {
+function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading,onUpdateTripData,onTripAmbientContextChange,founderExpedition=null,founderMode=false,onToggleFounderExpedition,onSaveAsFounderExpedition}) {
   const isMobile=useMobile();
   const [tab,setTab]=useState(initialTab);
   const [intelMapActive,setIntelMapActive]=useState(false);
@@ -130,9 +130,15 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
         {target:"trip-pack-switch",title:"Pack Console",body:"When you're ready, switch here to manage your one-bag gear list."}
       ]}/>}
       {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto'}}><ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/></div>}
-      {isMobile&&!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:"5px 12px",borderBottom:"1px solid rgba(0,229,255,0.08)",display:"flex",justifyContent:"space-between",background:"rgba(0,8,20,0.98)",flexShrink:0,position:"relative",zIndex:1}}>
+      {isMobile&&!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:"5px 12px",borderBottom:"1px solid rgba(0,229,255,0.08)",display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:8,background:"rgba(0,8,20,0.98)",flexShrink:0,position:"relative",zIndex:1}}>
         <button onClick={onRevise} style={{padding:"6px 16px",borderRadius:7,border:"1.5px solid rgba(0,229,255,0.55)",background:"rgba(0,229,255,0.12)",color:"#00E5FF",fontSize:14,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,minHeight:32}}>✏️ REVISE</button>
         <button onClick={handleNewTripClick} style={{padding:"6px 14px",borderRadius:7,border:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(255,255,255,0.18)",background:confirmNewTrip?"rgba(255,107,107,0.12)":"transparent",color:confirmNewTrip?"#FF6B6B":"rgba(255,255,255,0.45)",fontSize:13,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:confirmNewTrip?700:400,letterSpacing:1,minHeight:32}}>{confirmNewTrip?"⚠️ CONFIRM?":"+ NEW TRIP"}</button>
+        {founderExpedition?.phases?.length>0&&typeof onToggleFounderExpedition==="function"&&(
+          <button type="button" onClick={()=>onToggleFounderExpedition()} style={{background:founderMode?"rgba(255,217,61,0.15)":"rgba(255,255,255,0.05)",border:`1px solid ${founderMode?"rgba(255,217,61,0.4)":"rgba(255,255,255,0.10)"}`,borderRadius:12,padding:"4px 10px",fontSize:10,color:founderMode?"rgba(255,217,61,0.9)":"rgba(255,255,255,0.35)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",cursor:"pointer",minHeight:32}}>{founderMode?"★ expedition":"☆ expedition"}</button>
+        )}
+        {!founderMode&&tripData&&!tripData.isDemo&&typeof onSaveAsFounderExpedition==="function"&&(
+          <button type="button" onClick={()=>onSaveAsFounderExpedition()} style={{background:"transparent",border:"1px solid rgba(255,217,61,0.20)",borderRadius:12,padding:"4px 10px",fontSize:10,color:"rgba(255,217,61,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",cursor:"pointer",minHeight:32}}>+ save as expedition</button>
+        )}
       </div>}
       {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:isMobile?"rgba(0,8,16,0.10)":"linear-gradient(180deg,rgba(21,15,10,0.98),rgba(21,15,10,0.99))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden",zIndex:1}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(232,220,200,0.02) 0%,transparent 60%)",pointerEvents:"none"}}/>
@@ -267,6 +273,16 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
             <span style={{fontSize:15,color:confirmNewTrip?"#FF6B6B":"#c9a04c",lineHeight:1}}>{confirmNewTrip?"⚠️":"+"}</span>
             <span style={{fontSize:15,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:confirmNewTrip?"#FF6B6B":"#c9a04c",whiteSpace:"nowrap",fontWeight:700,textAlign:"center"}}>{confirmNewTrip?"CONFIRM?":"NEW TRIP"}</span>
           </button>
+          {founderExpedition?.phases?.length>0&&typeof onToggleFounderExpedition==="function"&&(
+            <button type="button" onClick={()=>onToggleFounderExpedition()} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"8px 12px",borderLeft:"1px solid rgba(255,217,61,0.2)",background:founderMode?"rgba(255,217,61,0.15)":"rgba(255,255,255,0.05)",border:"none",borderRight:"none",cursor:"pointer",flexShrink:0}} onMouseOver={e=>{e.currentTarget.style.background=founderMode?"rgba(255,217,61,0.22)":"rgba(255,255,255,0.08)";}} onMouseOut={e=>{e.currentTarget.style.background=founderMode?"rgba(255,217,61,0.15)":"rgba(255,255,255,0.05)";}}>
+              <span style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",color:founderMode?"rgba(255,217,61,0.9)":"rgba(255,255,255,0.35)",fontWeight:600,whiteSpace:"nowrap"}}>{founderMode?"★ expedition":"☆ expedition"}</span>
+            </button>
+          )}
+          {!founderMode&&tripData&&!tripData.isDemo&&typeof onSaveAsFounderExpedition==="function"&&(
+            <button type="button" onClick={()=>onSaveAsFounderExpedition()} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"8px 12px",borderLeft:"1px solid rgba(255,217,61,0.15)",background:"transparent",border:"none",cursor:"pointer",flexShrink:0}} onMouseOver={e=>{e.currentTarget.style.background="rgba(255,217,61,0.08)";}} onMouseOut={e=>{e.currentTarget.style.background="transparent";}}>
+              <span style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",color:"rgba(255,217,61,0.45)",fontWeight:600,whiteSpace:"nowrap"}}>+ save as expedition</span>
+            </button>
+          )}
         </div>
       )}
       {confirmNewTrip&&<div style={{padding:"7px 14px",background:"rgba(255,107,107,0.1)",borderBottom:"1px solid rgba(255,107,107,0.3)",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,position:"relative",zIndex:1}}>

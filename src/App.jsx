@@ -46,6 +46,27 @@ import MissionConsole from './components/MissionConsole';
 // ║  · Storage: 1bn_seg_v2 only — legacy bookings purged        ║
 // ╚══════════════════════════════════════════════════════════════╝
 
+// ─── Founder expedition (protected lane; QA / new trip never clears this key) ───
+const FOUNDER_KEY = "1bn_founder_expedition";
+
+function loadFounderExpedition() {
+  try {
+    const s = localStorage.getItem(FOUNDER_KEY);
+    if (!s) return null;
+    const p = JSON.parse(s);
+    return p?.phases?.length ? p : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveFounderExpedition(data) {
+  try {
+    if (data) localStorage.setItem(FOUNDER_KEY, JSON.stringify(data));
+    else localStorage.removeItem(FOUNDER_KEY);
+  } catch (e) {}
+}
+
 // ─── Constants ───────────────────────────────────────────────────
 // GOAL_PRESETS, QUICK_ACTIONS — imported from constants/dreamData.js
 const TC = TRIP_CATEGORY_COLORS;
@@ -481,6 +502,8 @@ export default function App() {
   },[]);
 
   const [tripAmbientCtx,setTripAmbientCtx]=useState({screen:"trip-console",phase:null,segment:null,tab:null});
+  const [founderMode,setFounderMode]=useState(false);
+  const [founderExpedition,setFounderExpedition]=useState(()=>loadFounderExpedition());
   const [tripData,setTripData]=useState(()=>{
     try{
       const params=new URLSearchParams(window.location.search);
@@ -493,7 +516,19 @@ export default function App() {
     }catch(e){}
     return null;
   });
-  useEffect(()=>{try{if(tripData)localStorage.setItem("1bn_tripData_v5",JSON.stringify(tripData));}catch(e){};},[tripData]);
+  useEffect(()=>{
+    try{
+      if(tripData)localStorage.setItem("1bn_tripData_v5",JSON.stringify(tripData));
+      else localStorage.removeItem("1bn_tripData_v5");
+    }catch(e){}
+  },[tripData]);
+
+  useEffect(()=>{
+    if(founderMode&&tripData){
+      saveFounderExpedition(tripData);
+      setFounderExpedition(tripData);
+    }
+  },[tripData,founderMode]);
 
   const hasTrip=useMemo(()=>Boolean(tripData?.phases?.length>0),[tripData?.phases?.length]);
   const suggestionsTripId=useMemo(()=>getSuggestionsTripId(tripData),[tripData]);
@@ -570,10 +605,10 @@ export default function App() {
     }
   }
 
-  function handleLoadDemo(){try{const preserve=["1bn_coach_v1","1bn_onboard_v1","1bn_pack_explainer_v1","1bn_phase_hint_shown","1bn_hide_all_tips"];const saved={};preserve.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)saved[k]=v;});localStorage.clear();Object.entries(saved).forEach(([k,v])=>localStorage.setItem(k,v));localStorage.removeItem(SEG_KEY);}catch(e){}setTripData(MICHAEL_EXPEDITION);setScreen("console");}
+  function handleLoadDemo(){try{const preserve=["1bn_coach_v1","1bn_onboard_v1","1bn_pack_explainer_v1","1bn_phase_hint_shown","1bn_hide_all_tips",FOUNDER_KEY];const saved={};preserve.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)saved[k]=v;});localStorage.clear();Object.entries(saved).forEach(([k,v])=>localStorage.setItem(k,v));localStorage.removeItem(SEG_KEY);}catch(e){}setFounderMode(false);setTripData(MICHAEL_EXPEDITION);setScreen("console");}
   function handleGoGen(data,vd){setAppData({...data,visionData:vd});setScreen("gen");}
   function handleGenComplete(){setScreen("coarchitect");}
-  function handleLaunch(hd){posthog.capture("trip_console_launched",{total_budget:hd?.totalBudget,nights:hd?.totalNights,phases:hd?.phases?.length});try{localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem(SUGGEST_KEY);}catch(e){}console.log('[1BN] handleLaunch tripName:',hd?.tripName,'phases:',hd?.phases?.length);setTripData(hd);setScreen("handoff");}
+  function handleLaunch(hd){posthog.capture("trip_console_launched",{total_budget:hd?.totalBudget,nights:hd?.totalNights,phases:hd?.phases?.length});try{localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem(SUGGEST_KEY);}catch(e){}console.log('[1BN] handleLaunch tripName:',hd?.tripName,'phases:',hd?.phases?.length);setFounderMode(false);setTripData(hd);setScreen("handoff");}
   function handleReviseLaunch(hd){setTripData(hd);setScreen("handoff");}
   function handleHandoffComplete(){setScreen("console");}
   function handleRevise(){
@@ -582,10 +617,12 @@ export default function App() {
     setAppData({...revData,isRevision:true});setScreen("coarchitect");
   }
   function handleNewTrip(){
+    setFounderMode(false);
     setTripData(null);setScreen("dream");setAppData(null);setSegmentSuggestions(null);
     try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem(SUGGEST_KEY);localStorage.removeItem(DISMISS_KEY);}catch(e){}
   }
   function handleExitDemo() {
+    setFounderMode(false);
     setTripData(null);
     setScreen("console");
   }
@@ -594,7 +631,30 @@ export default function App() {
     const name=tripData?.tripName||"my expedition";
     setPrefilledVision(`I just completed ${name}. Now I want to `);
     try{localStorage.removeItem("1bn_tripData_v5");localStorage.removeItem("1bn_seg_v2");localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");}catch(e){}
+    setFounderMode(false);
     setTripData(null);setAppData(null);setScreen("dream");
+  }
+
+  function handleToggleFounderExpedition(){
+    if(founderMode){
+      setFounderMode(false);
+      try{
+        const raw=localStorage.getItem("1bn_tripData_v5");
+        const p=raw?JSON.parse(raw):null;
+        setTripData(p?.phases?.length?p:null);
+      }catch(e){setTripData(null);}
+    }else if(founderExpedition?.phases?.length){
+      setFounderMode(true);
+      setTripData(founderExpedition);
+      setScreen("console");
+    }
+  }
+
+  function handleSaveAsFounderExpedition(){
+    if(!tripData||tripData.isDemo)return;
+    saveFounderExpedition(tripData);
+    setFounderExpedition(tripData);
+    setFounderMode(true);
   }
 
   return(
@@ -609,18 +669,19 @@ export default function App() {
         <BetaEmptyTripState
           onStartDreaming={() => setScreen("dream")}
           onTryDemo={() => {
+            setFounderMode(false);
             setTripData(BETA_DEMO_EXPEDITION);
             setScreen("console");
           }}
         />
       )}
-      {(screen==="console"||prevScreen==="console") && hasTrip && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onExitDemo={handleExitDemo} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} onUpdateTripData={(updates)=>setTripData(d=>({...d,...updates}))} onTripAmbientContextChange={setTripAmbientCtx}/></div>}
+      {(screen==="console"||prevScreen==="console") && hasTrip && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onExitDemo={handleExitDemo} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} onUpdateTripData={(updates)=>setTripData(d=>({...d,...updates}))} onTripAmbientContextChange={setTripAmbientCtx} founderExpedition={founderExpedition} founderMode={founderMode} onToggleFounderExpedition={handleToggleFounderExpedition} onSaveAsFounderExpedition={handleSaveAsFounderExpedition}/></div>}
       {(screen==="pack"||prevScreen==="pack") && tripData && hasTrip && <div style={{position:prevScreen==="pack"||slideDir?"fixed":"relative",inset:prevScreen==="pack"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="pack"?0:1,animation:prevScreen==="pack"?(slideDir==="right"?"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="pack"&&slideDir?(slideDir==="left"?"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><PackConsole tripData={tripData} onExpedition={()=>slideScreen("console")} onGoToTab={t=>{setPendingTab(t||"next");slideScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen}/></div>}
       <AmbientChat screen={screen==="pack"?"pack-console":screen==="console"&&!hasTrip?"dream":screen==="console"?tripAmbientCtx.screen:screen} tripData={tripData} currentPhase={screen==="console"?tripAmbientCtx.phase:null} currentSegment={screen==="console"?tripAmbientCtx.segment:null} currentTab={screen==="console"?tripAmbientCtx.tab:null}/>
       {hasTrip && (screen === "console" || screen === "pack") && (
         <button
           type="button"
-          onClick={() => window.open("https://tally.so", "_blank", "noopener,noreferrer")}
+          onClick={() => window.open("https://tally.so/r/QKJrdX", "_blank", "noopener,noreferrer")}
           style={{
             position: "fixed",
             bottom: "calc(env(safe-area-inset-bottom, 0px) + " + (tripData?.isDemo ? "82" : "72") + "px)",
