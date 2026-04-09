@@ -66,9 +66,18 @@ function dedupeQueries(queries) {
   return out;
 }
 
+/** Max N whitespace-separated tokens (country-first queries stay tight for Unsplash relevance). */
+function takeFirstTokens(phrase, maxTokens = 4) {
+  const w = String(phrase || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  return w.slice(0, maxTokens).join(" ");
+}
+
 /**
- * Ordered list: try each until Unsplash returns an image (handled in the hook).
- * Tier 1 = place-specific experience; tier 2 = cultural / old town; tier 3 = country.
+ * Country leads when available; max 4 tokens per query; Iberian/Caribbean/Andes food hints
+ * sit under the country prefix.
  */
 export function buildUnsplashQueryTiers(destination, category, country) {
   const d = String(destination || "").trim();
@@ -77,32 +86,56 @@ export function buildUnsplashQueryTiers(destination, category, country) {
   const tiers = [];
 
   if (category === "food") {
-    if (isIberian(d, co)) {
-      tiers.push(`${d} tapas bar market street scene`);
+    if (co) {
+      if (isIberian(d, co)) {
+        tiers.push(takeFirstTokens(`${co} ${d} tapas market`, 4));
+        tiers.push(takeFirstTokens(`${co} ${d} old town`, 4));
+        tiers.push(takeFirstTokens(`${co} culture street`, 4));
+      } else if (isCaribbeanOrAndes(d, co)) {
+        tiers.push(takeFirstTokens(`${co} ${d} street food`, 4));
+        tiers.push(takeFirstTokens(`${co} ${d} food market`, 4));
+        tiers.push(takeFirstTokens(`${co} culture street`, 4));
+      } else {
+        tiers.push(takeFirstTokens(`${co} ${d} food market`, 4));
+        tiers.push(takeFirstTokens(`${co} ${d} old town`, 4));
+        tiers.push(takeFirstTokens(`${co} culture street`, 4));
+      }
+    } else if (isIberian(d, co)) {
+      tiers.push(takeFirstTokens(`${d} tapas market`, 4));
+      tiers.push(takeFirstTokens(`${d} old town`, 4));
     } else if (isCaribbeanOrAndes(d, co)) {
-      tiers.push(`${d} street food market outdoor scene`);
+      tiers.push(takeFirstTokens(`${d} street food`, 4));
+      tiers.push(takeFirstTokens(`${d} food market`, 4));
     } else {
-      tiers.push(`${d} restaurant terrace dining street scene`);
+      tiers.push(takeFirstTokens(`${d} food market`, 4));
+      tiers.push(takeFirstTokens(`${d} old town`, 4));
     }
-    tiers.push(`${d} old town plaza street`, `${d} skyline golden hour city`);
-    if (co) tiers.push(`${co} architecture travel`);
     return dedupeQueries(tiers);
   }
 
   if (category === "stay") {
-    tiers.push(
-      `${d} boutique hotel courtyard rooftop exterior`,
-      `${d} hotel lobby interior courtyard`,
-      `${d} old town street evening`
-    );
-    if (co) tiers.push(`${co} historic city architecture`);
+    if (co) {
+      tiers.push(takeFirstTokens(`${co} ${d} hotel courtyard`, 4));
+      tiers.push(takeFirstTokens(`${co} ${d} azulejo exterior`, 4));
+      tiers.push(takeFirstTokens(`${co} historic architecture`, 4));
+    } else {
+      tiers.push(takeFirstTokens(`${d} hotel courtyard`, 4));
+      tiers.push(takeFirstTokens(`${d} hotel rooftop`, 4));
+      tiers.push(takeFirstTokens(`${d} old town`, 4));
+    }
     return dedupeQueries(tiers);
   }
 
   const activityClean = cleanActivityCategory(category);
-  if (activityClean) tiers.push(`${d} ${activityClean}`);
-  tiers.push(`${d} old town street scene`, `${d} plaza skyline golden hour`);
-  if (co) tiers.push(`${co} landscape travel`);
+  if (co) {
+    if (activityClean) tiers.push(takeFirstTokens(`${co} ${activityClean} plantation`, 4));
+    tiers.push(takeFirstTokens(`${co} ${d} mountains`, 4));
+    tiers.push(takeFirstTokens(`${co} landscape travel`, 4));
+  } else {
+    if (activityClean) tiers.push(takeFirstTokens(`${d} ${activityClean}`, 4));
+    tiers.push(takeFirstTokens(`${d} old town`, 4));
+    tiers.push(takeFirstTokens(`${d} plaza skyline`, 4));
+  }
   return dedupeQueries(tiers);
 }
 
