@@ -145,6 +145,39 @@ export function buildUnsplashQuery(destination, category, country) {
   return tiers[0] || "";
 }
 
+/**
+ * True if Unsplash metadata plausibly matches this stop. When `country` is set,
+ * require it to appear in metadata (avoids Kingston UK vs Kingston Jamaica).
+ */
+export function photoMatchesDestination(photo, destination, country) {
+  const tags = Array.isArray(photo?.tags)
+    ? photo.tags.map((t) => (typeof t === "string" ? t : t?.title)).filter(Boolean)
+    : [];
+  const haystack = [
+    photo?.alt_description,
+    photo?.description,
+    photo?.location?.country,
+    photo?.location?.city,
+    photo?.location?.name,
+    ...tags,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  const destLower = String(destination || "").trim().toLowerCase();
+  const countryLower = String(country || "").trim().toLowerCase();
+
+  if (!haystack.trim()) return false;
+
+  if (countryLower) {
+    if (haystack.includes(countryLower)) return true;
+    return false;
+  }
+  if (destLower && haystack.includes(destLower)) return true;
+  return false;
+}
+
 function readCache(cacheKey) {
   if (!cacheKey) return null;
   try {
@@ -186,6 +219,10 @@ export function useDestinationPhoto(destination, category, country) {
     const k = cacheKey;
 
     (async () => {
+      const destTrim = String(destination || "").trim();
+      const coTrim = normalizeCountry(country);
+      let fallback = null;
+
       for (const q of queryTiers) {
         if (cancelled) return;
         try {
@@ -199,7 +236,11 @@ export function useDestinationPhoto(destination, category, country) {
           const htmlLink =
             data?.links?.html ||
             "https://unsplash.com/?utm_source=1bag_nomad&utm_medium=referral";
-          if (imgUrl) {
+          if (!imgUrl) continue;
+
+          fallback = { imgUrl, htmlLink, data, query: q };
+
+          if (photoMatchesDestination(data, destTrim, coTrim)) {
             if (k) {
               try {
                 localStorage.setItem(k, JSON.stringify({ url: imgUrl, htmlLink }));
@@ -215,10 +256,44 @@ export function useDestinationPhoto(destination, category, country) {
             });
             return;
           }
+
+          if (import.meta.env.DEV) {
+            console.warn("[1BN] Unsplash photo rejected (metadata mismatch)", {
+              query: q,
+              destination: destTrim,
+              country: coTrim,
+              alt_description: data?.alt_description,
+            });
+          }
         } catch (err) {
           console.error("[1BN] Unsplash fetch error:", err);
         }
       }
+
+      if (!cancelled && fallback) {
+        console.warn("[1BN] Unsplash: all tiers failed metadata validation; using last image", {
+          destination: destTrim,
+          country: coTrim,
+          query: fallback.query,
+          alt_description: fallback.data?.alt_description,
+        });
+        const { imgUrl, htmlLink } = fallback;
+        if (k) {
+          try {
+            localStorage.setItem(k, JSON.stringify({ url: imgUrl, htmlLink }));
+          } catch {
+            /* quota */
+          }
+        }
+        setNet({
+          forKey: k,
+          done: true,
+          url: imgUrl,
+          htmlLink,
+        });
+        return;
+      }
+
       if (!cancelled) {
         setNet({
           forKey: k,
