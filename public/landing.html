@@ -10,8 +10,12 @@
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{background:#150F0A;color:#FFF;font-family:'Fraunces',serif;font-size:16px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    body{background:#150F0A;color:#FFF;font-family:'Fraunces',serif;font-size:16px;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative}
     a{color:inherit;text-decoration:none}
+
+    #lp-world-map{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    #lp-world-map svg{width:100%;height:100%;display:block}
+    body > section{position:relative;z-index:1}
 
     .fade-in{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease}
     .fade-in.visible{opacity:1;transform:translateY(0)}
@@ -21,7 +25,7 @@
     @keyframes playGlow{0%,100%{box-shadow:0 0 40px rgba(255,159,67,0.15),0 0 80px rgba(255,159,67,0.05)}50%{box-shadow:0 0 60px rgba(255,159,67,0.25),0 0 120px rgba(255,159,67,0.10)}}
 
     /* ── HERO ── */
-    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;position:relative;background:radial-gradient(ellipse at 50% 30%,rgba(169,70,29,0.08) 0%,transparent 60%),#150F0A}
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;position:relative;background:radial-gradient(ellipse at 50% 30%,rgba(169,70,29,0.1) 0%,transparent 58%),linear-gradient(180deg,rgba(21,15,10,0.9) 0%,rgba(21,15,10,0.82) 100%)}
     .hero::before{content:'';position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(255,159,67,0.06) 0%,transparent 70%);pointer-events:none}
     .hero-logo-wrap{position:relative;z-index:1;margin-bottom:clamp(28px,5vw,40px)}
     .hero-logo{
@@ -54,7 +58,7 @@
     .scroll-chevron svg path{filter:drop-shadow(0 0 6px rgba(255,217,61,0.6))}
 
     /* ── THE FEELING ── */
-    .feeling{padding:clamp(56px,10vw,100px) clamp(16px,4vw,28px);background:#150F0A}
+    .feeling{padding:clamp(56px,10vw,100px) clamp(16px,4vw,28px);background:rgba(21,15,10,0.78)}
     .feeling-inner{
       max-width:720px;
       margin:0 auto;
@@ -72,7 +76,7 @@
     .feeling-line.spacer{margin-bottom:0;line-height:1.2}
 
     /* ── HOW IT WORKS ── */
-    .how-section{padding:80px 24px;max-width:1100px;margin:0 auto;background:#150F0A}
+    .how-section{padding:80px 24px;max-width:1100px;margin:0 auto;background:rgba(21,15,10,0.8)}
     .how-label{font-family:'Space Mono',monospace;font-size:14px;letter-spacing:3px;color:rgba(255,159,67,0.75);text-align:center;margin-bottom:12px}
     .how-title{text-align:center;font-size:30px;font-weight:700;color:#FFD93D;margin-bottom:48px}
     .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
@@ -84,7 +88,7 @@
     .how-card-body{font-size:16px;font-weight:300;color:rgba(255,255,255,0.70);line-height:1.7}
 
     /* ── DEMO ── */
-    .demo-section{padding:80px 24px;text-align:center;background:#1A1208}
+    .demo-section{padding:80px 24px;text-align:center;background:rgba(26,18,8,0.82)}
     .demo-label{font-family:'Space Mono',monospace;font-size:15px;letter-spacing:3px;color:rgba(255,159,67,0.75);margin-bottom:32px}
     .demo-play{width:120px;height:120px;border-radius:50%;border:2px solid rgba(255,159,67,0.4);background:rgba(169,70,29,0.08);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;cursor:pointer;transition:all 0.3s;animation:playGlow 3s ease-in-out infinite}
     .demo-play:hover{border-color:rgba(255,159,67,0.7);background:rgba(169,70,29,0.15)}
@@ -92,7 +96,7 @@
     .demo-note{font-size:16px;font-style:italic;font-weight:300;color:rgba(255,255,255,0.45)}
 
     /* ── FOUNDER ── */
-    .founder-section{padding:80px 24px;max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;background:#150F0A}
+    .founder-section{padding:80px 24px;max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;background:rgba(21,15,10,0.8)}
     .founder-text h3{font-size:28px;font-weight:700;color:#FFD93D;margin-bottom:20px;line-height:1.3}
     .founder-text p{font-size:16px;font-weight:300;color:rgba(255,255,255,0.75);line-height:1.8;margin-bottom:16px}
     .founder-text p em{font-weight:400;color:rgba(255,255,255,0.90)}
@@ -106,7 +110,7 @@
     .founder-logo-ring::after{inset:20px;border-color:rgba(255,159,67,0.20)}
 
     /* ── FEATURES ── */
-    .features-section{padding:80px 24px;max-width:900px;margin:0 auto;background:#1A1208}
+    .features-section{padding:80px 24px;max-width:900px;margin:0 auto;background:rgba(26,18,8,0.82)}
     .features-label{font-family:'Space Mono',monospace;font-size:14px;letter-spacing:3px;color:rgba(255,159,67,0.75);text-align:center;margin-bottom:40px}
     .features-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
     .feature-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:24px 20px}
@@ -115,7 +119,7 @@
     .feature-body{font-size:15px;font-weight:300;color:rgba(255,255,255,0.75);line-height:1.7}
 
     /* ── FINAL CTA ── */
-    .final-cta{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;background:radial-gradient(ellipse at 50% 60%,rgba(169,70,29,0.06) 0%,transparent 60%),#150F0A}
+    .final-cta{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;background:radial-gradient(ellipse at 50% 60%,rgba(169,70,29,0.08) 0%,transparent 55%),linear-gradient(180deg,rgba(21,15,10,0.86) 0%,rgba(21,15,10,0.8) 100%)}
     .final-headline{font-size:52px;font-weight:900;color:#FFD93D;letter-spacing:2px;line-height:1.15;margin-bottom:4px}
     .final-headline-light{font-size:44px;font-weight:100;font-style:italic;color:rgba(255,255,255,0.55);margin-bottom:24px}
     .final-sub{font-size:20px;font-style:italic;font-weight:300;color:rgba(255,255,255,0.65);margin-bottom:40px}
@@ -151,6 +155,7 @@
   </style>
 </head>
 <body>
+<div id="lp-world-map" aria-hidden="true"></div>
 
 <!-- SECTION 1: HERO -->
 <section class="hero">
@@ -218,7 +223,7 @@
 </section>
 
 <!-- TAGLINE DIVIDER -->
-<section style="background:#150F0A;padding:60px 24px;text-align:center;border-top:1px solid rgba(255,159,67,0.12);border-bottom:1px solid rgba(255,159,67,0.12);">
+<section style="background:rgba(21,15,10,0.82);padding:60px 24px;text-align:center;border-top:1px solid rgba(255,159,67,0.12);border-bottom:1px solid rgba(255,159,67,0.12);">
   <p class="fade-in" style="font-family:'Fraunces',serif;font-size:13px;font-weight:400;letter-spacing:4px;color:rgba(255,255,255,0.40);text-transform:uppercase;margin-bottom:16px;font-style:normal;">The 1 Bag Nomad Promise</p>
   <h2 class="fade-in" style="font-family:'Fraunces',serif;font-size:clamp(22px,4vw,38px);font-weight:300;color:rgba(255,255,255,0.92);letter-spacing:2px;line-height:1.6;margin:0;">
     Dream it. Build it. Plan it.<br>
@@ -302,6 +307,37 @@
   <p class="fine-print fade-in">No account required &#183; Free to build &#183; Patent Pending</p>
   <div class="footer">&#169; 2026 SHAREGOOD Co. &#183; 1 Bag Nomad &#183; Dream Big. Travel Light.</div>
 </section>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+(function(){
+  var GEO_URL='https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
+  function draw(){
+    var el=document.getElementById('lp-world-map');
+    if(!el||typeof d3==='undefined'||typeof topojson==='undefined')return;
+    var w=window.innerWidth;
+    var h=window.innerHeight;
+    el.innerHTML='';
+    var svg=d3.select(el).append('svg').attr('width',w).attr('height',h).attr('viewBox','0 0 '+w+' '+h);
+    var g=svg.append('g');
+    var scale=Math.min(w,h)*0.38;
+    var projection=d3.geoNaturalEarth1().scale(scale).translate([w*0.5,h*0.48]).center([12,4]);
+    var path=d3.geoPath(projection);
+    fetch(GEO_URL).then(function(r){return r.json();}).then(function(topo){
+      var countries=topojson.feature(topo,topo.objects.countries);
+      g.selectAll('path').data(countries.features).join('path')
+        .attr('d',path)
+        .attr('fill','rgba(248,245,240,0.05)')
+        .attr('stroke','rgba(0,229,255,0.16)')
+        .attr('stroke-width',0.45);
+    }).catch(function(){});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',draw);else draw();
+  var t;
+  window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(draw,180);});
+})();
+</script>
 
 <!-- SCROLL ANIMATIONS -->
 <script>
