@@ -2,8 +2,6 @@
  * Shared hero + hierarchy for Food / Stay / Activities Co-Architect suggestion cards.
  * Full-bleed hero (when present) with a strong bottom-weighted scrim so copy and CTAs stay readable.
  */
-const WALNUT = "#0A0705";
-
 export default function SuggestionExperienceCard({
   accent,
   categoryLabel,
@@ -22,6 +20,7 @@ export default function SuggestionExperienceCard({
   const nameFs = isMobile ? 18 : 20;
   const cardRadius = 14;
   const cardMinH = heroUrl ? (isMobile ? 320 : 380) : undefined;
+  const txtSh = heroUrl ? "0 1px 2px rgba(0,0,0,0.92), 0 2px 18px rgba(0,0,0,0.48)" : undefined;
 
   return (
     <div
@@ -33,7 +32,7 @@ export default function SuggestionExperienceCard({
         border: "1.5px solid rgba(255,255,255,0.14)",
         borderLeft: `3px solid ${accent}`,
         borderRadius: cardRadius,
-        background: heroUrl ? `linear-gradient(165deg, rgba(255,159,67,0.07) 0%, ${WALNUT} 55%)` : "rgba(255,159,67,0.09)",
+        background: heroUrl ? "transparent" : "rgba(255,159,67,0.09)",
         overflow: "hidden",
         marginBottom: 10,
         textAlign: "left",
@@ -57,6 +56,7 @@ export default function SuggestionExperienceCard({
               objectFit: "cover",
               display: "block",
               zIndex: 0,
+              filter: "brightness(1.08) contrast(1.04)",
             }}
           />
           <div
@@ -68,11 +68,11 @@ export default function SuggestionExperienceCard({
               pointerEvents: "none",
               background: `linear-gradient(
                 180deg,
-                rgba(10,7,5,0.28) 0%,
-                rgba(10,7,5,0.5) 22%,
-                rgba(10,7,5,0.88) 48%,
-                rgba(10,7,5,0.94) 72%,
-                rgba(10,7,5,0.97) 100%
+                rgba(10,7,5,0.12) 0%,
+                rgba(10,7,5,0.22) 22%,
+                rgba(10,7,5,0.52) 45%,
+                rgba(10,7,5,0.78) 68%,
+                rgba(10,7,5,0.88) 100%
               )`,
             }}
           />
@@ -87,10 +87,6 @@ export default function SuggestionExperienceCard({
           display: "flex",
           flexDirection: "column",
           padding: "16px 16px 18px",
-          background: heroUrl ? "rgba(10,7,5,0.88)" : "transparent",
-          backdropFilter: heroUrl ? "saturate(1.08) blur(10px)" : undefined,
-          WebkitBackdropFilter: heroUrl ? "saturate(1.08) blur(10px)" : undefined,
-          textShadow: heroUrl ? "0 1px 14px rgba(0,0,0,0.55)" : undefined,
         }}
       >
         <div
@@ -102,6 +98,7 @@ export default function SuggestionExperienceCard({
             opacity: heroUrl ? 0.9 : 0.75,
             marginBottom: 8,
             lineHeight: 1.35,
+            textShadow: txtSh,
           }}
         >
           {categoryLabel}
@@ -115,6 +112,7 @@ export default function SuggestionExperienceCard({
             lineHeight: 1.25,
             marginBottom: descriptor ? 6 : 10,
             wordBreak: isMobile ? "break-word" : undefined,
+            textShadow: txtSh,
           }}
         >
           {title}
@@ -130,13 +128,14 @@ export default function SuggestionExperienceCard({
               whiteSpace: isMobile ? "normal" : "nowrap",
               overflow: isMobile ? "visible" : "hidden",
               textOverflow: isMobile ? "clip" : "ellipsis",
+              textShadow: txtSh,
             }}
           >
             {descriptor}
           </div>
         ) : null}
 
-        {middle}
+        {middle ? <div style={{ textShadow: txtSh }}>{middle}</div> : null}
 
         {priceLine ? (
           <div
@@ -147,6 +146,7 @@ export default function SuggestionExperienceCard({
               fontWeight: 600,
               marginBottom: priceSubline ? 4 : whisper || disclaimer ? 8 : 10,
               lineHeight: 1.4,
+              textShadow: txtSh,
             }}
           >
             {priceLine}
@@ -160,6 +160,7 @@ export default function SuggestionExperienceCard({
               color: "rgba(255,255,255,0.55)",
               marginBottom: whisper || disclaimer ? 8 : 10,
               lineHeight: 1.45,
+              textShadow: txtSh,
             }}
           >
             {priceSubline}
@@ -175,6 +176,7 @@ export default function SuggestionExperienceCard({
               color: "rgba(255,159,67,0.72)",
               lineHeight: 1.5,
               marginBottom: disclaimer ? 8 : 10,
+              textShadow: txtSh,
             }}
           >
             {whisper}
@@ -189,6 +191,7 @@ export default function SuggestionExperienceCard({
               color: "rgba(255,255,255,0.42)",
               lineHeight: 1.5,
               marginBottom: heroLink ? 6 : 12,
+              textShadow: txtSh,
             }}
           >
             {disclaimer}
@@ -206,6 +209,7 @@ export default function SuggestionExperienceCard({
                 fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
                 color: "rgba(255,255,255,0.48)",
                 textDecoration: "none",
+                textShadow: txtSh,
               }}
             >
               Photo: Unsplash
