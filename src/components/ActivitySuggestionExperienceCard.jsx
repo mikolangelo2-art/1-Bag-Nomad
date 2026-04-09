@@ -9,6 +9,7 @@ export function ActivitySuggestionExperienceCard({
   segmentName,
   segmentCountry = "",
   activity,
+  photoInstanceId,
   isMobile,
   onAdd,
   onSkip,
@@ -21,7 +22,8 @@ export function ActivitySuggestionExperienceCard({
   const photo = useDestinationPhoto(
     segmentName,
     name === "Activity" ? "sightseeing" : name,
-    segmentCountry
+    segmentCountry,
+    photoInstanceId ? { instanceId: photoInstanceId } : undefined
   );
   const provider = (activity?.provider || "").trim();
   const notes = (activity?.notes || activity?.brief || "").trim();

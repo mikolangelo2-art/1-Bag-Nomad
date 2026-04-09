@@ -437,7 +437,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {caFromArch.map((a,idx)=>{
               const actName=a.name||a.title||"";
               return(
-                <ActivitySuggestionExperienceCard key={`ca-act-${idx}-${String(actName).slice(0,32)}`} segmentName={dest} segmentCountry={destCountry} activity={{name:actName,notes:a.notes||a.brief||"",estimatedCost:a.estimatedCost||a.cost,provider:a.provider||""}} isMobile={isMobile} onAdd={()=>acceptActivity({name:actName,notes:a.notes||a.brief||"",estimatedCost:a.estimatedCost||a.cost,provider:a.provider||""})} showSkip={false} acceptBtnStyle={acceptBtnStyle} dismissBtnStyle={dismissBtnStyle} disclaimerText="Mentioned in chat \u2014 add to your plan if it fits"/>
+                <ActivitySuggestionExperienceCard key={`ca-act-${idx}-${String(actName).slice(0,32)}`} segmentName={dest} segmentCountry={destCountry} photoInstanceId={`ca-act-${idx}`} activity={{name:actName,notes:a.notes||a.brief||"",estimatedCost:a.estimatedCost||a.cost,provider:a.provider||""}} isMobile={isMobile} onAdd={()=>acceptActivity({name:actName,notes:a.notes||a.brief||"",estimatedCost:a.estimatedCost||a.cost,provider:a.provider||""})} showSkip={false} acceptBtnStyle={acceptBtnStyle} dismissBtnStyle={dismissBtnStyle} disclaimerText="Mentioned in chat \u2014 add to your plan if it fits"/>
               );
             })}
           </div>}
@@ -446,7 +446,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
           {suggestion?.activities?.map((activity,idx)=>(
-            !isDism(`activity_${idx}`)&&!det.activities.some(x=>x.suggestionActivityIdx===idx)&&<ActivitySuggestionExperienceCard key={`act-sug-${idx}-${String(activity.name||'').slice(0,32)}`} segmentName={dest} segmentCountry={destCountry} activity={activity} isMobile={isMobile} onAdd={()=>acceptActivity(activity,idx)} onSkip={()=>dismiss(`activity_${idx}`)} acceptBtnStyle={acceptBtnStyle} dismissBtnStyle={dismissBtnStyle}/>
+            !isDism(`activity_${idx}`)&&!det.activities.some(x=>x.suggestionActivityIdx===idx)&&<ActivitySuggestionExperienceCard key={`act-sug-${idx}-${String(activity.name||'').slice(0,32)}`} segmentName={dest} segmentCountry={destCountry} photoInstanceId={`sug-act-${idx}`} activity={activity} isMobile={isMobile} onAdd={()=>acceptActivity(activity,idx)} onSkip={()=>dismiss(`activity_${idx}`)} acceptBtnStyle={acceptBtnStyle} dismissBtnStyle={dismissBtnStyle}/>
           ))}
           {det.activities.length>0&&<div style={{marginBottom:16}}>
             {det.activities.map(a=>(

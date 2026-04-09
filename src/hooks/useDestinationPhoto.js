@@ -15,11 +15,13 @@ function slugPart(s) {
     .slice(0, 96);
 }
 
-export function unsplashCacheKey(destination, category) {
+export function unsplashCacheKey(destination, category, instanceId) {
   const d = slugPart(destination);
   const c = slugPart(category);
   if (!d || !c) return null;
-  return `${LS_PREFIX}${d}__${c}`;
+  const base = `${LS_PREFIX}${d}__${c}`;
+  const inst = instanceId != null && String(instanceId).trim() ? slugPart(String(instanceId).trim()) : "";
+  return inst ? `${base}__${inst}` : base;
 }
 
 function normalizeCountry(country) {
@@ -128,11 +130,20 @@ export function buildUnsplashQueryTiers(destination, category, country) {
 
   const activityClean = cleanActivityCategory(category);
   if (co) {
-    if (activityClean) tiers.push(takeFirstTokens(`${co} ${activityClean} plantation`, 4));
-    tiers.push(takeFirstTokens(`${co} ${d} mountains`, 4));
-    tiers.push(takeFirstTokens(`${co} landscape travel`, 4));
+    if (activityClean) {
+      tiers.push(takeFirstTokens(`${co} ${activityClean} plantation`, 4));
+      tiers.push(takeFirstTokens(`${co} ${activityClean} mountains`, 4));
+      tiers.push(takeFirstTokens(`${co} ${activityClean} outdoor`, 4));
+    } else {
+      tiers.push(takeFirstTokens(`${co} ${d} mountains`, 4));
+      tiers.push(takeFirstTokens(`${co} landscape travel`, 4));
+      tiers.push(takeFirstTokens(`${co} ${d} culture`, 4));
+    }
+  } else if (activityClean) {
+    tiers.push(takeFirstTokens(`${d} ${activityClean} street`, 4));
+    tiers.push(takeFirstTokens(`${d} ${activityClean} outdoor`, 4));
+    tiers.push(takeFirstTokens(`${d} ${activityClean} plaza`, 4));
   } else {
-    if (activityClean) tiers.push(takeFirstTokens(`${d} ${activityClean}`, 4));
     tiers.push(takeFirstTokens(`${d} old town`, 4));
     tiers.push(takeFirstTokens(`${d} plaza skyline`, 4));
   }
@@ -193,15 +204,17 @@ function readCache(cacheKey) {
 /**
  * Fetches via /api/unsplash; tries query tiers until one returns a photo.
  * @param {string} [country] optional; improves tier-3 regional fallback.
+ * @param {{ instanceId?: string }} [options] per-card cache slot (e.g. activity list index) so parallel activities do not share one cached URL.
  */
-export function useDestinationPhoto(destination, category, country) {
+export function useDestinationPhoto(destination, category, country, options = {}) {
+  const instanceId = options?.instanceId;
   const queryTiers = useMemo(
     () => buildUnsplashQueryTiers(destination, category, country),
     [destination, category, country]
   );
   const cacheKey = useMemo(
-    () => unsplashCacheKey(destination, category),
-    [destination, category]
+    () => unsplashCacheKey(destination, category, instanceId),
+    [destination, category, instanceId]
   );
   const cached = useMemo(() => readCache(cacheKey), [cacheKey]);
 
@@ -307,7 +320,7 @@ export function useDestinationPhoto(destination, category, country) {
     return () => {
       cancelled = true;
     };
-  }, [queryTiers, cacheKey, cached]);
+  }, [queryTiers, cacheKey, cached, destination, country]);
 
   const netMatches = net.forKey === cacheKey && net.done;
   const url = cached?.url ?? (netMatches ? net.url : null);
