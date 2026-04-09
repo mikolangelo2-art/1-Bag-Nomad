@@ -89,7 +89,7 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
     setLoadingIntel(false);
   }
 
-  const heroStats=[{label:"DEPARTS IN",value:daysToDepart,unit:"DAYS",color:"#FFD93D",glow:"rgba(255,217,61,0.35)"},{label:"NIGHTS",value:totalNights,unit:"NIGHTS",color:"#F8F5F0",glow:"rgba(248,245,240,0.22)"},...(totalDives>0?[{label:"DIVES",value:totalDives,unit:"DIVES",color:"#00E5FF",glow:"rgba(0,229,255,0.4)"}]:[]),{label:"BUDGET",value:fmt(totalBudget),unit:"TOTAL",color:"#FFD93D",glow:"rgba(255,217,61,0.35)"}];
+  const heroStats=[{label:"DEPARTS IN",value:daysToDepart,unit:"DAYS",color:"#c9a04c",glow:"rgba(201,160,76,0.32)"},{label:"NIGHTS",value:totalNights,unit:"NIGHTS",color:"#F8F5F0",glow:"rgba(248,245,240,0.22)"},...(totalDives>0?[{label:"DIVES",value:totalDives,unit:"DIVES",color:"#00E5FF",glow:"rgba(0,229,255,0.4)"}]:[]),{label:"BUDGET",value:fmt(totalBudget),unit:"TOTAL",color:"#c9a04c",glow:"rgba(201,160,76,0.32)"}];
   const TABS=[{id:"next",label:"🗺️ EXPEDITION"},{id:"budget",label:"💰 BUDGET"},{id:"book",label:"🗓 TIMELINE"},{id:"intel",label:"🔭 INTEL"},{id:"blueprint",label:isMobile?"✦":"✦ BLUEPRINT"}];
   const allSegD=loadSeg();
   const {changedSegs,cancelledSegs}=(()=>{const cs=[],xs=[];segPhases.forEach(p=>p.segments.forEach(s=>{const d=allSegD[`${p.id}-${s.id}`]||{};const st=d.status||'planning';if(st==='changed')cs.push({phase:p,seg:s});if(st==='cancelled')xs.push({phase:p,seg:s});}));return{changedSegs:cs,cancelledSegs:xs};})();
@@ -136,8 +136,8 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
       </div>}
       {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:isMobile?"rgba(0,8,16,0.10)":"linear-gradient(180deg,rgba(21,15,10,0.98),rgba(21,15,10,0.99))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden",zIndex:1}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(232,220,200,0.02) 0%,transparent 60%)",pointerEvents:"none"}}/>
-        {tripData.tripName&&<div style={{marginBottom:isMobile?5:7,position:"relative"}}>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?13:17,fontWeight:300,fontStyle:"italic",color:"#F8F5F0",lineHeight:1}}>{tripData.tripName}</div>
+        {tripData.tripName&&<div style={{marginBottom:isMobile?8:12,position:"relative"}}>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?16:24,fontWeight:400,fontStyle:"italic",color:"#F8F5F0",lineHeight:1.12,letterSpacing:"0.02em"}}>{tripData.tripName}</div>
           {!isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:2,marginTop:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{[...new Set(flatPhases.map(p=>p.country))].join(" · ")}</div>}
           <div style={{marginTop:5,display:"flex",alignItems:"center",gap:6}}>
             {editingDep?(
@@ -149,17 +149,17 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
                 onBlur={saveDep}
                 onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();saveDep();}if(e.key==="Escape"){e.preventDefault();setDepInput(tripData.departureCity||tripData.city||"");setEditingDep(false);}}}
                 placeholder="Departure city..."
-                style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,color:"#FFD93D",background:"rgba(255,217,61,0.08)",border:"1px solid rgba(255,217,61,0.35)",borderRadius:5,padding:"3px 8px",outline:"none",width:isMobile?130:160}}
+                style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,color:"#c9a04c",background:"rgba(201,160,76,0.08)",border:"1px solid rgba(201,160,76,0.35)",borderRadius:5,padding:"3px 8px",outline:"none",width:isMobile?130:160}}
               />
             ):(
               <button
                 onClick={()=>setEditingDep(true)}
                 style={{display:"flex",alignItems:"center",gap:5,background:"none",border:"none",padding:0,cursor:"pointer"}}
               >
-                <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:10,letterSpacing:2,color:depInput?"rgba(255,217,61,0.7)":"rgba(255,217,61,0.35)",fontWeight:700}}>
+                <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:10,letterSpacing:2,color:depInput?"rgba(201,160,76,0.78)":"rgba(201,160,76,0.35)",fontWeight:700}}>
                   {depInput?`FROM · ${depInput.replace(/\s+International\s+Airport.*$/i,'').replace(/\s+Intl\s+Airport.*$/i,'').replace(/\s+Airport.*$/i,'').replace(/,\s*[A-Z]{2,3}$/,'').replace(/,.*$/,'').trim().toUpperCase()}`:"＋ SET DEPARTURE CITY"}
                 </span>
-                <span style={{fontSize:9,color:"rgba(255,217,61,0.3)"}}>✎</span>
+                <span style={{fontSize:9,color:"rgba(201,160,76,0.35)"}}>✎</span>
               </button>
             )}
           </div>
@@ -169,8 +169,8 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
           segPhases.forEach(p=>p.segments.forEach(s=>{totalSegs++;const d=allSegD[`${p.id}-${s.id}`]||{};if(d.transport?.mode||d.transport?.cost||d.stay?.name||d.stay?.cost||(d.activities?.length||0)>0)filledSegs++;}));
           const readPct=totalSegs>0?Math.round((filledSegs/totalSegs)*100):0;
           return(
-            <div data-coach="trip-stats" style={{background:'rgba(10,7,5,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',borderRadius:14,border:'1.5px solid rgba(0,229,255,0.35)',borderTop:'1.5px solid rgba(0,229,255,0.65)',boxShadow:'inset 0 1px 0 rgba(0,229,255,0.30), 0 4px 24px rgba(0,0,0,0.35)',overflow:'hidden'}}>
-              <div style={{padding:'10px 12px 9px'}}>
+            <div data-coach="trip-stats" style={{background:'rgba(23,27,32,0.72)',backdropFilter:'blur(14px)',WebkitBackdropFilter:'blur(14px)',borderRadius:18,border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.55)',boxShadow:'inset 0 1px 0 rgba(0,229,255,0.22), 0 12px 40px rgba(0,0,0,0.45), 0 0 48px rgba(201,160,76,0.06)',overflow:'hidden'}}>
+              <div style={{padding:'14px 14px 12px'}}>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:7}}>
                   <span style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(0,229,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>EXPEDITION READINESS</span>
                   <span style={{fontSize:20,fontWeight:700,color:'#00E5FF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{readPct}%</span>
@@ -182,24 +182,24 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
               </div>
               <div style={{height:1,background:'rgba(0,229,255,0.12)'}}/>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',overflow:'hidden'}}>
-                {[{label:'DEPARTS IN',value:daysToDepart,sub:'DAYS',color:'#F8F5F0'},{label:'NIGHTS',value:totalNights,sub:'NIGHTS',color:'#F8F5F0'},{label:'BUDGET',value:fmt(totalBudget),sub:'TOTAL',color:'#FFD93D'}].map((s,i)=>(
-                  <div key={s.label} style={{textAlign:'center',padding:'8px 4px'}}>
-                    <div style={{fontSize:9,letterSpacing:'0.10em',color:'rgba(255,255,255,0.60)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:3}}>{s.label}</div>
-                    <div style={{fontSize:19,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1}}>{s.value}</div>
-                    <div style={{fontSize:10,color:'rgba(255,255,255,0.65)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:2}}>{s.sub}</div>
+                {[{label:'DEPARTS IN',value:daysToDepart,sub:'DAYS',color:'#F8F5F0'},{label:'NIGHTS',value:totalNights,sub:'NIGHTS',color:'#F8F5F0'},{label:'BUDGET',value:fmt(totalBudget),sub:'TOTAL',color:'#c9a04c'}].map((s,i)=>(
+                  <div key={s.label} style={{textAlign:'center',padding:'12px 8px 14px'}}>
+                    <div style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(248,245,240,0.52)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:6}}>{s.label}</div>
+                    <div style={{fontSize:21,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.05,textShadow:s.color==='#c9a04c'?'0 0 28px rgba(201,160,76,0.25)':'none'}}>{s.value}</div>
+                    <div style={{fontSize:10,color:'rgba(248,245,240,0.58)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:5,letterSpacing:'0.06em'}}>{s.sub}</div>
                   </div>
                 ))}
               </div>
             </div>
           );
         })():(
-          <div data-coach="trip-stats" style={{background:'rgba(0,10,25,0.30)',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',border:'1.5px solid rgba(0,229,255,0.35)',borderTop:'2px solid rgba(0,229,255,0.75)',borderRadius:12,padding:'4px 0',overflow:'hidden'}}>
+          <div data-coach="trip-stats" style={{background:'rgba(23,27,32,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.62)',borderRadius:18,padding:'10px 6px 14px',overflow:'hidden',boxShadow:'0 14px 44px rgba(0,0,0,0.42), 0 0 56px rgba(201,160,76,0.08), inset 0 1px 0 rgba(0,229,255,0.12)'}}>
             <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
               {heroStats.map((s,i)=>(
-                <div key={s.label} style={{textAlign:"center",padding:"4px 6px",borderLeft:i>0?"1px solid rgba(255,255,255,0.10)":"none"}}>
-                  <div style={{fontSize:13,fontWeight:700,color:"rgba(232,220,200,0.5)",letterSpacing:3,marginBottom:4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>{s.label}</div>
-                  <div className="stat-val" style={{fontSize:26,fontWeight:700,lineHeight:1,color:s.label==="BUDGET"?"#FFD93D":"#F8F5F0",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animationDelay:`${i*0.1}s`}}>{s.value}</div>
-                  <div style={{fontSize:13,fontWeight:700,color:"rgba(232,220,200,0.4)",letterSpacing:2,marginTop:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.unit}</div>
+                <div key={s.label} style={{textAlign:"center",padding:"6px 14px 4px",borderLeft:i>0?"1px solid rgba(248,245,240,0.08)":"none"}}>
+                  <div style={{fontSize:11,fontWeight:700,color:"rgba(248,245,240,0.48)",letterSpacing:3.2,marginBottom:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>{s.label}</div>
+                  <div className="stat-val" style={{fontSize:28,fontWeight:700,lineHeight:1.05,color:s.label==="BUDGET"||s.label==="DEPARTS IN"?"#c9a04c":"#F8F5F0",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animationDelay:`${i*0.1}s`,textShadow:(s.label==="BUDGET"||s.label==="DEPARTS IN")?"0 0 32px rgba(201,160,76,0.28)":"none"}}>{s.value}</div>
+                  <div style={{fontSize:12,fontWeight:600,color:"rgba(248,245,240,0.42)",letterSpacing:2.2,marginTop:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.unit}</div>
                 </div>
               ))}
             </div>
@@ -235,8 +235,8 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
             <span style={{fontSize:15,lineHeight:1}}>✏️</span><span style={{fontSize:15,letterSpacing:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"#00E5FF",whiteSpace:"nowrap",fontWeight:700}}>REVISE</span>
           </button>
           <button onClick={handleNewTripClick} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"8px 14px",borderLeft:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(169,70,29,0.4)",background:confirmNewTrip?"rgba(255,107,107,0.15)":"rgba(169,70,29,0.08)",border:"none",cursor:"pointer",flexShrink:0,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",minWidth:confirmNewTrip?72:50}} onMouseOver={e=>e.currentTarget.style.background=confirmNewTrip?"rgba(255,107,107,0.22)":"rgba(169,70,29,0.18)"} onMouseOut={e=>e.currentTarget.style.background=confirmNewTrip?"rgba(255,107,107,0.15)":"rgba(169,70,29,0.08)"}>
-            <span style={{fontSize:15,color:confirmNewTrip?"#FF6B6B":"#FFD93D",lineHeight:1}}>{confirmNewTrip?"⚠️":"+"}</span>
-            <span style={{fontSize:15,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:confirmNewTrip?"#FF6B6B":"#FFD93D",whiteSpace:"nowrap",fontWeight:700,textAlign:"center"}}>{confirmNewTrip?"CONFIRM?":"NEW TRIP"}</span>
+            <span style={{fontSize:15,color:confirmNewTrip?"#FF6B6B":"#c9a04c",lineHeight:1}}>{confirmNewTrip?"⚠️":"+"}</span>
+            <span style={{fontSize:15,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:confirmNewTrip?"#FF6B6B":"#c9a04c",whiteSpace:"nowrap",fontWeight:700,textAlign:"center"}}>{confirmNewTrip?"CONFIRM?":"NEW TRIP"}</span>
           </button>
         </div>
       )}
@@ -246,14 +246,14 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
       </div>}
       <div className="mc-content" style={{position:"relative",zIndex:1}}>
         {tab==="next"&&(
-          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          <div style={{display:"flex",flexDirection:"column",gap:14}}>
             {isComplete&&<div onClick={onHomecoming} style={{marginBottom:4,padding:"11px 14px",background:"linear-gradient(135deg,rgba(255,217,61,0.1),rgba(255,159,67,0.06))",border:"1px solid rgba(255,217,61,0.35)",borderRadius:10,cursor:"pointer",display:"flex",alignItems:"center",gap:8,animation:"consolePulse 2.8s ease-in-out infinite"}} onMouseOver={e=>e.currentTarget.style.background="linear-gradient(135deg,rgba(255,217,61,0.18),rgba(255,159,67,0.12))"} onMouseOut={e=>e.currentTarget.style.background="linear-gradient(135deg,rgba(255,217,61,0.1),rgba(255,159,67,0.06))"}>
               <span style={{fontSize:16}}>🏆</span>
               <span style={{fontSize:11,fontWeight:700,color:"#FFD93D",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flex:1}}>✦ EXPEDITION COMPLETE · TAP TO CELEBRATE</span>
               <span style={{fontSize:12,color:"rgba(255,217,61,0.5)"}}>→</span>
             </div>}
-            <div style={{fontSize:isMobile?12:14,color:"#F8F5F0",letterSpacing:isMobile?1.5:2.5,marginBottom:4,fontWeight:500,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:isMobile?"normal":"nowrap"}}>YOUR EXPEDITION · {destFlatPhases.length} {destFlatPhases.length===1?"DESTINATION":"DESTINATIONS"}</div>
-            {isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:1.5,marginBottom:4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>TAP PHASE TO EXPAND</div>}
+            <div style={{fontSize:isMobile?12:14,color:"#F8F5F0",letterSpacing:isMobile?1.5:2.8,marginBottom:8,marginTop:4,fontWeight:500,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:isMobile?"normal":"nowrap"}}>YOUR EXPEDITION · {destFlatPhases.length} {destFlatPhases.length===1?"DESTINATION":"DESTINATIONS"}</div>
+            {isMobile&&<div style={{fontSize:15,color:"rgba(248,245,240,0.42)",letterSpacing:1.5,marginBottom:6,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>TAP PHASE TO EXPAND</div>}
             {isMobile&&(
               <div style={{borderRadius:11,overflow:"hidden",border:"1px solid rgba(255,159,67,0.22)",background:"rgba(169,70,29,0.06)",marginBottom:2}}>
                 <button onClick={()=>setBlueprintOpen(o=>!o)} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",background:"none",border:"none",cursor:"pointer",gap:8}}>
@@ -280,8 +280,10 @@ function MissionConsole({tripData,onNewTrip,onRevise,onPackConsole,onHomecoming,
                 </div>}
               </div>
             )}
+            <div style={{display:"flex",flexDirection:"column",gap:14}}>
             {segPhases.map((phase,i)=>{const plannedOverBudget=computePhasePlannedSpend(phase,allSegD).total>(Number(phase.totalBudget)||0);return i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} allPhases={tripData.phases||[]} segPhases={segPhases} homeCity={tripData.departureCity||tripData.city||""} plannedOverBudget={plannedOverBudget}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} allPhases={tripData.phases||[]} segPhases={segPhases} homeCity={tripData.departureCity||tripData.city||""} plannedOverBudget={plannedOverBudget}/>;})}
             {returnPhase&&<PhaseCard key="return" phase={returnPhase} intelData={explorerData} idx={segPhases.length} onTap={null} allSuggestions={null} suggestionsLoading={false}/>}
+            </div>
           </div>
         )}
         {tab==="budget"&&(

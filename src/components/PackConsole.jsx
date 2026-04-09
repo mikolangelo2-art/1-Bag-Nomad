@@ -67,7 +67,7 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
           {item.owned&&<span style={{color:'#69F0AE',fontSize:15,fontWeight:900,lineHeight:1}}>✓</span>}
         </button>
         <div style={{flex:1,minWidth:0,textAlign:'left'}}>
-          <div style={{fontSize:13,fontWeight:500,color:item.owned?'#69F0AE':'#F8F5F0',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'normal',overflow:'visible',textOverflow:'clip',lineHeight:1.3}}>{item.essential&&<span style={{fontSize:9,color:'#E8B923',marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:'rgba(255,255,255,0.3)',marginRight:2}}>~</span>}{item.name||'Unnamed'}</div>
+          <div style={{fontSize:13,fontWeight:500,color:item.owned?'#69F0AE':'#F8F5F0',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'normal',overflow:'visible',textOverflow:'clip',lineHeight:1.3}}>{item.essential&&<span style={{fontSize:9,color:'#c9a04c',marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:'rgba(255,255,255,0.3)',marginRight:2}}>~</span>}{item.name||'Unnamed'}</div>
           <div style={{display:'flex',gap:8,marginTop:2}}>
             {parseFloat(item.weight)>0&&<span style={{fontSize:11,color:'rgba(255,255,255,0.38)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
             {parseFloat(item.cost)>0&&<span style={{fontSize:11,color:'rgba(255,217,61,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
@@ -88,7 +88,7 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
             {[{label:'WT (lbs)',f:'weight'},{label:'COST ($)',f:'cost'},{label:'VOL (L)',f:'volume'}].map(({label,f})=>(
               <div key={f}>
                 <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{label}</div>
-                <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:7,color:'#E8B923',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",transition:'border-color 0.2s,box-shadow 0.2s'}} onFocus={e=>{e.target.style.borderColor='rgba(255,159,67,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(255,159,67,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';}}/>
+                <input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:7,color:'#c9a04c',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",transition:'border-color 0.2s,box-shadow 0.2s'}} onFocus={e=>{e.target.style.borderColor='rgba(255,159,67,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(255,159,67,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';}}/>
               </div>
             ))}
           </div>
@@ -117,7 +117,7 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
         </button>
         <div onClick={()=>setOpen(o=>!o)} style={{flex:1,display:"flex",alignItems:"center",gap:10,padding:"10px 8px 10px 4px",cursor:"pointer",minWidth:0}}>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:13,fontWeight:500,color:item.owned?"rgba(105,240,174,0.82)":"rgba(255,242,210,0.78)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2}}>{item.essential&&<span style={{fontSize:9,color:"#E8B923",marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginRight:2}}>~</span>}{item.name||"Unnamed"}</div>
+            <div style={{fontSize:13,fontWeight:500,color:item.owned?"rgba(105,240,174,0.82)":"rgba(255,242,210,0.78)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2}}>{item.essential&&<span style={{fontSize:9,color:"#c9a04c",marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginRight:2}}>~</span>}{item.name||"Unnamed"}</div>
             <div style={{display:"flex",gap:8,alignItems:"center"}}>
               {parseFloat(item.weight)>0&&<span style={{fontSize:13,color:"rgba(255,255,255,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
               {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(255,217,61,0.55)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
@@ -137,7 +137,7 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
           <input value={item.name} onChange={e=>updateItem(item.id,"name",e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:7,color:"#FFF",fontSize:12,padding:"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} placeholder="Item name" onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
             {[{label:"WT (lbs)",f:"weight"},{label:"COST ($)",f:"cost"},{label:"VOL (L)",f:"volume"}].map(({label,f})=>(
-              <div key={f}><div style={{fontSize:9,color:"rgba(255,159,67,0.65)",letterSpacing:1,marginBottom:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{label}</div><input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:5,color:"#E8B923",fontSize:12,padding:"6px 8px",outline:"none",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/></div>
+              <div key={f}><div style={{fontSize:9,color:"rgba(255,159,67,0.65)",letterSpacing:1,marginBottom:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{label}</div><input value={item[f]} onChange={e=>updateItem(item.id,f,e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:5,color:"#c9a04c",fontSize:12,padding:"6px 8px",outline:"none",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/></div>
             ))}
           </div>
           <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
@@ -158,7 +158,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const isMobile=useMobile();
   useEffect(()=>{window.scrollTo(0,0);posthog.capture("pack_console_opened");posthog.capture("$pageview",{$current_url:"/pack-console"});},[]);
   const ALL_CATS=[
-    {id:"clothes",label:"Clothes",icon:"👕",color:"#E8B923"},
+    {id:"clothes",label:"Clothes",icon:"👕",color:"#c9a04c"},
     {id:"tech",label:"Tech",icon:"💻",color:"#00D4FF"},
     {id:"creator",label:"Creator",icon:"🎥",color:"#FF9F43"},
     {id:"dive",label:"Dive",icon:"🤿",color:"#00E5FF"},
@@ -167,7 +167,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     {id:"docs",label:"Docs",icon:"📄",color:"#E0E0E0"},
     {id:"adventure",label:"Adventure",icon:"🥾",color:"#55EFC4"},
     {id:"moto",label:"Moto",icon:"🏍️",color:"#FF6B6B"},
-    {id:"safari",label:"Safari",icon:"🦁",color:"#E8B923"},
+    {id:"safari",label:"Safari",icon:"🦁",color:"#c9a04c"},
     {id:"work",label:"Work",icon:"💼",color:"#A29BFE"},
   ];
   const pp=tripData.packProfile||null;
@@ -306,7 +306,7 @@ Return ONLY a JSON array:
           <span>{catItems.length} items</span>
           <span>·</span>
           <span style={{color:cat.color}}>{catW.toFixed(1)}{unit}</span>
-          <span style={{marginLeft:'auto',color:'#E8B923'}}>{needCount>0?`$${Math.round(needCost)} still needed`:'✓ all owned'}</span>
+          <span style={{marginLeft:'auto',color:'#c9a04c'}}>{needCount>0?`$${Math.round(needCost)} still needed`:'✓ all owned'}</span>
         </div>
         <div style={{height:3,background:'rgba(255,255,255,0.08)',borderRadius:2,overflow:'hidden'}}>
           <div style={{height:'100%',width:`${pct}%`,background:`linear-gradient(90deg,${cat.color}66,${cat.color})`,borderRadius:2,transition:'width 0.5s ease',boxShadow:`0 0 8px ${cat.color}90`}}/>
@@ -333,7 +333,7 @@ Return ONLY a JSON array:
         {/* Subheader */}
         <div style={{display:'flex',gap:16,padding:isMobile?'10px 12px':'10px 16px',borderBottom:'1px solid rgba(255,255,255,0.06)',flexShrink:0}}>
           <span style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}><span style={{color:cat.color,fontWeight:700}}>{catW.toFixed(1)}{unit}</span> total weight</span>
-          {catCost>0&&<span style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}><span style={{color:'#E8B923',fontWeight:700}}>${catCost.toLocaleString()}</span> total cost</span>}
+          {catCost>0&&<span style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}><span style={{color:'#c9a04c',fontWeight:700}}>${catCost.toLocaleString()}</span> total cost</span>}
         </div>
         {/* Item list */}
         <div style={{flex:1,padding:isMobile?'8px 12px 24px':'8px 16px 24px'}}>
@@ -412,7 +412,7 @@ Return ONLY a JSON array:
         </div>
         {/* 4 mini stats */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%",padding:'10px 12px'}}>
-          {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#00E5FF"},{label:"GEAR READY",value:gearPct+"%",color:"#FF9F43"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#E8B923"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
+          {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#00E5FF"},{label:"GEAR READY",value:gearPct+"%",color:"#FF9F43"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#c9a04c"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} style={{background:"rgba(0,0,0,0.25)",border:`1.5px solid ${s.color}55`,borderTop:`1.5px solid ${s.color}99`,borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:`0 0 12px ${s.color}30, inset 0 1px 0 ${s.color}55`}}>
               <div style={{fontSize:9,fontWeight:700,color:"rgba(255,255,255,0.55)",letterSpacing:'0.06em',marginBottom:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.2}}>{s.label}</div>
               <div style={{fontSize:isMobile?13:18,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.value}</div>
@@ -438,7 +438,7 @@ Return ONLY a JSON array:
       {/* Tab bar */}
       <div style={{display:"flex",alignItems:"stretch",background:"rgba(12,5,0,0.98)",borderBottom:"1px solid rgba(196,87,30,0.2)",position:"relative"}}>
         {packSaveFlash&&<div style={{position:"absolute",right:12,top:4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#69F0AE",opacity:0.80,letterSpacing:1,zIndex:2,pointerEvents:"none",transition:"opacity 0.40s cubic-bezier(0.25,0.46,0.45,0.94)"}}>&#10003; saved</div>}
-        <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(255,159,67,0.15)":"rgba(255,159,67,0.06)",border:"none",borderRight:"1px solid rgba(196,87,30,0.3)",cursor:"pointer",flexShrink:0,color:"#E8B923"}}>
+        <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(255,159,67,0.15)":"rgba(255,159,67,0.06)",border:"none",borderRight:"1px solid rgba(196,87,30,0.3)",cursor:"pointer",flexShrink:0,color:"#c9a04c"}}>
           <span style={{fontSize:isMobile?12:15,lineHeight:1}}>{isFullscreen?"⊡":"⛶"}</span>
           <span style={{fontSize:isMobile?9:13,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
         </button>
@@ -492,7 +492,7 @@ Return ONLY a JSON array:
                         <div style={{fontSize:10,color:`${c}99`,letterSpacing:1,marginTop:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{item.cat?.toUpperCase()} · {item.bag}</div>
                       </div>
                       <div style={{textAlign:"right",flexShrink:0}}>
-                        <div style={{fontSize:14,fontWeight:700,color:"#E8B923",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${parseFloat(item.cost||0).toLocaleString()}</div>
+                        <div style={{fontSize:14,fontWeight:700,color:"#c9a04c",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${parseFloat(item.cost||0).toLocaleString()}</div>
                         <div style={{fontSize:10,color:"rgba(255,255,255,0.28)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>running: ${running.toLocaleString()}</div>
                       </div>
                       <button onClick={()=>toggleOwned(item.id)} style={{padding:"5px 10px",borderRadius:6,border:"1px solid rgba(105,240,174,0.3)",background:"rgba(105,240,174,0.06)",color:"#69F0AE",fontSize:11,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>GOT IT</button>
@@ -585,7 +585,7 @@ Return ONLY a JSON array:
                       <div style={{fontSize:15,fontWeight:600,color:"#FFF",marginBottom:5}}>{s.name}</div>
                       <div style={{fontFamily:"'Playfair Display',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,255,255,0.82)",lineHeight:1.65}}>{s.reason}</div>
                     </div>
-                    <div style={{textAlign:"right",flexShrink:0,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.cost>0&&<div style={{fontSize:12,fontWeight:700,color:"#E8B923",marginBottom:3}}>~${s.cost}</div>}{s.weight>0&&<div style={{fontSize:12,color:"rgba(255,255,255,0.45)"}}>~{s.weight}lb</div>}</div>
+                    <div style={{textAlign:"right",flexShrink:0,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.cost>0&&<div style={{fontSize:12,fontWeight:700,color:"#c9a04c",marginBottom:3}}>~${s.cost}</div>}{s.weight>0&&<div style={{fontSize:12,color:"rgba(255,255,255,0.45)"}}>~{s.weight}lb</div>}</div>
                   </div>
                   <div style={{display:"flex",gap:8}}>
                     <button onClick={()=>acceptSuggestion(s)} style={{flex:1,padding:"10px",borderRadius:8,border:"1px solid rgba(105,240,174,0.5)",background:"rgba(105,240,174,0.08)",color:"#69F0AE",fontSize:13,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:700,minHeight:40}}>+ ADD TO PACK</button>
@@ -605,7 +605,7 @@ Return ONLY a JSON array:
             <button onClick={()=>{try{localStorage.removeItem(suggestCacheKey);}catch(e){}setSuggestions([]);setSuggestDone(false);setAccepted([]);genSuggestions(true);}} style={{width:"100%",padding:10,borderRadius:8,border:"1px solid rgba(169,70,29,0.35)",background:"rgba(169,70,29,0.1)",color:"rgba(255,159,67,0.75)",fontSize:11,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,marginBottom:18,fontWeight:700}}>↺ REFRESH SUGGESTIONS</button>
           </div>}
           {suggestDone&&!suggestLoading&&<div style={{borderTop:"1px solid rgba(196,87,30,0.25)",paddingTop:16}}>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontStyle:"italic",fontWeight:300,color:"#E8B923",marginBottom:12,lineHeight:1.4}}>Refine packing list with your co-architect</div>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontStyle:"italic",fontWeight:300,color:"#c9a04c",marginBottom:12,lineHeight:1.4}}>Refine packing list with your co-architect</div>
             <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:12,maxHeight:220,overflowY:"auto"}}>
               {chat.length===0&&<div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,200,120,0.82)",lineHeight:1.7,padding:"4px 0"}}>"Tell me your trip vibe and I'll tailor your pack to match."</div>}
               {chat.map((m,i)=>(
@@ -637,14 +637,14 @@ Return ONLY a JSON array:
             const bagW=bagItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM;
             const bagV=bagName==="Backpack"?bpV:0;
             const isOver=bagName==="Backpack"&&bagW>wLim;
-            const bagColor=bagName==="Backpack"?"#69F0AE":bagName==="Global Briefcase"?"#A29BFE":bagName==="Worn"?"#E8B923":"#69F0AE";
+            const bagColor=bagName==="Backpack"?"#69F0AE":bagName==="Global Briefcase"?"#A29BFE":bagName==="Worn"?"#c9a04c":"#69F0AE";
             return(
               <div key={bagName} style={{background:"rgba(18,8,0,0.85)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:16,marginBottom:12}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
                   <div style={{fontSize:16,fontWeight:600,color:bagColor,letterSpacing:0.5}}>{bagName}</div>
                   <div style={{textAlign:"right"}}>
                     <div style={{fontSize:20,fontWeight:900,color:isOver?"#FF6B6B":bagColor,letterSpacing:-1,lineHeight:1}}>{bagW.toFixed(1)}<span style={{fontSize:15,fontWeight:400,opacity:0.8}}> {unit}</span></div>
-                    {bagName==="Backpack"&&<div style={{fontSize:15,color:"#E8B923",marginTop:1,fontWeight:700}}>{bagV.toFixed(1)}L / {VL}L</div>}
+                    {bagName==="Backpack"&&<div style={{fontSize:15,color:"#c9a04c",marginTop:1,fontWeight:700}}>{bagV.toFixed(1)}L / {VL}L</div>}
                   </div>
                 </div>
                 {bagName==="Backpack"&&<div style={{height:4,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden",marginBottom:11}}><div style={{height:"100%",background:isOver?"linear-gradient(90deg,#4D9FFF88,#FF6B6B)":"linear-gradient(90deg,rgba(77,159,255,0.5),#4D9FFF)",borderRadius:2,width:Math.min(bagW/wLim*100,100)+"%",transition:"width 0.5s ease"}}/></div>}

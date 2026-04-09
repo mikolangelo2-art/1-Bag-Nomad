@@ -53,10 +53,19 @@ button:focus-visible,
   outline-offset: 3px;
 }
 
-/* Cards / rows: gentle lift + gold wash on hover (where not overridden) */
+/* Cards / rows: depth + warm gold halo on hover */
 .g-card.off:hover,
 .phase-row:hover {
   box-shadow: var(--lux-shadow-gold-card);
+  transform: scale(1.025) translateY(-2px);
+}
+
+.g-card.on:hover {
+  transform: scale(1.02) translateY(-2px);
+  box-shadow:
+    0 0 0 1.5px rgba(201, 160, 76, 0.55),
+    0 0 40px var(--lux-glow-gold-30),
+    0 12px 36px rgba(0, 0, 0, 0.55);
 }
 
 .mc-tab {
@@ -68,14 +77,53 @@ button:focus-visible,
 
 .mc-tab:hover:not(.active) {
   color: var(--lux-text-primary);
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(1.03);
 }
 
 .launch-btn.on:hover,
 .cta-build-btn:hover {
+  transform: scale(1.03) translateY(-2px);
   box-shadow:
-    0 0 36px var(--lux-glow-gold-30),
-    0 16px 40px rgba(0, 0, 0, 0.35);
+    0 0 42px var(--lux-glow-gold-30),
+    0 18px 44px rgba(0, 0, 0, 0.4);
+}
+
+/* Co-Architect floating orb */
+.ca-architect-fab {
+  transition:
+    transform var(--lux-duration-slow) var(--lux-ease-smooth),
+    box-shadow var(--lux-duration-slow) var(--lux-ease-smooth),
+    border-color var(--lux-duration-slow) var(--lux-ease-smooth),
+    opacity var(--lux-duration) var(--lux-ease-smooth);
+}
+
+.ca-architect-fab:hover {
+  transform: scale(1.04);
+  box-shadow:
+    0 0 28px rgba(201, 160, 76, 0.35),
+    0 0 64px rgba(201, 160, 76, 0.2),
+    0 12px 40px rgba(0, 0, 0, 0.45);
+  opacity: 1;
+}
+
+.ca-architect-fab:focus-visible {
+  outline: 2px solid var(--lux-glow-gold-35);
+  outline-offset: 4px;
+}
+
+/* Stat tiles (vision reveal, etc.) */
+.stat-card {
+  transition:
+    transform var(--lux-duration) var(--lux-ease-smooth),
+    box-shadow var(--lux-duration) var(--lux-ease-smooth);
+}
+
+.stat-card:hover {
+  transform: scale(1.02);
+  box-shadow:
+    0 0 0 1px rgba(201, 160, 76, 0.2),
+    0 10px 32px rgba(0, 0, 0, 0.35),
+    0 0 36px rgba(201, 160, 76, 0.12);
 }
 
 /* Scrollbar */
@@ -91,5 +139,5 @@ button:focus-visible,
   border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(232, 185, 35, 0.35);
+  background: rgba(201, 160, 76, 0.38);
 }

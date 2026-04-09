@@ -160,14 +160,25 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
             }
           });
           map.addLayer({
+            id: 'route-glow',
+            type: 'line',
+            source: 'route',
+            paint: {
+              'line-color': '#c9a04c',
+              'line-width': 5,
+              'line-opacity': 0.22,
+              'line-blur': 2.2,
+            }
+          });
+          map.addLayer({
             id: 'route',
             type: 'line',
             source: 'route',
             paint: {
-              'line-color': '#FFD93D',
-              'line-width': 2,
-              'line-opacity': 0.8,
-              'line-dasharray': [2, 3],
+              'line-color': '#d4a017',
+              'line-width': 1.35,
+              'line-opacity': 0.9,
+              'line-dasharray': [1, 4.5],
             }
           });
         }
@@ -180,7 +191,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
 
           const sz = isMobile ? 18 : 14;
           const ring = document.createElement('div');
-          ring.style.cssText = `position:relative;width:${sz}px;height:${sz}px;border-radius:50%;border:2px solid rgba(232,220,200,0.85);background:rgba(232,220,200,0.12);box-shadow:0 0 8px rgba(232,220,200,0.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;`;
+          ring.style.cssText = `position:relative;width:${sz}px;height:${sz}px;border-radius:50%;border:2px solid rgba(201,160,76,0.55);background:rgba(201,160,76,0.1);box-shadow:0 0 12px rgba(201,160,76,0.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;`;
           const innerDot = document.createElement('div');
           innerDot.style.cssText = `width:4px;height:4px;border-radius:50%;background:#F8F5F0;flex-shrink:0;`;
           ring.appendChild(innerDot);

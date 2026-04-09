@@ -1,7 +1,7 @@
 // ── Core Palette ─────────────────────────────────────────────
 export const DIVE_CYAN       = "#00E5FF";
 export const SURF_GREEN      = "#69F0AE";
-export const CULTURE_GOLD    = "#E8B923";
+export const CULTURE_GOLD    = "#C9A04C";
 export const EXPLORATION_ORANGE = "#FF9F43";
 export const NATURE_PURPLE   = "#A29BFE";
 export const MOTO_RED        = "#FF6B6B";
@@ -13,14 +13,14 @@ export const LIGHT_GRAY      = "#E0E0E0";
 export const WHITE           = "#FFFFFF";
 
 // ── Dark Backgrounds ─────────────────────────────────────────
-export const BG_PAGE         = "#161616";              // Quiet luxury main dark
-export const BG_DARK         = "rgba(22,22,22,0.96)";
+export const BG_PAGE         = "#121212";              // Deep charcoal
+export const BG_DARK         = "rgba(18,18,18,0.96)";
 export const BG_DARK_TRIP    = "rgba(23,27,32,0.94)";
 export const BG_PAGE_LEGACY  = "#0A0705";
 export const BLACK_OVERLAY   = "rgba(0,0,0,0.55)";
-export const BG_DREAM_GRADIENT = "radial-gradient(ellipse at 50% 0%, rgba(166,123,91,0.12) 0%, transparent 58%), #161616";
+export const BG_DREAM_GRADIENT = "radial-gradient(ellipse at 50% 0%, rgba(166,123,91,0.12) 0%, transparent 58%), #121212";
 export const BG_TRIP_GRADIENT  = "radial-gradient(ellipse at 50% 0%, rgba(0,229,255,0.06) 0%, transparent 55%), #171b20";
-export const BG_PACK_GRADIENT  = "radial-gradient(ellipse at 50% 0%, rgba(232,185,35,0.08) 0%, transparent 55%), #161616";
+export const BG_PACK_GRADIENT  = "radial-gradient(ellipse at 50% 0%, rgba(201,160,76,0.07) 0%, transparent 55%), #121212";
 
 // ── Parchment / Sand Alphas ──────────────────────────────────
 export const PARCHMENT_08    = "rgba(248,245,240,0.08)";
@@ -50,12 +50,12 @@ export const ORANGE_65       = "rgba(255,159,67,0.65)";
 export const ORANGE_90       = "rgba(255,159,67,0.90)";
 
 // ── Gold Alphas ──────────────────────────────────────────────
-export const GOLD_04         = "rgba(232,185,35,0.04)";
-export const GOLD_20         = "rgba(232,185,35,0.2)";
-export const GOLD_35         = "rgba(232,185,35,0.35)";
-export const GOLD_50         = "rgba(232,185,35,0.5)";
-export const GOLD_60         = "rgba(232,185,35,0.6)";
-export const GOLD_65         = "rgba(232,185,35,0.65)";
+export const GOLD_04         = "rgba(201,160,76,0.04)";
+export const GOLD_20         = "rgba(201,160,76,0.2)";
+export const GOLD_35         = "rgba(201,160,76,0.35)";
+export const GOLD_50         = "rgba(201,160,76,0.5)";
+export const GOLD_60         = "rgba(201,160,76,0.6)";
+export const GOLD_65         = "rgba(201,160,76,0.65)";
 
 // ── Red Alphas ───────────────────────────────────────────────
 export const RED_04          = "rgba(255,107,107,0.04)";

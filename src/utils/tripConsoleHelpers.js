@@ -212,10 +212,10 @@ export function detectMode(route) {
 
 // ── Suggestion Card Styles ────────────────────────────────────
 export const suggestionCardStyle = {
-  border: '1px solid rgba(232,185,35,0.18)',
-  borderRadius: '16px',
-  background: 'rgba(44,44,44,0.55)',
-  boxShadow: '0 0 0 1px rgba(232,185,35,0.06), 0 12px 36px rgba(0,0,0,0.35), 0 0 40px rgba(232,185,35,0.12)',
+  border: '1px solid rgba(201,160,76,0.2)',
+  borderRadius: '18px',
+  background: 'rgba(44,44,44,0.58)',
+  boxShadow: '0 0 0 1px rgba(201,160,76,0.08), 0 14px 44px rgba(0,0,0,0.42), 0 0 48px rgba(201,160,76,0.14)',
   padding: '18px',
   marginBottom: '18px',
   textAlign: 'left',
@@ -243,7 +243,7 @@ export const acceptBtnStyle = {
   flex: 1, padding: '10px',
   background: 'rgba(255,159,67,0.20)',
   border: '1px solid rgba(255,159,67,0.50)',
-  borderRadius: '14px',
+  borderRadius: '16px',
   color: '#FF9F43',
   fontSize: '12px',
   fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
@@ -254,7 +254,7 @@ export const dismissBtnStyle = {
   padding: '10px 14px',
   background: 'transparent',
   border: '1px solid rgba(255,255,255,0.12)',
-  borderRadius: '14px',
+  borderRadius: '16px',
   color: 'rgba(255,255,255,0.45)',
   fontSize: '12px',
   fontFamily: "'Inter',system-ui,-apple-system,sans-serif",

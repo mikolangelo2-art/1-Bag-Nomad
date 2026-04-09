@@ -15,7 +15,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
       ?{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:500,color:"#F8F5F0",lineHeight:1.1,textAlign:"center"}
       :{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:600,color:"#F8F5F0",textAlign:"center"};
     return(
-    <div style={{borderRadius:13,border:"1px solid rgba(148,163,184,0.30)",borderTop:"1px solid rgba(203,213,225,0.42)",background:"rgba(0,8,20,0.35)",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)",overflow:"hidden",boxShadow:"inset 0 1px 0 rgba(255,255,255,0.05)",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`,opacity:0.80}}>
+    <div style={{borderRadius:18,border:"1px solid rgba(148,163,184,0.28)",borderTop:"1px solid rgba(203,213,225,0.38)",background:"rgba(23,27,32,0.65)",backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",overflow:"hidden",boxShadow:"inset 0 1px 0 rgba(255,255,255,0.06), 0 12px 40px rgba(0,0,0,0.4), 0 0 48px rgba(201,160,76,0.06)",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`,opacity:0.88}}>
       <div style={{padding:isMobile?"16px 12px":"14px 16px",borderLeft:"3px solid rgba(148,163,184,0.52)"}}>
         <div style={{display:"flex",alignItems:"center",gap:isMobile?8:8,marginBottom:6,width:"100%"}}>
           {isMobile?<div style={{width:30,flexShrink:0}} aria-hidden />:<div style={{width:22,height:22,flexShrink:0}} aria-hidden />}
@@ -59,7 +59,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
       <div className="tap-scale" onClick={()=>onTap?onTap(phase):setSheetOpen(true)}
         onMouseOver={e=>{e.currentTarget.style.background='rgba(10,7,5,0.62)';e.currentTarget.style.border='1.5px solid rgba(0,229,255,0.48)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.5),inset 0 1px 0 rgba(232,220,200,0.11),inset 1px 0 0 rgba(0,229,255,0.18),inset -1px 0 0 rgba(0,229,255,0.18),inset 0 -1px 0 rgba(0,229,255,0.10)';}}
         onMouseOut={e=>{e.currentTarget.style.background='rgba(10,7,5,0.50)';e.currentTarget.style.border='1.5px solid rgba(0,229,255,0.30)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(232,220,200,0.07),inset 1px 0 0 rgba(0,229,255,0.15),inset -1px 0 0 rgba(0,229,255,0.15),inset 0 -1px 0 rgba(0,229,255,0.08)';}}
-        style={{display:'flex',flexDirection:'column',padding:'18px 12px',background:'rgba(10,7,5,0.50)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',border:'1.5px solid rgba(0,229,255,0.30)',borderRadius:12,marginBottom:10,boxShadow:'0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(232,220,200,0.07),inset 1px 0 0 rgba(0,229,255,0.15),inset -1px 0 0 rgba(0,229,255,0.15),inset 0 -1px 0 rgba(0,229,255,0.08)',animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*0.07}s both`}}>
+        style={{display:'flex',flexDirection:'column',padding:'20px 14px',background:'rgba(23,27,32,0.72)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(0,229,255,0.28)',borderRadius:18,marginBottom:0,boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 0 1px rgba(201,160,76,0.08), 0 0 40px rgba(201,160,76,0.07), inset 0 1px 0 rgba(248,245,240,0.06)',animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*0.07}s both`}}>
         {/* Row 1: badge + flag + name + budget */}
         <div style={{display:'flex',alignItems:'center',gap:8,width:'100%',overflow:'hidden'}}>
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
@@ -69,7 +69,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
           <div style={{flex:1,fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:500,color:'#F8F5F0',lineHeight:1.1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',minWidth:0}}>{phase.name}</div>
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
             {plannedOverBudget&&<span style={{fontSize:10,fontWeight:700,letterSpacing:0.5,color:'#FF6B6B',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>⚠ OVER</span>}
-            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:700,color:'#FFD93D',whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</div>
+            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:700,color:'#c9a04c',whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</div>
           </div>
         </div>
         {/* Row 2: date + nights/dives */}
@@ -91,7 +91,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
           <div style={{display:'flex',gap:14,alignItems:'center',paddingLeft:42}}>
             <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,fontWeight:700,color:phase.color}}>🌙{phase.totalNights}n</span>
             {phase.totalDives>0&&<span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,fontWeight:700,color:'#00E5FF'}}>🤿{phase.totalDives}</span>}
-            <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:700,color:'#FFD93D',marginLeft:'auto'}}>{fmt(phase.totalBudget)}</span>
+            <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:700,color:'#c9a04c',marginLeft:'auto'}}>{fmt(phase.totalBudget)}</span>
           </div>
           {phase.note&&<div style={{fontFamily:"'Playfair Display',serif",fontSize:17,fontWeight:400,fontStyle:'italic',color:'rgba(255,245,220,0.92)',lineHeight:1.72,paddingLeft:42,marginTop:10,borderLeft:'2px solid rgba(255,217,61,0.22)',marginLeft:40,letterSpacing:'0.02em',textShadow:'0 1px 14px rgba(0,0,0,0.45)'}}>{phase.note}</div>}
           {pct>0&&<div style={{marginTop:10,paddingLeft:42,display:'flex',alignItems:'center',gap:8}}>
@@ -112,7 +112,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
 
   // ── Desktop: phase card (always slides to detail page when onTap provided) ──
   return(
-    <div style={{borderRadius:13,border:"1px solid rgba(0,229,255,0.16)",borderTop:"1px solid rgba(0,229,255,0.32)",background:"rgba(0,15,35,0.55)",backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',overflow:"hidden",boxShadow:"inset 0 1px 0 rgba(232,220,200,0.07)",transition:"all 0.35s cubic-bezier(0.25,0.46,0.45,0.94)",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`}}>
+    <div style={{borderRadius:18,border:"1px solid rgba(0,229,255,0.18)",borderTop:"1px solid rgba(0,229,255,0.36)",background:"rgba(23,27,32,0.62)",backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',overflow:"hidden",boxShadow:"inset 0 1px 0 rgba(248,245,240,0.06), 0 14px 44px rgba(0,0,0,0.42), 0 0 52px rgba(201,160,76,0.08)",transition:"all 0.38s cubic-bezier(0.25,0.46,0.45,0.94)",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`}}>
       <div onClick={()=>onTap?onTap(phase):setOpen(o=>!o)} style={{padding:"14px 16px",cursor:"pointer",minHeight:62,borderLeft:`3px solid ${phase.color}66`}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
           <div style={{width:22,height:22,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}52`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>{phase.id}</div>
@@ -120,7 +120,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
           <span style={{flex:1,fontSize:15,fontWeight:600,color:"#F8F5F0",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",transition:"color 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>{phase.name}</span>
           {isNow&&<span style={{fontSize:9,color:"#69F0AE",background:"rgba(105,240,174,0.1)",border:"1px solid rgba(105,240,174,0.28)",borderRadius:20,padding:"2px 8px",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>ACTIVE</span>}
           {plannedOverBudget&&<span style={{fontSize:9,fontWeight:700,letterSpacing:0.5,color:"#FF6B6B",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",flexShrink:0}}>⚠ OVER</span>}
-          <span style={{fontSize:15,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",flexShrink:0}}>{fmt(phase.totalBudget)}</span>
+          <span style={{fontSize:15,fontWeight:600,color:"rgba(201,160,76,0.92)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",flexShrink:0}}>{fmt(phase.totalBudget)}</span>
           <span style={{fontSize:14,color:"rgba(255,255,255,0.30)",flexShrink:0}}>›</span>
         </div>
         {phase.note&&<div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:400,fontStyle:"italic",color:"rgba(255,245,220,0.93)",lineHeight:1.68,paddingLeft:28,paddingRight:8,marginBottom:10,marginTop:4,letterSpacing:"0.02em",textShadow:"0 1px 16px rgba(0,0,0,0.5),0 0 24px rgba(255,217,61,0.06)"}}>{phase.note}</div>}

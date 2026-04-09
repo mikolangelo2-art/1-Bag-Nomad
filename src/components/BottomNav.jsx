@@ -11,7 +11,7 @@ function BottomNav({activeTab,onTab}) {
       {NAV.map(n=>{
         const active=activeTab===n.id;
         const isPack=n.id==="pack";
-        const pipColor=isPack?"#FF9F43":"#FFD93D";
+        const pipColor=isPack?"#FF9F43":"#c9a04c";
         const borderColor=n.id==="next"?"rgba(0,229,255,0.90)":n.id==="pack"?"rgba(255,159,67,0.90)":"rgba(255,255,255,0.60)";
         const activeGlow=n.id==="next"
           ?'0 -3px 12px rgba(0,229,255,0.45),0 -1px 6px rgba(0,229,255,0.25)'

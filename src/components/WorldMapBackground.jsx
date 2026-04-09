@@ -128,8 +128,14 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, d
 
     return (
       <div style={{position:'fixed',top:0,left:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:0,overflow:'hidden'}}>
-        <style>{`@keyframes dashMove{to{stroke-dashoffset:-50}}.route-line{animation:dashMove 6s linear infinite}@keyframes activePulseR{0%,100%{r:2.8}50%{r:5}}.active-dot{animation:activePulseR 1.4s ease-in-out infinite}@keyframes depPulse{0%,100%{opacity:0.55}50%{opacity:0.9}}.dep-ring{animation:depPulse 2.4s ease-in-out infinite}`}</style>
+        <style>{`@keyframes dashMove{to{stroke-dashoffset:-72}}.route-line{animation:dashMove 14s linear infinite}@keyframes activePulseR{0%,100%{r:2.8}50%{r:5}}.active-dot{animation:activePulseR 1.4s ease-in-out infinite}@keyframes depPulse{0%,100%{opacity:0.55}50%{opacity:0.9}}.dep-ring{animation:depPulse 2.4s ease-in-out infinite}`}</style>
         <ComposableMap projection="geoNaturalEarth1" projectionConfig={{scale:160,center:[20,10]}} style={{width:'100%',height:'100%'}}>
+          <defs>
+            <filter id="luxRouteGlow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="1.4" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
           <Geographies geography={GEO_URL}>
             {({geographies})=>geographies.map(geo=>(
               <Geography key={geo.rsmKey} geography={geo} fill={geoFill} fillOpacity={geoFillOp} stroke={geoStroke} strokeWidth={0.4} strokeOpacity={geoStrokeOp} style={{default:{outline:'none'},hover:{outline:'none'},pressed:{outline:'none'}}}/>
@@ -138,7 +144,7 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, d
           {routeCoords.length>1&&routeCoords.map((coord,i)=>{
             if(i===routeCoords.length-1)return null;
             const isDep = depCoord && i===0;
-            return(<Line key={i} from={coord} to={routeCoords[i+1]} stroke="#FFD93D" strokeWidth={isDep?1:1.2} strokeOpacity={isDep?(isPack?0.3:0.45):(isPack?0.55:0.85)} strokeDasharray={isDep?"3,6":"4,4"} className="route-line"/>);
+            return(<Line key={i} from={coord} to={routeCoords[i+1]} stroke="#c9a04c" strokeWidth={isDep?0.95:1.15} strokeOpacity={isDep?(isPack?0.32:0.5):(isPack?0.58:0.88)} strokeDasharray={isDep?"2,7":"1.5,5.5"} strokeLinecap="round" filter="url(#luxRouteGlow)" className="route-line"/>);
           })}
           {depCoord&&(
             <Marker coordinates={depCoord}>
@@ -153,7 +159,7 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, d
             return(
               <Marker key={i} coordinates={coord}>
                 <circle r={isActive?14:6} fill={isActive?"#00E5FF":"#FF9F43"} fillOpacity={isActive?0.35:(isPack?0.18:0.30)}/>
-                <circle r="2.8" fill={isActive?"#00E5FF":"#FFD93D"} fillOpacity={isActive?1:(isPack?0.65:1)} className={isActive?"active-dot":undefined}/>
+                <circle r="2.8" fill={isActive?"#00E5FF":"#c9a04c"} fillOpacity={isActive?1:(isPack?0.65:1)} className={isActive?"active-dot":undefined}/>
               </Marker>
             );
           })}

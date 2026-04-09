@@ -5,7 +5,7 @@
 
 :root {
   /* Surfaces */
-  --lux-bg-main: #161616;
+  --lux-bg-main: #121212;
   --lux-bg-elevated: #1c1c1c;
   --lux-bg-card: #2c2c2c;
   --lux-bg-card-soft: rgba(44, 44, 44, 0.94);
@@ -18,18 +18,21 @@
   --lux-text-secondary: rgba(248, 245, 240, 0.74);
   --lux-text-muted: rgba(248, 245, 240, 0.5);
 
-  /* Accents */
-  --lux-gold: #e8b923;
+  /* Accents - warm antique gold (not bright yellow) */
+  --lux-gold: #c9a04c;
   --lux-gold-deep: #d4a017;
   --lux-terracotta: #a67b5b;
   --lux-sage: #5c6b5e;
 
-  /* Gold outer glows (target 25-35% perceived strength) */
-  --lux-glow-gold-25: rgba(232, 185, 35, 0.25);
-  --lux-glow-gold-30: rgba(232, 185, 35, 0.3);
-  --lux-glow-gold-35: rgba(232, 185, 35, 0.35);
-  --lux-shadow-gold-card: 0 0 0 1px rgba(232, 185, 35, 0.12),
-    0 12px 40px rgba(0, 0, 0, 0.45), 0 0 48px var(--lux-glow-gold-25);
+  /* RGB helpers for glows */
+  --lux-gold-rgb: 201, 160, 76;
+
+  /* Gold outer glows (25-35% opacity band) */
+  --lux-glow-gold-25: rgba(201, 160, 76, 0.25);
+  --lux-glow-gold-30: rgba(201, 160, 76, 0.3);
+  --lux-glow-gold-35: rgba(201, 160, 76, 0.35);
+  --lux-shadow-gold-card: 0 0 0 1px rgba(201, 160, 76, 0.14),
+    0 16px 48px rgba(0, 0, 0, 0.5), 0 0 56px rgba(201, 160, 76, 0.22);
 
   /* Typography */
   --lux-font-display: "Playfair Display", Georgia, "Times New Roman", serif;
@@ -42,8 +45,8 @@
   /* Body & narrative */
   --lux-text-body: 1.0625rem;
   --lux-text-body-lg: 1.125rem;
-  --lux-lh-body: 1.78;
-  --lux-lh-relaxed: 1.82;
+  --lux-lh-body: 1.8;
+  --lux-lh-relaxed: 1.85;
 
   /* UI labels & buttons */
   --lux-text-label: 0.9375rem;
@@ -60,8 +63,8 @@
   --lux-duration: 350ms;
   --lux-duration-slow: 400ms;
 
-  /* Film grain overlay (used in luxury-app.css) */
-  --lux-grain-opacity: 0.1;
+  /* Film grain (8-12% perceived) */
+  --lux-grain-opacity: 0.09;
 
   /* Bridge for legacy inline styles / older constants */
   --cream: var(--lux-text-primary);

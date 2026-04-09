@@ -130,8 +130,8 @@ Return ONLY valid JSON:
           {narrativeDone&&<div style={{display:"flex",gap:7,flexWrap:"wrap",marginTop:14,position:"relative"}}>{(vd.vibe||"").split(" · ").filter(Boolean).map((w,i)=><span key={i} className="vibe-tag">{w}</span>)}</div>}
         </div>
         {showStats&&(
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:isMobile?6:8,marginBottom:16,animation:"fadeUp 0.5s ease"}}>
-            {[{label:"COUNTRIES",value:vd.countries,color:"#FFD93D"},{label:"PHASES",value:(vd.phases||[]).filter(p=>p.type!=="Return").length,color:"#FFD93D"},{label:"NIGHTS",value:vd.totalNights,color:"#FFD93D"},{label:"BUDGET",value:fmt(vd.totalBudget||0),color:"#FFD93D"}].map(s=>(
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:isMobile?10:14,marginBottom:22,animation:"fadeUp 0.5s ease"}}>
+            {[{label:"COUNTRIES",value:vd.countries,color:"#c9a04c"},{label:"PHASES",value:(vd.phases||[]).filter(p=>p.type!=="Return").length,color:"#c9a04c"},{label:"NIGHTS",value:vd.totalNights,color:"#c9a04c"},{label:"BUDGET",value:fmt(vd.totalBudget||0),color:"#c9a04c"}].map(s=>(
               <div key={s.label} className="stat-card" style={{overflow:"hidden"}}><div style={{fontSize:isMobile?9:11,color:"rgba(255,255,255,0.45)",letterSpacing:isMobile?1:1.5,marginBottom:4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>{s.label}</div><div style={{fontSize:isMobile?16:22,fontWeight:700,color:s.color,whiteSpace:"nowrap"}}>{s.value}</div></div>
             ))}
           </div>
@@ -140,7 +140,7 @@ Return ONLY valid JSON:
         {showPhases&&(
           <div style={{animation:"fadeUp 0.5s ease"}}>
             <div style={{fontSize:15,color:"rgba(255,159,67,0.8)",letterSpacing:4,marginBottom:12,paddingBottom:7,borderBottom:"1px solid rgba(169,70,29,0.2)"}}>YOUR EXPEDITION PHASES</div>
-            <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:20}}>
+            <div style={{display:"flex",flexDirection:"column",gap:14,marginBottom:24}}>
               {vd.phases?.map((p,i)=>{
                 const c=TC[p.type]||"#FFD93D";
                 return(<div key={i} className="phase-row" style={{borderLeftColor:c,background:`linear-gradient(90deg,${c}08,#0C1520)`,animation:`phaseIn 0.4s ease ${i*.07}s both`}}>

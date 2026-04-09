@@ -34,8 +34,8 @@ function HandoffScreen({tripData,onComplete}) {
             </div>
           </div>
           <div style={{textAlign:"center",marginBottom:isMobile?16:20}}>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?13:22,fontWeight:900,letterSpacing:3,textShadow:"0 0 30px rgba(255,217,61,0.5)",lineHeight:1,WebkitTextFillColor:"transparent",background:"linear-gradient(90deg,#FFD93D 25%,#fff 45%,#FF9F43 55%,#FFD93D 75%)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",animation:"shimmerOnce 2s ease forwards"}}>DREAM BIG</div>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?13:22,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.7)",letterSpacing:2,lineHeight:1.2}}>travel light</div>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?22:"clamp(2rem, 4.5vw, 3.25rem)",fontWeight:900,letterSpacing:4,textShadow:"0 0 40px rgba(201,160,76,0.45)",lineHeight:1.05,WebkitTextFillColor:"transparent",background:"linear-gradient(90deg,#c9a04c 18%,#f8f5f0 42%,#d4a017 58%,#c9a04c 82%)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",animation:"shimmerOnce 2s ease forwards"}}>DREAM BIG</div>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?15:"clamp(1.15rem, 2.2vw, 1.75rem)",fontWeight:300,fontStyle:"italic",color:"rgba(201,160,76,0.75)",letterSpacing:3,lineHeight:1.25,marginTop:6}}>travel light</div>
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:6,justifyContent:"center",maxWidth:isMobile?320:480,marginBottom:isMobile?20:28}}>
             {tripData.phases?.map((p,i)=>(
@@ -46,8 +46,8 @@ function HandoffScreen({tripData,onComplete}) {
             ))}
           </div>
           <div style={{opacity:ph>=3?1:0,transform:ph>=3?"translateY(0)":"translateY(16px)",transition:"opacity 0.7s ease,transform 0.7s ease",textAlign:"center",width:"100%"}}>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?13:32,fontWeight:300,fontStyle:"italic",color:"#FFD93D",marginBottom:6,textShadow:"0 0 40px rgba(255,217,61,0.4)"}}>{tripData.tripName}</div>
-            <div style={{width:80,height:1,background:"linear-gradient(90deg,transparent,rgba(255,217,61,0.5),transparent)",margin:"10px auto 16px"}}/>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?16:"clamp(1.35rem, 3vw, 2.25rem)",fontWeight:400,fontStyle:"italic",color:"#c9a04c",marginBottom:8,textShadow:"0 0 36px rgba(201,160,76,0.35)"}}>{tripData.tripName}</div>
+            <div style={{width:100,height:1,background:"linear-gradient(90deg,transparent,rgba(201,160,76,0.45),transparent)",margin:"12px auto 20px"}}/>
             <div style={{display:"flex",justifyContent:"center",gap:isMobile?16:28,marginBottom:isMobile?28:36,flexWrap:"wrap"}}>
               {[{value:totalNights,label:"NIGHTS"},{value:"$"+Math.round(totalBudget/1000)+"k",label:"BUDGET"},{value:countries,label:"COUNTRIES"}].map((s,i)=>(
                 <div key={i} style={{textAlign:"center"}}>
