@@ -8,18 +8,12 @@ import { BG_PAGE } from '../constants/colors';
 import SegmentRow from './SegmentRow';
 import SegmentWorkspace from './SegmentWorkspace';
 import WorldMapBackground from './WorldMapBackground';
+import HelpTip from './HelpTip';
 
 function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsLoading,homeCity="",segPhases=[],warningFlags=[],onDismissWarning,allPhases=[],onAmbientSegmentChange}) {
   const isMobile=useMobile();
   const [activeSegment,setActiveSegment]=useState(null);
   useEffect(()=>{window.scrollTo(0,0);},[]);
-  const [hintVisible,setHintVisible]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;return!localStorage.getItem('1bn_phase_hint_shown');}catch(e){return false;}});
-  useEffect(()=>{
-    if(hintVisible){
-      const t=setTimeout(()=>{try{localStorage.setItem('1bn_phase_hint_shown','1');}catch(e){}setHintVisible(false);},4000);
-      return()=>clearTimeout(t);
-    }
-  },[hintVisible]);
   useEffect(()=>{onAmbientSegmentChange?.(activeSegment);},[activeSegment,onAmbientSegmentChange]);
   const allSegD=loadSeg();
   const plannedBreakdown=computePhasePlannedSpend(phase,allSegD);
@@ -35,18 +29,21 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       <WorldMapBackground phases={allPhases} activeCountry={phase.country} departureCity={homeCity||""}/>
       <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box',position:'relative',zIndex:1}}>
       {/* Header */}
-      <div style={{display:'flex',alignItems:'center',padding:'12px 0',gap:12,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(0,229,255,0.12)',position:'sticky',top:0,left:0,right:0,width:'100%',zIndex:10}}>
-        {isMobile?<button onClick={onBack} style={{background:'none',border:'none',color:'#00E5FF',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6}}>‹ <span style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,opacity:0.60}}>EXPEDITION</span></button>
-        :<div style={{display:'flex',alignItems:'center',gap:8,fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
+      <div style={{display:'flex',alignItems:'center',flexWrap:'nowrap',padding:'12px 0',gap:12,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(0,229,255,0.12)',position:'sticky',top:0,left:0,right:0,width:'100%',zIndex:10}}>
+        {isMobile?<button type="button" onClick={onBack} style={{background:'none',border:'none',color:'#00E5FF',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6,flexShrink:0}}>‹ <span style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,opacity:0.60}}>EXPEDITION</span></button>
+        :<div style={{display:'flex',alignItems:'center',gap:8,fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>
           <span onClick={onBack} style={{color:'#FF9F43',cursor:'pointer'}}>←</span>
           <span onClick={onBack} style={{color:'rgba(255,255,255,0.45)',cursor:'pointer',letterSpacing:1}}>EXPEDITION</span>
           <span style={{color:'rgba(255,255,255,0.25)'}}>›</span>
           <span style={{color:'rgba(255,255,255,0.85)',letterSpacing:1}}>{phase.name.toUpperCase()}</span>
         </div>}
-        {isMobile&&<span style={{fontSize:20}}>{phase.flag}</span>}
-        {isMobile&&<span style={{flex:1,fontSize:18,fontWeight:500,color:'#FFFFFF',fontFamily:"'Playfair Display',serif"}}>{phase.name}</span>}
-        {!isMobile&&<div style={{flex:1}}/>}
-        <span style={{fontSize:14,fontWeight:700,color:'#FFD93D',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{fmt(phase.totalBudget)}</span>
+        {isMobile&&<span style={{fontSize:20,flexShrink:0}}>{phase.flag}</span>}
+        {isMobile&&<span style={{flex:1,minWidth:0,fontSize:18,fontWeight:500,color:'#FFFFFF',fontFamily:"'Playfair Display',serif",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{phase.name}</span>}
+        {!isMobile&&<div style={{flex:1,minWidth:8}}/>}
+        <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0,marginLeft:isMobile?'auto':0}}>
+          <span style={{fontSize:14,fontWeight:700,color:'#FFD93D',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</span>
+          <HelpTip compact noLeadingMargin text="Manage your flights, stays, activities and notes for this destination" />
+        </div>
       </div>
       <div style={{padding:'8px 0 10px',borderBottom:'1px solid rgba(0,229,255,0.08)'}}>
         <div style={{height:6,background:'rgba(255,255,255,0.06)',borderRadius:3,overflow:'hidden',marginBottom:8}}>
@@ -57,8 +54,6 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
           {spendOverCap&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm over budget on the ${phase?.name||'this'} phase. Can you suggest alternatives that fit within my ${fmt(phase.totalBudget)} phase budget?`}}))} style={{background:'rgba(255,217,61,0.12)',border:'1px solid rgba(255,217,61,0.35)',borderRadius:8,color:'#FFD93D',fontSize:11,fontWeight:600,padding:'6px 12px',cursor:'pointer',letterSpacing:0.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Ask Co-Architect for alternatives</button>}
         </div>
       </div>
-      {/* First-visit breadcrumb hint */}
-      {hintVisible&&<div style={{fontSize:11,letterSpacing:'0.12em',color:'rgba(0,229,255,0.35)',padding:'6px 0 0',textAlign:'center',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>TAP ‹ TO RETURN TO EXPEDITION</div>}
       {/* Stats bar */}
       <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'10px 0',flexShrink:0}}>
         <span style={{flex:1,fontSize:13,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{fD(phase.arrival)} – {fD(phase.departure)}</span>
@@ -78,7 +73,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       ))}
       {/* Segment list */}
       <div style={{padding:'6px 0 80px'}}>
-        <div style={{padding:'8px 0 4px',fontSize:12,color:'rgba(255,255,255,0.50)',letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''} · TAP TO PLAN</div>
+        <div style={{padding:'8px 0 4px',fontSize:12,color:'rgba(255,255,255,0.50)',letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''}</div>
         {phase.segments.map((seg,i)=>(
           <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onSegmentTap={s=>setActiveSegment(s)} prevCity={prevSegmentNameForSeg(seg, segPhases)} homeCity={homeCity}/>
         ))}

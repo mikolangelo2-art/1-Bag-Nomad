@@ -88,6 +88,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
   }
 
   const heroStats=[{label:"DEPARTS IN",value:daysToDepart,unit:"DAYS",color:"#c9a04c",glow:"rgba(201,160,76,0.32)"},{label:"NIGHTS",value:totalNights,unit:"NIGHTS",color:"#F8F5F0",glow:"rgba(248,245,240,0.22)"},...(totalDives>0?[{label:"DIVES",value:totalDives,unit:"DIVES",color:"#00E5FF",glow:"rgba(0,229,255,0.4)"}]:[]),{label:"BUDGET",value:fmt(totalBudget),unit:"TOTAL",color:"#c9a04c",glow:"rgba(201,160,76,0.32)"}];
+  const mobileHeroCells=[{label:"DEPARTS IN",value:daysToDepart,sub:"DAYS",color:"#F8F5F0",kind:"stat"},{label:"NIGHTS",value:totalNights,sub:"NIGHTS",color:"#F8F5F0",kind:"stat"},...(totalDives>0?[{label:"DIVES",value:totalDives,sub:"DIVES",color:"#00E5FF",kind:"stat"}]:[]),{kind:"budget"}];
   const TABS=[{id:"next",label:"🗺️ EXPEDITION"},{id:"budget",label:"💰 BUDGET"},{id:"book",label:"🗓 TIMELINE"},{id:"intel",label:"🔭 INTEL"},{id:"blueprint",label:isMobile?"✦":"✦ BLUEPRINT"}];
   const allSegD=loadSeg();
   const totalPlannedSpend=segPhases.reduce((s,p)=>s+computePhasePlannedSpend(p,allSegD).total,0);
@@ -99,7 +100,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
       {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} homeCity={tripData.departureCity||tripData.city||""} segPhases={segPhases} warningFlags={warningFlags} onDismissWarning={dismissWarning} allPhases={tripData.phases||[]} onAmbientSegmentChange={setCaWorkspaceSegment}/>}
       {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto'}}><ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/></div>}
       {isMobile&&!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:"5px 12px",borderBottom:"1px solid rgba(0,229,255,0.08)",display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:8,background:"rgba(0,8,20,0.98)",flexShrink:0,position:"relative",zIndex:1}}>
-        <button onClick={onRevise} style={{padding:"6px 16px",borderRadius:7,border:"1.5px solid rgba(0,229,255,0.55)",background:"rgba(0,229,255,0.12)",color:"#00E5FF",fontSize:14,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,minHeight:32}}>✏️ REVISE</button>
+        <button type="button" onClick={onRevise} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 14px",borderRadius:7,border:"1.5px solid rgba(0,229,255,0.55)",background:"rgba(0,229,255,0.12)",color:"#00E5FF",fontSize:14,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,minHeight:32}}><span>✏️ REVISE</span><HelpTip noLeadingMargin text="Take your expedition back to the Co-Architect — tweak destinations, timing, budget, anything" /></button>
         <button onClick={handleNewTripClick} style={{padding:"6px 14px",borderRadius:7,border:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(255,255,255,0.18)",background:confirmNewTrip?"rgba(255,107,107,0.12)":"transparent",color:confirmNewTrip?"#FF6B6B":"rgba(255,255,255,0.45)",fontSize:13,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:confirmNewTrip?700:400,letterSpacing:1,minHeight:32}}>{confirmNewTrip?"⚠️ CONFIRM?":"+ NEW TRIP"}</button>
         {founderExpedition?.phases?.length>0&&typeof onToggleFounderExpedition==="function"&&(
           <button type="button" onClick={()=>onToggleFounderExpedition()} style={{background:founderMode?"rgba(255,217,61,0.15)":"rgba(255,255,255,0.05)",border:`1px solid ${founderMode?"rgba(255,217,61,0.4)":"rgba(255,255,255,0.10)"}`,borderRadius:12,padding:"4px 10px",fontSize:10,color:founderMode?"rgba(255,217,61,0.9)":"rgba(255,255,255,0.35)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",cursor:"pointer",minHeight:32}}>{founderMode?"★ expedition":"☆ expedition"}</button>
@@ -184,19 +185,20 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                 <div style={{fontSize:11,color:'rgba(255,255,255,0.55)',marginTop:5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{filledSegs} of {totalSegs} planning tasks complete</div>
               </div>
               <div style={{height:1,background:'rgba(0,229,255,0.12)'}}/>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',overflow:'hidden'}}>
-                {[{label:'DEPARTS IN',value:daysToDepart,sub:'DAYS',color:'#F8F5F0'},{label:'NIGHTS',value:totalNights,sub:'NIGHTS',color:'#F8F5F0'},{label:'BUDGET',value:fmt(totalBudget),sub:'TOTAL',color:'#c9a04c'}].map((s,i)=>(
-                  <div key={s.label} style={{textAlign:'center',padding:'12px 8px 14px'}}>
-                    {s.label==='BUDGET'?(
-                      <TripBudgetRing compact planned={totalPlannedSpend} cap={totalBudget} labelText="BUDGET" displayAmount={fmt(totalBudget)} helpTip="Estimated total based on your phase costs" />
+              <div style={{display:'grid',gridTemplateColumns:`repeat(${mobileHeroCells.length},1fr)`,overflow:'hidden'}}>
+                {mobileHeroCells.map((s,i)=>(
+                  <div key={s.kind==="budget"?"budget":s.label} style={{textAlign:'center',padding:'5px 4px 6px'}}>
+                    {s.kind==="budget"?(
+                      <TripBudgetRing compact planned={totalPlannedSpend} cap={totalBudget} labelText="BUDGET" displayAmount={fmt(totalBudget)} helpTip="Your estimated expedition total — tap phases to adjust individual costs" />
                     ):(
                       <>
-                        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:2,marginBottom:6}}>
-                          <div style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(248,245,240,0.52)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{s.label}</div>
-                          {s.label==='DEPARTS IN'&&<HelpTip text="Set departure and return to calculate your timeline" />}
+                        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:2,marginBottom:3}}>
+                          <div style={{fontSize:8,letterSpacing:'0.1em',color:'rgba(248,245,240,0.52)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{s.label}</div>
+                          {s.label==='NIGHTS'&&<HelpTip noLeadingMargin compact text="Total nights across all your destinations — your expedition's full footprint" />}
+                          {s.label==='DIVES'&&<HelpTip noLeadingMargin compact text="Planned dives logged across your dive destinations" />}
                         </div>
                         <div style={{fontSize:21,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.05,textShadow:s.color==='#c9a04c'?'0 0 28px rgba(201,160,76,0.25)':'none'}}>{s.value}</div>
-                        <div style={{fontSize:10,color:'rgba(248,245,240,0.58)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:5,letterSpacing:'0.06em'}}>{s.sub}</div>
+                        <div style={{fontSize:9,color:'rgba(248,245,240,0.58)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:2,letterSpacing:'0.06em'}}>{s.sub}</div>
                       </>
                     )}
                   </div>
@@ -205,20 +207,20 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
             </div>
           );
         })():(
-          <div style={{background:'rgba(23,27,32,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.62)',borderRadius:18,padding:'10px 6px 14px',overflow:'hidden',boxShadow:'0 14px 44px rgba(0,0,0,0.42), 0 0 56px rgba(201,160,76,0.08), inset 0 1px 0 rgba(0,229,255,0.12)'}}>
+          <div style={{background:'rgba(23,27,32,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.62)',borderRadius:18,padding:'5px 4px 7px',overflow:'hidden',boxShadow:'0 14px 44px rgba(0,0,0,0.42), 0 0 56px rgba(201,160,76,0.08), inset 0 1px 0 rgba(0,229,255,0.12)'}}>
             <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
               {heroStats.map((s,i)=>(
-                <div key={s.label} style={{textAlign:"center",padding:"6px 14px 4px",borderLeft:i>0?"1px solid rgba(248,245,240,0.08)":"none"}}>
+                <div key={s.label} style={{textAlign:"center",padding:"2px 10px 0",borderLeft:i>0?"1px solid rgba(248,245,240,0.08)":"none"}}>
                   {s.label==="BUDGET"?(
-                    <TripBudgetRing planned={totalPlannedSpend} cap={totalBudget} labelText={s.label} displayAmount={fmt(totalBudget)} helpTip="Estimated total based on your phase costs" />
+                    <TripBudgetRing planned={totalPlannedSpend} cap={totalBudget} labelText={s.label} displayAmount={fmt(totalBudget)} helpTip="Your estimated expedition total — tap phases to adjust individual costs" />
                   ):(
                     <>
-                      <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:2,marginBottom:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>
-                        <span style={{fontSize:11,fontWeight:700,color:"rgba(248,245,240,0.48)",letterSpacing:3.2}}>{s.label}</span>
-                        {s.label==="DEPARTS IN"&&<HelpTip text="Set departure and return to calculate your timeline" />}
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:2,marginBottom:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>
+                        <span style={{fontSize:10,fontWeight:700,color:"rgba(248,245,240,0.48)",letterSpacing:2.5}}>{s.label}</span>
+                        {s.label==="NIGHTS"&&<HelpTip noLeadingMargin text="Total nights across all your destinations — your expedition's full footprint" />}{s.label==="DIVES"&&<HelpTip noLeadingMargin text="Planned dives logged across your dive destinations" />}
                       </div>
-                      <div className="stat-val" style={{fontSize:28,fontWeight:700,lineHeight:1.05,color:s.label==="DEPARTS IN"?"#c9a04c":"#F8F5F0",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animationDelay:`${i*0.1}s`,textShadow:s.label==="DEPARTS IN"?"0 0 32px rgba(201,160,76,0.28)":"none"}}>{s.value}</div>
-                      <div style={{fontSize:12,fontWeight:600,color:"rgba(248,245,240,0.42)",letterSpacing:2.2,marginTop:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.unit}</div>
+                      <div className="stat-val" style={{fontSize:28,fontWeight:700,lineHeight:1.05,color:s.label==="DEPARTS IN"?"#c9a04c":s.label==="DIVES"?"#00E5FF":"#F8F5F0",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animationDelay:`${i*0.1}s`,textShadow:s.label==="DEPARTS IN"?"0 0 32px rgba(201,160,76,0.28)":s.label==="DIVES"?"0 0 24px rgba(0,229,255,0.22)":"none"}}>{s.value}</div>
+                      <div style={{fontSize:11,fontWeight:600,color:"rgba(248,245,240,0.42)",letterSpacing:1.8,marginTop:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.unit}</div>
                     </>
                   )}
                 </div>
@@ -252,8 +254,8 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
               </button>
             ))}
           </div>
-          <button onClick={onRevise} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"8px 12px",background:"rgba(0,229,255,0.06)",border:"none",borderLeft:"1px solid rgba(0,229,255,0.15)",cursor:"pointer",flexShrink:0}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.14)"} onMouseOut={e=>e.currentTarget.style.background="rgba(0,229,255,0.06)"}>
-            <span style={{fontSize:15,lineHeight:1}}>✏️</span><span style={{fontSize:15,letterSpacing:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"#00E5FF",whiteSpace:"nowrap",fontWeight:700}}>REVISE</span>
+          <button type="button" onClick={onRevise} style={{display:"inline-flex",flexDirection:"row",alignItems:"center",justifyContent:"center",gap:6,padding:"8px 12px",background:"rgba(0,229,255,0.06)",border:"none",borderLeft:"1px solid rgba(0,229,255,0.15)",cursor:"pointer",flexShrink:0}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.14)"} onMouseOut={e=>e.currentTarget.style.background="rgba(0,229,255,0.06)"}>
+            <span style={{fontSize:15,lineHeight:1}}>✏️</span><span style={{fontSize:15,letterSpacing:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"#00E5FF",whiteSpace:"nowrap",fontWeight:700}}>REVISE</span><HelpTip noLeadingMargin text="Take your expedition back to the Co-Architect — tweak destinations, timing, budget, anything" />
           </button>
           <button onClick={handleNewTripClick} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"8px 14px",borderLeft:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(169,70,29,0.4)",background:confirmNewTrip?"rgba(255,107,107,0.15)":"rgba(169,70,29,0.08)",border:"none",cursor:"pointer",flexShrink:0,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",minWidth:confirmNewTrip?72:50}} onMouseOver={e=>e.currentTarget.style.background=confirmNewTrip?"rgba(255,107,107,0.22)":"rgba(169,70,29,0.18)"} onMouseOut={e=>e.currentTarget.style.background=confirmNewTrip?"rgba(255,107,107,0.15)":"rgba(169,70,29,0.08)"}>
             <span style={{fontSize:15,color:confirmNewTrip?"#FF6B6B":"#c9a04c",lineHeight:1}}>{confirmNewTrip?"⚠️":"+"}</span>
@@ -283,7 +285,10 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
               <span style={{fontSize:11,fontWeight:700,color:"#FFD93D",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flex:1}}>✦ EXPEDITION COMPLETE · TAP TO CELEBRATE</span>
               <span style={{fontSize:12,color:"rgba(255,217,61,0.5)"}}>→</span>
             </div>}
-            <div style={{fontSize:isMobile?12:14,color:"#F8F5F0",letterSpacing:isMobile?1.5:2.8,marginBottom:8,marginTop:4,fontWeight:500,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:isMobile?"normal":"nowrap"}}>YOUR EXPEDITION · {destFlatPhases.length} {destFlatPhases.length===1?"DESTINATION":"DESTINATIONS"}</div>
+            <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:6,marginBottom:8,marginTop:4}}>
+              <span style={{fontSize:isMobile?12:14,color:"#F8F5F0",letterSpacing:isMobile?1.5:2.8,fontWeight:500,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:isMobile?"normal":"nowrap"}}>YOUR EXPEDITION · {destFlatPhases.length} {destFlatPhases.length===1?"DESTINATION":"DESTINATIONS"}</span>
+              <HelpTip noLeadingMargin compact text="Tap any destination to plan your transport, stays, activities, and budget for that stop" />
+            </div>
             {isMobile&&(
               <div style={{borderRadius:11,overflow:"hidden",border:"1px solid rgba(255,159,67,0.22)",background:"rgba(169,70,29,0.06)",marginBottom:2}}>
                 <button onClick={()=>setBlueprintOpen(o=>!o)} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",background:"none",border:"none",cursor:"pointer",gap:8}}>

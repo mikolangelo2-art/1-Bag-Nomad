@@ -554,7 +554,7 @@ Return ONLY a JSON array:
       {!isFullscreen&&<div style={{background:'rgba(10,7,5,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)'}}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,padding:'10px 12px 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
           <span style={{fontSize:10,letterSpacing:2,fontWeight:700,color:'rgba(255,159,67,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>WEIGHT & VOLUME</span>
-          <HelpTip text="Your total packed weight across all bags" />
+          <HelpTip noLeadingMargin text="Track your packed weight and volume — stay carry-on legal so you never have to check a bag" />
         </div>
         <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',position:'relative',boxShadow:'inset 0 1px 0 rgba(255,159,67,0.40),inset 1px 0 0 rgba(255,159,67,0.12),inset -1px 0 0 rgba(255,159,67,0.12),inset 0 -1px 0 rgba(255,159,67,0.06)'}}>
           {/* LBS/KG toggle pill above weight ring */}
@@ -563,7 +563,12 @@ Return ONLY a JSON array:
               {["lbs","kg"].map(u=><div key={u} style={{padding:'3px 10px',fontSize:10,fontWeight:700,background:unit===u?'rgba(0,229,255,0.18)':'transparent',color:unit===u?'#00E5FF':'rgba(0,229,255,0.35)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,borderLeft:u==="kg"?'1px solid rgba(77,159,255,0.2)':'none'}}>{u.toUpperCase()}</div>)}
             </div>
           </div>
-          <CircularRing value={parseFloat((bpW*wM).toFixed(1))} max={wLim} label="MAIN BAG" sublabel="carry-on limit" color="#00E5FF" unit={unit}/>
+          <div style={{position:'relative',flex:1,minHeight:0}}>
+            <div style={{position:'absolute',top:8,right:10,zIndex:2,pointerEvents:'auto'}}>
+              <HelpTip compact noLeadingMargin text="Your primary bag target — 15 lbs keeps you carry-on compliant on most airlines worldwide" />
+            </div>
+            <CircularRing value={parseFloat((bpW*wM).toFixed(1))} max={wLim} label="MAIN BAG" sublabel="carry-on limit" color="#00E5FF" unit={unit}/>
+          </div>
           <div style={{width:'1px',background:'rgba(255,255,255,0.06)',flexShrink:0}}/>
           <CircularRing value={parseFloat(bpV.toFixed(1))} max={VL} label="MAIN BAG" sublabel="volume limit" color="#FF9F43" unit="L"/>
         </div>
@@ -571,7 +576,12 @@ Return ONLY a JSON array:
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%",padding:'10px 12px'}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#00E5FF"},{label:"GEAR READY",value:gearPct+"%",color:"#FF9F43"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#c9a04c"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} className={s.label==="GEAR READY"&&gearPct>=100?"pack-gear-ready-seal--full":undefined} style={{background:"rgba(0,0,0,0.25)",border:`1.5px solid ${s.color}55`,borderTop:`1.5px solid ${s.color}99`,borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:`0 0 12px ${s.color}30, inset 0 1px 0 ${s.color}55`}}>
-              <div style={{fontSize:9,fontWeight:700,color:"rgba(255,255,255,0.55)",letterSpacing:'0.06em',marginBottom:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.2}}>{s.label}</div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:3,marginBottom:2,flexWrap:"wrap",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.2}}>
+                <span style={{fontSize:9,fontWeight:700,color:"rgba(255,255,255,0.55)",letterSpacing:'0.06em'}}>{s.label}</span>
+                {s.label==="PERSONAL BAG"&&<HelpTip compact noLeadingMargin text="Your personal item — the under-seat bag that travels separately from your main carry-on" />}
+                {s.label==="GEAR READY"&&<HelpTip compact noLeadingMargin text="How much of your kit you already own — everything else becomes your pre-departure shopping list" />}
+                {s.label==="STILL NEED"&&<HelpTip compact noLeadingMargin text="Estimated spend to complete your pack — built from your gear list and what's still unpurchased" />}
+              </div>
               <div style={{fontSize:isMobile?13:18,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.value}</div>
             </div>
           ))}
@@ -602,7 +612,10 @@ Return ONLY a JSON array:
         {[{id:"pack",label:isMobile?"PACK":"PACK LIST",emoji:"🎒"},{id:"tailor",label:"TAILOR",emoji:"✦"},{id:"weight",label:isMobile?"WEIGHT":"BREAKDOWN",emoji:"⚖️"}].map(t=>(
           <button key={t.id} onClick={()=>setPackTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",position:"relative"}}>
             {t.emoji&&<span style={{fontSize:isMobile?12:15,lineHeight:1}}>{t.emoji}</span>}
-            <span style={{fontSize:isMobile?9:13,letterSpacing:isMobile?1:1,fontWeight:700,whiteSpace:"nowrap"}}>{t.label}</span>
+            <span style={{fontSize:isMobile?9:13,letterSpacing:isMobile?1:1,fontWeight:700,whiteSpace:"nowrap",display:"inline-flex",alignItems:"center",justifyContent:"center",gap:3}}>
+              {t.label}
+              {t.id==="tailor"&&<HelpTip compact noLeadingMargin text="Tell your Co-Architect about your trip and get a personalized gear list built around your exact destinations and activities" />}
+            </span>
             {t.id==="tailor"&&suggestions.length>0&&<div style={{position:"absolute",top:6,right:"20%",width:7,height:7,borderRadius:"50%",background:"#4D9FFF",boxShadow:"0 0 8px #4D9FFF"}}/>}
           </button>
         ))}

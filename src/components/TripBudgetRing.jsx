@@ -37,8 +37,8 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        padding: compact ? "4px 2px 2px" : "6px 8px 4px",
-        minHeight: compact ? 0 : 132,
+        padding: compact ? "4px 2px 2px" : "2px 6px 0",
+        minHeight: compact ? 0 : 96,
       }}
       role="img"
       aria-label={
@@ -53,22 +53,22 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
           alignItems: "center",
           justifyContent: "center",
           gap: 2,
-          marginBottom: compact ? 4 : 6,
+          marginBottom: compact ? 4 : 3,
           fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
           whiteSpace: "nowrap",
         }}
       >
         <span
           style={{
-            fontSize: compact ? 8 : 11,
+            fontSize: compact ? 8 : 10,
             fontWeight: 700,
             color: "rgba(248,245,240,0.48)",
-            letterSpacing: compact ? 2 : 3.2,
+            letterSpacing: compact ? 2 : 2.6,
           }}
         >
           {labelText}
         </span>
-        {helpTip ? <HelpTip text={helpTip} /> : null}
+        {helpTip ? <HelpTip noLeadingMargin text={helpTip} /> : null}
       </div>
       <div style={{ position: "relative", width: svgSize, height: svgSize, flexShrink: 0 }}>
         <svg width={svgSize} height={svgSize} viewBox={`0 0 ${svgSize} ${svgSize}`} aria-hidden>
@@ -129,7 +129,7 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
             lineHeight: 1.05,
             color: "#c9a04c",
             fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-            marginTop: compact ? 2 : 4,
+            marginTop: compact ? 2 : 2,
             textShadow: "0 0 28px rgba(201,160,76,0.28)",
           }}
         >
@@ -137,7 +137,7 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
         </div>
       ) : null}
       {!compact ? (
-        <div style={{ fontSize: 12, fontWeight: 600, color: "rgba(248,245,240,0.42)", letterSpacing: 2.2, marginTop: displayAmount ? 6 : 8, fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(248,245,240,0.42)", letterSpacing: 1.8, marginTop: displayAmount ? 3 : 5, fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>
           TOTAL
         </div>
       ) : (

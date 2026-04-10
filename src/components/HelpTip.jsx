@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useMobile } from "../hooks/useMobile";
 
 /** Small "?" help control: hover on desktop, tap to pin on mobile. */
-export default function HelpTip({ text }) {
+export default function HelpTip({ text, noLeadingMargin = false, compact = false }) {
   const isMobile = useMobile();
   const [hover, setHover] = useState(false);
   const [pinned, setPinned] = useState(false);
@@ -22,8 +22,10 @@ export default function HelpTip({ text }) {
     ? { top: "100%", left: 0, marginTop: 8, transform: "none" }
     : { bottom: 22, left: "50%", transform: "translateX(-50%)" };
 
+  const dim = compact ? 12 : 14;
+  const fs = compact ? 8 : 9;
   return (
-    <span ref={rootRef} style={{ position: "relative", display: "inline-flex", alignItems: "center", marginLeft: 5, verticalAlign: "middle" }}>
+    <span ref={rootRef} style={{ position: "relative", display: "inline-flex", alignItems: "center", marginLeft: noLeadingMargin ? 0 : 5, verticalAlign: "middle" }}>
       <button
         type="button"
         aria-label="Help"
@@ -35,14 +37,14 @@ export default function HelpTip({ text }) {
           if (isMobile) setPinned((p) => !p);
         }}
         style={{
-          width: 14,
-          height: 14,
+          width: dim,
+          height: dim,
           borderRadius: "50%",
           border: `1px solid ${show ? "rgba(245,158,11,0.9)" : "rgba(245,158,11,0.4)"}`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 9,
+          fontSize: fs,
           color: show ? "rgba(245,158,11,0.9)" : "rgba(245,158,11,0.5)",
           cursor: "default",
           fontFamily: "'Space Mono',monospace",
@@ -68,10 +70,10 @@ export default function HelpTip({ text }) {
             fontSize: 11,
             color: "rgba(255,255,255,0.75)",
             whiteSpace: "normal",
-            maxWidth: "min(280px, calc(100vw - 32px))",
+            maxWidth: "min(300px, calc(100vw - 32px))",
             width: "max-content",
             zIndex: 999,
-            lineHeight: 1.45,
+            lineHeight: 1.6,
             fontFamily: "'Space Mono',monospace",
             boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
             animation: "fadeIn 0.15s ease",

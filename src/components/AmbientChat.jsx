@@ -3,6 +3,7 @@ import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { BG_PAGE } from '../constants/colors';
 import SharegoodLogo from './SharegoodLogo';
+import HelpTip from './HelpTip';
 
 function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab}) {
   const isMobile=useMobile();
@@ -88,7 +89,7 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
       <div onClick={()=>setOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.4)",zIndex:1000}}/>
       <div data-ca-drawer style={{position:"fixed",bottom:0,left:0,right:0,height:"65vh",background:BG_PAGE,borderTop:"1px solid rgba(201,160,76,0.3)",borderRadius:"20px 20px 0 0",zIndex:1001,display:"flex",flexDirection:"column",animation:"drawerSlideUp 400ms cubic-bezier(0.25,0.46,0.45,0.94)",boxShadow:"0 -14px 52px rgba(0,0,0,0.48), 0 0 64px rgba(201,160,76,0.1)"}}>
         <div style={{padding:"16px 20px 12px",borderBottom:"1px solid rgba(255,255,255,0.08)",display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexShrink:0}}>
-          <div><div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,159,67,0.85)",letterSpacing:3}}>✦ CO-ARCHITECT</div>{subtitle&&<div style={{fontSize:11,color:"rgba(255,255,255,0.3)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,marginTop:3}}>{subtitle}</div>}</div>
+          <div><div style={{display:'flex',alignItems:'center',gap:6}}><span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,159,67,0.85)",letterSpacing:3}}>✦ CO-ARCHITECT</span><HelpTip compact noLeadingMargin text="This is where the real magic happens — dial in your destinations, refine your budget, adjust your timing, swap stays. Your Co-Architect knows your whole trip and is ready to shape it around you" /></div>{subtitle&&<div style={{fontSize:11,color:"rgba(255,255,255,0.3)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,marginTop:3}}>{subtitle}</div>}</div>
           <button onClick={()=>setOpen(false)} style={{color:"rgba(255,255,255,0.4)",background:"none",border:"none",fontSize:20,cursor:"pointer",minWidth:44,minHeight:44,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
         </div>
         <div style={{flex:1,overflowY:"auto",padding:"16px 20px",display:"flex",flexDirection:"column",gap:12,minHeight:0,background:"rgba(255,255,255,0.06)"}}>

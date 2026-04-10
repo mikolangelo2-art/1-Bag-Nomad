@@ -13,6 +13,7 @@ import { StaySuggestionExperienceCard } from './StaySuggestionExperienceCard';
 import { ActivitySuggestionExperienceCard } from './ActivitySuggestionExperienceCard';
 import { useDestinationPhoto } from '../hooks/useDestinationPhoto';
 import { BG_PAGE } from '../constants/colors';
+import HelpTip from './HelpTip';
 
 function parseFoodRecLine(s) {
   const t = sanitizeAiDisplayText(String(s || "").trim());
@@ -294,6 +295,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         </div>}
         {/* TRANSPORT */}
         {tab==="transport"&&<div style={{padding:0}}>
+          <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
+            <HelpTip compact noLeadingMargin text="Plan your transport to this destination — use the Co-Architect's suggestion or build your own route with flights, ferries, or ground transport" />
+          </div>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
@@ -609,6 +613,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           const budgetRows=[{icon:'✈️',label:'TRANSPORT',cost:tCost,has:hideTransportSuggestion,snap:transportSnap},{icon:'🏨',label:'STAY',cost:sCost,has:hasS,snap:hasS?staySnap:''},{icon:'⚡',label:'ACTIVITIES',cost:aCost,has:det.activities.length>0,snap:activitiesSnap,snapLines:actLines},{icon:'🍜',label:'FOOD',cost:fCost,has:!isRowEmpty(db),snap:foodSnap},{icon:'💸',label:'MISC',cost:mCost,has:det.misc.length>0,snap:miscSnap}];
           return(
           <div style={{padding:0}}>
+            <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
+              <HelpTip compact noLeadingMargin text="Your phase budget at a glance — costs flow in automatically as you plan transport, stays, and activities" />
+            </div>
             <div style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12,textAlign:'left',lineHeight:1.4}}>PHASE BUDGET</div>
             <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4,textAlign:'left'}}>{segment.name}</div>
             <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:16,textAlign:'left'}}>{segment.nights} Nights · Budget: {fmt(budget)}</div>
@@ -649,6 +656,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>);})()}
         {/* DOCS & VISA */}
         {tab==="docs"&&<div style={{padding:0}}>
+          <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
+            <HelpTip compact noLeadingMargin text="Generate visa requirements, travel advisories, and document checklists tailored to this destination" />
+          </div>
           <div style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12}}>DOCS & VISA</div>
           <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{segment.name}, {segment.country}</div>
           <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:16}}>{segment.nights} Nights</div>
