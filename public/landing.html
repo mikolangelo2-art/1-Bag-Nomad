@@ -59,12 +59,11 @@
       backface-visibility:hidden;
     }
     .hero-copy{max-width:540px;margin:0 auto;padding:clamp(22px,4vw,34px) clamp(22px,5vw,40px)}
-    .hero-headline{font-size:42px;letter-spacing:2px;margin-bottom:8px;line-height:1.2;position:relative;z-index:1}
+    .hero-headline{font-size:42px;letter-spacing:2px;margin-bottom:clamp(20px,4vw,32px);line-height:1.2;position:relative;z-index:1}
     .hero-headline .bold{font-weight:900;color:#FFD93D}
     .hero-headline .light{font-weight:100;font-style:italic;color:rgba(255,255,255,0.92);font-size:38px}
     .hero-headline .sep{color:rgba(255,255,255,0.15);font-weight:100;margin:0 12px}
-    .hero-tagline{font-style:italic;font-size:24px;font-weight:300;color:rgba(255,255,255,0.75);margin-bottom:16px;position:relative;z-index:1}
-    .hero-sub{font-size:18px;font-weight:300;color:rgba(255,255,255,0.55);max-width:500px;line-height:1.7;margin:0 auto 40px;position:relative;z-index:1}
+    .hero-sub{font-family:'Fraunces',serif;font-size:clamp(17px,2.3vw,20px);font-weight:300;font-style:italic;letter-spacing:0.02em;color:rgba(255,255,255,0.62);max-width:520px;line-height:1.95;margin:clamp(8px,2vw,14px) auto clamp(32px,6vw,44px);position:relative;z-index:1}
     .hero-buttons{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;position:relative;z-index:1}
     .btn-ghost{padding:14px 28px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:transparent;color:rgba(255,255,255,0.80);font-family:'Space Mono',monospace;font-size:16px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;min-height:52px}
     .btn-ghost:hover{border-color:rgba(255,255,255,0.5);color:#FFF;background:rgba(255,255,255,0.04)}
@@ -153,8 +152,7 @@
       .hero-headline{font-size:22px;white-space:nowrap}
       .hero-headline .light{font-size:20px}
       .hero-headline .sep{margin:0 8px}
-      .hero-tagline{font-size:20px}
-      .hero-sub{font-size:16px}
+      .hero-sub{font-size:clamp(15px,4vw,17px);line-height:1.9;margin-bottom:clamp(28px,7vw,40px)}
       .hero-buttons{flex-direction:column;width:100%;max-width:320px}
       .hero-buttons button,.hero-buttons a{width:100%;text-align:center}
       .feeling-line{font-size:20px}
@@ -190,7 +188,6 @@
   <div class="hero-headline">
     <span class="bold">DREAM BIG</span><span class="sep">|</span><span class="light">travel light</span>
   </div>
-  <p class="hero-tagline">Stop searching. Start dreaming.</p>
   <p class="hero-sub">1 Bag Nomad builds your expedition around what you want to feel — not just where you want to go.</p>
   <div class="hero-buttons">
     <button class="btn-ghost" onclick="document.querySelector('.demo-section').scrollIntoView({behavior:'smooth'})">&#9654; WATCH THE DEMO</button>
