@@ -133,7 +133,9 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 @keyframes caFabPulse{0%,100%{box-shadow:0 0 12px rgba(255,217,61,0.25)}50%{box-shadow:0 0 24px rgba(255,217,61,0.45)}}
 @keyframes welcomeLogoGlow{0%,100%{box-shadow:0 0 0 2px rgba(201,160,76,0.4),0 0 32px rgba(201,160,76,0.3),0 0 64px rgba(169,70,29,0.14),inset 0 0 22px rgba(255,255,255,0.05);filter:drop-shadow(0 0 20px rgba(201,160,76,0.38))}50%{box-shadow:0 0 0 2px rgba(255,217,61,0.55),0 0 46px rgba(201,160,76,0.42),0 0 84px rgba(169,70,29,0.2),inset 0 0 28px rgba(255,255,255,0.08);filter:drop-shadow(0 0 30px rgba(255,200,100,0.48))}}
 @keyframes welcomeCtaGlow{0%,100%{box-shadow:0 0 28px rgba(169,70,29,0.42),0 0 56px rgba(201,160,76,0.2),0 0 0 1px rgba(255,200,120,0.45),inset 0 1px 0 rgba(255,255,255,0.15)}50%{box-shadow:0 0 40px rgba(201,160,76,0.48),0 0 78px rgba(255,159,67,0.24),0 0 0 1px rgba(255,217,61,0.55),inset 0 1px 0 rgba(255,255,255,0.2)}}
-.welcome-beta-logo{width:118px;height:118px;border-radius:50%;object-fit:contain;box-sizing:border-box;border:2px solid rgba(201,160,76,0.48);margin-bottom:10px;animation:welcomeLogoGlow 3s ease-in-out infinite}
+.welcome-beta-logo{width:118px;height:118px;border-radius:50%;object-fit:contain;box-sizing:border-box;border:2px solid rgba(201,160,76,0.48);margin-bottom:8px;animation:welcomeLogoGlow 3s ease-in-out infinite}
+.welcome-beta-wordmark{margin:0 0 6px;font-family:'Playfair Display',Georgia,serif;font-size:clamp(17px,3.4vw,22px);font-weight:500;letter-spacing:0.14em;color:rgba(201,160,76,0.9);text-rendering:optimizeLegibility}
+@media (min-width:769px){.welcome-beta-logo{width:136px;height:136px;margin-bottom:10px}}
 .welcome-beta-cta{transition:transform 0.2s ease,filter 0.2s ease!important;animation:welcomeCtaGlow 2.8s ease-in-out infinite}
 .welcome-beta-cta:hover{transform:scale(1.03);filter:brightness(1.05)}
 @media (prefers-reduced-motion:reduce){.welcome-beta-logo,.welcome-beta-cta{animation:none!important}.welcome-beta-logo{box-shadow:0 0 0 2px rgba(201,160,76,0.4),0 0 36px rgba(201,160,76,0.32);filter:drop-shadow(0 0 20px rgba(201,160,76,0.38))}.welcome-beta-cta{box-shadow:0 0 28px rgba(169,70,29,0.42),0 0 56px rgba(201,160,76,0.2),0 0 0 1px rgba(255,200,120,0.45),inset 0 1px 0 rgba(255,255,255,0.15)!important}}
@@ -337,12 +339,13 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
     >
       <img
         src="/1bn-logo.png"
-        alt="1 Bag Nomad"
+        alt=""
         className="welcome-beta-logo"
         onError={(e) => {
           e.target.style.display = "none";
         }}
       />
+      <p className="welcome-beta-wordmark">1 Bag Nomad</p>
       <div>
         <div
           style={{
