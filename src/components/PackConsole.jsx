@@ -494,6 +494,8 @@ Return ONLY a JSON array:
   // shared props for PackItemRow
   const rowProps={isMobile,toggleOwned,updateItem,removeItem,wM,unit,BAGS,BAG_C};
   const selectCategory=(cat)=>{setActiveCategory(cat);setPackView("category");};
+  const packMobileScrollBottom=isMobile?"calc(112px + env(safe-area-inset-bottom))":"32px";
+  const packMobileNavSpacer=isMobile?"calc(88px + env(safe-area-inset-bottom))":"0px";
 
   return(
     <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",background:BG_PACK_GRADIENT,minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
@@ -609,11 +611,11 @@ Return ONLY a JSON array:
       {packTab==="pack"&&packView==="category"&&activeCategory&&(
         <>
           <CategoryDetailPage cat={activeCategory} onBack={()=>{setPackView('dashboard');setActiveCategory(null);}} catItems={items.filter(i=>i.cat===activeCategory.id)} isMobile={isMobile} rowProps={rowProps} addItemToCat={addItemToCat}/>
-          {isMobile&&<div style={{height:"calc(64px + env(safe-area-inset-bottom))"}}/>}
+          {isMobile&&<div style={{height:packMobileNavSpacer}}/>}
         </>
       )}
       {packTab==="pack"&&packView==="dashboard"&&(
-        <div style={{overflowY:"auto",flex:1,padding:isMobile?"12px 12px 32px":"12px 16px 32px",boxSizing:"border-box"}}>
+        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 16px 32px",boxSizing:"border-box"}}>
           {filterCat==="needtobuy"?(()=>{
             const unowned=[...items].filter(i=>!i.owned).sort((a,b)=>(parseFloat(b.cost)||0)-(parseFloat(a.cost)||0));
             const total=unowned.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
@@ -684,7 +686,7 @@ Return ONLY a JSON array:
         </div>
       )}
       {packTab==="tailor"&&(
-        <div style={{overflowY:"auto",flex:1,padding:isMobile?"12px 12px":"12px 16px",boxSizing:"border-box"}}>
+        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 16px",boxSizing:"border-box"}}>
           <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.15),rgba(255,217,61,0.05))",border:"1px solid rgba(169,70,29,0.35)",borderRadius:12,marginBottom:16,overflow:"hidden"}}>
             <button onClick={()=>{const next=!packBriefCollapsed;setPackBriefCollapsed(next);if(next)try{localStorage.setItem(briefKey,"1");}catch(e){}}} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"none",border:"none",cursor:"pointer"}}>
               <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#FF9F43",letterSpacing:2,fontWeight:700}}>✦ CO-ARCHITECT PACK BRIEF</div>
@@ -776,7 +778,7 @@ Return ONLY a JSON array:
         </div>
       )}
       {packTab==="weight"&&(
-        <div style={{overflowY:"auto",flex:1,padding:isMobile?"12px 12px":"12px 16px",boxSizing:"border-box"}}>
+        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 16px",boxSizing:"border-box"}}>
           <div style={{display:"flex",justifyContent:"flex-end",marginBottom:14}}>
             <button onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:15,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:6,padding:"7px 16px",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:700}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
           </div>
@@ -809,7 +811,7 @@ Return ONLY a JSON array:
         </div>
       )}
       {(()=>{try{return localStorage.getItem("1bn_hide_all_tips")!=="1";}catch(e){return true;}})()&&<div style={{padding:isMobile?"12px 12px":"12px 16px",textAlign:"center"}}><button onClick={()=>{try{localStorage.setItem("1bn_hide_all_tips","1");}catch(e){}setShowCoach(false);setShowOnboard(false);setPackExplainerDismissed(true);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.50)",fontSize:11,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,padding:"6px 12px"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.65)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.50)"}>Hide all tips</button></div>}
-      {isMobile&&!isFullscreen&&packView==="dashboard"&&<div style={{height:"calc(64px + env(safe-area-inset-bottom))"}}/>}
+      {isMobile&&!isFullscreen&&packView==="dashboard"&&<div style={{height:packMobileNavSpacer}}/>}
       {isMobile&&!isFullscreen&&<BottomNav activeTab="pack" onTab={t=>{if(t==="pack")return;if(onGoToTab)onGoToTab(t);else onExpedition();}}/>}
       </div>
     </div>

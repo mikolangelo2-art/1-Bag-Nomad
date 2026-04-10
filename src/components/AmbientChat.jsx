@@ -10,9 +10,48 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
   const [msgs,setMsgs]=useState([]);
   const [input,setInput]=useState("");
   const [loading,setLoading]=useState(false);
+  const [keyboardLikely,setKeyboardLikely]=useState(false);
+  const [anyInputFocused,setAnyInputFocused]=useState(false);
   const endRef=useRef();
   useEffect(()=>{const h=(e)=>{if(e.detail?.message){setOpen(true);setInput(e.detail.message);}};window.addEventListener('openCA',h);return()=>window.removeEventListener('openCA',h);},[]);
   useEffect(()=>{if(endRef.current)endRef.current.scrollIntoView({behavior:"smooth"});},[msgs,loading]);
+
+  useEffect(()=>{
+    if(!isMobile||typeof window==="undefined"){setKeyboardLikely(false);return;}
+    const vv=window.visualViewport;
+    if(!vv){setKeyboardLikely(false);return;}
+    const update=()=>{
+      const inner=window.innerHeight;
+      if(inner<320)return;
+      setKeyboardLikely(vv.height/inner<0.74);
+    };
+    update();
+    vv.addEventListener("resize",update);
+    vv.addEventListener("scroll",update);
+    return()=>{vv.removeEventListener("resize",update);vv.removeEventListener("scroll",update);};
+  },[isMobile]);
+
+  useEffect(()=>{
+    if(!isMobile||open){
+      setAnyInputFocused(false);
+      return;
+    }
+    const onIn=(e)=>{
+      const t=e.target;
+      if(!t||typeof t.matches!=="function")return;
+      if(t.closest&&t.closest("[data-ca-drawer]"))return;
+      if(t.matches("input, textarea, [contenteditable=true]"))setAnyInputFocused(true);
+    };
+    const onOut=()=>{
+      requestAnimationFrame(()=>{
+        const a=document.activeElement;
+        if(!a||typeof a.matches!=="function"||!a.matches("input, textarea, [contenteditable=true]"))setAnyInputFocused(false);
+      });
+    };
+    document.addEventListener("focusin",onIn);
+    document.addEventListener("focusout",onOut);
+    return()=>{document.removeEventListener("focusin",onIn);document.removeEventListener("focusout",onOut);};
+  },[isMobile,open]);
   const phases=tripData?.phases||[];
   const ctx=scr==="trip-console"?`You are the Co-Architect for "${tripData?.tripName||"this expedition"}". Full expedition: ${phases.length} phases, ${tripData?.totalNights||0} nights total. Departure: ${tripData?.startDate||tripData?.departureDate||"TBD"}. Phases: ${phases.map(p=>`${p.name} (${p.arrival||""} to ${p.departure||""}, ${p.nights}n, $${p.budget||p.cost||0})`).join("; ")}. Help refine, expand, or think through their expedition. Be concise and warm.`
     :scr==="phase-detail"?`You are the Co-Architect. User is planning: Phase: ${currentPhase?.name||"unknown"}. Country: ${currentPhase?.country||""}. Dates: ${currentPhase?.arrival||""} to ${currentPhase?.departure||""}. Nights: ${currentPhase?.totalNights||currentPhase?.nights||0}. Budget: $${currentPhase?.budget||currentPhase?.totalBudget||0}. Help plan transport, stays, activities, and local tips for this specific phase. Be concise.`
@@ -28,8 +67,16 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
   const send=async()=>{if(!input.trim()||loading)return;const userMsg=input;setInput("");const newMsgs=[...msgs,{role:"user",text:userMsg}];setMsgs(newMsgs);setLoading(true);try{const history=newMsgs.map(m=>`${m.role==="user"?"User":"Co-Architect"}: ${m.text}`).join("\n");const response=await askAI(`${ctx}\n\nConversation:\n${history}\n\nCo-Architect:`,800);setMsgs([...newMsgs,{role:"ai",text:response}]);}catch(e){setMsgs([...newMsgs,{role:"ai",text:"I'm having trouble connecting. Try again in a moment."}]);}setLoading(false);};
   const parseMarkdown=(text)=>{if(!text)return null;const parts=text.split(/(\*\*[^*]+\*\*)/g);return parts.map((part,i)=>{if(part.startsWith('**')&&part.endsWith('**'))return <strong key={i} style={{fontWeight:600,color:'#c9a04c'}}>{part.slice(2,-2)}</strong>;return <span key={i}>{part}</span>;});};
   if(scr==="dream")return null;
+  const isPackMobile=isMobile&&scr==="pack-console";
+  const fabBottom=isPackMobile
+    ?"calc(88px + env(safe-area-inset-bottom, 0px))"
+    :isMobile
+      ?"calc(62px + env(safe-area-inset-bottom, 0px))"
+      :24;
+  const hideFabMobile=isMobile&&(keyboardLikely||anyInputFocused);
+  const showFab=!open&&!hideFabMobile;
   return(<>
-    {!open&&<div style={{position:"fixed",bottom:isMobile?62:24,right:isMobile?12:"calc((100vw / 1.15 - 1382px) / 4)",display:"flex",flexDirection:"column",alignItems:"center",gap:4,zIndex:1000}}>
+    {showFab&&<div style={{position:"fixed",bottom:fabBottom,right:isMobile?12:"calc((100vw / 1.15 - 1382px) / 4)",display:"flex",flexDirection:"column",alignItems:"center",gap:4,zIndex:1000}}>
       <button type="button" className="ca-architect-fab ca-architect-fab--breathe" onClick={()=>setOpen(true)} style={{width:isMobile?48:128,height:isMobile?48:128,borderRadius:"50%",background:"linear-gradient(145deg,rgba(166,123,91,0.55),rgba(18,18,18,0.92))",border:"1px solid rgba(201,160,76,0.42)",boxShadow:"0 0 24px rgba(201,160,76,0.28), 0 0 56px rgba(201,160,76,0.12), 0 12px 32px rgba(0,0,0,0.45)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,opacity:0.92}}>
         <span className="ca-architect-fab-inner--breathe" style={{ lineHeight: 0 }}>
           <SharegoodLogo size={isMobile?56:112} animationState={loading?"thinking":"idle"} opacity={1} glowColor="rgba(201,160,76,0.55)"/>
@@ -39,7 +86,7 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
     </div>}
     {open&&<>
       <div onClick={()=>setOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.4)",zIndex:1000}}/>
-      <div style={{position:"fixed",bottom:0,left:0,right:0,height:"65vh",background:BG_PAGE,borderTop:"1px solid rgba(201,160,76,0.3)",borderRadius:"20px 20px 0 0",zIndex:1001,display:"flex",flexDirection:"column",animation:"drawerSlideUp 400ms cubic-bezier(0.25,0.46,0.45,0.94)",boxShadow:"0 -14px 52px rgba(0,0,0,0.48), 0 0 64px rgba(201,160,76,0.1)"}}>
+      <div data-ca-drawer style={{position:"fixed",bottom:0,left:0,right:0,height:"65vh",background:BG_PAGE,borderTop:"1px solid rgba(201,160,76,0.3)",borderRadius:"20px 20px 0 0",zIndex:1001,display:"flex",flexDirection:"column",animation:"drawerSlideUp 400ms cubic-bezier(0.25,0.46,0.45,0.94)",boxShadow:"0 -14px 52px rgba(0,0,0,0.48), 0 0 64px rgba(201,160,76,0.1)"}}>
         <div style={{padding:"16px 20px 12px",borderBottom:"1px solid rgba(255,255,255,0.08)",display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexShrink:0}}>
           <div><div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,159,67,0.85)",letterSpacing:3}}>✦ CO-ARCHITECT</div>{subtitle&&<div style={{fontSize:11,color:"rgba(255,255,255,0.3)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,marginTop:3}}>{subtitle}</div>}</div>
           <button onClick={()=>setOpen(false)} style={{color:"rgba(255,255,255,0.4)",background:"none",border:"none",fontSize:20,cursor:"pointer",minWidth:44,minHeight:44,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>

@@ -465,6 +465,7 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
 
 // ─── Root App ─────────────────────────────────────────────────────
 export default function App() {
+  const isMobile=useMobile();
   const isNewFromLanding=(()=>{try{return new URLSearchParams(window.location.search).get("new")==="true";}catch(e){return false;}})();
   const [screen,setScreen]=useState(isNewFromLanding?"dream":"console");
   const [appData,setAppData]=useState(null);
@@ -685,42 +686,69 @@ export default function App() {
       {hasTrip && (screen === "console" || screen === "pack") && (
         <button
           type="button"
+          className="bn-feedback-pill"
           onClick={() => window.open("https://tally.so/r/QKJrdX", "_blank", "noopener,noreferrer")}
           style={{
             position: "fixed",
             bottom: "calc(env(safe-area-inset-bottom, 0px) + " + (tripData?.isDemo ? "82" : "72") + "px)",
             left: 16,
-            background: tripData?.isDemo ? "rgba(201,160,76,0.12)" : "rgba(255,255,255,0.05)",
-            border: tripData?.isDemo ? "1px solid rgba(201,160,76,0.48)" : "1px solid rgba(255,255,255,0.10)",
-            borderRadius: tripData?.isDemo ? 24 : 20,
-            padding: tripData?.isDemo ? "12px 22px" : "6px 14px",
-            fontSize: tripData?.isDemo ? 14 : 11,
-            fontWeight: tripData?.isDemo ? 600 : 400,
-            color: tripData?.isDemo ? "rgba(248,245,220,0.75)" : "rgba(255,255,255,0.35)",
+            background: !isMobile
+              ? tripData?.isDemo
+                ? "rgba(201,160,76,0.16)"
+                : "rgba(201,160,76,0.1)"
+              : tripData?.isDemo
+                ? "rgba(201,160,76,0.12)"
+                : "rgba(255,255,255,0.05)",
+            border: !isMobile
+              ? "1px solid rgba(201,160,76,0.42)"
+              : tripData?.isDemo
+                ? "1px solid rgba(201,160,76,0.48)"
+                : "1px solid rgba(255,255,255,0.10)",
+            borderRadius: tripData?.isDemo ? 24 : !isMobile ? 22 : 20,
+            padding: tripData?.isDemo ? "12px 22px" : !isMobile ? "8px 18px" : "6px 14px",
+            fontSize: tripData?.isDemo ? 14 : !isMobile ? 12 : 11,
+            fontWeight: tripData?.isDemo ? 600 : !isMobile ? 500 : 400,
+            color: !isMobile
+              ? "rgba(248,245,220,0.82)"
+              : tripData?.isDemo
+                ? "rgba(248,245,220,0.75)"
+                : "rgba(255,255,255,0.35)",
             fontFamily: "Inter, system-ui, sans-serif",
-            letterSpacing: tripData?.isDemo ? "0.1em" : "0.06em",
+            letterSpacing: tripData?.isDemo ? "0.1em" : !isMobile ? "0.08em" : "0.06em",
             cursor: "pointer",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
             zIndex: 890,
-            transition: "color 0.2s ease, border-color 0.2s ease, background 0.2s ease",
+            transition: "color 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease",
             userSelect: "none",
             textTransform: "lowercase",
-            minHeight: tripData?.isDemo ? 48 : undefined,
-            boxShadow: tripData?.isDemo ? "0 0 32px rgba(201,160,76,0.2)" : undefined,
+            minHeight: tripData?.isDemo ? 48 : !isMobile ? 36 : undefined,
+            boxShadow: !isMobile
+              ? "0 0 28px rgba(201,160,76,0.22), inset 0 1px 0 rgba(255,255,255,0.08)"
+              : tripData?.isDemo
+                ? "0 0 32px rgba(201,160,76,0.2)"
+                : undefined,
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = tripData?.isDemo ? "rgba(255,230,180,0.95)" : "rgba(255,255,255,0.65)";
+            e.currentTarget.style.color = tripData?.isDemo ? "rgba(255,230,180,0.95)" : !isMobile ? "rgba(255,245,230,0.95)" : "rgba(255,255,255,0.65)";
             if (tripData?.isDemo) {
               e.currentTarget.style.borderColor = "rgba(201,160,76,0.6)";
               e.currentTarget.style.background = "rgba(201,160,76,0.16)";
+            } else if (!isMobile) {
+              e.currentTarget.style.borderColor = "rgba(201,160,76,0.55)";
+              e.currentTarget.style.background = "rgba(201,160,76,0.14)";
+              e.currentTarget.style.boxShadow = "0 0 36px rgba(201,160,76,0.32), inset 0 1px 0 rgba(255,255,255,0.1)";
             }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = tripData?.isDemo ? "rgba(248,245,220,0.75)" : "rgba(255,255,255,0.35)";
+            e.currentTarget.style.color = tripData?.isDemo ? "rgba(248,245,220,0.75)" : !isMobile ? "rgba(248,245,220,0.82)" : "rgba(255,255,255,0.35)";
             if (tripData?.isDemo) {
               e.currentTarget.style.borderColor = "rgba(201,160,76,0.4)";
               e.currentTarget.style.background = "rgba(201,160,76,0.1)";
+            } else if (!isMobile) {
+              e.currentTarget.style.borderColor = "rgba(201,160,76,0.42)";
+              e.currentTarget.style.background = "rgba(201,160,76,0.1)";
+              e.currentTarget.style.boxShadow = "0 0 28px rgba(201,160,76,0.22), inset 0 1px 0 rgba(255,255,255,0.08)";
             }
           }}
         >
