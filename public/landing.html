@@ -69,6 +69,7 @@
     .btn-ghost:hover{border-color:rgba(255,255,255,0.5);color:#FFF;background:rgba(255,255,255,0.04)}
     .btn-amber{padding:14px 32px;border-radius:12px;border:1px solid rgba(255,159,67,0.5);background:linear-gradient(135deg,rgba(196,87,30,0.25),rgba(255,159,67,0.12));color:#FF9F43;font-family:'Space Mono',monospace;font-size:16px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;min-height:52px;display:inline-flex;align-items:center;justify-content:center}
     .btn-amber:hover{background:linear-gradient(135deg,rgba(196,87,30,0.40),rgba(255,159,67,0.20));box-shadow:0 0 24px rgba(255,159,67,0.15)}
+    .btn-amber.cta-sentence{letter-spacing:0.06em;text-transform:none}
     .scroll-indicator{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;z-index:1}
     .scroll-label{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:3px;opacity:0.55;color:white;text-align:center;display:block}
     .scroll-chevron{display:flex;justify-content:center;animation:chevronBounce 1.5s ease-in-out infinite;margin-top:6px}
@@ -117,7 +118,8 @@
     .founder-attr{font-size:16px;font-style:italic;color:rgba(255,255,255,0.55);margin-top:24px;line-height:1.6}
     .patent-badge{display:inline-block;margin-top:16px;padding:6px 16px;border-radius:20px;border:1px solid rgba(255,159,67,0.35);background:rgba(255,159,67,0.06);font-family:'Space Mono',monospace;font-size:13px;letter-spacing:1.5px;color:rgba(255,159,67,0.80)}
     .founder-text-panel{padding:clamp(26px,4vw,36px) clamp(22px,4vw,34px);height:fit-content}
-    .founder-visual-panel{padding:clamp(20px,4vw,32px);display:flex;align-items:center;justify-content:center}
+    .founder-visual-float{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:clamp(8px,2vw,16px) 0}
+    .founder-brand-line{margin:clamp(18px,3.5vw,26px) 0 0;max-width:300px;font-family:'Space Mono',monospace;font-size:clamp(9px,1.6vw,11px);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;line-height:1.55;color:rgba(255,159,67,0.72)}
     .founder-visual{display:flex;align-items:center;justify-content:center}
     .founder-logo-ring{position:relative;width:clamp(220px,42vw,280px);height:clamp(220px,42vw,280px);margin:0 auto}
     .founder-logo-ring img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:clamp(108px,22vw,140px);height:auto;opacity:0.92;animation:founderLogoPulse 3s ease-in-out infinite;-webkit-backface-visibility:hidden;backface-visibility:hidden}
@@ -144,6 +146,7 @@
     .final-headline-light{font-size:44px;font-weight:100;font-style:italic;color:rgba(255,255,255,0.55);margin-bottom:24px}
     .final-sub{font-size:20px;font-style:italic;font-weight:300;color:rgba(255,255,255,0.65);margin-bottom:40px}
     .final-btn{padding:18px 40px;border-radius:14px;border:1.5px solid rgba(255,159,67,0.55);background:linear-gradient(135deg,rgba(196,87,30,0.30),rgba(255,159,67,0.15));color:#FF9F43;font-family:'Space Mono',monospace;font-size:16px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all 0.25s;min-height:58px;margin-bottom:20px;display:inline-flex;align-items:center;justify-content:center}
+    .final-btn.cta-sentence{letter-spacing:0.06em;text-transform:none;font-weight:700}
     .final-btn:hover{background:linear-gradient(135deg,rgba(196,87,30,0.45),rgba(255,159,67,0.25));box-shadow:0 0 32px rgba(255,159,67,0.2);transform:translateY(-1px)}
     .fine-print{font-family:'Space Mono',monospace;font-size:13px;color:rgba(255,255,255,0.35);letter-spacing:1px;margin-bottom:48px}
     .footer{font-family:'Space Mono',monospace;font-size:13px;color:rgba(255,255,255,0.25);letter-spacing:1px}
@@ -193,7 +196,7 @@
   <p class="hero-sub">1 Bag Nomad builds your expedition around what you want to feel — not just where you want to go.</p>
   <div class="hero-buttons">
     <button class="btn-ghost" onclick="document.querySelector('.demo-section').scrollIntoView({behavior:'smooth'})">&#9654; WATCH THE DEMO</button>
-    <a href="https://1bagnomad.com/?new=true" target="_blank" rel="noopener" class="btn-amber cta-primary">&#10022; BUILD MY EXPEDITION &#8594;</a>
+    <a href="https://1bagnomad.com/?new=true" target="_blank" rel="noopener" class="btn-amber cta-primary cta-sentence">&#10022; Build your expedition &#8594;</a>
   </div>
   </div>
   <div class="scroll-indicator">
@@ -282,10 +285,11 @@
     </div>
     <div class="patent-badge">&#9889; Patent Pending &#183; USPTO #64/014,106</div>
   </div>
-  <div class="founder-visual founder-visual-panel glass-panel fade-in">
+  <div class="founder-visual founder-visual-float fade-in">
     <div class="founder-logo-ring">
       <img src="/1bn-logo.png" alt="SHAREGOOD" width="140" height="140" decoding="async"/>
     </div>
+    <p class="founder-brand-line">1 Bag Nomad Trip Co - Architect</p>
   </div>
 </section>
 
@@ -333,7 +337,7 @@
   <div class="final-headline-light fade-in">travel light.</div>
   <p class="fade-in" style="font-family:'Fraunces',serif;font-size:16px;font-weight:300;color:rgba(255,255,255,0.50);letter-spacing:3px;margin-bottom:8px;font-style:italic;">Dream it. Build it. Plan it. Pack it. Live it.</p>
   <p class="final-sub fade-in">Your expedition starts now.</p>
-  <a href="https://1bagnomad.com/?new=true" target="_blank" rel="noopener" class="final-btn cta-primary fade-in">&#10022; BUILD MY EXPEDITION — IT'S FREE &#8594;</a>
+  <a href="https://1bagnomad.com/?new=true" target="_blank" rel="noopener" class="final-btn cta-primary cta-sentence fade-in">&#10022; Build your expedition &#8594;</a>
   <p class="fine-print fade-in" style="margin-bottom:0">No account required &#183; Free to build &#183; Patent Pending</p>
   </div>
   <div class="footer">&#169; 2026 SHAREGOOD Co. &#183; 1 Bag Nomad &#183; Dream Big. Travel Light.</div>

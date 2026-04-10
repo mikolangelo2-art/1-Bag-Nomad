@@ -40,11 +40,11 @@ export function FinalCTASection() {
         <Reveal delay={280}>
           <a
             href={buildUrl()}
-            className="lp-btn-gold lp-final-btn"
-            style={{ padding: "18px 40px", borderRadius: 14, fontSize: 16, letterSpacing: "0.12em", minHeight: 58, marginBottom: 20 }}
+            className="lp-btn-gold lp-final-btn lp-cta-sentence"
+            style={{ padding: "18px 40px", borderRadius: 14, fontSize: 16, minHeight: 58, marginBottom: 20 }}
             onClick={() => trackCta("footer")}
           >
-            {`${STAR} BUILD MY EXPEDITION \u2014 IT'S FREE \u2192`}
+            {`${STAR} Build your expedition \u2192`}
           </a>
         </Reveal>
         <Reveal delay={340}>

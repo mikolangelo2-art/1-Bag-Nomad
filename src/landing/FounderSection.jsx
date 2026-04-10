@@ -41,12 +41,13 @@ export function FounderSection() {
         </div>
       </Reveal>
       <Reveal delay={120} variant="subtle">
-        <div className="lp-founder-visual lp-glass lp-founder-visual-glass">
+        <div className="lp-founder-visual lp-founder-visual-float">
           <div className="lp-founder-ring">
             <span className="lp-founder-ring__outer" aria-hidden />
             <span className="lp-founder-ring__inner" aria-hidden />
             <img src="/1bn-logo.png" alt="SHAREGOOD" className="lp-founder-logo-img" width={132} height={132} decoding="async" />
           </div>
+          <p className="lp-founder-brand-line">1 Bag Nomad Trip Co - Architect</p>
         </div>
       </Reveal>
     </section>

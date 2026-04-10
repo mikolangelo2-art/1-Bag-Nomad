@@ -54,8 +54,8 @@ export function HeroSection({ onWatchDemo }) {
             <button type="button" className="lp-btn-ghost" onClick={onWatchDemo}>
               {"\u25B6 WATCH THE DEMO"}
             </button>
-            <a href={buildUrl()} className="lp-btn-gold" onClick={trackHeroCta}>
-              {`${STAR} BUILD MY EXPEDITION \u2192`}
+            <a href={buildUrl()} className="lp-btn-gold lp-cta-sentence" onClick={trackHeroCta}>
+              {`${STAR} Build your expedition \u2192`}
             </a>
           </div>
         </Reveal>
