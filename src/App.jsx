@@ -5,7 +5,7 @@ import { DIVE_CYAN, SURF_GREEN, CULTURE_GOLD, EXPLORATION_ORANGE, NATURE_PURPLE,
 import { getDefaultPack, fixPackItemVolume, mapPackItemsWithVolumes } from './utils/packHelpers';
 import { fmt, daysBetween, fD, fDS } from './utils/dateHelpers';
 import { estCost } from './utils/priceHelpers';
-import { TI, SEG_KEY, loadSeg, saveSeg, COACH_KEY, loadCoach, saveCoach, ONBOARD_KEY, loadOnboard, saveOnboard, RETURN_KEY, BLANK_RETURN, loadReturn, saveReturn } from './utils/storageHelpers';
+import { TI, SEG_KEY, loadSeg, saveSeg, RETURN_KEY, BLANK_RETURN, loadReturn, saveReturn } from './utils/storageHelpers';
 import { askAI, parseJSON } from './utils/aiHelpers';
 import { GOAL_PRESETS, QUICK_ACTIONS } from './constants/dreamData';
 import { COUNTRY_FLAGS, toSegPhases } from './utils/tripHelpers';
@@ -15,8 +15,6 @@ import SharegoodLogo from './components/SharegoodLogo';
 import BottomSheet from './components/BottomSheet';
 import ConsoleHeader from './components/ConsoleHeader';
 import BottomNav from './components/BottomNav';
-import CoachOverlay from './components/CoachOverlay';
-import OnboardCard from './components/OnboardCard';
 import PackConsole from './components/PackConsole';
 import GenerationScreen from './components/GenerationScreen';
 import CityInput from './components/CityInput';
@@ -442,10 +440,6 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
 // HandoffScreen — imported from components/HandoffScreen.jsx
 
 // HomecomingScreen — imported from components/HomecomingScreen.jsx
-
-// ─── CoachOverlay ─────────────────────────────────────────────────
-// CoachOverlay — imported from components/CoachOverlay.jsx
-// OnboardCard — imported from components/OnboardCard.jsx
 
 // SegmentDetails — imported from components/SegmentDetails.jsx
 

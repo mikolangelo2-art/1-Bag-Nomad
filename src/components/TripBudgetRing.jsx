@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import HelpTip from "./HelpTip";
 
 /**
  * Planned spend vs expedition budget - gold ring, animates on load and when values change.
  */
-export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDGET", displayAmount = "", compact = false }) {
+export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDGET", displayAmount = "", compact = false, helpTip = "" }) {
   const safeCap = cap > 0 ? cap : 0;
   const pct = safeCap > 0 ? Math.min(planned / safeCap, 1) : 0;
   const r = compact ? 20 : 28;
@@ -48,16 +49,26 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
     >
       <div
         style={{
-          fontSize: compact ? 8 : 11,
-          fontWeight: 700,
-          color: "rgba(248,245,240,0.48)",
-          letterSpacing: compact ? 2 : 3.2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 2,
           marginBottom: compact ? 4 : 6,
           fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
           whiteSpace: "nowrap",
         }}
       >
-        {labelText}
+        <span
+          style={{
+            fontSize: compact ? 8 : 11,
+            fontWeight: 700,
+            color: "rgba(248,245,240,0.48)",
+            letterSpacing: compact ? 2 : 3.2,
+          }}
+        >
+          {labelText}
+        </span>
+        {helpTip ? <HelpTip text={helpTip} /> : null}
       </div>
       <div style={{ position: "relative", width: svgSize, height: svgSize, flexShrink: 0 }}>
         <svg width={svgSize} height={svgSize} viewBox={`0 0 ${svgSize} ${svgSize}`} aria-hidden>

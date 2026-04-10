@@ -4,11 +4,10 @@ import WorldMapBackground from './WorldMapBackground';
 import ConsoleHeader from './ConsoleHeader';
 import BottomNav from './BottomNav';
 import BottomSheet from './BottomSheet';
-import CoachOverlay from './CoachOverlay';
-import OnboardCard from './OnboardCard';
+import HelpTip from './HelpTip';
 import { useMobile } from '../hooks/useMobile';
 import { askAI, parseJSON } from '../utils/aiHelpers';
-import { TI, loadCoach, loadOnboard } from '../utils/storageHelpers';
+import { TI } from '../utils/storageHelpers';
 import { BAG_COLORS, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS, BG_PACK_GRADIENT } from '../constants/colors';
 import { buildTripPack, getDefaultPack, mapPackItemsWithVolumes } from '../utils/packHelpers';
 
@@ -449,9 +448,6 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const [chat,setChat]=useState([]);
   const [chatInput,setChatInput]=useState("");
   const [chatLoading,setChatLoading]=useState(false);
-  const [showCoach,setShowCoach]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadCoach().pack;});
-  const [showOnboard,setShowOnboard]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadOnboard().pack;});
-  const [packExplainerDismissed,setPackExplainerDismissed]=useState(()=>{try{return localStorage.getItem("1bn_hide_all_tips")==="1"||localStorage.getItem("1bn_pack_explainer_v1")==="1";}catch(e){return false;}});
   const briefKey="1bn_pack_brief_"+(tripData?.tripName||"default").replace(/\s+/g,"_").toLowerCase();
   const [packBriefCollapsed,setPackBriefCollapsed]=useState(()=>{try{return localStorage.getItem(briefKey)==="1";}catch(e){return false;}});
   const [showAddCats,setShowAddCats]=useState(false);
@@ -541,39 +537,6 @@ Return ONLY a JSON array:
     <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",background:BG_PACK_GRADIENT,minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
       <WorldMapBackground phases={tripData?.phases||[]} console="pack" departureCity={tripData?.departureCity||tripData?.city||""}/>
       <div style={{position:'relative',zIndex:1,display:'flex',flexDirection:'column',flex:1,minHeight:'100vh'}}>
-      {showOnboard&&<OnboardCard storageKey="pack" ctaLabel="✦ BUILD MY PACK" onDismiss={()=>setShowOnboard(false)}>
-        <div style={{textAlign:"center",marginBottom:20}}>
-          <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,letterSpacing:4,color:"rgba(255,159,67,0.75)",marginBottom:10}}>PACK CONSOLE</div>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,fontStyle:"italic",color:"#FF9F43",lineHeight:1.2,marginBottom:10}}>One bag. Everything you need.</div>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.7}}>Your gear list is built for this specific expedition. Here's how to make it yours.</div>
-        </div>
-        <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:4}}>
-          {[
-            {icon:"📦",label:"PACK LIST",color:"#FF9F43",desc:"Full gear list by category. Expand sections, check off what you own, edit weights and volumes."},
-            {icon:"✨",label:"TAILOR",color:"#69F0AE",desc:"Co-Architect suggestions tailored to your specific destinations and travel style. Add what fits, skip what doesn't."},
-            {icon:"📊",label:"BREAKDOWN",color:"#A29BFE",desc:"Visual weight and volume breakdown across every bag category."},
-            {icon:"🛒",label:"NEED TO BUY",color:"#00E5FF",desc:"Focused list of items you haven't checked off yet. Your pre-trip shopping list."},
-          ].map(t=>(
-            <div key={t.label} style={{display:"flex",gap:8,alignItems:"flex-start",padding:isMobile?"6px 8px":"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.04)",border:`1px solid ${t.color}44`}}>
-              <span style={{fontSize:isMobile?13:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
-              <div style={{minWidth:0}}>
-                <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:isMobile?11:13,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
-                <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:isMobile?11:13,color:"rgba(255,255,255,0.65)",marginLeft:5}}>{t.desc}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div style={{marginTop:14,padding:"9px 12px",borderRadius:9,background:"rgba(255,159,67,0.06)",border:"1px solid rgba(255,159,67,0.2)",display:"flex",alignItems:"center",gap:8}}>
-          <span style={{fontSize:14}}>🎒</span>
-          <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:10,color:"rgba(255,159,67,0.8)",lineHeight:1.5}}>Carry-on limit: <strong>15 lbs · 45L volume</strong> — every item counts.</span>
-        </div>
-        <div style={{marginTop:14,fontFamily:"'Playfair Display',serif",fontSize:12,fontStyle:"italic",color:"rgba(255,217,61,0.55)",textAlign:"center",lineHeight:1.6}}>Pack light. Pack right. Built for your exact route.</div>
-      </OnboardCard>}
-      {!showOnboard&&showCoach&&<CoachOverlay storageKey="pack" accentColor="#FF9F43" onDismiss={()=>setShowCoach(false)} steps={[
-        {target:"pack-stats",title:"Weight & Volume",body:"Track your bag weight and volume against carry-on limits."},
-        {target:"pack-filters",title:"Filter by Category",body:"Tap a category to focus. Use 'Need to Buy' to see what's missing."},
-        {target:"pack-first-cat",title:"Your Gear",body:"Expand a category, tap an item to edit. Check the box when you own it."}
-      ]}/>}
       {/* Header */}
       {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} onTripConsole={onExpedition} onPackConsole={()=>{}}/>}
       {/* Console switcher */}
@@ -588,7 +551,11 @@ Return ONLY a JSON array:
         </div>
       </div>}
       {/* Hero rings */}
-      {!isFullscreen&&<div data-coach="pack-stats" style={{background:'rgba(10,7,5,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)'}}>
+      {!isFullscreen&&<div style={{background:'rgba(10,7,5,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,padding:'10px 12px 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+          <span style={{fontSize:10,letterSpacing:2,fontWeight:700,color:'rgba(255,159,67,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>WEIGHT & VOLUME</span>
+          <HelpTip text="Your total packed weight across all bags" />
+        </div>
         <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',position:'relative',boxShadow:'inset 0 1px 0 rgba(255,159,67,0.40),inset 1px 0 0 rgba(255,159,67,0.12),inset -1px 0 0 rgba(255,159,67,0.12),inset 0 -1px 0 rgba(255,159,67,0.06)'}}>
           {/* LBS/KG toggle pill above weight ring */}
           <div style={{position:'absolute',top:10,left:'25%',transform:'translateX(-50%)',zIndex:1}}>
@@ -641,7 +608,7 @@ Return ONLY a JSON array:
         ))}
       </div>
       {/* Need to Buy pill (retained as a standalone shortcut) */}
-      {packTab==="pack"&&packView==="dashboard"&&<div data-coach="pack-filters" style={{display:"flex",padding:isMobile?"8px 12px":"8px 16px",borderBottom:"1px solid rgba(169,70,29,0.2)",background:"rgba(10,4,0,0.8)",flexShrink:0}}>
+      {packTab==="pack"&&packView==="dashboard"&&<div style={{display:"flex",padding:isMobile?"8px 12px":"8px 16px",borderBottom:"1px solid rgba(169,70,29,0.2)",background:"rgba(10,4,0,0.8)",flexShrink:0}}>
         <button onClick={()=>setFilterCat(f=>f==="needtobuy"?"all":"needtobuy")} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 16px",borderRadius:20,border:"1px solid "+(filterCat==="needtobuy"?"rgba(255,107,107,0.85)":"rgba(255,107,107,0.25)"),background:filterCat==="needtobuy"?"rgba(255,107,107,0.18)":"transparent",cursor:"pointer",whiteSpace:"nowrap",minHeight:34,boxShadow:filterCat==="needtobuy"?"0 0 10px rgba(255,107,107,0.30)":"none",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
           <span style={{fontSize:13}}>{filterCat==="needtobuy"?"←":"🛒"}</span>
           <span style={{fontSize:11,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.6)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:filterCat==="needtobuy"?700:400,letterSpacing:1}}>{filterCat==="needtobuy"?"ALL ITEMS":"NEED TO BUY"}</span>
@@ -696,15 +663,7 @@ Return ONLY a JSON array:
               )}
             </div>);
           })():<>
-            {pp&&!packExplainerDismissed&&<div style={{background:"rgba(0,8,20,0.6)",border:"1px solid rgba(255,159,67,0.3)",borderLeft:"3px solid #FF9F43",borderRadius:10,padding:"10px 13px",marginBottom:12,display:"flex",alignItems:"flex-start",gap:10}}>
-              <div style={{flex:1}}>
-                <div style={{fontSize:12,color:"rgba(255,159,67,0.85)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,marginBottom:4}}>✦ Your pack list was built for this trip</div>
-                <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?12:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.7)",lineHeight:1.5}}>Gear selected for {tripData.tripName||"your trip"} — {pp.tripType}, {pp.duration}, {pp.climate?.replace(/-/g," ")}. Categories not relevant to your trip are hidden.</div>
-                <div style={{fontSize:11,color:"rgba(255,255,255,0.7)",marginTop:4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Tap "＋ Add gear categories" below to unlock everything.</div>
-              </div>
-              <button onClick={()=>{setPackExplainerDismissed(true);try{localStorage.setItem("1bn_pack_explainer_v1","1");}catch(e){}}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.8)",fontSize:14,cursor:"pointer",padding:"0 4px",flexShrink:0,lineHeight:1}}>✕</button>
-            </div>}
-            {CATS.map((cat,i)=>i===0?<div key={cat.id} data-coach="pack-first-cat"><CatCard cat={cat} idx={i} isMobile={isMobile} itemsForCat={itemsForCat} wM={wM} unit={unit} onSelectCategory={selectCategory}/></div>:<CatCard key={cat.id} cat={cat} idx={i} isMobile={isMobile} itemsForCat={itemsForCat} wM={wM} unit={unit} onSelectCategory={selectCategory}/>)}
+            {CATS.map((cat,i)=><CatCard key={cat.id} cat={cat} idx={i} isMobile={isMobile} itemsForCat={itemsForCat} wM={wM} unit={unit} onSelectCategory={selectCategory}/>)}
             {pp&&<>
               <button onClick={()=>setShowAddCats(o=>!o)} style={{width:"100%",padding:"10px 14px",marginTop:4,borderRadius:10,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.02)",color:"rgba(255,255,255,0.4)",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",cursor:"pointer",letterSpacing:1,textAlign:"center",minHeight:40}}>＋ Add gear categories</button>
               {showAddCats&&<div style={{marginTop:8,padding:"10px 14px",background:"rgba(0,8,20,0.6)",border:"1px solid rgba(255,159,67,0.2)",borderRadius:10}}>
@@ -850,7 +809,6 @@ Return ONLY a JSON array:
           })}
         </div>
       )}
-      {(()=>{try{return localStorage.getItem("1bn_hide_all_tips")!=="1";}catch(e){return true;}})()&&<div style={{padding:isMobile?"12px 12px":"12px 16px",textAlign:"center"}}><button onClick={()=>{try{localStorage.setItem("1bn_hide_all_tips","1");}catch(e){}setShowCoach(false);setShowOnboard(false);setPackExplainerDismissed(true);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.50)",fontSize:11,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,padding:"6px 12px"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.65)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.50)"}>Hide all tips</button></div>}
       {isMobile&&!isFullscreen&&packView==="dashboard"&&<div style={{height:packMobileNavSpacer}}/>}
       {isMobile&&!isFullscreen&&<BottomNav activeTab="pack" onTab={t=>{if(t==="pack")return;if(onGoToTab)onGoToTab(t);else onExpedition();}}/>}
       </div>

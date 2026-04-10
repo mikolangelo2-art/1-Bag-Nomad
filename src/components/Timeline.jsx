@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { fmt, fD, daysBetween } from '../utils/dateHelpers';
+import HelpTip from './HelpTip';
 
 function Timeline({ tripData }) {
   const phases = tripData?.phases || [];
@@ -35,7 +35,10 @@ function Timeline({ tripData }) {
         {/* Departure header */}
         <div style={{position:"relative",marginBottom:24,animation:"fadeUp 0.4s ease both"}}>
           <div style={{position:"absolute",left:-22,top:4,width:8,height:8,borderRadius:"50%",background:"#FFD93D",boxShadow:"0 0 8px rgba(255,217,61,0.5)"}}/>
-          <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,217,61,0.6)",letterSpacing:3,marginBottom:4}}>DEPARTS</div>
+          <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:4}}>
+            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,217,61,0.6)",letterSpacing:3}}>DEPARTS</div>
+            <HelpTip text="Set departure and return to calculate your timeline" />
+          </div>
           <div style={{fontFamily:"'Playfair Display',serif",fontSize:28,color:"#F8F5F0",fontWeight:500}}>{startDate ? fD(startDate) : "Date TBD"}</div>
           {daysFromNow !== null && daysFromNow > 0 && <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#FFD93D",marginTop:4}}>{daysFromNow} DAYS FROM NOW</div>}
           {daysFromNow !== null && daysFromNow <= 0 && <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#69F0AE",marginTop:4}}>EXPEDITION UNDERWAY</div>}

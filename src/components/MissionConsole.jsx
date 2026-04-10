@@ -4,13 +4,12 @@ import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fmt, daysBetween } from '../utils/dateHelpers';
 import { urgencyColor } from '../constants/colors';
-import { loadSeg, saveSeg, loadCoach, loadOnboard, loadReturn, saveReturn, TI } from '../utils/storageHelpers';
+import { loadSeg, saveSeg, loadReturn, saveReturn, TI } from '../utils/storageHelpers';
 import { STATUS_CFG, STATUS_NEXT } from '../utils/tripConsoleHelpers';
 import { toSegPhases, computePhasePlannedSpend } from '../utils/tripHelpers';
 import ConsoleHeader from './ConsoleHeader';
 import BottomNav from './BottomNav';
-import CoachOverlay from './CoachOverlay';
-import OnboardCard from './OnboardCard';
+import HelpTip from './HelpTip';
 import WorldMapBackground from './WorldMapBackground';
 import SDF from './SDF';
 import PhaseCard from './PhaseCard';
@@ -30,8 +29,6 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
   const [explorerDest,setExplorerDest]=useState(null);
   const [explorerData,setExplorerData]=useState(()=>{try{const s=localStorage.getItem("1bn_intel");return s?JSON.parse(s):{}}catch(e){return{};}});
   const [loadingIntel,setLoadingIntel]=useState(false);
-  const [showCoach,setShowCoach]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadCoach().trip;});
-  const [showOnboard,setShowOnboard]=useState(()=>{try{if(localStorage.getItem("1bn_hide_all_tips")==="1")return false;}catch(e){}return!loadOnboard().trip;});
   const [phaseDetailView,setPhaseDetailView]=useState(null);
   const [caWorkspaceSegment,setCaWorkspaceSegment]=useState(null);
   useEffect(()=>{if(!phaseDetailView)setCaWorkspaceSegment(null);},[phaseDetailView]);
@@ -100,37 +97,6 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
     <div className="mc-root" style={{animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
       <WorldMapBackground phases={tripData.phases||[]} activeCountry={phaseDetailView?.country} departureCity={depInput}/>
       {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} homeCity={tripData.departureCity||tripData.city||""} segPhases={segPhases} warningFlags={warningFlags} onDismissWarning={dismissWarning} allPhases={tripData.phases||[]} onAmbientSegmentChange={setCaWorkspaceSegment}/>}
-      {showOnboard&&<OnboardCard storageKey="trip" ctaLabel="✦ ENTER MY EXPEDITION" onDismiss={()=>setShowOnboard(false)}>
-        <div style={{textAlign:"center",marginBottom:20}}>
-          <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,letterSpacing:4,color:"rgba(0,229,255,0.75)",marginBottom:10}}>TRIP CONSOLE</div>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,fontStyle:"italic",color:"#FF9F43",lineHeight:1.2,marginBottom:10}}>Your expedition is live.</div>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.7}}>Every leg of your journey — planned, budgeted, and briefed. Here's how to navigate your console.</div>
-        </div>
-        <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:4}}>
-          {[
-            {icon:"🗺️",label:"EXPEDITION",color:"#00E5FF",desc:"Country-by-country breakdown. Tap any card to expand segments, add stays, transport, and activities."},
-            {icon:"💰",label:"BUDGET",color:"#FFD93D",desc:"Real-time cost tracking across every leg. See where your money goes before you leave."},
-            {icon:"🔗",label:"BOOK",color:"#69F0AE",desc:"Direct links for flights, stays, and experiences — everything to action in one place."},
-            {icon:"🔭",label:"INTEL",color:"#A29BFE",desc:"Co-Architect briefings for every stop. Local tips, must-dos, food, street intel, and culture."},
-          ].map(t=>(
-            <div key={t.label} style={{display:"flex",gap:8,alignItems:"flex-start",padding:isMobile?"6px 8px":"8px 10px",borderRadius:9,background:"rgba(255,255,255,0.04)",border:`1px solid ${t.color}44`}}>
-              <span style={{fontSize:isMobile?13:14,flexShrink:0,marginTop:1}}>{t.icon}</span>
-              <div style={{minWidth:0}}>
-                <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:isMobile?11:13,fontWeight:700,letterSpacing:2,color:t.color}}>{t.label}</span>
-                <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:isMobile?11:13,color:"rgba(255,255,255,0.65)",marginLeft:5}}>{t.desc}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div style={{marginTop:16,fontFamily:"'Playfair Display',serif",fontSize:12,fontStyle:"italic",color:"rgba(255,217,61,0.55)",textAlign:"center",lineHeight:1.6}}>Built by your co-architect. Now it's yours to command.</div>
-      </OnboardCard>}
-      {!showOnboard&&showCoach&&<CoachOverlay storageKey="trip" accentColor="#00E5FF" onDismiss={()=>setShowCoach(false)} steps={[
-        {target:"trip-stats",title:"Your Mission Dashboard",body:"Countdown, nights, dives, and budget — your expedition at a glance."},
-        {target:"trip-phases",title:"Country Phases",body:"Each card is a country. Tap to expand and see the segments within."},
-        {target:"trip-tabs",title:"Explore Your Data",body:"Switch between Expedition, Budget, Booking links, and Intel views."},
-        {target:"trip-intel",title:"Destination Intel",body:"Co-Architect briefings — local tips, must-dos, food, culture, and street intel for every stop."},
-        {target:"trip-pack-switch",title:"Pack Console",body:"When you're ready, switch here to manage your one-bag gear list."}
-      ]}/>}
       {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto'}}><ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/></div>}
       {isMobile&&!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:"5px 12px",borderBottom:"1px solid rgba(0,229,255,0.08)",display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:8,background:"rgba(0,8,20,0.98)",flexShrink:0,position:"relative",zIndex:1}}>
         <button onClick={onRevise} style={{padding:"6px 16px",borderRadius:7,border:"1.5px solid rgba(0,229,255,0.55)",background:"rgba(0,229,255,0.12)",color:"#00E5FF",fontSize:14,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,minHeight:32}}>✏️ REVISE</button>
@@ -206,7 +172,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
           segPhases.forEach(p=>p.segments.forEach(s=>{totalSegs++;const d=allSegD[`${p.id}-${s.id}`]||{};if(d.transport?.mode||d.transport?.cost||d.stay?.name||d.stay?.cost||(d.activities?.length||0)>0)filledSegs++;}));
           const readPct=totalSegs>0?Math.round((filledSegs/totalSegs)*100):0;
           return(
-            <div data-coach="trip-stats" style={{background:'rgba(23,27,32,0.72)',backdropFilter:'blur(14px)',WebkitBackdropFilter:'blur(14px)',borderRadius:18,border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.55)',boxShadow:'inset 0 1px 0 rgba(0,229,255,0.22), 0 12px 40px rgba(0,0,0,0.45), 0 0 48px rgba(201,160,76,0.06)',overflow:'hidden'}}>
+            <div style={{background:'rgba(23,27,32,0.72)',backdropFilter:'blur(14px)',WebkitBackdropFilter:'blur(14px)',borderRadius:18,border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.55)',boxShadow:'inset 0 1px 0 rgba(0,229,255,0.22), 0 12px 40px rgba(0,0,0,0.45), 0 0 48px rgba(201,160,76,0.06)',overflow:'hidden'}}>
               <div style={{padding:'14px 14px 12px'}}>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:7}}>
                   <span style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(0,229,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>EXPEDITION READINESS</span>
@@ -222,10 +188,13 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                 {[{label:'DEPARTS IN',value:daysToDepart,sub:'DAYS',color:'#F8F5F0'},{label:'NIGHTS',value:totalNights,sub:'NIGHTS',color:'#F8F5F0'},{label:'BUDGET',value:fmt(totalBudget),sub:'TOTAL',color:'#c9a04c'}].map((s,i)=>(
                   <div key={s.label} style={{textAlign:'center',padding:'12px 8px 14px'}}>
                     {s.label==='BUDGET'?(
-                      <TripBudgetRing compact planned={totalPlannedSpend} cap={totalBudget} labelText="BUDGET" displayAmount={fmt(totalBudget)} />
+                      <TripBudgetRing compact planned={totalPlannedSpend} cap={totalBudget} labelText="BUDGET" displayAmount={fmt(totalBudget)} helpTip="Estimated total based on your phase costs" />
                     ):(
                       <>
-                        <div style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(248,245,240,0.52)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:6}}>{s.label}</div>
+                        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:2,marginBottom:6}}>
+                          <div style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(248,245,240,0.52)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{s.label}</div>
+                          {s.label==='DEPARTS IN'&&<HelpTip text="Set departure and return to calculate your timeline" />}
+                        </div>
                         <div style={{fontSize:21,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.05,textShadow:s.color==='#c9a04c'?'0 0 28px rgba(201,160,76,0.25)':'none'}}>{s.value}</div>
                         <div style={{fontSize:10,color:'rgba(248,245,240,0.58)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:5,letterSpacing:'0.06em'}}>{s.sub}</div>
                       </>
@@ -236,15 +205,18 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
             </div>
           );
         })():(
-          <div data-coach="trip-stats" style={{background:'rgba(23,27,32,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.62)',borderRadius:18,padding:'10px 6px 14px',overflow:'hidden',boxShadow:'0 14px 44px rgba(0,0,0,0.42), 0 0 56px rgba(201,160,76,0.08), inset 0 1px 0 rgba(0,229,255,0.12)'}}>
+          <div style={{background:'rgba(23,27,32,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.62)',borderRadius:18,padding:'10px 6px 14px',overflow:'hidden',boxShadow:'0 14px 44px rgba(0,0,0,0.42), 0 0 56px rgba(201,160,76,0.08), inset 0 1px 0 rgba(0,229,255,0.12)'}}>
             <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
               {heroStats.map((s,i)=>(
                 <div key={s.label} style={{textAlign:"center",padding:"6px 14px 4px",borderLeft:i>0?"1px solid rgba(248,245,240,0.08)":"none"}}>
                   {s.label==="BUDGET"?(
-                    <TripBudgetRing planned={totalPlannedSpend} cap={totalBudget} labelText={s.label} displayAmount={fmt(totalBudget)} />
+                    <TripBudgetRing planned={totalPlannedSpend} cap={totalBudget} labelText={s.label} displayAmount={fmt(totalBudget)} helpTip="Estimated total based on your phase costs" />
                   ):(
                     <>
-                      <div style={{fontSize:11,fontWeight:700,color:"rgba(248,245,240,0.48)",letterSpacing:3.2,marginBottom:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>{s.label}</div>
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:2,marginBottom:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>
+                        <span style={{fontSize:11,fontWeight:700,color:"rgba(248,245,240,0.48)",letterSpacing:3.2}}>{s.label}</span>
+                        {s.label==="DEPARTS IN"&&<HelpTip text="Set departure and return to calculate your timeline" />}
+                      </div>
                       <div className="stat-val" style={{fontSize:28,fontWeight:700,lineHeight:1.05,color:s.label==="DEPARTS IN"?"#c9a04c":"#F8F5F0",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animationDelay:`${i*0.1}s`,textShadow:s.label==="DEPARTS IN"?"0 0 32px rgba(201,160,76,0.28)":"none"}}>{s.value}</div>
                       <div style={{fontSize:12,fontWeight:600,color:"rgba(248,245,240,0.42)",letterSpacing:2.2,marginTop:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.unit}</div>
                     </>
@@ -260,7 +232,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
           <div style={{width:5,height:5,borderRadius:"50%",background:"#00E5FF",boxShadow:"0 0 6px #00E5FF",animation:"consolePulse 2.5s ease-in-out infinite"}}/>
           <span style={{fontSize:13,fontWeight:700,color:"#00E5FF",letterSpacing:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
         </div>
-        <div data-coach="trip-pack-switch" onClick={onPackConsole} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",background:"transparent",opacity:0.55}} onMouseOver={e=>{e.currentTarget.style.background="rgba(196,87,30,0.08)";e.currentTarget.style.opacity="1";}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.opacity="0.55";}}>
+        <div onClick={onPackConsole} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",background:"transparent",opacity:0.55}} onMouseOver={e=>{e.currentTarget.style.background="rgba(196,87,30,0.08)";e.currentTarget.style.opacity="1";}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.opacity="0.55";}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(196,87,30,0.4)"}}/>
           <span style={{fontSize:13,fontWeight:700,color:"rgba(255,159,67,0.65)",letterSpacing:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>PACK CONSOLE</span>
         </div>
@@ -272,9 +244,9 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
             <span style={{fontSize:15,lineHeight:1,textShadow:"0 0 10px rgba(0,229,255,0.9)"}}>{isFullscreen?"⊡":"⛶"}</span>
             <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
           </button>
-          <div data-coach="trip-tabs" style={{display:"flex",flex:1,overflowX:"auto",minWidth:0}}>
+          <div style={{display:"flex",flex:1,overflowX:"auto",minWidth:0}}>
             {TABS.map(t=>(
-              <button key={t.id} {...(t.id==="intel"?{"data-coach":"trip-intel"}:{})} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1,padding:"9px 12px",minWidth:44}}>
+              <button key={t.id} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1,padding:"9px 12px",minWidth:44}}>
                 <span style={{fontSize:15}}>{t.label.split(" ")[0]}</span>
                 <span style={{fontSize:15,letterSpacing:1.5}}>{t.label.split(" ").slice(1).join(" ")}</span>
               </button>
@@ -312,7 +284,6 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
               <span style={{fontSize:12,color:"rgba(255,217,61,0.5)"}}>→</span>
             </div>}
             <div style={{fontSize:isMobile?12:14,color:"#F8F5F0",letterSpacing:isMobile?1.5:2.8,marginBottom:8,marginTop:4,fontWeight:500,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:isMobile?"normal":"nowrap"}}>YOUR EXPEDITION · {destFlatPhases.length} {destFlatPhases.length===1?"DESTINATION":"DESTINATIONS"}</div>
-            {isMobile&&<div style={{fontSize:15,color:"rgba(248,245,240,0.42)",letterSpacing:1.5,marginBottom:6,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>TAP PHASE TO EXPAND</div>}
             {isMobile&&(
               <div style={{borderRadius:11,overflow:"hidden",border:"1px solid rgba(255,159,67,0.22)",background:"rgba(169,70,29,0.06)",marginBottom:2}}>
                 <button onClick={()=>setBlueprintOpen(o=>!o)} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",background:"none",border:"none",cursor:"pointer",gap:8}}>
@@ -340,7 +311,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
               </div>
             )}
             <div style={{display:"flex",flexDirection:"column",gap:14}}>
-            {segPhases.map((phase,i)=>{const plannedOverBudget=computePhasePlannedSpend(phase,allSegD).total>(Number(phase.totalBudget)||0);return i===0?<div key={phase.id} data-coach="trip-phases"><PhaseCard phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} allPhases={tripData.phases||[]} segPhases={segPhases} homeCity={tripData.departureCity||tripData.city||""} plannedOverBudget={plannedOverBudget}/></div>:<PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} allPhases={tripData.phases||[]} segPhases={segPhases} homeCity={tripData.departureCity||tripData.city||""} plannedOverBudget={plannedOverBudget}/>;})}
+            {segPhases.map((phase,i)=>{const plannedOverBudget=computePhasePlannedSpend(phase,allSegD).total>(Number(phase.totalBudget)||0);return <PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} allPhases={tripData.phases||[]} segPhases={segPhases} homeCity={tripData.departureCity||tripData.city||""} plannedOverBudget={plannedOverBudget}/>;})}
             {returnPhase&&<PhaseCard key="return" phase={returnPhase} intelData={explorerData} idx={segPhases.length} onTap={null} allSuggestions={null} suggestionsLoading={false}/>}
             </div>
           </div>
@@ -473,7 +444,6 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
           </div>
         )}
       </div>
-      {(()=>{try{return localStorage.getItem("1bn_hide_all_tips")!=="1";}catch(e){return true;}})()&&<div style={{padding:isMobile?"12px 12px":"12px 16px",textAlign:"center"}}><button onClick={()=>{try{localStorage.setItem("1bn_hide_all_tips","1");}catch(e){}setShowCoach(false);setShowOnboard(false);}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.50)",fontSize:11,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,padding:"6px 12px"}} onMouseOver={e=>e.currentTarget.style.color="rgba(255,255,255,0.65)"} onMouseOut={e=>e.currentTarget.style.color="rgba(255,255,255,0.50)"}>Hide all tips</button></div>}
       {isMobile&&!isFullscreen&&!phaseDetailView&&<div style={{height:"calc(64px + env(safe-area-inset-bottom))"}}/>}
       {isMobile&&!isFullscreen&&<div style={{opacity:phaseDetailView?0:1,pointerEvents:phaseDetailView?"none":"auto",transition:"opacity 0.35s cubic-bezier(0.25,0.46,0.45,0.94)"}}><BottomNav activeTab={tab} onTab={t=>{if(t==="pack")onPackConsole();else{setTab(t);if(t!=="intel")setExplorerDest(null);}}}/></div>}
     </div>
