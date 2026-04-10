@@ -30,8 +30,10 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
   if(scr==="dream")return null;
   return(<>
     {!open&&<div style={{position:"fixed",bottom:isMobile?62:24,right:isMobile?12:"calc((100vw / 1.15 - 1382px) / 4)",display:"flex",flexDirection:"column",alignItems:"center",gap:4,zIndex:1000}}>
-      <button type="button" className="ca-architect-fab" onClick={()=>setOpen(true)} style={{width:isMobile?48:128,height:isMobile?48:128,borderRadius:"50%",background:"linear-gradient(145deg,rgba(166,123,91,0.55),rgba(18,18,18,0.92))",border:"1px solid rgba(201,160,76,0.42)",boxShadow:"0 0 24px rgba(201,160,76,0.28), 0 0 56px rgba(201,160,76,0.12), 0 12px 32px rgba(0,0,0,0.45)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",animation:"caFabPulse 3s ease-in-out infinite",padding:0,opacity:0.92}}>
-        <SharegoodLogo size={isMobile?56:112} animationState={loading?"thinking":"idle"} opacity={1} glowColor="rgba(201,160,76,0.55)"/>
+      <button type="button" className="ca-architect-fab ca-architect-fab--breathe" onClick={()=>setOpen(true)} style={{width:isMobile?48:128,height:isMobile?48:128,borderRadius:"50%",background:"linear-gradient(145deg,rgba(166,123,91,0.55),rgba(18,18,18,0.92))",border:"1px solid rgba(201,160,76,0.42)",boxShadow:"0 0 24px rgba(201,160,76,0.28), 0 0 56px rgba(201,160,76,0.12), 0 12px 32px rgba(0,0,0,0.45)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,opacity:0.92}}>
+        <span className="ca-architect-fab-inner--breathe" style={{ lineHeight: 0 }}>
+          <SharegoodLogo size={isMobile?56:112} animationState={loading?"thinking":"idle"} opacity={1} glowColor="rgba(201,160,76,0.55)"/>
+        </span>
       </button>
       {!isMobile&&<span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,letterSpacing:2,color:"rgba(255,159,67,0.7)",textTransform:"uppercase",whiteSpace:"nowrap"}}>CO-ARCHITECT</span>}
     </div>}

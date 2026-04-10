@@ -17,6 +17,7 @@ import PhaseCard from './PhaseCard';
 import PhaseDetailPage from './PhaseDetailPage';
 import Timeline from './Timeline';
 import IntelMap from './IntelMap';
+import TripBudgetRing from './TripBudgetRing';
 
 function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading,onUpdateTripData,onTripAmbientContextChange,founderExpedition=null,founderMode=false,onToggleFounderExpedition,onSaveAsFounderExpedition}) {
   const isMobile=useMobile();
@@ -92,6 +93,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
   const heroStats=[{label:"DEPARTS IN",value:daysToDepart,unit:"DAYS",color:"#c9a04c",glow:"rgba(201,160,76,0.32)"},{label:"NIGHTS",value:totalNights,unit:"NIGHTS",color:"#F8F5F0",glow:"rgba(248,245,240,0.22)"},...(totalDives>0?[{label:"DIVES",value:totalDives,unit:"DIVES",color:"#00E5FF",glow:"rgba(0,229,255,0.4)"}]:[]),{label:"BUDGET",value:fmt(totalBudget),unit:"TOTAL",color:"#c9a04c",glow:"rgba(201,160,76,0.32)"}];
   const TABS=[{id:"next",label:"🗺️ EXPEDITION"},{id:"budget",label:"💰 BUDGET"},{id:"book",label:"🗓 TIMELINE"},{id:"intel",label:"🔭 INTEL"},{id:"blueprint",label:isMobile?"✦":"✦ BLUEPRINT"}];
   const allSegD=loadSeg();
+  const totalPlannedSpend=segPhases.reduce((s,p)=>s+computePhasePlannedSpend(p,allSegD).total,0);
   const {changedSegs,cancelledSegs}=(()=>{const cs=[],xs=[];segPhases.forEach(p=>p.segments.forEach(s=>{const d=allSegD[`${p.id}-${s.id}`]||{};const st=d.status||'planning';if(st==='changed')cs.push({phase:p,seg:s});if(st==='cancelled')xs.push({phase:p,seg:s});}));return{changedSegs:cs,cancelledSegs:xs};})();
 
   return(
@@ -232,9 +234,15 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
             <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
               {heroStats.map((s,i)=>(
                 <div key={s.label} style={{textAlign:"center",padding:"6px 14px 4px",borderLeft:i>0?"1px solid rgba(248,245,240,0.08)":"none"}}>
-                  <div style={{fontSize:11,fontWeight:700,color:"rgba(248,245,240,0.48)",letterSpacing:3.2,marginBottom:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>{s.label}</div>
-                  <div className="stat-val" style={{fontSize:28,fontWeight:700,lineHeight:1.05,color:s.label==="BUDGET"||s.label==="DEPARTS IN"?"#c9a04c":"#F8F5F0",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animationDelay:`${i*0.1}s`,textShadow:(s.label==="BUDGET"||s.label==="DEPARTS IN")?"0 0 32px rgba(201,160,76,0.28)":"none"}}>{s.value}</div>
-                  <div style={{fontSize:12,fontWeight:600,color:"rgba(248,245,240,0.42)",letterSpacing:2.2,marginTop:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.unit}</div>
+                  {s.label==="BUDGET"?(
+                    <TripBudgetRing planned={totalPlannedSpend} cap={totalBudget} labelText={s.label} displayAmount={fmt(totalBudget)} />
+                  ):(
+                    <>
+                      <div style={{fontSize:11,fontWeight:700,color:"rgba(248,245,240,0.48)",letterSpacing:3.2,marginBottom:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>{s.label}</div>
+                      <div className="stat-val" style={{fontSize:28,fontWeight:700,lineHeight:1.05,color:s.label==="DEPARTS IN"?"#c9a04c":"#F8F5F0",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animationDelay:`${i*0.1}s`,textShadow:s.label==="DEPARTS IN"?"0 0 32px rgba(201,160,76,0.28)":"none"}}>{s.value}</div>
+                      <div style={{fontSize:12,fontWeight:600,color:"rgba(248,245,240,0.42)",letterSpacing:2.2,marginTop:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.unit}</div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
@@ -253,12 +261,12 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
       </div>}
       {/* Tab bar */}
       {!isMobile&&(
-        <div style={{display:"flex",boxSizing:"border-box",borderTop:"1px solid rgba(0,229,255,0.14)",borderBottom:"1px solid rgba(0,229,255,0.38)",background:"rgba(0,15,35,0.95)",overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch",position:intelMapActive?"fixed":"relative",top:intelMapActive?0:"auto",left:intelMapActive?0:"auto",right:intelMapActive?0:"auto",width:"100%",zIndex:100}}>
+        <div style={{display:"flex",boxSizing:"border-box",borderTop:"1px solid rgba(0,229,255,0.14)",borderBottom:"1px solid rgba(0,229,255,0.38)",background:"rgba(0,15,35,0.95)",overflow:"hidden",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch",position:intelMapActive?"fixed":"relative",top:intelMapActive?0:"auto",left:intelMapActive?0:"auto",right:intelMapActive?0:"auto",width:"100%",zIndex:100}}>
           <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)",border:"none",borderRight:"1px solid rgba(0,229,255,0.2)",cursor:"pointer",flexShrink:0,color:"#00E5FF"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.22)"} onMouseOut={e=>e.currentTarget.style.background=isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)"}>
             <span style={{fontSize:15,lineHeight:1,textShadow:"0 0 10px rgba(0,229,255,0.9)"}}>{isFullscreen?"⊡":"⛶"}</span>
             <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
           </button>
-          <div data-coach="trip-tabs" style={{display:"flex",flex:1,overflowX:"auto"}}>
+          <div data-coach="trip-tabs" style={{display:"flex",flex:1,overflowX:"auto",minWidth:0}}>
             {TABS.map(t=>(
               <button key={t.id} {...(t.id==="intel"?{"data-coach":"trip-intel"}:{})} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1,padding:"9px 12px",minWidth:44}}>
                 <span style={{fontSize:15}}>{t.label.split(" ")[0]}</span>
@@ -335,7 +343,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
           <div>
             <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr 1fr":"1fr 1fr 1fr",gap:8,marginBottom:16}}>
               {[{label:"EXPEDITION TOTAL",value:fmt(totalBudget),color:"#FFD93D",sub:`across ${flatPhases.length} phases`},{label:"AVG / NIGHT",value:fmt(totalBudget/Math.max(totalNights,1)),color:"#A29BFE",sub:`${totalNights} nights`},{label:"AVG / PHASE",value:fmt(totalBudget/Math.max(flatPhases.length,1)),color:"#00E5FF",sub:"per destination"}].map((s,si)=>(
-                <div key={s.label} style={{background:"linear-gradient(135deg,rgba(0,8,20,0.8),rgba(0,20,40,0.6))",border:"1px solid rgba(0,229,255,0.12)",borderRadius:10,padding:isMobile?"8px 10px":"12px 14px",textAlign:"center",gridColumn:isMobile&&si===2?"1 / -1":"auto"}}>
+                <div key={s.label} className="lux-card-interactive" style={{background:"linear-gradient(135deg,rgba(0,8,20,0.8),rgba(0,20,40,0.6))",border:"1px solid rgba(0,229,255,0.12)",borderRadius:10,padding:isMobile?"8px 10px":"12px 14px",textAlign:"center",gridColumn:isMobile&&si===2?"1 / -1":"auto"}}>
                   <div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.6)",letterSpacing:isMobile?0:1,marginBottom:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600}}>{s.label}</div>
                   <div style={{fontSize:isMobile?16:22,fontWeight:900,color:s.color}}>{s.value}</div>
                   <div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.45)",marginTop:2}}>{s.sub}</div>

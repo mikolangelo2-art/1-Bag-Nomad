@@ -112,7 +112,7 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
 
   // ── Desktop: phase card (always slides to detail page when onTap provided) ──
   return(
-    <div style={{borderRadius:18,border:"1px solid rgba(0,229,255,0.18)",borderTop:"1px solid rgba(0,229,255,0.36)",background:"rgba(23,27,32,0.62)",backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',overflow:"hidden",boxShadow:"inset 0 1px 0 rgba(248,245,240,0.06), 0 14px 44px rgba(0,0,0,0.42), 0 0 52px rgba(201,160,76,0.08)",transition:"all 0.38s cubic-bezier(0.25,0.46,0.45,0.94)",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`}}>
+    <div className="lux-card-interactive" style={{borderRadius:18,border:"1px solid rgba(0,229,255,0.18)",borderTop:"1px solid rgba(0,229,255,0.36)",background:"rgba(23,27,32,0.62)",backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',overflow:"hidden",boxShadow:"inset 0 1px 0 rgba(248,245,240,0.06), 0 14px 44px rgba(0,0,0,0.42), 0 0 52px rgba(201,160,76,0.08)",transition:"all 0.38s cubic-bezier(0.25,0.46,0.45,0.94)",animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*.06}s both`}}>
       <div onClick={()=>onTap?onTap(phase):setOpen(o=>!o)} style={{padding:"14px 16px",cursor:"pointer",minHeight:62,borderLeft:`3px solid ${phase.color}66`}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
           <div style={{width:22,height:22,borderRadius:"50%",background:`${phase.color}14`,border:`1.5px solid ${phase.color}52`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>{phase.id}</div>

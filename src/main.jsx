@@ -2,6 +2,7 @@ import { StrictMode, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import "./posthogInit.js";
 import "./theme/luxury-tokens.css";
+import "./theme/luxury-animations.css";
 import "./theme/luxury-app.css";
 import "./index.css";
 import App from "./App.jsx";

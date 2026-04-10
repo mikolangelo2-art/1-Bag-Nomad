@@ -39,12 +39,12 @@ button,
 .sg-suggestion-card,
 .sg-experience-card {
   transition:
-    transform var(--lux-duration) var(--lux-ease-smooth),
-    box-shadow var(--lux-duration) var(--lux-ease-smooth),
-    border-color var(--lux-duration) var(--lux-ease-smooth),
-    background var(--lux-duration) var(--lux-ease-smooth),
-    color var(--lux-duration) var(--lux-ease-smooth),
-    filter var(--lux-duration) var(--lux-ease-smooth);
+    transform var(--lux-dur-2, var(--lux-duration)) var(--lux-ease-primary, var(--lux-ease-smooth)),
+    box-shadow var(--lux-dur-2, var(--lux-duration)) var(--lux-ease-primary, var(--lux-ease-smooth)),
+    border-color var(--lux-dur-1, var(--lux-duration)) var(--lux-ease-primary, var(--lux-ease-smooth)),
+    background var(--lux-dur-1, var(--lux-duration)) var(--lux-ease-primary, var(--lux-ease-smooth)),
+    color var(--lux-dur-1, var(--lux-duration)) var(--lux-ease-primary, var(--lux-ease-smooth)),
+    filter var(--lux-dur-1, var(--lux-duration)) var(--lux-ease-primary, var(--lux-ease-smooth));
 }
 
 button:focus-visible,
@@ -53,26 +53,38 @@ button:focus-visible,
   outline-offset: 3px;
 }
 
-/* Cards / rows: depth + warm gold halo on hover */
+/* Cards / rows: lift + warm gold glow (#c9a04c) - quiet, not snappy */
 .g-card.off:hover,
 .phase-row:hover {
-  box-shadow: var(--lux-shadow-gold-card);
-  transform: scale(1.025) translateY(-2px);
+  box-shadow:
+    0 0 0 1px rgba(201, 160, 76, 0.2),
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    0 0 56px rgba(201, 160, 76, 0.22);
+  transform: translateY(-8px);
 }
 
 .g-card.on:hover {
-  transform: scale(1.02) translateY(-2px);
+  transform: translateY(-6px) scale(1.01);
   box-shadow:
     0 0 0 1.5px rgba(201, 160, 76, 0.55),
-    0 0 40px var(--lux-glow-gold-30),
-    0 12px 36px rgba(0, 0, 0, 0.55);
+    0 0 44px rgba(201, 160, 76, 0.32),
+    0 14px 40px rgba(0, 0, 0, 0.55);
+}
+
+.sg-suggestion-card:hover,
+.sg-experience-card:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 0 0 1px rgba(201, 160, 76, 0.18),
+    0 14px 44px rgba(0, 0, 0, 0.45),
+    0 0 48px rgba(201, 160, 76, 0.18);
 }
 
 .mc-tab {
   transition:
-    color var(--lux-duration) var(--lux-ease-smooth),
-    border-color var(--lux-duration) var(--lux-ease-smooth),
-    transform var(--lux-duration) var(--lux-ease-smooth) !important;
+    color var(--lux-dur-1, var(--lux-duration)) var(--lux-ease-primary, var(--lux-ease-smooth)),
+    border-color var(--lux-dur-1, var(--lux-duration)) var(--lux-ease-primary, var(--lux-ease-smooth)),
+    transform var(--lux-dur-1, var(--lux-duration)) var(--lux-ease-primary, var(--lux-ease-smooth)) !important;
 }
 
 .mc-tab:hover:not(.active) {
@@ -91,19 +103,25 @@ button:focus-visible,
 /* Co-Architect floating orb */
 .ca-architect-fab {
   transition:
-    transform var(--lux-duration-slow) var(--lux-ease-smooth),
-    box-shadow var(--lux-duration-slow) var(--lux-ease-smooth),
-    border-color var(--lux-duration-slow) var(--lux-ease-smooth),
-    opacity var(--lux-duration) var(--lux-ease-smooth);
+    transform var(--lux-dur-2, var(--lux-duration-slow)) var(--lux-ease-primary, var(--lux-ease-smooth)),
+    box-shadow var(--lux-dur-2, var(--lux-duration-slow)) var(--lux-ease-primary, var(--lux-ease-smooth)),
+    border-color var(--lux-dur-2, var(--lux-duration-slow)) var(--lux-ease-primary, var(--lux-ease-smooth)),
+    opacity var(--lux-dur-1, var(--lux-duration)) var(--lux-ease-primary, var(--lux-ease-smooth));
 }
 
 .ca-architect-fab:hover {
-  transform: scale(1.04);
+  transform: scale(1.045);
   box-shadow:
-    0 0 28px rgba(201, 160, 76, 0.35),
-    0 0 64px rgba(201, 160, 76, 0.2),
-    0 12px 40px rgba(0, 0, 0, 0.45);
+    0 0 32px rgba(201, 160, 76, 0.42),
+    0 0 72px rgba(201, 160, 76, 0.24),
+    0 14px 42px rgba(0, 0, 0, 0.48);
   opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-architect-fab:hover {
+    transform: none;
+  }
 }
 
 .ca-architect-fab:focus-visible {

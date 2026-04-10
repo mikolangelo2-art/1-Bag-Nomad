@@ -1,0 +1,106 @@
+/**
+ * 1 Bag Nomad - luxury motion tokens + keyframes (Trip / Pack / Co-Architect).
+ * Prefer CSS over JS. Pair with prefers-reduced-motion.
+ */
+
+:root {
+  --lux-ease-primary: cubic-bezier(0.23, 1, 0.32, 1);
+  --lux-dur-1: 320ms;
+  --lux-dur-2: 380ms;
+  --lux-dur-3: 400ms;
+  --lux-gold-accent: #c9a04c;
+  --lux-gold-glow-soft: rgba(201, 160, 76, 0.22);
+  --lux-gold-glow-mid: rgba(201, 160, 76, 0.38);
+}
+
+/* Co-Architect floating orb: slow breathing (glow + inner scale) */
+@keyframes caOrbBreatheGlow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 24px rgba(201, 160, 76, 0.28),
+      0 0 56px rgba(201, 160, 76, 0.12),
+      0 12px 32px rgba(0, 0, 0, 0.45);
+    border-color: rgba(201, 160, 76, 0.42);
+  }
+  50% {
+    box-shadow:
+      0 0 38px rgba(201, 160, 76, 0.42),
+      0 0 92px rgba(201, 160, 76, 0.2),
+      0 14px 38px rgba(0, 0, 0, 0.5),
+      0 0 1px rgba(201, 160, 76, 0.55);
+    border-color: rgba(201, 160, 76, 0.58);
+  }
+}
+
+@keyframes caOrbBreatheScale {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.034);
+  }
+}
+
+.ca-architect-fab--breathe {
+  animation: caOrbBreatheGlow 7s var(--lux-ease-primary) infinite;
+}
+
+.ca-architect-fab-inner--breathe {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: caOrbBreatheScale 7.5s ease-in-out infinite;
+}
+
+/* Trip console budget ring: smooth stroke (transition driven in component) */
+.trip-budget-ring__arc {
+  transition:
+    stroke-dasharray var(--lux-dur-2) var(--lux-ease-primary),
+    stroke var(--lux-dur-1) var(--lux-ease-primary),
+    filter var(--lux-dur-1) var(--lux-ease-primary);
+}
+
+/* Generic interactive cards (add class alongside existing surfaces) */
+.lux-card-interactive {
+  transition:
+    transform var(--lux-dur-2) var(--lux-ease-primary),
+    box-shadow var(--lux-dur-2) var(--lux-ease-primary),
+    border-color var(--lux-dur-1) var(--lux-ease-primary);
+}
+
+.lux-card-interactive:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 0 0 1px rgba(201, 160, 76, 0.22),
+    0 16px 48px rgba(0, 0, 0, 0.48),
+    0 0 56px rgba(201, 160, 76, 0.2);
+}
+
+.lux-card-interactive:active {
+  transform: translateY(-4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-architect-fab--breathe,
+  .ca-architect-fab-inner--breathe {
+    animation: none !important;
+  }
+
+  .trip-budget-ring__arc {
+    transition: none !important;
+  }
+
+  .lux-card-interactive,
+  .lux-card-interactive:hover,
+  .lux-card-interactive:active,
+  .g-card.off:hover,
+  .g-card.on:hover,
+  .phase-row:hover,
+  .sg-suggestion-card:hover,
+  .sg-experience-card:hover {
+    transform: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
