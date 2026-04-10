@@ -131,6 +131,12 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 @keyframes tabFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @keyframes drawerSlideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes caFabPulse{0%,100%{box-shadow:0 0 12px rgba(255,217,61,0.25)}50%{box-shadow:0 0 24px rgba(255,217,61,0.45)}}
+@keyframes welcomeLogoGlow{0%,100%{box-shadow:0 0 0 2px rgba(201,160,76,0.4),0 0 32px rgba(201,160,76,0.3),0 0 64px rgba(169,70,29,0.14),inset 0 0 22px rgba(255,255,255,0.05);filter:drop-shadow(0 0 20px rgba(201,160,76,0.38))}50%{box-shadow:0 0 0 2px rgba(255,217,61,0.55),0 0 46px rgba(201,160,76,0.42),0 0 84px rgba(169,70,29,0.2),inset 0 0 28px rgba(255,255,255,0.08);filter:drop-shadow(0 0 30px rgba(255,200,100,0.48))}}
+@keyframes welcomeCtaGlow{0%,100%{box-shadow:0 0 28px rgba(169,70,29,0.42),0 0 56px rgba(201,160,76,0.2),0 0 0 1px rgba(255,200,120,0.45),inset 0 1px 0 rgba(255,255,255,0.15)}50%{box-shadow:0 0 40px rgba(201,160,76,0.48),0 0 78px rgba(255,159,67,0.24),0 0 0 1px rgba(255,217,61,0.55),inset 0 1px 0 rgba(255,255,255,0.2)}}
+.welcome-beta-logo{width:118px;height:118px;border-radius:50%;object-fit:contain;box-sizing:border-box;border:2px solid rgba(201,160,76,0.48);margin-bottom:10px;animation:welcomeLogoGlow 3s ease-in-out infinite}
+.welcome-beta-cta{transition:transform 0.2s ease,filter 0.2s ease!important;animation:welcomeCtaGlow 2.8s ease-in-out infinite}
+.welcome-beta-cta:hover{transform:scale(1.03);filter:brightness(1.05)}
+@media (prefers-reduced-motion:reduce){.welcome-beta-logo,.welcome-beta-cta{animation:none!important}.welcome-beta-logo{box-shadow:0 0 0 2px rgba(201,160,76,0.4),0 0 36px rgba(201,160,76,0.32);filter:drop-shadow(0 0 20px rgba(201,160,76,0.38))}.welcome-beta-cta{box-shadow:0 0 28px rgba(169,70,29,0.42),0 0 56px rgba(201,160,76,0.2),0 0 0 1px rgba(255,200,120,0.45),inset 0 1px 0 rgba(255,255,255,0.15)!important}}
 @media(max-width:768px){.sg-suggestion-card{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;padding:16px!important;box-sizing:border-box!important}}
 
   .dream-root,.mc-root,.build-root{font-size:18px}
@@ -332,7 +338,7 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
       <img
         src="/1bn-logo.png"
         alt="1 Bag Nomad"
-        style={{ width: 110, height: 110, borderRadius: "50%", marginBottom: 8, objectFit: "contain" }}
+        className="welcome-beta-logo"
         onError={(e) => {
           e.target.style.display = "none";
         }}
@@ -366,9 +372,9 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
       <button
         type="button"
         onClick={onStartDreaming}
+        className="welcome-beta-cta"
         style={{
           background: "linear-gradient(135deg, #A9461D, #C4571E)",
-          border: "none",
           borderRadius: 16,
           padding: "18px 56px",
           color: "#fff",
@@ -377,14 +383,6 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
           fontWeight: 600,
           letterSpacing: "0.04em",
           cursor: "pointer",
-          boxShadow: "0 0 32px rgba(169,70,29,0.35)",
-          transition: "transform 0.2s ease",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = "scale(1.03)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "scale(1)";
         }}
       >
         ✦ Start Dreaming
