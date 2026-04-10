@@ -19,6 +19,7 @@ export function FeelingSection() {
   let revealIndex = 0;
   return (
     <section className="lp-section lp-band-feeling">
+      <div className="lp-glass lp-feeling-panel">
       {BLOCKS.map((block) => {
         if (block.spacer) {
           return <div key={block.key} className="lp-feeling-spacer" />;
@@ -50,6 +51,7 @@ export function FeelingSection() {
           </Reveal>
         );
       })}
+      </div>
     </section>
   );
 }

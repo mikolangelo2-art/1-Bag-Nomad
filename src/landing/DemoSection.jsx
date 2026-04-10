@@ -5,7 +5,7 @@ const STAR = String.fromCodePoint(0x2726);
 export function DemoSection({ onPlay }) {
   return (
     <section className="lp-section lp-demo-section">
-      <div className="lp-demo-inner">
+      <div className="lp-demo-inner lp-glass lp-demo-glass">
         <Reveal variant="subtle" rootMargin="0px 0px -6% 0px">
           <p className="lp-demo-eyebrow lp-sans">{`${STAR} SEE IT IN ACTION`}</p>
         </Reveal>

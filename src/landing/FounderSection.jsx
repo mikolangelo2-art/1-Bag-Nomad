@@ -4,7 +4,7 @@ export function FounderSection() {
   return (
     <section className="lp-section lp-founder-section">
       <Reveal variant="subtle">
-        <div>
+        <div className="lp-glass lp-founder-panel">
           <h3 className="lp-serif" style={{ fontSize: "clamp(1.35rem, 3vw, 1.75rem)", fontWeight: 700, color: "var(--lp-gold-bright)", marginBottom: 20, lineHeight: 1.3 }}>
             Built by a traveler, for travelers.
           </h3>
@@ -41,38 +41,11 @@ export function FounderSection() {
         </div>
       </Reveal>
       <Reveal delay={120} variant="subtle">
-        <div className="lp-founder-visual" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ position: "relative", width: 180, height: 180 }}>
-            <span
-              aria-hidden
-              style={{
-                position: "absolute",
-                inset: 0,
-                borderRadius: "50%",
-                border: "1px solid rgba(201,160,76,0.12)",
-              }}
-            />
-            <span
-              aria-hidden
-              style={{
-                position: "absolute",
-                inset: 20,
-                borderRadius: "50%",
-                border: "1px solid rgba(201,160,76,0.2)",
-              }}
-            />
-            <img
-              src="/1bn-logo.png"
-              alt="SHAREGOOD"
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: 70,
-                opacity: 0.6,
-              }}
-            />
+        <div className="lp-founder-visual lp-glass lp-founder-visual-glass">
+          <div className="lp-founder-ring">
+            <span className="lp-founder-ring__outer" aria-hidden />
+            <span className="lp-founder-ring__inner" aria-hidden />
+            <img src="/1bn-logo.png" alt="SHAREGOOD" className="lp-founder-logo-img" width={132} height={132} decoding="async" />
           </div>
         </div>
       </Reveal>

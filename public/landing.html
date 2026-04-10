@@ -21,26 +21,44 @@
     .fade-in.visible{opacity:1;transform:translateY(0)}
 
     @keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    @keyframes heroLogoPulse{
+      0%,100%{filter:drop-shadow(0 0 32px rgba(255,217,61,0.42)) drop-shadow(0 0 64px rgba(255,159,67,0.14)) drop-shadow(0 8px 28px rgba(0,0,0,0.55));}
+      50%{filter:drop-shadow(0 0 52px rgba(255,217,61,0.72)) drop-shadow(0 0 100px rgba(255,159,67,0.26)) drop-shadow(0 8px 28px rgba(0,0,0,0.55));}
+    }
+    @keyframes founderLogoPulse{
+      0%,100%{filter:drop-shadow(0 0 20px rgba(255,159,67,0.45)) drop-shadow(0 0 48px rgba(0,229,255,0.1));}
+      50%{filter:drop-shadow(0 0 36px rgba(255,217,61,0.72)) drop-shadow(0 0 72px rgba(0,229,255,0.18));}
+    }
+    .glass-panel{
+      background:rgba(10,8,6,0.52);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      border:1px solid rgba(255,159,67,0.15);
+      border-radius:18px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.045),0 16px 48px rgba(0,0,0,0.28);
+    }
     @keyframes chevronBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
     @keyframes playGlow{0%,100%{box-shadow:0 0 40px rgba(255,159,67,0.15),0 0 80px rgba(255,159,67,0.05)}50%{box-shadow:0 0 60px rgba(255,159,67,0.25),0 0 120px rgba(255,159,67,0.10)}}
 
     /* ── HERO ── */
     .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;position:relative;background:radial-gradient(ellipse at 50% 30%,rgba(169,70,29,0.08) 0%,transparent 55%)}
     .hero::before{content:'';position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(255,159,67,0.06) 0%,transparent 70%);pointer-events:none}
-    .hero-logo-wrap{position:relative;z-index:1;margin-bottom:clamp(28px,5vw,40px)}
+    .hero-logo-wrap{position:relative;z-index:1;margin-bottom:clamp(22px,4vw,36px);animation:logoFloat 4s ease-in-out infinite}
     .hero-logo{
-      width:clamp(160px,36vw,280px);
-      height:clamp(160px,36vw,280px);
-      max-width:min(280px,92vw);
-      max-height:min(280px,92vw);
+      width:clamp(180px,38vw,340px);
+      height:clamp(180px,38vw,340px);
+      max-width:min(340px,90vw);
+      max-height:min(340px,90vw);
       object-fit:contain;
-      animation:logoFloat 4s ease-in-out infinite;
       position:relative;
       z-index:1;
-      filter:drop-shadow(0 0 32px rgba(255,217,61,0.38)) drop-shadow(0 6px 28px rgba(0,0,0,0.6));
+      display:block;
+      margin:0 auto;
+      animation:heroLogoPulse 2.8s ease-in-out infinite;
       -webkit-backface-visibility:hidden;
       backface-visibility:hidden;
     }
+    .hero-copy{max-width:540px;margin:0 auto;padding:clamp(22px,4vw,34px) clamp(22px,5vw,40px)}
     .hero-headline{font-size:42px;letter-spacing:2px;margin-bottom:8px;line-height:1.2;position:relative;z-index:1}
     .hero-headline .bold{font-weight:900;color:#FFD93D}
     .hero-headline .light{font-weight:100;font-style:italic;color:rgba(255,255,255,0.92);font-size:38px}
@@ -63,11 +81,7 @@
       max-width:720px;
       margin:0 auto;
       text-align:center;
-      background:transparent;
-      border:none;
-      border-radius:0;
-      padding:clamp(24px,5vw,48px) clamp(22px,5vw,44px);
-      box-shadow:none;
+      padding:clamp(36px,7vw,72px) clamp(22px,5vw,44px);
     }
     .feeling-line{font-size:26px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.80);line-height:2.0;margin-bottom:8px}
     .feeling-line.gold{color:#FFD93D;font-weight:400}
@@ -80,7 +94,7 @@
     .how-label{font-family:'Space Mono',monospace;font-size:14px;letter-spacing:3px;color:rgba(255,159,67,0.75);text-align:center;margin-bottom:12px}
     .how-title{text-align:center;font-size:30px;font-weight:700;color:#FFD93D;margin-bottom:48px}
     .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-    .how-card{background:transparent;border:none;border-radius:0;padding:32px 24px}
+    .how-card{background:rgba(10,8,6,0.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,159,67,0.14);border-radius:16px;padding:32px 24px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.04),0 10px 36px rgba(0,0,0,0.22)}
     .how-card-label{font-family:'Space Mono',monospace;font-size:14px;letter-spacing:3px;margin-bottom:14px;font-weight:700}
     .how-card-label.amber{color:#FF9F43}
     .how-card-label.cyan{color:#00E5FF}
@@ -102,18 +116,23 @@
     .founder-text p em{font-weight:400;color:rgba(255,255,255,0.90)}
     .founder-attr{font-size:16px;font-style:italic;color:rgba(255,255,255,0.55);margin-top:24px;line-height:1.6}
     .patent-badge{display:inline-block;margin-top:16px;padding:6px 16px;border-radius:20px;border:1px solid rgba(255,159,67,0.35);background:rgba(255,159,67,0.06);font-family:'Space Mono',monospace;font-size:13px;letter-spacing:1.5px;color:rgba(255,159,67,0.80)}
+    .founder-text-panel{padding:clamp(26px,4vw,36px) clamp(22px,4vw,34px);height:fit-content}
+    .founder-visual-panel{padding:clamp(20px,4vw,32px);display:flex;align-items:center;justify-content:center}
     .founder-visual{display:flex;align-items:center;justify-content:center}
-    .founder-logo-ring{position:relative;width:180px;height:180px}
-    .founder-logo-ring img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70px;opacity:0.6}
-    .founder-logo-ring::before,.founder-logo-ring::after{content:'';position:absolute;border-radius:50%;border:1px solid rgba(255,159,67,0.12)}
+    .founder-logo-ring{position:relative;width:clamp(220px,42vw,280px);height:clamp(220px,42vw,280px);margin:0 auto}
+    .founder-logo-ring img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:clamp(108px,22vw,140px);height:auto;opacity:0.92;animation:founderLogoPulse 3s ease-in-out infinite;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+    .founder-logo-ring::before,.founder-logo-ring::after{content:'';position:absolute;border-radius:50%;border:1px solid rgba(255,159,67,0.14)}
     .founder-logo-ring::before{inset:0}
-    .founder-logo-ring::after{inset:20px;border-color:rgba(255,159,67,0.20)}
+    .founder-logo-ring::after{inset:22px;border-color:rgba(255,159,67,0.22)}
+    .promise-panel{max-width:720px;margin:0 auto;padding:clamp(28px,5vw,44px) clamp(24px,5vw,48px)}
+    .demo-panel{max-width:920px;margin:0 auto;padding:clamp(28px,5vw,48px) clamp(20px,4vw,36px);text-align:center}
+    .final-cta-panel{max-width:520px;margin:0 auto clamp(24px,5vw,40px);padding:clamp(32px,6vw,48px) clamp(28px,5vw,44px)}
 
     /* ── FEATURES ── */
     .features-section{padding:80px 24px;max-width:900px;margin:0 auto;background:transparent}
     .features-label{font-family:'Space Mono',monospace;font-size:14px;letter-spacing:3px;color:rgba(255,159,67,0.75);text-align:center;margin-bottom:40px}
     .features-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .feature-card{background:transparent;border:none;border-radius:0;padding:24px 20px}
+    .feature-card{background:rgba(10,8,6,0.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,159,67,0.12);border-radius:16px;padding:24px 20px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.04),0 10px 36px rgba(0,0,0,0.2)}
     .feature-icon{font-size:22px;margin-bottom:10px}
     .feature-title{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.90);margin-bottom:8px}
     .feature-body{font-size:15px;font-weight:300;color:rgba(255,255,255,0.75);line-height:1.7}
@@ -130,7 +149,7 @@
 
     /* ── MOBILE ── */
     @media(max-width:768px){
-      .hero-logo{width:clamp(132px,48vw,220px);height:clamp(132px,48vw,220px);max-width:min(220px,90vw);max-height:min(220px,90vw)}
+      .hero-logo{width:clamp(140px,52vw,220px);height:clamp(140px,52vw,220px);max-width:min(220px,88vw);max-height:min(220px,88vw)}
       .hero-headline{font-size:22px;white-space:nowrap}
       .hero-headline .light{font-size:20px}
       .hero-headline .sep{margin:0 8px}
@@ -152,6 +171,11 @@
       .final-btn{font-size:14px;padding:16px 28px;width:100%;max-width:360px}
       .scroll-indicator{display:none}
     }
+    @media (prefers-reduced-motion:reduce){
+      .hero-logo-wrap,.hero-logo,.founder-logo-ring img{animation:none}
+      .hero-logo{filter:drop-shadow(0 0 36px rgba(255,217,61,0.45)) drop-shadow(0 8px 24px rgba(0,0,0,0.5))}
+      .founder-logo-ring img{filter:drop-shadow(0 0 28px rgba(255,159,67,0.5))}
+    }
   </style>
 </head>
 <body>
@@ -162,6 +186,7 @@
   <div class="hero-logo-wrap">
     <img src="/1bn-logo.png" alt="1 Bag Nomad" class="hero-logo" width="280" height="280" decoding="async" fetchpriority="high"/>
   </div>
+  <div class="hero-copy glass-panel">
   <div class="hero-headline">
     <span class="bold">DREAM BIG</span><span class="sep">|</span><span class="light">travel light</span>
   </div>
@@ -170,6 +195,7 @@
   <div class="hero-buttons">
     <button class="btn-ghost" onclick="document.querySelector('.demo-section').scrollIntoView({behavior:'smooth'})">&#9654; WATCH THE DEMO</button>
     <a href="https://1bagnomad.com/?new=true" target="_blank" rel="noopener" class="btn-amber cta-primary">&#10022; BUILD MY EXPEDITION &#8594;</a>
+  </div>
   </div>
   <div class="scroll-indicator">
     <span class="scroll-label">SCROLL TO EXPLORE</span>
@@ -183,7 +209,7 @@
 
 <!-- SECTION 2: THE FEELING -->
 <section class="feeling">
-  <div class="feeling-inner">
+  <div class="feeling-inner glass-panel">
   <p class="feeling-line fade-in">Real travel begins with a feeling.</p>
   <p class="feeling-line fade-in spacer">&nbsp;</p>
   <p class="feeling-line fade-in">A reef you need to dive.</p>
@@ -224,25 +250,29 @@
 
 <!-- TAGLINE DIVIDER -->
 <section style="background:transparent;padding:60px 24px;text-align:center;">
+  <div class="promise-panel glass-panel">
   <p class="fade-in" style="font-family:'Fraunces',serif;font-size:13px;font-weight:400;letter-spacing:4px;color:rgba(255,255,255,0.40);text-transform:uppercase;margin-bottom:16px;font-style:normal;">The 1 Bag Nomad Promise</p>
   <h2 class="fade-in" style="font-family:'Fraunces',serif;font-size:clamp(22px,4vw,38px);font-weight:300;color:rgba(255,255,255,0.92);letter-spacing:2px;line-height:1.6;margin:0;">
     Dream it. Build it. Plan it.<br>
     Pack it. <span style="color:#FFD93D;font-style:italic;">Live it.</span>
   </h2>
+  </div>
 </section>
 
 <!-- SECTION 4: DEMO VIDEO -->
 <section class="demo-section">
+  <div class="demo-panel glass-panel">
   <div class="demo-label fade-in">&#10022; SEE IT IN ACTION</div>
   <div class="demo-play fade-in">
     <span>&#9654;</span>
   </div>
   <p class="demo-note fade-in">Demo coming soon — follow the journey</p>
+  </div>
 </section>
 
 <!-- SECTION 5: FOUNDER STORY -->
 <section class="founder-section">
-  <div class="founder-text fade-in">
+  <div class="founder-text founder-text-panel glass-panel fade-in">
     <h3>Built by a traveler, for travelers.</h3>
     <p>I planned my 180-night global expedition in a Google Sheets spreadsheet. Every leg, every budget line.</p>
     <p>Then I thought: <em>what if this existed as an app?</em></p>
@@ -253,9 +283,9 @@
     </div>
     <div class="patent-badge">&#9889; Patent Pending &#183; USPTO #64/014,106</div>
   </div>
-  <div class="founder-visual fade-in">
+  <div class="founder-visual founder-visual-panel glass-panel fade-in">
     <div class="founder-logo-ring">
-      <img src="/1bn-logo.png" alt="SHAREGOOD"/>
+      <img src="/1bn-logo.png" alt="SHAREGOOD" width="140" height="140" decoding="async"/>
     </div>
   </div>
 </section>
@@ -299,12 +329,14 @@
 
 <!-- SECTION 7: FINAL CTA -->
 <section class="final-cta">
+  <div class="final-cta-panel glass-panel">
   <div class="final-headline fade-in">DREAM BIG.</div>
   <div class="final-headline-light fade-in">travel light.</div>
   <p class="fade-in" style="font-family:'Fraunces',serif;font-size:16px;font-weight:300;color:rgba(255,255,255,0.50);letter-spacing:3px;margin-bottom:8px;font-style:italic;">Dream it. Build it. Plan it. Pack it. Live it.</p>
   <p class="final-sub fade-in">Your expedition starts now.</p>
   <a href="https://1bagnomad.com/?new=true" target="_blank" rel="noopener" class="final-btn cta-primary fade-in">&#10022; BUILD MY EXPEDITION — IT'S FREE &#8594;</a>
-  <p class="fine-print fade-in">No account required &#183; Free to build &#183; Patent Pending</p>
+  <p class="fine-print fade-in" style="margin-bottom:0">No account required &#183; Free to build &#183; Patent Pending</p>
+  </div>
   <div class="footer">&#169; 2026 SHAREGOOD Co. &#183; 1 Bag Nomad &#183; Dream Big. Travel Light.</div>
 </section>
 

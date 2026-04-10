@@ -3,6 +3,7 @@ import { Reveal } from "./Reveal.jsx";
 export function PromiseSection() {
   return (
     <section className="lp-section lp-band-promise">
+      <div className="lp-glass lp-promise-panel">
       <Reveal variant="whisper" duration="slow">
         <p
           className="lp-serif"
@@ -36,6 +37,7 @@ export function PromiseSection() {
           Pack it. <span style={{ color: "var(--lp-gold-bright)", fontStyle: "italic" }}>Live it.</span>
         </h2>
       </Reveal>
+      </div>
     </section>
   );
 }
