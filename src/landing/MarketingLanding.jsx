@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import posthog from "posthog-js";
 import WorldMapBackground from "../components/WorldMapBackground.jsx";
 import "./landing.css";
@@ -12,8 +12,28 @@ import { FeaturesSection } from "./FeaturesSection.jsx";
 import { FinalCTASection } from "./FinalCTASection.jsx";
 
 export default function MarketingLanding() {
+  const [mapParallaxY, setMapParallaxY] = useState(0);
+
   const scrollToDemo = useCallback(() => {
     document.getElementById("lp-demo")?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      try {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          setMapParallaxY(0);
+          return;
+        }
+        const y = window.scrollY || 0;
+        setMapParallaxY(Math.min(52, Math.round(y * 0.052)));
+      } catch {
+        setMapParallaxY(0);
+      }
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -37,7 +57,7 @@ export default function MarketingLanding() {
 
   return (
     <div className="lp-root lp-sans">
-      <WorldMapBackground phases={[]} />
+      <WorldMapBackground phases={[]} parallaxTranslateY={mapParallaxY} />
       <div className="lp-content-stack">
         <div id="lp-hero">
           <HeroSection onWatchDemo={scrollToDemo} />

@@ -22,35 +22,25 @@ export function HeroSection({ onWatchDemo }) {
           <img src="/1bn-logo.png" alt="1 Bag Nomad" className="lp-hero-logo" width={260} height={260} decoding="async" />
         </div>
       </Reveal>
-      <div className="lp-glass lp-hero-copy">
+      <div className="lp-glass lp-glass--hero lp-hero-copy">
         <Reveal delay={80}>
-          <h1 className="lp-serif lp-hero-headline" style={{ fontSize: "clamp(1.35rem, 5vw, 2.6rem)", fontWeight: 700, marginBottom: "clamp(1.25rem, 4vw, 2rem)", lineHeight: 1.2 }}>
-            <span style={{ color: "var(--lp-gold-bright)", fontWeight: 900 }}>DREAM BIG</span>
-            <span className="lp-hero-sep" style={{ color: "rgba(248,245,240,0.15)", fontWeight: 100, margin: "0 12px" }}>
-              |
+          <h1 className="lp-serif lp-hero-headline">
+            <span className="lp-hero-dream-big">DREAM BIG</span>
+            <span className="lp-hero-headline-subline">
+              <span className="lp-hero-sep" aria-hidden>
+                |
+              </span>
+              <span className="lp-hero-travel-light">travel light</span>
             </span>
-            <span style={{ fontWeight: 100, fontStyle: "italic", color: "rgba(248,245,240,0.92)", fontSize: "clamp(1.2rem, 4.5vw, 2.35rem)" }}>travel light</span>
           </h1>
         </Reveal>
         <Reveal delay={180}>
-          <p
-            className="lp-serif"
-            style={{
-              margin: "0 auto clamp(2rem, 6vw, 2.75rem)",
-              maxWidth: 520,
-              fontSize: "clamp(1.05rem, 2.4vw, 1.2rem)",
-              fontWeight: 300,
-              fontStyle: "italic",
-              lineHeight: 1.95,
-              letterSpacing: "0.02em",
-              color: "rgba(248,245,240,0.62)",
-            }}
-          >
+          <p className="lp-serif lp-hero-tagline">
             {"1 Bag Nomad builds your expedition around what you want to feel \u2014 not just where you want to go."}
           </p>
         </Reveal>
         <Reveal delay={280}>
-          <div className="lp-hero-buttons" style={{ display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
+          <div className="lp-hero-buttons">
             <button type="button" className="lp-btn-ghost" onClick={onWatchDemo}>
               {"\u25B6 WATCH THE DEMO"}
             </button>

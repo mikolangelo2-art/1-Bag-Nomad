@@ -91,7 +91,7 @@ const EXPEDITION_COORDS = {
   'Fiji':          [178.0, -17.7],
 };
 
-const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, dream, departureCity}) => {
+const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, dream, departureCity, parallaxTranslateY = 0}) => {
   try {
     const isPack = consoleProp === 'pack';
     const phaseList = phases||[];
@@ -126,8 +126,22 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, d
     })();
     const routeCoords = depCoord ? [depCoord, ...coords] : coords;
 
+    const parallaxY = typeof parallaxTranslateY === "number" && !Number.isNaN(parallaxTranslateY) ? parallaxTranslateY : 0;
     return (
-      <div style={{position:'fixed',top:0,left:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:0,overflow:'hidden'}}>
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          pointerEvents: "none",
+          zIndex: 0,
+          overflow: "hidden",
+          transform: parallaxY ? `translate3d(0, ${parallaxY}px, 0)` : undefined,
+          willChange: parallaxY ? "transform" : undefined,
+        }}
+      >
         <style>{`@keyframes dashMove{to{stroke-dashoffset:-72}}.route-line{animation:dashMove 14s linear infinite}@keyframes activePulseR{0%,100%{r:2.8}50%{r:5}}.active-dot{animation:activePulseR 1.4s ease-in-out infinite}@keyframes depPulse{0%,100%{opacity:0.55}50%{opacity:0.9}}.dep-ring{animation:depPulse 2.4s ease-in-out infinite}`}</style>
         <ComposableMap projection="geoNaturalEarth1" projectionConfig={{scale:160,center:[20,10]}} style={{width:'100%',height:'100%'}}>
           <defs>
