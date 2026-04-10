@@ -13,10 +13,14 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
   const [drawn, setDrawn] = useState(0);
 
   useEffect(() => {
-    const id = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setDrawn(dash));
+    let innerId;
+    const outerId = requestAnimationFrame(() => {
+      innerId = requestAnimationFrame(() => setDrawn(dash));
     });
-    return () => cancelAnimationFrame(id);
+    return () => {
+      cancelAnimationFrame(outerId);
+      if (innerId != null) cancelAnimationFrame(innerId);
+    };
   }, [dash]);
 
   const over = safeCap > 0 && planned > safeCap;
@@ -64,13 +68,13 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
             cy={cx}
             r={r}
             fill="none"
-            stroke={stroke}
             strokeWidth={strokeW}
             strokeLinecap="round"
-            strokeDasharray={`${drawn} ${circ}`}
-            strokeDashoffset={circ * 0.25}
             transform={`rotate(-90 ${cx} ${cx})`}
             style={{
+              stroke,
+              strokeDasharray: `${drawn} ${circ}`,
+              strokeDashoffset: circ * 0.25,
               filter: over ? "drop-shadow(0 0 5px rgba(255,107,107,0.35))" : "drop-shadow(0 0 6px rgba(201,160,76,0.35))",
             }}
           />

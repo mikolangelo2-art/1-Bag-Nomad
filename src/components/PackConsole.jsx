@@ -40,8 +40,14 @@ function CircularRing({ value, max, label, sublabel, color, unit }) {
   const targetDash = displayRatio * circ;
   const [drawn, setDrawn] = useState(0);
   useEffect(() => {
-    const id = requestAnimationFrame(() => requestAnimationFrame(() => setDrawn(targetDash)));
-    return () => cancelAnimationFrame(id);
+    let innerId;
+    const outerId = requestAnimationFrame(() => {
+      innerId = requestAnimationFrame(() => setDrawn(targetDash));
+    });
+    return () => {
+      cancelAnimationFrame(outerId);
+      if (innerId != null) cancelAnimationFrame(innerId);
+    };
   }, [targetDash]);
   const over = rawRatio > 1;
   const near = rawRatio >= 0.82 && !over;
@@ -61,18 +67,21 @@ function CircularRing({ value, max, label, sublabel, color, unit }) {
           </filter>
         </defs>
         <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
+        {/* Dash values must live on style (not SVG attrs) so stroke-dasharray CSS transitions run in WebKit/Chromium. */}
         <circle
           className="pack-ring__arc"
           cx="65"
           cy="65"
           r={r}
           fill="none"
-          stroke={stroke}
           strokeWidth="10"
           strokeLinecap="round"
-          strokeDasharray={`${drawn} ${circ}`}
-          strokeDashoffset={circ * 0.25}
-          filter={`url(#${filterId})`}
+          style={{
+            stroke,
+            strokeDasharray: `${drawn} ${circ}`,
+            strokeDashoffset: circ * 0.25,
+            filter: `url(#${filterId})`,
+          }}
         />
         <text x="65" y="58" textAnchor="middle" fill={centerFill} fontSize="22" fontWeight="700" fontFamily="Inter">
           {value}
