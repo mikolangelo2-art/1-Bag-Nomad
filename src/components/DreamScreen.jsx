@@ -231,7 +231,7 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
         <div style={{textAlign:"center",marginBottom:isMobile?20:28,animation:"fadeUp 0.6s ease"}}>
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:14}}>
             <SharegoodLogo size={isMobile?148:168} animate={true} logoState={logoState} glowColor={loading?"rgba(0,229,255,0.7)":"rgba(0,229,255,0.3)"} opacity={loading?1:0.92}/>
-            {loading&&<div key={retryMsg||hintIdx} style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontStyle:"italic",color:retryMsg?"rgba(255,217,61,0.75)":"rgba(255,159,67,0.65)",marginTop:10,animation:"hintFade 2.5s ease forwards",textAlign:"center",letterSpacing:0.5}}>{retryMsg||GENERATION_HINTS[hintIdx]}</div>}
+            {loading&&<div key={retryMsg||hintIdx} className="dream-co-architect-loading-msg" style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontStyle:"italic",color:retryMsg?"rgba(255,217,61,0.75)":"rgba(255,159,67,0.65)",marginTop:10,textAlign:"center",letterSpacing:0.5}}>{retryMsg||GENERATION_HINTS[hintIdx]}</div>}
           </div>
           <div style={{minHeight:isMobile?80:110}}>
             {heroPhase>=1&&<div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?28:38,fontWeight:100,color:"rgba(255,255,255,0.88)",lineHeight:1.15,letterSpacing:2,animation:"slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both"}}>Your expedition</div>}

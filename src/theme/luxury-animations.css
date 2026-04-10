@@ -54,6 +54,25 @@
   animation: caOrbBreatheScale 7.5s ease-in-out infinite;
 }
 
+/* Dream console: rotating generation hints under logo (loading copy only) */
+@keyframes coArchitectPulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    text-shadow: 0 0 20px rgba(255, 159, 67, 0);
+  }
+  50% {
+    opacity: 1;
+    text-shadow:
+      0 0 30px rgba(255, 159, 67, 0.5),
+      0 0 60px rgba(169, 70, 29, 0.3);
+  }
+}
+
+.dream-co-architect-loading-msg {
+  animation: coArchitectPulse 2.5s ease-in-out infinite;
+}
+
 /* Trip console budget ring: smooth stroke (transition driven in component) */
 .trip-budget-ring__arc {
   transition:
@@ -195,6 +214,12 @@
   .ca-architect-fab--breathe,
   .ca-architect-fab-inner--breathe {
     animation: none !important;
+  }
+
+  .dream-co-architect-loading-msg {
+    animation: none !important;
+    opacity: 0.85 !important;
+    text-shadow: none !important;
   }
 
   .trip-budget-ring__arc,
