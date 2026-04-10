@@ -378,10 +378,10 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
           borderRadius: 16,
           padding: "18px 56px",
           color: "#fff",
-          fontFamily: "'Inter',system-ui,sans-serif",
-          fontSize: 17,
+          fontFamily: "'Playfair Display',Georgia,serif",
+          fontSize: 18,
           fontWeight: 600,
-          letterSpacing: "0.04em",
+          letterSpacing: "0.08em",
           cursor: "pointer",
         }}
       >
