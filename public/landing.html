@@ -6,7 +6,7 @@
   <title>1 Bag Nomad — Dream Big. Travel Light.</title>
   <meta name="description" content="1 Bag Nomad builds your expedition around what you want to feel — not just where you want to go. AI-powered trip planning, packing, and budgeting in one place."/>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400&family=Inter:wght@400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
@@ -58,8 +58,8 @@
       -webkit-backface-visibility:hidden;
       backface-visibility:hidden;
     }
-    .hero-copy{max-width:540px;margin:0 auto;padding:clamp(22px,4vw,34px) clamp(22px,5vw,40px)}
-    .hero-headline{font-size:42px;letter-spacing:2px;margin-bottom:clamp(20px,4vw,32px);line-height:1.2;position:relative;z-index:1}
+    .hero-copy{max-width:min(680px,calc(100vw - 32px));margin:0 auto;padding:clamp(22px,4vw,34px) clamp(22px,5vw,40px)}
+    .hero-headline{font-size:42px;letter-spacing:2px;margin-bottom:clamp(20px,4vw,32px);line-height:1.2;position:relative;z-index:1;white-space:nowrap}
     .hero-headline .bold{font-weight:900;color:#FFD93D}
     .hero-headline .light{font-weight:100;font-style:italic;color:rgba(255,255,255,0.92);font-size:38px}
     .hero-headline .sep{color:rgba(255,255,255,0.15);font-weight:100;margin:0 12px}
@@ -151,10 +151,26 @@
     .fine-print{font-family:'Space Mono',monospace;font-size:13px;color:rgba(255,255,255,0.35);letter-spacing:1px;margin-bottom:48px}
     .footer{font-family:'Space Mono',monospace;font-size:13px;color:rgba(255,255,255,0.25);letter-spacing:1px}
 
+    /* ── APP SCREENSHOTS (static landing) ── */
+    .lp-app-shot{margin:60px auto;max-width:900px;padding:0 24px}
+    .lp-app-shot-frame{border-radius:16px;overflow:hidden;border:1px solid rgba(255,159,67,0.15);box-shadow:0 0 60px rgba(169,70,29,0.15),0 24px 48px rgba(0,0,0,0.4)}
+    .lp-app-shot-frame img{width:100%;display:block;vertical-align:middle}
+    .lp-app-shot-caption{text-align:center;font-size:12px;color:rgba(255,255,255,0.30);margin-top:12px;font-family:'Inter',system-ui,sans-serif;letter-spacing:0.06em}
+
+    /* ── EMAIL CAPTURE ── */
+    .lp-email-wrap{text-align:center;padding:48px 24px;max-width:480px;margin:0 auto}
+    .lp-email-label{font-size:13px;color:rgba(255,255,255,0.45);letter-spacing:0.08em;margin-bottom:16px;font-family:'Inter',system-ui,sans-serif}
+    .lp-email-row{display:flex;gap:8px;max-width:400px;margin:0 auto;flex-wrap:wrap;justify-content:center}
+    .lp-email-row input[type=email]{flex:1;min-width:200px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:12px 16px;color:#fff;font-size:14px;font-family:'Inter',system-ui,sans-serif;outline:none}
+    .lp-email-row input[type=email]:focus{border-color:rgba(255,159,67,0.35)}
+    .lp-email-row button{background:linear-gradient(135deg,#A9461D,#C4571E);border:none;border-radius:12px;padding:12px 20px;color:#fff;font-size:13px;font-family:'Inter',system-ui,sans-serif;font-weight:600;cursor:pointer;white-space:nowrap}
+    .lp-email-row button:hover{filter:brightness(1.06)}
+    .lp-email-note{font-size:11px;color:rgba(255,255,255,0.25);margin-top:10px;font-family:'Inter',system-ui,sans-serif}
+
     /* ── MOBILE ── */
     @media(max-width:768px){
       .hero-logo{width:clamp(140px,52vw,220px);height:clamp(140px,52vw,220px);max-width:min(220px,88vw);max-height:min(220px,88vw)}
-      .hero-headline{font-size:22px;white-space:nowrap}
+      .hero-headline{font-size:clamp(16px,5.2vw,22px);white-space:nowrap}
       .hero-headline .light{font-size:20px}
       .hero-headline .sep{margin:0 8px}
       .hero-sub{font-size:clamp(15px,4vw,17px);line-height:1.9;margin-bottom:clamp(28px,7vw,40px)}
@@ -227,6 +243,14 @@
   </div>
 </section>
 
+<!-- APP SCREENSHOT: Dream Console -->
+<section class="lp-app-shot" aria-label="Dream Console preview">
+  <div class="lp-app-shot-frame">
+    <img src="/screenshots/dream-console.png" alt="1 Bag Nomad Dream Console — describe your vision" width="900" height="520" loading="lazy" decoding="async"/>
+  </div>
+  <p class="lp-app-shot-caption">Describe your vision. Your Co-Architect builds the expedition.</p>
+</section>
+
 <!-- SECTION 3: HOW IT WORKS -->
 <section class="how-section">
   <div class="how-label fade-in">HOW IT WORKS</div>
@@ -248,6 +272,14 @@
       <div class="how-card-body">Your pack list built for your specific trip — climate, activities, duration. The co-architect knows what you need before you do.</div>
     </div>
   </div>
+</section>
+
+<!-- APP SCREENSHOT: Trip Console -->
+<section class="lp-app-shot" aria-label="Trip Console preview">
+  <div class="lp-app-shot-frame">
+    <img src="/screenshots/trip-console.png" alt="1 Bag Nomad Trip Console — expedition phases and world map" width="900" height="520" loading="lazy" decoding="async"/>
+  </div>
+  <p class="lp-app-shot-caption">Every phase, every destination — managed from one expedition console.</p>
 </section>
 
 <!-- TAGLINE DIVIDER -->
@@ -323,10 +355,30 @@
       <div class="feature-body">See every decision. Every budget allocation. Every routing choice.</div>
     </div>
     <div class="feature-card fade-in">
-      <div class="feature-icon">&#128279;</div>
-      <div class="feature-title">Expedition Linking</div>
-      <div class="feature-body">Build once. Invite friends. Everyone gets their own pack list.</div>
+      <div class="feature-icon">&#128506;&#65039;</div>
+      <div class="feature-title">Street Intel</div>
+      <div class="feature-body">Your Co-Architect knows the local intelligence — transport, food, safety, timing — for every destination before you arrive.</div>
     </div>
+  </div>
+</section>
+
+<!-- APP SCREENSHOT: Segment workspace -->
+<section class="lp-app-shot" aria-label="Segment workspace preview">
+  <div class="lp-app-shot-frame">
+    <img src="/screenshots/segment-workspace.png" alt="1 Bag Nomad segment workspace — food, stays, and activities" width="900" height="520" loading="lazy" decoding="async"/>
+  </div>
+  <p class="lp-app-shot-caption">Food, stays, activities — curated for your specific trip.</p>
+</section>
+
+<!-- EMAIL CAPTURE (pre-launch) -->
+<section style="background:transparent;padding-bottom:8px">
+  <div class="lp-email-wrap">
+    <div class="lp-email-label">GET EARLY ACCESS</div>
+    <form class="lp-email-row" action="#" method="get" onsubmit="return lpEmailSubmit(event)" novalidate>
+      <input type="email" name="email" autocomplete="email" placeholder="your@email.com" aria-label="Email for launch updates" required/>
+      <button type="submit">Notify me &#8594;</button>
+    </form>
+    <p class="lp-email-note">No spam. Launch updates only.</p>
   </div>
 </section>
 
@@ -343,6 +395,19 @@
   <div class="footer">&#169; 2026 SHAREGOOD Co. &#183; 1 Bag Nomad &#183; Dream Big. Travel Light.</div>
 </section>
 
+<script>
+function lpEmailSubmit(ev){
+  ev.preventDefault();
+  var form=ev.target;
+  var input=form&&form.querySelector('input[type=email]');
+  var v=input&&String(input.value||'').trim();
+  if(!v){if(input)input.focus();return false;}
+  var sub='1 Bag Nomad — early access';
+  var body='Please add me to launch updates:\n\n'+v;
+  window.location.href='mailto:hello@1bagnomad.com?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body);
+  return false;
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
 <script>
