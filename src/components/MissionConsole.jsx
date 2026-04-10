@@ -213,7 +213,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                   <span style={{fontSize:20,fontWeight:700,color:'#00E5FF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{readPct}%</span>
                 </div>
                 <div style={{width:'100%',height:6,background:'rgba(255,255,255,0.08)',borderRadius:3,overflow:'hidden'}}>
-                  <div style={{height:'100%',width:`${readPct}%`,background:'linear-gradient(90deg,#00E5FF88,#00E5FF)',borderRadius:3,transition:'width 0.6s ease'}}/>
+                  <div className="trip-readiness-bar-fill" style={{height:'100%',width:`${readPct}%`,background:'linear-gradient(90deg,#00E5FF88,#00E5FF)',borderRadius:3}}/>
                 </div>
                 <div style={{fontSize:11,color:'rgba(255,255,255,0.55)',marginTop:5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{filledSegs} of {totalSegs} planning tasks complete</div>
               </div>
@@ -221,9 +221,15 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',overflow:'hidden'}}>
                 {[{label:'DEPARTS IN',value:daysToDepart,sub:'DAYS',color:'#F8F5F0'},{label:'NIGHTS',value:totalNights,sub:'NIGHTS',color:'#F8F5F0'},{label:'BUDGET',value:fmt(totalBudget),sub:'TOTAL',color:'#c9a04c'}].map((s,i)=>(
                   <div key={s.label} style={{textAlign:'center',padding:'12px 8px 14px'}}>
-                    <div style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(248,245,240,0.52)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:6}}>{s.label}</div>
-                    <div style={{fontSize:21,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.05,textShadow:s.color==='#c9a04c'?'0 0 28px rgba(201,160,76,0.25)':'none'}}>{s.value}</div>
-                    <div style={{fontSize:10,color:'rgba(248,245,240,0.58)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:5,letterSpacing:'0.06em'}}>{s.sub}</div>
+                    {s.label==='BUDGET'?(
+                      <TripBudgetRing compact planned={totalPlannedSpend} cap={totalBudget} labelText="BUDGET" displayAmount={fmt(totalBudget)} />
+                    ):(
+                      <>
+                        <div style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(248,245,240,0.52)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:6}}>{s.label}</div>
+                        <div style={{fontSize:21,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.05,textShadow:s.color==='#c9a04c'?'0 0 28px rgba(201,160,76,0.25)':'none'}}>{s.value}</div>
+                        <div style={{fontSize:10,color:'rgba(248,245,240,0.58)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:5,letterSpacing:'0.06em'}}>{s.sub}</div>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>

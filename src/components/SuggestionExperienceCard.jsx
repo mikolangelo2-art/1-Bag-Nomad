@@ -48,10 +48,13 @@ export default function SuggestionExperienceCard({
       {heroUrl ? (
         <>
           <img
+            key={heroUrl}
             src={heroUrl}
             alt=""
             loading="lazy"
             decoding="async"
+            className="lux-img-reveal lux-img-hero-grade"
+            onLoad={(e) => e.currentTarget.classList.add("lux-img-reveal--loaded")}
             style={{
               position: "absolute",
               inset: 0,
@@ -60,7 +63,6 @@ export default function SuggestionExperienceCard({
               objectFit: "cover",
               display: "block",
               zIndex: 0,
-              filter: "brightness(1.08) contrast(1.04)",
             }}
           />
           <div

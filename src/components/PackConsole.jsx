@@ -31,30 +31,61 @@ function persistPackExpandedCats(obj) {
 }
 
 // ── CircularRing (pack-only) ─────────────────────────────────
-function CircularRing({value,max,label,sublabel,color,unit}) {
-  const r=54,circ=2*Math.PI*r;
-  const pct=Math.min(value/max,1);
-  const dash=pct*circ,gap=circ-dash;
-  return(
-    <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',padding:'14px 12px'}}>
+function CircularRing({ value, max, label, sublabel, color, unit }) {
+  const r = 54;
+  const circ = 2 * Math.PI * r;
+  const safeMax = max > 0 ? max : 1;
+  const rawRatio = value / safeMax;
+  const displayRatio = Math.min(Math.max(rawRatio, 0), 1);
+  const targetDash = displayRatio * circ;
+  const [drawn, setDrawn] = useState(0);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => requestAnimationFrame(() => setDrawn(targetDash)));
+    return () => cancelAnimationFrame(id);
+  }, [targetDash]);
+  const over = rawRatio > 1;
+  const near = rawRatio >= 0.82 && !over;
+  const stroke = over ? "#FF6B6B" : near ? "#c9a04c" : color;
+  const centerFill = over ? "#FF6B6B" : near ? "#c9a04c" : color;
+  const filterId = `glow-${String(color).replace("#", "")}`;
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "14px 12px" }}>
       <svg width="130" height="130" viewBox="0 0 130 130">
         <defs>
-          <filter id={`glow-${color.replace('#','')}`} x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
           </filter>
         </defs>
-        <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10"/>
-        <circle cx="65" cy="65" r={r} fill="none" stroke={color} strokeWidth="10" strokeLinecap="round"
-          strokeDasharray={`${dash} ${gap}`} strokeDashoffset={circ*0.25}
-          filter={`url(#glow-${color.replace('#','')})`}
-          style={{transition:'stroke-dasharray 0.6s ease'}}/>
-        <text x="65" y="58" textAnchor="middle" fill={color} fontSize="22" fontWeight="700" fontFamily="Inter">{value}</text>
-        <text x="65" y="74" textAnchor="middle" fill="rgba(255,255,255,0.65)" fontSize="11" fontFamily="Inter">{unit}</text>
-        <text x="65" y="90" textAnchor="middle" fill="rgba(255,255,255,0.50)" fontSize="10" fontFamily="Inter">/ {max} {unit}</text>
+        <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
+        <circle
+          className="pack-ring__arc"
+          cx="65"
+          cy="65"
+          r={r}
+          fill="none"
+          stroke={stroke}
+          strokeWidth="10"
+          strokeLinecap="round"
+          strokeDasharray={`${drawn} ${circ}`}
+          strokeDashoffset={circ * 0.25}
+          filter={`url(#${filterId})`}
+        />
+        <text x="65" y="58" textAnchor="middle" fill={centerFill} fontSize="22" fontWeight="700" fontFamily="Inter">
+          {value}
+        </text>
+        <text x="65" y="74" textAnchor="middle" fill="rgba(255,255,255,0.65)" fontSize="11" fontFamily="Inter">
+          {unit}
+        </text>
+        <text x="65" y="90" textAnchor="middle" fill="rgba(255,255,255,0.50)" fontSize="10" fontFamily="Inter">
+          / {max} {unit}
+        </text>
       </svg>
-      <div style={{fontSize:11,fontWeight:700,letterSpacing:'0.10em',color:'rgba(255,255,255,0.80)',marginTop:4}}>{label}</div>
-      <div style={{fontSize:11,color:'rgba(255,255,255,0.55)',letterSpacing:'0.08em',marginTop:2}}>{sublabel}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.10em", color: "rgba(255,255,255,0.80)", marginTop: 4 }}>{label}</div>
+      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", letterSpacing: "0.08em", marginTop: 2 }}>{sublabel}</div>
     </div>
   );
 }
@@ -98,11 +129,11 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
     <>
       <div className="tap-scale" onClick={()=>setEditOpen(true)}
         style={{display:'flex',alignItems:'center',minHeight:56,padding:'0 12px',borderBottom:isLast?'none':'1px solid rgba(248,245,240,0.08)',gap:12,background:'transparent'}}>
-        <button onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:34,height:34,borderRadius:8,border:`1.5px solid ${item.owned?'#69F0AE':'rgba(255,255,255,0.15)'}`,background:item.owned?'rgba(105,240,174,0.1)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flexShrink:0,transition:'all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
-          {item.owned&&<span style={{color:'#69F0AE',fontSize:15,fontWeight:900,lineHeight:1}}>✓</span>}
+        <button type="button" className="pack-owned-hit" onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:34,height:34,borderRadius:8,border:`1.5px solid ${item.owned?'rgba(201,160,76,0.55)':'rgba(255,255,255,0.15)'}`,background:item.owned?'rgba(201,160,76,0.12)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flexShrink:0}}>
+          {item.owned?<span className="pack-check-mark" style={{fontSize:15}} aria-hidden>✓</span>:null}
         </button>
         <div style={{flex:1,minWidth:0,textAlign:'left'}}>
-          <div style={{fontSize:13,fontWeight:500,color:item.owned?'#69F0AE':'#F8F5F0',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'normal',overflow:'visible',textOverflow:'clip',lineHeight:1.3}}>{item.essential&&<span style={{fontSize:9,color:'#c9a04c',marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:'rgba(255,255,255,0.3)',marginRight:2}}>~</span>}{item.name||'Unnamed'}</div>
+          <div className={`pack-item-name${item.owned?" pack-item-name--owned":""}`} style={{fontSize:13,fontWeight:500,color:item.owned?'rgba(105,240,174,0.82)':'#F8F5F0',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'normal',overflow:'visible',textOverflow:'clip',lineHeight:1.3}}>{item.essential&&<span style={{fontSize:9,color:'#c9a04c',marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:'rgba(255,255,255,0.3)',marginRight:2}}>~</span>}{item.name||'Unnamed'}</div>
           <div style={{display:'flex',gap:8,marginTop:2}}>
             {parseFloat(item.weight)>0&&<span style={{fontSize:11,color:'rgba(255,255,255,0.38)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
             {parseFloat(item.cost)>0&&<span style={{fontSize:11,color:'rgba(255,217,61,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
@@ -145,14 +176,14 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
   return(
     <div style={{borderBottom:isLast?"none":"1px solid rgba(255,255,255,0.2)"}}>
       <div style={{display:"flex",alignItems:"center",minHeight:44,borderLeft:`2px solid ${catColor}${open?"88":"33"}`}}>
-        <button onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:44,height:"100%",minHeight:52,display:"flex",alignItems:"center",justifyContent:"center",background:"none",border:"none",cursor:"pointer",flexShrink:0}}>
-          <div style={{width:20,height:20,borderRadius:4,border:`1.5px solid ${item.owned?"#69F0AE":"rgba(255,255,255,0.2)"}`,background:item.owned?"rgba(105,240,174,0.12)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
-            {item.owned&&<span style={{color:"#69F0AE",fontSize:15,fontWeight:900,lineHeight:1}}>✓</span>}
+        <button type="button" className="pack-owned-hit" onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:44,height:"100%",minHeight:52,display:"flex",alignItems:"center",justifyContent:"center",background:"none",border:"none",cursor:"pointer",flexShrink:0}}>
+          <div style={{width:20,height:20,borderRadius:4,border:`1.5px solid ${item.owned?"rgba(201,160,76,0.55)":"rgba(255,255,255,0.2)"}`,background:item.owned?"rgba(201,160,76,0.14)":"transparent",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            {item.owned?<span className="pack-check-mark" style={{fontSize:14}} aria-hidden>✓</span>:null}
           </div>
         </button>
         <div onClick={()=>setOpen(o=>!o)} style={{flex:1,display:"flex",alignItems:"center",gap:10,padding:"10px 8px 10px 4px",cursor:"pointer",minWidth:0}}>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:13,fontWeight:500,color:item.owned?"rgba(105,240,174,0.82)":"rgba(255,242,210,0.78)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2}}>{item.essential&&<span style={{fontSize:9,color:"#c9a04c",marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginRight:2}}>~</span>}{item.name||"Unnamed"}</div>
+            <div className={`pack-item-name${item.owned?" pack-item-name--owned":""}`} style={{fontSize:13,fontWeight:500,color:item.owned?"rgba(105,240,174,0.82)":"rgba(255,242,210,0.78)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2}}>{item.essential&&<span style={{fontSize:9,color:"#c9a04c",marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginRight:2}}>~</span>}{item.name||"Unnamed"}</div>
             <div style={{display:"flex",gap:8,alignItems:"center"}}>
               {parseFloat(item.weight)>0&&<span style={{fontSize:13,color:"rgba(255,255,255,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
               {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(255,217,61,0.55)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
@@ -245,12 +276,12 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
       </div>
       <div style={{ height: 3, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
         <div
+          className="pack-cat-progress-fill"
           style={{
             height: "100%",
             width: `${pct}%`,
             background: `linear-gradient(90deg,${cat.color}66,${cat.color})`,
             borderRadius: 2,
-            transition: "width 0.5s ease",
             boxShadow: `0 0 8px ${cat.color}90`,
           }}
         />
@@ -563,7 +594,7 @@ Return ONLY a JSON array:
         {/* 4 mini stats */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%",padding:'10px 12px'}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#00E5FF"},{label:"GEAR READY",value:gearPct+"%",color:"#FF9F43"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#c9a04c"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
-            <div key={s.label} style={{background:"rgba(0,0,0,0.25)",border:`1.5px solid ${s.color}55`,borderTop:`1.5px solid ${s.color}99`,borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:`0 0 12px ${s.color}30, inset 0 1px 0 ${s.color}55`}}>
+            <div key={s.label} className={s.label==="GEAR READY"&&gearPct>=100?"pack-gear-ready-seal--full":undefined} style={{background:"rgba(0,0,0,0.25)",border:`1.5px solid ${s.color}55`,borderTop:`1.5px solid ${s.color}99`,borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:`0 0 12px ${s.color}30, inset 0 1px 0 ${s.color}55`}}>
               <div style={{fontSize:9,fontWeight:700,color:"rgba(255,255,255,0.55)",letterSpacing:'0.06em',marginBottom:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.2}}>{s.label}</div>
               <div style={{fontSize:isMobile?13:18,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.value}</div>
             </div>
