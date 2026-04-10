@@ -122,8 +122,7 @@
   text-align: center;
   padding: 48px var(--lp-gutter-x) 100px;
   position: relative;
-  background: radial-gradient(ellipse 80% 50% at 50% 20%, rgba(169, 70, 29, 0.12) 0%, transparent 55%),
-    linear-gradient(180deg, rgba(18, 18, 18, 0.92) 0%, rgba(18, 18, 18, 0.84) 100%);
+  background: radial-gradient(ellipse 80% 50% at 50% 20%, rgba(169, 70, 29, 0.08) 0%, transparent 55%);
 }
 
 .lp-hero-glow {
@@ -237,7 +236,7 @@
   max-width: 720px;
   margin: 0 auto;
   text-align: center;
-  background: radial-gradient(ellipse 75% 55% at 50% 42%, rgba(201, 160, 76, 0.055) 0%, transparent 62%), rgba(21, 21, 21, 0.78);
+  background: transparent;
 }
 
 .lp-feeling-spacer {
@@ -248,23 +247,22 @@
 .lp-band-promise {
   padding: var(--lp-section-y-tight) var(--lp-gutter-x);
   text-align: center;
-  background: rgba(18, 18, 18, 0.86);
-  border-top: 1px solid rgba(201, 160, 76, 0.1);
-  border-bottom: 1px solid rgba(201, 160, 76, 0.1);
+  background: transparent;
+  border: none;
 }
 
 .lp-band-features {
   padding: var(--lp-section-y) var(--lp-gutter-x);
   max-width: 920px;
   margin: 0 auto;
-  background: rgba(21, 21, 21, 0.8);
+  background: transparent;
 }
 
 .lp-how-wrap {
   padding: var(--lp-section-y) var(--lp-gutter-x);
   max-width: 1100px;
   margin: 0 auto;
-  background: rgba(18, 18, 18, 0.82);
+  background: transparent;
 }
 
 .lp-how-wrap .lp-how-head {
@@ -272,22 +270,16 @@
 }
 
 .lp-card {
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(201, 160, 76, 0.12);
-  border-radius: 16px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
   padding: 28px 24px;
-  transition: border-color var(--lp-duration) var(--lp-ease), box-shadow var(--lp-duration) var(--lp-ease);
+  transition: opacity var(--lp-duration) var(--lp-ease);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .lp-card {
-    transition: border-color var(--lp-duration) var(--lp-ease), box-shadow var(--lp-duration) var(--lp-ease),
-      transform var(--lp-duration) var(--lp-ease);
-  }
   .lp-card:hover {
-    border-color: rgba(201, 160, 76, 0.28);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), 0 0 36px rgba(201, 160, 76, 0.08);
-    transform: translateY(-2px);
+    opacity: 0.92;
   }
 }
 
@@ -306,7 +298,7 @@
 /* Demo: cinematic 16:9 stage (60-90s hero video) */
 .lp-demo-section {
   padding: calc(var(--lp-section-y) * 1.1) var(--lp-gutter-x);
-  background: radial-gradient(ellipse 90% 70% at 50% 20%, rgba(169, 70, 29, 0.07) 0%, transparent 55%), rgba(12, 12, 12, 0.82);
+  background: transparent;
 }
 
 .lp-demo-inner {
@@ -458,7 +450,7 @@
   max-width: 920px;
   margin: 0 auto;
   padding: var(--lp-section-y) var(--lp-gutter-x);
-  background: rgba(18, 18, 18, 0.82);
+  background: transparent;
 }
 
 .lp-final-cta {
@@ -469,8 +461,7 @@
   justify-content: center;
   text-align: center;
   padding: clamp(3.5rem, 12vw, 6rem) var(--lp-gutter-x);
-  background: radial-gradient(ellipse 80% 50% at 50% 60%, rgba(169, 70, 29, 0.07) 0%, transparent 55%),
-    linear-gradient(180deg, rgba(18, 18, 18, 0.9) 0%, rgba(18, 18, 18, 0.82) 100%);
+  background: radial-gradient(ellipse 80% 50% at 50% 60%, rgba(169, 70, 29, 0.06) 0%, transparent 50%);
 }
 
 @media (max-width: 768px) {

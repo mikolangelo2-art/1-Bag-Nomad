@@ -32,7 +32,7 @@ export function FeaturesSection() {
       <div className="lp-features-grid">
         {FEATURES.map((f, i) => (
           <Reveal key={f.title} delay={60 + i * 70} variant="subtle">
-            <div className="lp-card" style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}>
+            <div className="lp-card">
               <div style={{ fontSize: 22, marginBottom: 10 }}>{f.icon}</div>
               <div className="lp-sans" style={{ fontSize: 15, fontWeight: 700, letterSpacing: "0.06em", color: "rgba(248,245,240,0.9)", marginBottom: 8 }}>
                 {f.title}
