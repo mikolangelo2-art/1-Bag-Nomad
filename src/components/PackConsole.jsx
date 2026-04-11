@@ -29,11 +29,34 @@ function persistPackExpandedCats(obj) {
   } catch (e) {}
 }
 
+const PACK_RING_SEGMENTS = 36;
+const PACK_RING_GAP_RATIO = 0.14;
+
+function packRingArcPath(cx, cy, r, startAngle, endAngle) {
+  const x1 = cx + r * Math.cos(startAngle);
+  const y1 = cy + r * Math.sin(startAngle);
+  const x2 = cx + r * Math.cos(endAngle);
+  const y2 = cy + r * Math.sin(endAngle);
+  const delta = endAngle - startAngle;
+  const largeArc = delta > Math.PI ? 1 : 0;
+  return `M ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2}`;
+}
+
+/** Start/end angles for segment i of N (gap between segments, ring opens at top). */
+function packRingSegmentAngles(i, N, gapRatio) {
+  const slot = (2 * Math.PI) / N;
+  const segSpan = slot * (1 - gapRatio);
+  const gapPad = (slot - segSpan) / 2;
+  const start = -Math.PI / 2 + i * slot + gapPad;
+  const end = start + segSpan;
+  return { start, end, segSpan };
+}
+
 // ── CircularRing (pack-only) ─────────────────────────────────
 function CircularRing({ value, max, label, sublabel, color, unit, isMobile }) {
   const r = 54;
   const circ = 2 * Math.PI * r;
-  const strokeW = isMobile ? 6 : 10;
+  const strokeW = isMobile ? 5 : 10;
   const blurStd = isMobile ? 1.5 : 3;
   const safeMax = max > 0 ? max : 1;
   const rawRatio = value / safeMax;
@@ -55,6 +78,69 @@ function CircularRing({ value, max, label, sublabel, color, unit, isMobile }) {
   const stroke = over ? "#FF6B6B" : near ? "#c9a04c" : color;
   const centerFill = over ? "#FF6B6B" : near ? "#c9a04c" : color;
   const filterId = `glow-${String(color).replace("#", "")}`;
+  const cx = 65;
+  const cy = 65;
+  const N = PACK_RING_SEGMENTS;
+  const gapR = PACK_RING_GAP_RATIO;
+  const fillRatio = over ? 1 : displayRatio;
+  const segFill = fillRatio * N;
+  const segFull = Math.floor(segFill);
+  const segFrac = segFill - segFull;
+
+  const segmentedTrack = isMobile
+    ? Array.from({ length: N }, (_, i) => {
+        const { start, end } = packRingSegmentAngles(i, N, gapR);
+        return (
+          <path
+            key={`trk-${i}`}
+            d={packRingArcPath(cx, cy, r, start, end)}
+            fill="none"
+            stroke="rgba(255,255,255,0.06)"
+            strokeWidth={strokeW}
+            strokeLinecap="round"
+          />
+        );
+      })
+    : null;
+
+  const segmentedProgress = isMobile
+    ? (() => {
+        const out = [];
+        for (let i = 0; i < segFull && i < N; i++) {
+          const { start, end } = packRingSegmentAngles(i, N, gapR);
+          out.push(
+            <path
+              key={`prg-${i}`}
+              className="pack-ring__arc"
+              d={packRingArcPath(cx, cy, r, start, end)}
+              fill="none"
+              stroke={stroke}
+              strokeWidth={strokeW}
+              strokeLinecap="round"
+              filter={`url(#${filterId})`}
+            />
+          );
+        }
+        if (segFrac > 0.002 && segFull < N) {
+          const { start, end, segSpan } = packRingSegmentAngles(segFull, N, gapR);
+          const endPartial = start + segSpan * Math.min(1, segFrac);
+          out.push(
+            <path
+              key="prg-partial"
+              className="pack-ring__arc"
+              d={packRingArcPath(cx, cy, r, start, endPartial)}
+              fill="none"
+              stroke={stroke}
+              strokeWidth={strokeW}
+              strokeLinecap="round"
+              filter={`url(#${filterId})`}
+            />
+          );
+        }
+        return out;
+      })()
+    : null;
+
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "14px 12px" }}>
       <svg width="130" height="130" viewBox="0 0 130 130">
@@ -67,23 +153,32 @@ function CircularRing({ value, max, label, sublabel, color, unit, isMobile }) {
             </feMerge>
           </filter>
         </defs>
-        <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={strokeW} />
-        {/* Dash values must live on style (not SVG attrs) so stroke-dasharray CSS transitions run in WebKit/Chromium. */}
-        <circle
-          className="pack-ring__arc"
-          cx="65"
-          cy="65"
-          r={r}
-          fill="none"
-          strokeWidth={strokeW}
-          strokeLinecap="round"
-          style={{
-            stroke,
-            strokeDasharray: `${drawn} ${circ}`,
-            strokeDashoffset: circ * 0.25,
-            filter: `url(#${filterId})`,
-          }}
-        />
+        {isMobile ? (
+          <>
+            {segmentedTrack}
+            {segmentedProgress}
+          </>
+        ) : (
+          <>
+            <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={strokeW} />
+            {/* Dash values must live on style (not SVG attrs) so stroke-dasharray CSS transitions run in WebKit/Chromium. */}
+            <circle
+              className="pack-ring__arc"
+              cx="65"
+              cy="65"
+              r={r}
+              fill="none"
+              strokeWidth={strokeW}
+              strokeLinecap="round"
+              style={{
+                stroke,
+                strokeDasharray: `${drawn} ${circ}`,
+                strokeDashoffset: circ * 0.25,
+                filter: `url(#${filterId})`,
+              }}
+            />
+          </>
+        )}
         <text x="65" y="58" textAnchor="middle" fill={centerFill} fontSize="22" fontWeight="700" fontFamily="Inter">
           {value}
         </text>
