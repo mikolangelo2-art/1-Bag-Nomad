@@ -195,12 +195,14 @@ Return ONLY valid JSON:
                 </div>
               );
             })()}
-            <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.1),rgba(12,21,32,0.92))",border:"1px solid rgba(201,160,76,0.32)",borderRadius:13,padding:14,marginBottom:18,overflow:"hidden",maxWidth:"100%",boxSizing:"border-box",marginLeft:0,marginRight:0,boxShadow:"0 0 24px rgba(169,70,29,0.1)"}}>
+            <div style={{background:"rgba(12,21,32,0.96)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:13,padding:14,marginBottom:18,overflow:"hidden",maxWidth:"100%",boxSizing:"border-box",marginLeft:0,marginRight:0,boxShadow:"0 4px 24px rgba(0,0,0,0.35)"}}>
               <div style={{fontSize:15,color:"rgba(201,160,76,0.9)",letterSpacing:2,marginBottom:10}}>💬 REFINE YOUR VISION</div>
               {loading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",marginBottom:8}}>✨ refining...</div>}
-              <div style={{display:"flex",gap:7}}>
-                <input className="vision-refine-input" style={{flex:1,backgroundColor:"#0C1520",border:"1px solid rgba(255,255,255,0.14)",borderRadius:8,color:"#FFF",fontSize:isMobile?14:15,padding:isMobile?"11px":"9px 11px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",WebkitAppearance:"none",appearance:"none",colorScheme:"dark"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Reshape your vision — more culture, less beach, different vibe..." onFocus={e=>{e.target.style.borderColor="rgba(255,255,255,0.32)";e.target.style.boxShadow="0 0 0 2px rgba(255,255,255,0.06)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.14)";e.target.style.boxShadow="none";}}/>
-                <button style={{background:"rgba(169,70,29,0.2)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:8,color:"#FFD93D",fontSize:15,padding:"8px 12px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={refine}>↑</button>
+              <div style={{display:"flex",gap:7,alignItems:"stretch"}}>
+                <div className="ca-chat-input-wrap" style={{flex:1,minWidth:0,display:"flex",alignItems:"stretch",borderRadius:8,overflow:"hidden"}}>
+                  <input className="vision-refine-input" style={{flex:1,width:"100%",minWidth:0,color:"#FFF",fontSize:isMobile?14:15,padding:isMobile?"11px":"9px 11px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",colorScheme:"dark"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Reshape your vision — more culture, less beach, different vibe..."/>
+                </div>
+                <button style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.16)",borderRadius:8,color:"rgba(255,217,61,0.92)",fontSize:15,padding:"8px 12px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={refine}>↑</button>
               </div>
             </div>
             <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.1),rgba(255,217,61,0.04))",border:"1px solid rgba(169,70,29,0.4)",borderRadius:16,padding:22,textAlign:"center"}}>
