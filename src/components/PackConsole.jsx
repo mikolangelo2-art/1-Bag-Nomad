@@ -615,7 +615,7 @@ Return ONLY a JSON array:
           <span style={{fontSize:isMobile?12:15,lineHeight:1}}>{isFullscreen?"⊡":"⛶"}</span>
           <span style={{fontSize:isMobile?9:13,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
         </button>
-        {[{id:"pack",label:isMobile?"PACK":"PACK LIST",emoji:"🎒"},{id:"tailor",label:"TAILOR",emoji:"✦"},{id:"weight",label:isMobile?"WEIGHT":"BREAKDOWN",emoji:"⚖️"}].map(t=>(
+        {[{id:"pack",label:isMobile?"PACK":"PACK LIST",emoji:"🎒"},{id:"tailor",label:"TAILOR",emoji:"✦"},{id:"weight",label:"BREAKDOWN",emoji:"⚖️"}].map(t=>(
           <button key={t.id} onClick={()=>setPackTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",position:"relative"}}>
             {t.emoji&&<span style={{fontSize:isMobile?12:15,lineHeight:1}}>{t.emoji}</span>}
             <span style={{fontSize:isMobile?9:13,letterSpacing:isMobile?1:1,fontWeight:700,whiteSpace:"nowrap",display:"inline-flex",alignItems:"center",justifyContent:"center",gap:3}}>

@@ -45,7 +45,7 @@ export function StaySuggestionExperienceCard({
 
   const middle =
     propsList.length > 0 ? (
-      <div style={{ marginBottom: 12 }}>
+      <div style={{ marginBottom: isMobile ? 8 : 12, width: isMobile ? "100%" : undefined }}>
         <div
           style={{
             fontSize: 11,
@@ -70,31 +70,57 @@ export function StaySuggestionExperienceCard({
                 setSelectedStayProp(prop);
               }
             }}
-            style={{
-              border:
-                selectedStayProp === prop
-                  ? "1px solid rgba(105,240,174,0.55)"
-                  : "1px solid rgba(255,255,255,0.12)",
-              borderRadius: 8,
-              padding: "12px 14px",
-              marginBottom: 6,
-              cursor: "pointer",
-              fontSize: 14,
-              fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-              color:
-                selectedStayProp === prop
-                  ? STAY_ACCENT
-                  : "rgba(255,255,255,0.75)",
-              background:
-                selectedStayProp === prop
-                  ? "rgba(105,240,174,0.08)"
-                  : "transparent",
-              minHeight: 44,
-              display: "flex",
-              alignItems: "center",
-              lineHeight: 1.35,
-              transition: "all 0.2s",
-            }}
+            style={
+              isMobile
+                ? {
+                    border: "none",
+                    borderBottom:
+                      pi < propsList.length - 1 ? "1px solid rgba(255,255,255,0.12)" : "none",
+                    borderRadius: 0,
+                    padding: "12px 0",
+                    marginBottom: 0,
+                    width: "100%",
+                    boxSizing: "border-box",
+                    cursor: "pointer",
+                    fontSize: 14,
+                    fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+                    color:
+                      selectedStayProp === prop
+                        ? STAY_ACCENT
+                        : "rgba(255,255,255,0.75)",
+                    background: "transparent",
+                    minHeight: 44,
+                    display: "flex",
+                    alignItems: "center",
+                    lineHeight: 1.35,
+                    transition: "all 0.2s",
+                  }
+                : {
+                    border:
+                      selectedStayProp === prop
+                        ? "1px solid rgba(105,240,174,0.55)"
+                        : "1px solid rgba(255,255,255,0.12)",
+                    borderRadius: 8,
+                    padding: "12px 14px",
+                    marginBottom: 6,
+                    cursor: "pointer",
+                    fontSize: 14,
+                    fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+                    color:
+                      selectedStayProp === prop
+                        ? STAY_ACCENT
+                        : "rgba(255,255,255,0.75)",
+                    background:
+                      selectedStayProp === prop
+                        ? "rgba(105,240,174,0.08)"
+                        : "transparent",
+                    minHeight: 44,
+                    display: "flex",
+                    alignItems: "center",
+                    lineHeight: 1.35,
+                    transition: "all 0.2s",
+                  }
+            }
           >
             {prop}
           </div>
@@ -123,6 +149,7 @@ export function StaySuggestionExperienceCard({
       heroUrl={heroUrl}
       heroLink={heroLink}
       isMobile={isMobile}
+      flatMobile={isMobile}
     >
       <button type="button" onClick={onUseThisStay} style={{ ...acceptBtnStyle, ...ctaFlex }}>
         USE THIS STAY
