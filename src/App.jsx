@@ -197,8 +197,10 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 .g-desc{font-size:12px;line-height:1.5}
 .g-card.off .g-desc{color:rgba(255,255,255,0.78)}.g-card.on .g-desc{color:rgba(201,160,76,0.82)}
 .vision-textarea-wrap{width:100%;min-width:0;display:block;box-sizing:border-box}
+.vision-textarea-wrap.ca-chat-input-wrap{border-radius:12px!important;overflow:hidden!important}
 .vision-ta{width:100%;max-width:100%;min-width:0;box-sizing:border-box;display:block;background:#0C1520!important;border:1px solid rgba(201,160,76,0.5)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Inter',system-ui,-apple-system,sans-serif;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.3s,box-shadow 0.3s;margin-bottom:6px;word-break:normal;overflow-wrap:break-word;white-space:pre-wrap;box-shadow:0 4px 28px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.05)}
 .vision-ta::placeholder{font-family:'Playfair Display',serif;font-style:italic;font-weight:300;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.28);letter-spacing:0.01em}.vision-ta:focus{border:1px solid rgba(201,160,76,0.85)!important;animation:none!important;box-shadow:0 0 0 2px rgba(201,160,76,0.18),0 10px 36px rgba(0,0,0,0.55)}
+.ca-chat-input-wrap .vision-ta{border:none!important;border-radius:0!important;box-shadow:0 4px 28px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.05)!important}.ca-chat-input-wrap .vision-ta:focus{border:none!important;animation:none!important;box-shadow:none!important}
 .f-label{font-size:13px;color:rgba(255,159,67,0.88);letter-spacing:0.10em}
 .f-input{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.30);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Inter',system-ui,-apple-system,sans-serif;outline:none;width:100%;box-sizing:border-box;transition:border-color 0.2s,box-shadow 0.2s}
 .f-input:focus{border-color:rgba(255,159,67,0.65);box-shadow:0 0 0 2px rgba(255,159,67,0.15),0 0 20px rgba(255,159,67,0.1)}.f-input::placeholder{color:rgba(255,255,255,0.40)}
