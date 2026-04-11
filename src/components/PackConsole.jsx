@@ -30,9 +30,11 @@ function persistPackExpandedCats(obj) {
 }
 
 // ── CircularRing (pack-only) ─────────────────────────────────
-function CircularRing({ value, max, label, sublabel, color, unit }) {
+function CircularRing({ value, max, label, sublabel, color, unit, isMobile }) {
   const r = 54;
   const circ = 2 * Math.PI * r;
+  const strokeW = isMobile ? 6 : 10;
+  const blurStd = isMobile ? 1.5 : 3;
   const safeMax = max > 0 ? max : 1;
   const rawRatio = value / safeMax;
   const displayRatio = Math.min(Math.max(rawRatio, 0), 1);
@@ -58,14 +60,14 @@ function CircularRing({ value, max, label, sublabel, color, unit }) {
       <svg width="130" height="130" viewBox="0 0 130 130">
         <defs>
           <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feGaussianBlur stdDeviation={blurStd} result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
         </defs>
-        <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
+        <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={strokeW} />
         {/* Dash values must live on style (not SVG attrs) so stroke-dasharray CSS transitions run in WebKit/Chromium. */}
         <circle
           className="pack-ring__arc"
@@ -73,7 +75,7 @@ function CircularRing({ value, max, label, sublabel, color, unit }) {
           cy="65"
           r={r}
           fill="none"
-          strokeWidth="10"
+          strokeWidth={strokeW}
           strokeLinecap="round"
           style={{
             stroke,
@@ -566,14 +568,14 @@ Return ONLY a JSON array:
             <div style={{position:'absolute',top:8,right:10,zIndex:2,pointerEvents:'auto'}}>
               <HelpTip compact noLeadingMargin desktopOnly text="Your primary bag target — 15 lbs keeps you carry-on compliant on most airlines worldwide" />
             </div>
-            <CircularRing value={parseFloat((bpW*wM).toFixed(1))} max={wLim} label="MAIN BAG" sublabel="carry-on limit" color="#00E5FF" unit={unit}/>
+            <CircularRing value={parseFloat((bpW*wM).toFixed(1))} max={wLim} label="MAIN BAG" sublabel="carry-on limit" color="#00E5FF" unit={unit} isMobile={isMobile}/>
           </div>
           <div style={{width:'1px',background:'rgba(255,255,255,0.06)',flexShrink:0}}/>
           <div style={{position:'relative',flex:1,minHeight:0}}>
             <div style={{position:'absolute',top:8,right:10,zIndex:2,pointerEvents:'auto'}}>
               <HelpTip compact noLeadingMargin desktopOnly text="Track how much space your gear takes up — as you add items, this shows whether everything will actually fit in your bag" />
             </div>
-            <CircularRing value={parseFloat(bpV.toFixed(1))} max={VL} label="MAIN BAG" sublabel="volume limit" color="#FF9F43" unit="L"/>
+            <CircularRing value={parseFloat(bpV.toFixed(1))} max={VL} label="MAIN BAG" sublabel="volume limit" color="#FF9F43" unit="L" isMobile={isMobile}/>
           </div>
         </div>
         {/* 4 mini stats */}
