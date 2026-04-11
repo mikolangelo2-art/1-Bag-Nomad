@@ -397,6 +397,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         </div>}
         {/* STAY */}
         {tab==="stay"&&<div style={{padding:0}}>
+          <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
+            <HelpTip compact noLeadingMargin text="Find your accommodation for this stop — use the Co-Architect's suggestion or search for your own property" />
+          </div>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
@@ -545,6 +548,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         </div>}
         {/* FOOD */}
         {tab==="food"&&(()=>{const hasFood=!isRowEmpty(det.food?.dailyBudget);const showFoodSummary=hasFood&&!editingFood&&!foodFocused&&!showFoodResuggest;const showFoodSuggestionCard=!!(suggestion?.food&&(showFoodResuggest||(!hasFood&&!isDism('food'))));const showFoodManual=!showFoodSummary&&!showFoodSuggestionCard&&!(suggestionsLoading&&!suggestion);return(<div style={{padding:0}} onFocus={()=>setFoodFocused(true)} onBlur={(e)=>{if(!e.currentTarget.contains(e.relatedTarget))setFoodFocused(false);}}>
+          <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
+            <HelpTip compact noLeadingMargin text="Local dining recommendations and daily food budget estimates for this destination" />
+          </div>
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>

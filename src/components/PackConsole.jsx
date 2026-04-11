@@ -552,9 +552,8 @@ Return ONLY a JSON array:
       </div>}
       {/* Hero rings */}
       {!isFullscreen&&<div style={{background:'rgba(10,7,5,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)'}}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,padding:'10px 12px 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',padding:'10px 12px 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
           <span style={{fontSize:10,letterSpacing:2,fontWeight:700,color:'rgba(255,159,67,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>WEIGHT & VOLUME</span>
-          <HelpTip noLeadingMargin text="Track your packed weight and volume — stay carry-on legal so you never have to check a bag" />
         </div>
         <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',position:'relative',boxShadow:'inset 0 1px 0 rgba(255,159,67,0.40),inset 1px 0 0 rgba(255,159,67,0.12),inset -1px 0 0 rgba(255,159,67,0.12),inset 0 -1px 0 rgba(255,159,67,0.06)'}}>
           {/* LBS/KG toggle pill above weight ring */}
@@ -570,7 +569,12 @@ Return ONLY a JSON array:
             <CircularRing value={parseFloat((bpW*wM).toFixed(1))} max={wLim} label="MAIN BAG" sublabel="carry-on limit" color="#00E5FF" unit={unit}/>
           </div>
           <div style={{width:'1px',background:'rgba(255,255,255,0.06)',flexShrink:0}}/>
-          <CircularRing value={parseFloat(bpV.toFixed(1))} max={VL} label="MAIN BAG" sublabel="volume limit" color="#FF9F43" unit="L"/>
+          <div style={{position:'relative',flex:1,minHeight:0}}>
+            <div style={{position:'absolute',top:8,right:10,zIndex:2,pointerEvents:'auto'}}>
+              <HelpTip compact noLeadingMargin text="Track how much space your gear takes up — as you add items, this shows whether everything will actually fit in your bag" />
+            </div>
+            <CircularRing value={parseFloat(bpV.toFixed(1))} max={VL} label="MAIN BAG" sublabel="volume limit" color="#FF9F43" unit="L"/>
+          </div>
         </div>
         {/* 4 mini stats */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%",padding:'10px 12px'}}>
