@@ -516,21 +516,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Curated activities and experiences for this destination — add them to your plan or skip to move on" />
           </div>
-          {actInsight.loading&&<SuggestionShimmer message={`Curating experiences in ${dest||"this destination"}...`}/>}
-          {!actInsight.loading&&actInsight.items.length>0&&actInsight.items.map((it,idx)=>(
-            <GenericSuggestionCard key={`act-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`act-tab-${idx}`} accent="#c9a04c" variant="expand" isMobile={isMobile} warmLine={it.name?`Great choice. ${it.name} is one of the best ways to experience ${dest}.`:undefined} onAddToPlan={()=>acceptActivity({name:it.name,notes:it.description,estimatedCost:String(it.price),provider:it.category})}/>
-          ))}
-          {!actInsight.loading&&actInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{actInsight.error}</div>}
-          <button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("openCA",{detail:{message:`What are some hidden gems and local favorites in ${dest}?`}}))} style={{background:"none",border:"none",padding:"8px 0",marginBottom:8,cursor:"pointer",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"rgba(201,160,76,0.75)",textAlign:"left",width:"100%"}}>Your Co-Architect knows {dest} well — ask for hidden gems</button>
-          {caFromArch.length>0&&<div style={{marginBottom:16}}>
-            <div style={{...suggestionHeaderReadable,marginBottom:10}}>✦ FROM YOUR CO-ARCHITECT CONVERSATION</div>
-            {caFromArch.map((a,idx)=>{
-              const actName=a.name||a.title||"";
-              return(
-                <ActivitySuggestionExperienceCard key={`ca-act-${idx}-${String(actName).slice(0,32)}`} segmentName={dest} segmentCountry={destCountry} photoInstanceId={`ca-act-${idx}`} activity={{name:actName,notes:a.notes||a.brief||"",estimatedCost:a.estimatedCost||a.cost,provider:a.provider||""}} isMobile={isMobile} onAdd={()=>acceptActivity({name:actName,notes:a.notes||a.brief||"",estimatedCost:a.estimatedCost||a.cost,provider:a.provider||""})} showSkip={false} acceptBtnStyle={acceptBtnStyle} dismissBtnStyle={dismissBtnStyle} disclaimerText="Mentioned in chat \u2014 add to your plan if it fits"/>
-              );
-            })}
-          </div>}
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
@@ -582,6 +567,21 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             </div>
           </div>}
           {det.activities.length===0&&!(suggestion?.activities?.some((_,i)=>!isDism(`activity_${i}`)&&!det.activities.some(x=>x.suggestionActivityIdx===i)))&&!suggestionsLoading&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Playfair Display',serif",fontSize:14,fontStyle:'italic',color:'rgba(201,160,76,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
+          {actInsight.loading&&<SuggestionShimmer message={`Curating experiences in ${dest||"this destination"}...`}/>}
+          {!actInsight.loading&&actInsight.items.length>0&&actInsight.items.map((it,idx)=>(
+            <GenericSuggestionCard key={`act-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`act-tab-${idx}`} accent="#c9a04c" variant="expand" isMobile={isMobile} warmLine={it.name?`Great choice. ${it.name} is one of the best ways to experience ${dest}.`:undefined} onAddToPlan={()=>acceptActivity({name:it.name,notes:it.description,estimatedCost:String(it.price),provider:it.category})}/>
+          ))}
+          {!actInsight.loading&&actInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{actInsight.error}</div>}
+          <button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("openCA",{detail:{message:`What are some hidden gems and local favorites in ${dest}?`}}))} style={{background:"none",border:"none",padding:"8px 0",marginBottom:8,cursor:"pointer",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"rgba(201,160,76,0.75)",textAlign:"left",width:"100%"}}>Your Co-Architect knows {dest} well — ask for hidden gems</button>
+          {caFromArch.length>0&&<div style={{marginBottom:16}}>
+            <div style={{...suggestionHeaderReadable,marginBottom:10}}>✦ FROM YOUR CO-ARCHITECT CONVERSATION</div>
+            {caFromArch.map((a,idx)=>{
+              const actName=a.name||a.title||"";
+              return(
+                <ActivitySuggestionExperienceCard key={`ca-act-${idx}-${String(actName).slice(0,32)}`} segmentName={dest} segmentCountry={destCountry} photoInstanceId={`ca-act-${idx}`} activity={{name:actName,notes:a.notes||a.brief||"",estimatedCost:a.estimatedCost||a.cost,provider:a.provider||""}} isMobile={isMobile} onAdd={()=>acceptActivity({name:actName,notes:a.notes||a.brief||"",estimatedCost:a.estimatedCost||a.cost,provider:a.provider||""})} showSkip={false} acceptBtnStyle={acceptBtnStyle} dismissBtnStyle={dismissBtnStyle} disclaimerText="Mentioned in chat \u2014 add to your plan if it fits"/>
+              );
+            })}
+          </div>}
           <button type="button" onClick={()=>setActivitiesManualOpen(o=>!o)} style={{width:'100%',textAlign:'left',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(201,160,76,0.35)',borderRadius:10,color:'#c9a04c',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,padding:'10px 14px',cursor:'pointer',marginTop:8,marginBottom:4,minHeight:44}}>{activitiesManualOpen?'⌄ Hide manual activity form':'+ Plan your own activity'}</button>
           {activitiesManualOpen&&<div style={{border:isMobile?'none':'1px solid rgba(255,255,255,0.10)',borderRadius:12,background:isMobile?'rgba(255,255,255,0.03)':'rgba(255,255,255,0.04)',padding:isMobile?'12px 10px':16,marginTop:4}}>
             <div style={{fontSize:12,color:'rgba(201,160,76,0.60)',letterSpacing:2,marginBottom:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>+ ADD ACTIVITY</div>
