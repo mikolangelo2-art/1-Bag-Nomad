@@ -164,7 +164,24 @@ RULES:
   }
   return(
     <div className="build-root" style={{opacity:mounted?1:0,transform:mounted?"translateY(0)":"translateY(32px)",transition:"opacity 0.55s ease,transform 0.55s cubic-bezier(0.22,1,0.36,1)",overflowX:"hidden"}}>
-      <ConsoleHeader console="dream" isMobile={isMobile} screenLabel="CO-ARCHITECT" rightSlot={<div style={{display:"flex",gap:5,alignItems:"center"}}>{[1,2,3,4].map(n=><div key={n} style={{width:n<3?22:n===3?28:18,height:6,borderRadius:3,background:n===1?"rgba(255,159,67,0.85)":n===2?"rgba(255,159,67,0.55)":n===3?"#FFD93D":"rgba(0,229,255,0.15)",boxShadow:n===1?"0 0 8px rgba(255,159,67,0.5)":n===3?"0 0 10px rgba(255,217,61,0.7)":"none",transition:"all 0.3s ease"}}/>)}</div>}/>
+      <ConsoleHeader console="dream" isMobile={isMobile} screenLabel="CO-ARCHITECT" rightSlot={(
+        <div style={{display:"flex",gap:6,alignItems:"center",justifyContent:"center"}}>
+          {[1,2,3,4].map(n=>(
+            <div
+              key={n}
+              style={{
+                width:5,
+                height:5,
+                borderRadius:"50%",
+                background:n===1?"rgba(255,159,67,0.85)":n===2?"rgba(255,159,67,0.55)":n===3?"#FFD93D":"rgba(0,229,255,0.15)",
+                boxShadow:n===1?"0 0 6px rgba(255,159,67,0.5)":n===3?"0 0 8px rgba(255,217,61,0.7)":"none",
+                transition:"all 0.3s ease",
+                flexShrink:0,
+              }}
+            />
+          ))}
+        </div>
+      )}/>
       <div style={{display:"flex",border:"none",background:"#080D14",flexShrink:0}}>
         {(isMobile?[{label:"STOPS",val:items.length,c:"#FFFFFF"},{label:"COUNTRIES",val:countries.length,c:"#FFFFFF"},{label:"NIGHTS",val:totalNights,c:"#FFFFFF"},{label:"BUDGET",val:fmt(totalCost),c:"#D4AF37"}]:[{label:"STOPS",val:items.length,c:"#00E5FF"},{label:"COUNTRIES",val:countries.length,c:"#69F0AE"},{label:"NIGHTS",val:totalNights,c:"#A29BFE"},{label:"BUDGET",val:fmt(totalCost),c:"#FFD93D"}]).map((s,i)=>(
           <div key={s.label} style={{flex:1,minWidth:0,padding:isMobile?"6px 4px":"8px 6px",textAlign:"center",borderRight:i<3?"1px solid #111D2A":"none"}}>

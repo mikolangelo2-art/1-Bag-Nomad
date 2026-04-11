@@ -76,14 +76,17 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
               <div style={{fontFamily:"'Playfair Display',serif",fontWeight:300,fontStyle:"italic",fontSize:isMobile?8:10,color:sub,letterSpacing:1.5}}>Sharegood Co.</div>
             </div>
           </div>
+          {isMobile&&isDream&&rightSlot?(
+            <div style={{display:"flex",justifyContent:"center",width:"100%",paddingTop:2}} aria-hidden>{rightSlot}</div>
+          ):null}
         </div>
-        {/* Right slot */}
+        {/* Right slot — Dream mobile progress moves under logo; desktop Dream keeps pills here */}
         <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
           {(!isMobile&&(isTrip||isPack)) ? <PackBtn active={isPack}/> : (isMobile&&(isTrip||isPack)) ? (
             <button onClick={()=>setProfileOpen(true)} className="tap-scale" style={{width:36,height:36,borderRadius:"50%",border:`1.5px solid ${isPack?"rgba(255,159,67,0.45)":"rgba(0,229,255,0.45)"}`,background:isPack?"rgba(255,159,67,0.08)":"rgba(0,229,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,boxShadow:isPack?"0 0 12px rgba(255,159,67,0.12)":"0 0 12px rgba(0,229,255,0.12)"}}>
               <span style={{fontSize:16,lineHeight:1}}>👤</span>
             </button>
-          ) : rightSlot||null}
+          ) : isMobile&&isDream ? null : rightSlot||null}
         </div>
       </div>
       {isMobile&&isDream&&screenLabel&&(
