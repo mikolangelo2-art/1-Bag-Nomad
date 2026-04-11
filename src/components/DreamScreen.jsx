@@ -21,6 +21,7 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision="",onBackToWelcome}) {
   const [budgetMode,setBudgetMode]=useState("dream");
   const [budgetAmount,setBudgetAmount]=useState("");
   const [loadError,setLoadError]=useState(false);
+  const [loadErrorMsg,setLoadErrorMsg]=useState("");
   const [visionData,setVisionData]=useState(null);
   const [focused,setFocused]=useState(false);
   const [logoState,setLogoState]=useState("idle");
@@ -43,7 +44,7 @@ function DreamScreen({onGoGen,onLoadDemo,prefilledVision="",onBackToWelcome}) {
   async function handleReveal() {
     if(!canLaunch||loading)return;
     posthog.capture("expedition_built",{budget_mode:budgetMode,has_budget:Number(budgetAmount)>0,traveler_group:travelerGroup,travel_style:travelStyle,interests,specialty_interests:specialtyInterests});
-    setLoading(true);setLoadError(false);setLogoState("thinking");
+    setLoading(true);setLoadError(false);setLoadErrorMsg("");setLogoState("thinking");
     const hasBudget=budgetMode!=="dream"&&budgetAmount&&Number(budgetAmount)>0;
     const nightCount=(date&&returnDate)?Math.round((new Date(returnDate)-new Date(date))/(1000*60*60*24)):null;
     const nightsDirective=nightCount?`CRITICAL: trip is exactly ${nightCount} nights — phases must sum to exactly ${nightCount} totalNights.`:"Infer duration from vision.";
@@ -194,8 +195,14 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
       }
       console.log('[1BN] packProfile:',parsed?.packProfile);
       if(parsed){setLogoState("done");setTimeout(()=>setLogoState("idle"),600);setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount,travelerProfile:{group:travelerGroup,style:travelStyle,interests,specialtyInterests}});}
-      else{setLogoState("error");setTimeout(()=>setLogoState("idle"),2000);setLoadError(true);setLoading(false);}
-    } catch(e){setLogoState("error");setTimeout(()=>setLogoState("idle"),2000);setLoadError(true);setLoading(false);}
+      else{setLogoState("error");setTimeout(()=>setLogoState("idle"),2000);setLoadErrorMsg("Could not read expedition data — try again.");setLoadError(true);setLoading(false);}
+    } catch(e){
+      setLogoState("error");
+      setTimeout(()=>setLogoState("idle"),2000);
+      setLoadErrorMsg(e?.message||"Request failed — check connection or try again.");
+      setLoadError(true);
+      setLoading(false);
+    }
   }
   if(visionData) return <VisionReveal data={visionData} onBuild={vd=>onGoGen(visionData,vd)} onBack={()=>{setVisionData(null);setLoading(false);}} freshMount={true}/>;
   return (
@@ -285,9 +292,9 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
           </div>
         </div>
         <div className="sec-label">EXPEDITION DETAILS</div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22,overflow:"visible"}}>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onClick={e=>e.stopPropagation()} onChange={e=>setTripName(e.target.value)} placeholder="MY GRAND EXPEDITION" style={{textTransform:"uppercase",borderColor:"rgba(0,229,255,0.72)",boxShadow:"0 0 14px rgba(0,229,255,0.18),0 0 32px rgba(0,229,255,0.07)"}}/></div>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">DEPARTS FROM</div><CityInput className="f-input" value={city} onChange={v=>setCity(v)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5,position:"relative",zIndex:30,overflow:"visible"}}><div className="f-label">DEPARTS FROM</div><CityInput className="f-input" value={city} onChange={v=>setCity(v)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{width:"100%",overflow:"clip",boxSizing:"border-box"}}><DatePickerInput className="f-input" value={date} onChange={setDate} style={{width:"100%",boxSizing:"border-box",fontSize:16,display:"block",borderColor:"rgba(105,240,174,0.72)",boxShadow:"0 0 14px rgba(105,240,174,0.18),0 0 32px rgba(105,240,174,0.07)"}} aria-label="Target start date" buttonStyle={{border:"1px solid rgba(105,240,174,0.35)",background:"rgba(105,240,174,0.12)"}}/></div></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div key={`return-${date}`} style={{width:"100%",overflow:"clip",boxSizing:"border-box"}}><DatePickerInput className="f-input" value={returnDate||date} min={date||undefined} onChange={setReturnDate} style={{width:"100%",boxSizing:"border-box",fontSize:16,display:"block",borderColor:"rgba(255,217,61,0.72)",boxShadow:"0 0 14px rgba(255,217,61,0.18),0 0 32px rgba(255,217,61,0.07)"}} aria-label="Return date" buttonStyle={{border:"1px solid rgba(255,217,61,0.35)",background:"rgba(255,217,61,0.10)"}}/></div><div style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,217,61,0.65)",marginTop:3}}>optional · open-ended</div>{date&&returnDate&&(()=>{const d0=new Date(date+"T12:00:00"),d1=new Date(returnDate+"T12:00:00");const n=Math.round((d1-d0)/86400000);return n>0?<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,255,255,0.55)",marginTop:4}}>{n} nights</div>:null;})()}</div>
         </div>
@@ -310,7 +317,7 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
         <button className={"launch-btn "+(loading?"loading":canLaunch?"on":"off")} onClick={handleReveal} style={{minHeight:54,cursor:loading?"wait":canLaunch?"pointer":"default"}}>
           {loading?"✨  BUILDING YOUR EXPEDITION...":"🚀  BUILD MY EXPEDITION"}
         </button>
-        {loadError&&<div style={{marginTop:12,padding:"10px 14px",borderRadius:8,background:"rgba(255,107,107,0.1)",border:"1px solid rgba(255,107,107,0.3)",textAlign:"center",fontSize:15,color:"#FF6B6B",letterSpacing:1}}>Connection issue — tap to try again</div>}
+        {loadError&&<div role="button" tabIndex={0} onClick={()=>{if(!loading)handleReveal();}} onKeyDown={e=>{if((e.key==="Enter"||e.key===" ")&&!loading){e.preventDefault();handleReveal();}}} style={{marginTop:12,padding:"12px 14px",borderRadius:10,background:"#0C1520",border:"1px solid rgba(201,160,76,0.4)",textAlign:"center",fontSize:14,color:"#c9a04c",letterSpacing:0.5,cursor:loading?"wait":"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.45}}>{loadErrorMsg||"Could not build expedition — tap to try again"}</div>}
         <div style={{textAlign:"center",marginTop:30,paddingTop:20,borderTop:"1px solid rgba(0,229,255,0.1)"}}>
           <div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,217,61,0.4)",letterSpacing:2}}>Dream Big. Travel Light.</div>
           <div style={{fontSize:15,color:"rgba(255,255,255,0.15)",letterSpacing:3,marginTop:5}}>A SHAREGOOD COMPANY</div>
