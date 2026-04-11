@@ -5,7 +5,6 @@ import { loadSeg } from '../utils/storageHelpers';
 import { findSuggestionForSegment, flatPhaseIndexForSegment, prevSegmentNameForSeg, STATUS_CFG } from '../utils/tripConsoleHelpers';
 import SegmentRow from './SegmentRow';
 import BottomSheet from './BottomSheet';
-import HelpTip from './HelpTip';
 
 function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions,suggestionsLoading,allPhases=[],segPhases=[],homeCity="",plannedOverBudget=false}) {
   const isMobile=useMobile();
@@ -104,7 +103,6 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
         <div style={{paddingTop:4,paddingBottom:20}}>
           <div style={{display:"flex",alignItems:"center",gap:4,padding:'10px 12px 6px',fontSize:11,color:'rgba(255,255,255,0.3)',letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>
             <span>{phase.segments.length} SEGMENT{phase.segments.length!==1?"S":""}</span>
-            <HelpTip text="Track flights, stays and activities per phase" />
           </div>
           {phase.segments.map((seg,i)=>(
             <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onAskOpenChange={setAnyAskOpen} suggestion={findSuggestionForSegment(allSuggestions, seg.name, flatPhaseIndexForSegment(seg, allPhases))} suggestionsLoading={suggestionsLoading} prevCity={prevSegmentNameForSeg(seg, segPhases)} homeCity={homeCity}/>
@@ -142,7 +140,6 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
             <div style={{width:4,height:4,borderRadius:"50%",background:phase.color,flexShrink:0}}/>
             <span style={{fontSize:11,color:`${phase.color}cc`,letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4}}>
               {phase.segments.length} SEGMENT{phase.segments.length>1?"S":""}
-              <HelpTip text="Track flights, stays and activities per phase" />
             </span>
           </div>
           {phase.segments.map((seg,i)=><SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} suggestion={findSuggestionForSegment(allSuggestions, seg.name, flatPhaseIndexForSegment(seg, allPhases))} suggestionsLoading={suggestionsLoading} prevCity={prevSegmentNameForSeg(seg, segPhases)} homeCity={homeCity}/>)}
