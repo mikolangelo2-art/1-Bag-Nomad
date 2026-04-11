@@ -136,7 +136,7 @@ Return ONLY valid JSON:
             ))}
           </div>
         )}
-        {narrativeDone&&vd.highlight&&<div style={{background:"rgba(0,229,255,0.04)",border:"1px solid rgba(0,229,255,0.18)",borderRadius:11,padding:"10px 12px",marginBottom:18}}><div style={{fontSize:12,color:"#00E5FF",letterSpacing:2.5,marginBottom:7,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>⚡ EXPEDITION HIGHLIGHT</div><div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.7,opacity:0.90}}>{vd.highlight}</div></div>}
+        {narrativeDone&&vd.highlight&&<div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.1),rgba(201,160,76,0.04))",border:"1px solid rgba(201,160,76,0.35)",borderRadius:11,padding:"10px 12px",marginBottom:18,boxShadow:"0 0 20px rgba(169,70,29,0.1)"}}><div style={{fontSize:12,color:"rgba(201,160,76,0.95)",letterSpacing:2.5,marginBottom:7,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>⚡ EXPEDITION HIGHLIGHT</div><div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.7,opacity:0.90}}>{vd.highlight}</div></div>}
         {showPhases&&(
           <div style={{animation:"fadeUp 0.5s ease"}}>
             <div style={{fontSize:15,color:"rgba(255,159,67,0.8)",letterSpacing:4,marginBottom:12,paddingBottom:7,borderBottom:"1px solid rgba(169,70,29,0.2)"}}>YOUR EXPEDITION PHASES</div>
@@ -195,11 +195,11 @@ Return ONLY valid JSON:
                 </div>
               );
             })()}
-            <div style={{background:"#0C1520",border:"1px solid #1a2535",borderRadius:13,padding:14,marginBottom:18,overflow:"hidden",maxWidth:"100%",boxSizing:"border-box",marginLeft:0,marginRight:0}}>
-              <div style={{fontSize:15,color:"rgba(255,255,255,0.9)",letterSpacing:2,marginBottom:10}}>💬 REFINE YOUR VISION</div>
+            <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.1),rgba(12,21,32,0.92))",border:"1px solid rgba(201,160,76,0.32)",borderRadius:13,padding:14,marginBottom:18,overflow:"hidden",maxWidth:"100%",boxSizing:"border-box",marginLeft:0,marginRight:0,boxShadow:"0 0 24px rgba(169,70,29,0.1)"}}>
+              <div style={{fontSize:15,color:"rgba(201,160,76,0.9)",letterSpacing:2,marginBottom:10}}>💬 REFINE YOUR VISION</div>
               {loading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",marginBottom:8}}>✨ refining...</div>}
               <div style={{display:"flex",gap:7}}>
-                <input style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:isMobile?"11px":"9px 11px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Reshape your vision — more culture, less beach, different vibe..." onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
+                <input style={{flex:1,background:"rgba(169,70,29,0.08)",border:"1px solid rgba(201,160,76,0.38)",borderRadius:8,color:"#FFF",fontSize:isMobile?13:15,padding:isMobile?"11px":"9px 11px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Reshape your vision — more culture, less beach, different vibe..." onFocus={e=>{e.target.style.borderColor="rgba(201,160,76,0.85)";e.target.style.boxShadow="0 0 0 2px rgba(169,70,29,0.2)";}} onBlur={e=>{e.target.style.borderColor="rgba(201,160,76,0.38)";e.target.style.boxShadow="none";}}/>
                 <button style={{background:"rgba(169,70,29,0.2)",border:"1px solid rgba(169,70,29,0.4)",borderRadius:8,color:"#FFD93D",fontSize:15,padding:"8px 12px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={refine}>↑</button>
               </div>
             </div>

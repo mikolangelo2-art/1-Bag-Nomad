@@ -113,7 +113,7 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 @keyframes amberPulse{0%,100%{opacity:0.2;transform:scale(1)}50%{opacity:0.8;transform:scale(1.12)}}
 @keyframes shimmer{0%,100%{opacity:0.5}50%{opacity:1}}
 @keyframes shimmerBar{0%{background-position:200% 0}100%{background-position:-200% 0}}
-@keyframes visionGlow{0%,100%{box-shadow:0 0 0 1px rgba(255,159,67,0.12),0 0 28px rgba(255,159,67,0.2),0 0 52px rgba(255,159,67,0.08),inset 0 0 16px rgba(255,159,67,0.06)}50%{box-shadow:0 0 0 1px rgba(255,159,67,0.18),0 0 36px rgba(255,159,67,0.26),0 0 68px rgba(255,159,67,0.11),inset 0 0 18px rgba(255,159,67,0.08)}}
+@keyframes visionGlow{0%,100%{box-shadow:0 0 0 1px rgba(201,160,76,0.14),0 0 24px rgba(169,70,29,0.2),0 0 48px rgba(201,160,76,0.08),inset 0 0 16px rgba(169,70,29,0.07)}50%{box-shadow:0 0 0 1px rgba(201,160,76,0.22),0 0 32px rgba(201,160,76,0.2),0 0 56px rgba(169,70,29,0.12),inset 0 0 20px rgba(169,70,29,0.09)}}
 @keyframes msgIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 @keyframes logoPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 @keyframes ambientGlow{0%,100%{opacity:0.5}50%{opacity:0.9}}
@@ -151,7 +151,7 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
   .f-input{font-size:15px;padding:12px 16px}
   .vision-ta{font-size:15px;padding:16px 20px;transition:box-shadow 0.35s cubic-bezier(0.25,0.46,0.45,0.94),border-color 0.35s cubic-bezier(0.25,0.46,0.45,0.94)}.vision-ta:focus{outline:none}
   .launch-btn{font-size:15px;padding:20px;transition:box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94),transform 0.30s cubic-bezier(0.25,0.46,0.45,0.94)}.launch-btn:hover{box-shadow:0 0 28px rgba(255,159,67,0.35);transform:translateY(-1px)}
-  .vibe-tag{font-size:11px;padding:6px 16px;transition:transform 0.30s cubic-bezier(0.25,0.46,0.45,0.94),border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),background 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)}.vibe-tag:hover{transform:scale(1.04);box-shadow:0 0 10px rgba(255,159,67,0.2)}
+  .vibe-tag{font-size:11px;padding:6px 16px;transition:transform 0.30s cubic-bezier(0.25,0.46,0.45,0.94),border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),background 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)}.vibe-tag:hover{transform:scale(1.04);box-shadow:0 0 10px rgba(169,70,29,0.35)}
   .mc-tab{font-size:11px;padding:12px 16px}
   .chat-bubble{font-size:12px}
   .intel-section-label{font-size:12px}
@@ -198,8 +198,8 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 .g-desc{font-size:12px;line-height:1.5}
 .g-card.off .g-desc{color:rgba(255,255,255,0.78)}.g-card.on .g-desc{color:rgba(201,160,76,0.82)}
 .vision-textarea-wrap{width:100%;min-width:0;display:block;box-sizing:border-box}
-.vision-ta{width:100%;max-width:100%;min-width:0;box-sizing:border-box;display:block;background:rgba(255,159,67,0.03)!important;border:4px solid rgba(255,159,67,0.85)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Inter',system-ui,-apple-system,sans-serif;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.3s,box-shadow 0.3s;margin-bottom:6px;word-break:normal;overflow-wrap:break-word;white-space:pre-wrap;box-shadow:0 0 0 1px rgba(255,159,67,0.12),0 0 28px rgba(255,159,67,0.2),0 0 52px rgba(255,159,67,0.08),inset 0 0 16px rgba(255,159,67,0.06)}
-.vision-ta::placeholder{font-family:'Playfair Display',serif;font-style:italic;font-weight:300;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.28);letter-spacing:0.01em}.vision-ta:focus{border:4px solid rgba(255,159,67,1)!important;animation:none!important;box-shadow:0 0 0 1px rgba(255,159,67,0.2),0 0 36px rgba(255,159,67,0.28),0 0 64px rgba(255,159,67,0.12),inset 0 0 18px rgba(255,159,67,0.09)}
+.vision-ta{width:100%;max-width:100%;min-width:0;box-sizing:border-box;display:block;background:linear-gradient(135deg,rgba(169,70,29,0.12),rgba(201,160,76,0.06))!important;border:3px solid rgba(201,160,76,0.52)!important;border-radius:12px;color:#FFF;font-size:12px;padding:14px 16px;font-family:'Inter',system-ui,-apple-system,sans-serif;resize:none;outline:none;line-height:1.8;min-height:106px;transition:border-color 0.3s,box-shadow 0.3s;margin-bottom:6px;word-break:normal;overflow-wrap:break-word;white-space:pre-wrap;box-shadow:0 0 0 1px rgba(201,160,76,0.12),0 8px 32px rgba(0,0,0,0.38),0 0 44px rgba(169,70,29,0.12),inset 0 0 18px rgba(169,70,29,0.08)}
+.vision-ta::placeholder{font-family:'Playfair Display',serif;font-style:italic;font-weight:300;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.28);letter-spacing:0.01em}.vision-ta:focus{border:3px solid rgba(201,160,76,0.92)!important;animation:none!important;box-shadow:0 0 0 1px rgba(255,217,61,0.12),0 0 28px rgba(201,160,76,0.28),0 0 52px rgba(169,70,29,0.16),inset 0 0 22px rgba(169,70,29,0.1)}
 .f-label{font-size:13px;color:rgba(255,159,67,0.88);letter-spacing:0.10em}
 .f-input{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.30);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Inter',system-ui,-apple-system,sans-serif;outline:none;width:100%;box-sizing:border-box;transition:border-color 0.2s,box-shadow 0.2s}
 .f-input:focus{border-color:rgba(255,159,67,0.65);box-shadow:0 0 0 2px rgba(255,159,67,0.15),0 0 20px rgba(255,159,67,0.1)}.f-input::placeholder{color:rgba(255,255,255,0.40)}
