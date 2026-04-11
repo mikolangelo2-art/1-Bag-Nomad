@@ -1,5 +1,5 @@
 /**
- * Foursquare Places API v3 proxy ó venue search + photo URLs.
+ * Foursquare Places API v3 proxy ù venue search + photo URLs.
  * Env: FOURSQUARE_API_KEY (raw key in Authorization header, no "Bearer" prefix).
  */
 export default async function handler(req, res) {
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
   const fsqHeaders = {
     Authorization: key,
     Accept: "application/json",
-    "X-Places-Api-Version": "1970-01-01",
+    "X-Places-Api-Version": "2025-01-01",
   };
 
   try {
