@@ -10,12 +10,22 @@ export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
   const key = process.env.FOURSQUARE_API_KEY;
-  if (!key) return res.status(500).json({ error: "FOURSQUARE_API_KEY not configured" });
+  const keyPreview = () =>
+    key && typeof key === "string"
+      ? { length: key.length, prefix: key.slice(0, 4) }
+      : { length: 0, prefix: "" };
+
+  if (!key) {
+    return res.status(500).json({
+      error: "FOURSQUARE_API_KEY not configured",
+      keyPreview: keyPreview(),
+    });
+  }
 
   const { query, near, limit = "3" } = req.query;
   const q = Array.isArray(query) ? query[0] : query;
   if (!q || typeof q !== "string" || !q.trim()) {
-    return res.status(400).json({ error: "Query required" });
+    return res.status(400).json({ error: "Query required", keyPreview: keyPreview() });
   }
 
   const nearStr = Array.isArray(near) ? near[0] : near;
@@ -46,6 +56,7 @@ export default async function handler(req, res) {
         error: data?.message || data?.error || "Foursquare search failed",
         status: searchRes.status,
         details: data,
+        keyPreview: keyPreview(),
       });
     }
 
@@ -78,6 +89,9 @@ export default async function handler(req, res) {
 
     res.status(200).json({ results });
   } catch (err) {
-    res.status(500).json({ error: String(err?.message || err) });
+    res.status(500).json({
+      error: String(err?.message || err),
+      keyPreview: keyPreview(),
+    });
   }
 }
