@@ -42,7 +42,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
         {!isMobile&&<div style={{flex:1,minWidth:8}}/>}
         <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0,marginLeft:isMobile?'auto':0}}>
           <span style={{fontSize:14,fontWeight:700,color:'#FFD93D',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</span>
-          <HelpTip compact noLeadingMargin text="Manage your flights, stays, activities and notes for this destination" />
+          <HelpTip compact noLeadingMargin desktopOnly text="Manage your flights, stays, activities and notes for this destination" />
         </div>
       </div>
       <div style={{padding:'8px 0 10px',borderBottom:'1px solid rgba(0,229,255,0.08)'}}>

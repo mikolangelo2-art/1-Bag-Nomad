@@ -257,6 +257,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
     </div>
   </>;
   const TABS=[{id:"transport",label:"TRAVEL",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:isMobile?"ACTS":"ACTIVITIES",icon:"🎯",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"budget",label:"BUDGET",icon:"💰"},{id:"calendar",label:isMobile?"CAL":"CALENDAR",icon:"📅"},{id:"docs",label:"DOCS",icon:"📋"}];
+  const segMobileLoose=isMobile&&(tab==="stay"||tab==="activities"||tab==="food");
   return(
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:300,background:BG_PAGE,overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
       <WorldMapBackground phases={allPhases} activeCountry={(() => { const match = (allPhases||[]).find(p => p.name === phaseLabelName); return match ? match.country : phaseLabelName; })()} departureCity={homeCity||""}/>
@@ -289,8 +290,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
       </div>
       {/* Tab content */}
-      <div key={tab} style={{border:'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(0,8,20,0.85)',padding:'16px 14px',margin:'12px 0',minHeight:300,textAlign:'left',animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
-        {(tab==="transport"||tab==="stay"||tab==="activities"||tab==="food")&&!!segmentCardDateHeader&&<div style={{textAlign:'center',margin:'0 0 14px',padding:'0 8px 12px',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
+      <div key={tab} style={{border:segMobileLoose?'none':'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(0,8,20,0.85)',padding:segMobileLoose?'10px 10px':'16px 14px',margin:segMobileLoose?'6px 0':'12px 0',minHeight:300,textAlign:'left',animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+        {(tab==="transport"||tab==="stay"||tab==="activities"||tab==="food")&&!!segmentCardDateHeader&&<div style={{textAlign:'center',margin:segMobileLoose?'0 0 10px':'0 0 14px',padding:segMobileLoose?'0 0 10px':'0 8px 12px',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
           <div style={{fontSize:isMobile?13:14,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.52)',letterSpacing:0.35,lineHeight:1.52}}>{segmentCardDateHeader}</div>
         </div>}
         {/* TRANSPORT */}
@@ -405,17 +406,17 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
           {suggestion?.stay&&!isDism('stay')&&!showStayAccommodationCard&&<StaySuggestionExperienceCard suggestion={suggestion.stay} segment={segment} selectedStayProp={selectedStayProp} setSelectedStayProp={setSelectedStayProp} heroUrl={stayPhoto.ready?stayPhoto.url:null} heroLink={stayPhoto.htmlLink} isMobile={isMobile} acceptBtnStyle={acceptBtnStyle} dismissBtnStyle={dismissBtnStyle} onUseThisStay={()=>{const s=suggestion.stay;const name=selectedStayProp||s.suggestions?.[0]||"";const alts=(s.suggestions||[]).filter(p=>p!==name);if(name)uS("name",name);uS("cost",(s.estimatedTotal||"").split('-')[0].replace(/[^0-9]/g,''));if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",`${alts.length>0?`Alternatives: ${alts.join(', ')}\n\n`:""}${stayBlurbForSelection(s,name)}${s.notes?`\n${s.notes}`:""}`);dismiss('stay');}} onPlanMyOwn={()=>{dismiss('stay');setPlanningOwnStay(true);}}/>}
-          {showStayAccommodationCard&&!showStayResuggest&&<div style={{position:'relative',border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:stayLockedCardRadius,background:stayPhoto.ready&&stayPhoto.url?'transparent':'rgba(0,229,255,0.06)',overflow:'hidden',marginBottom:14,display:'flex',flexDirection:'column',minHeight:stayPhoto.ready&&stayPhoto.url?(isMobile?300:340):undefined}}>
-            {stayPhoto.ready&&stayPhoto.url?<><img key={stayPhoto.url} src={stayPhoto.url} alt="" loading="lazy" decoding="async" className="lux-img-reveal lux-img-hero-grade" onLoad={(e)=>e.currentTarget.classList.add('lux-img-reveal--loaded')} style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',display:'block',zIndex:0}}/><div aria-hidden style={{position:'absolute',inset:0,zIndex:1,pointerEvents:'none',background:'linear-gradient(180deg, rgba(10,7,5,0.14) 0%, rgba(10,7,5,0.28) 25%, rgba(10,7,5,0.62) 55%, rgba(10,7,5,0.86) 100%)'}}/></>:null}
-            <div style={{position:'relative',zIndex:2,padding:'18px 20px',display:'flex',flexDirection:'column',flex:1,background:stayPhoto.ready&&stayPhoto.url?'linear-gradient(90deg, rgba(10,7,5,0.88) 0%, rgba(10,7,5,0.55) 52%, rgba(10,7,5,0.18) 100%)':'transparent'}}>
+          {showStayAccommodationCard&&!showStayResuggest&&<div style={{position:'relative',border:isMobile?'none':'1.5px solid rgba(255,159,67,0.45)',borderRadius:isMobile?12:stayLockedCardRadius,background:stayPhoto.ready&&stayPhoto.url?'transparent':'rgba(0,229,255,0.06)',overflow:'hidden',marginBottom:14,display:'flex',flexDirection:'column',minHeight:stayPhoto.ready&&stayPhoto.url?(isMobile?300:340):undefined}}>
+            {stayPhoto.ready&&stayPhoto.url?<><img key={stayPhoto.url} src={stayPhoto.url} alt="" loading="lazy" decoding="async" className="lux-img-reveal lux-img-hero-grade" onLoad={(e)=>e.currentTarget.classList.add('lux-img-reveal--loaded')} style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',display:'block',zIndex:0}}/><div aria-hidden style={{position:'absolute',inset:0,zIndex:1,pointerEvents:'none',background:isMobile?'linear-gradient(180deg, rgba(0,0,0,0.48) 0%, rgba(0,0,0,0.58) 45%, rgba(0,0,0,0.64) 100%)':'linear-gradient(180deg, rgba(10,7,5,0.14) 0%, rgba(10,7,5,0.28) 25%, rgba(10,7,5,0.62) 55%, rgba(10,7,5,0.86) 100%)'}}/></>:null}
+            <div style={{position:'relative',zIndex:2,padding:isMobile?'12px 10px':'18px 20px',display:'flex',flexDirection:'column',flex:1,background:stayPhoto.ready&&stayPhoto.url?(isMobile?'linear-gradient(90deg, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.48) 55%, rgba(0,0,0,0.22) 100%)':'linear-gradient(90deg, rgba(10,7,5,0.88) 0%, rgba(10,7,5,0.55) 52%, rgba(10,7,5,0.18) 100%)'):'transparent'}}>
             <div style={{flex:1,minHeight:0}}>
             <div style={{display:'flex',alignItems:'center',marginBottom:10}}>
-              <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,flex:1,textShadow:stayPhoto.ready&&stayPhoto.url?'0 1px 3px rgba(0,0,0,0.9)':undefined}}>🏨 ACCOMMODATION</span>
+              <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,flex:1,textShadow:stayPhoto.ready&&stayPhoto.url?(isMobile?'0 1px 3px rgba(0,0,0,0.5)':'0 1px 3px rgba(0,0,0,0.9)'):undefined}}>🏨 ACCOMMODATION</span>
               <button type="button" onClick={()=>setBookDropdown(bookDropdown==='stay'?null:'stay')} style={stayPhoto.ready&&stayPhoto.url?{background:'rgba(10,7,5,0.55)',border:'1px solid rgba(0,229,255,0.55)',borderRadius:6,color:'rgba(190,255,252,0.95)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6,textShadow:'0 1px 3px rgba(0,0,0,0.85)'}:{background:'none',border:'1px solid rgba(0,229,255,0.25)',borderRadius:6,color:'rgba(0,229,255,0.60)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>🔗</button>
               <button type="button" onClick={()=>setEditingStay(e=>!e)} style={stayPhoto.ready&&stayPhoto.url?{background:'rgba(10,7,5,0.55)',border:'1px solid rgba(255,159,67,0.55)',borderRadius:6,color:'rgba(255,220,180,0.95)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,textShadow:'0 1px 3px rgba(0,0,0,0.85)'}:{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28}}>{editingStay?'DONE':'EDIT'}</button>
             </div>
-            <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{det.stay.name}</div>
-            {det.stay.cost&&<div style={{fontSize:13,color:'#FFD93D',fontWeight:600,marginBottom:4}}>Est. ${det.stay.cost}</div>}
+            <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4,textShadow:stayPhoto.ready&&stayPhoto.url&&isMobile?'0 1px 3px rgba(0,0,0,0.5)':undefined}}>{det.stay.name}</div>
+            {det.stay.cost&&<div style={{fontSize:13,color:'#FFD93D',fontWeight:600,marginBottom:4,textShadow:stayPhoto.ready&&stayPhoto.url&&isMobile?'0 1px 3px rgba(0,0,0,0.5)':undefined}}>Est. ${det.stay.cost}</div>}
             {det.stay.notes&&!editingStay&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,color:'rgba(255,255,255,0.60)',marginTop:6,lineHeight:1.5,whiteSpace:'pre-line'}}>{(()=>{const n=sanitizeAiDisplayText(det.stay.notes);return n.length>140?n.slice(0,140)+'...':n;})()}</div>}
             {det.stay.link&&<a href={det.stay.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:4}}>{det.stay.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
             {stayPhoto.ready&&stayPhoto.htmlLink&&!editingStay&&<div style={{textAlign:'right',marginTop:8}}><a href={stayPhoto.htmlLink} target="_blank" rel="noopener noreferrer" style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.48)',textDecoration:'none'}}>Photo: Unsplash</a></div>}
@@ -473,6 +474,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         </div>}
         {/* ACTIVITIES */}
         {tab==="activities"&&<div style={{padding:0}}>
+          <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
+            <HelpTip compact noLeadingMargin text="Curated activities and experiences for this destination — add them to your plan or skip to move on" />
+          </div>
           {caFromArch.length>0&&<div style={{marginBottom:16}}>
             <div style={{...suggestionHeaderReadable,marginBottom:10}}>✦ FROM YOUR CO-ARCHITECT CONVERSATION</div>
             {caFromArch.map((a,idx)=>{
@@ -491,7 +495,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           ))}
           {det.activities.length>0&&<div style={{marginBottom:16}}>
             {det.activities.map(a=>(
-              <div key={a.id} style={{border:'1.5px solid rgba(255,210,0,0.55)',borderRadius:14,background:'rgba(255,200,0,0.06)',padding:'18px 20px',marginBottom:14,display:'flex',flexDirection:'column'}}>
+              <div key={a.id} style={{border:isMobile?'1px solid rgba(255,210,0,0.45)':'1.5px solid rgba(255,210,0,0.55)',borderRadius:isMobile?12:14,background:'rgba(255,200,0,0.06)',padding:isMobile?'14px 10px':'18px 20px',marginBottom:14,display:'flex',flexDirection:'column'}}>
                 <div style={{flex:1,minHeight:0}}>
                 <div style={{display:'flex',alignItems:'center',marginBottom:8}}>
                   <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,217,61,0.65)',letterSpacing:2,flex:1}}>⚡ ACTIVITY</span>
@@ -533,7 +537,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             </div>
           </div>}
           {det.activities.length===0&&!(suggestion?.activities?.some((_,i)=>!isDism(`activity_${i}`)&&!det.activities.some(x=>x.suggestionActivityIdx===i)))&&!suggestionsLoading&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Playfair Display',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,217,61,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
-          <div style={{border:'1px solid rgba(255,255,255,0.10)',borderRadius:12,background:'rgba(255,255,255,0.04)',padding:16,marginTop:4}}>
+          <div style={{border:isMobile?'none':'1px solid rgba(255,255,255,0.10)',borderRadius:12,background:isMobile?'rgba(255,255,255,0.03)':'rgba(255,255,255,0.04)',padding:isMobile?'12px 10px':16,marginTop:4}}>
             <div style={{fontSize:12,color:'rgba(255,217,61,0.60)',letterSpacing:2,marginBottom:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>+ ADD ACTIVITY</div>
             <SDF label="ACTIVITY NAME" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/>
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:8,marginTop:8,overflow:'hidden'}}>
@@ -555,7 +559,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
-          {showFoodSummary&&<div style={{border:'1.5px solid rgba(255,159,67,0.45)',borderRadius:14,background:'rgba(0,229,255,0.06)',padding:'18px 20px',marginBottom:14,display:'flex',flexDirection:'column'}}>
+          {showFoodSummary&&<div style={{border:isMobile?'1px solid rgba(255,159,67,0.38)':'1.5px solid rgba(255,159,67,0.45)',borderRadius:isMobile?12:14,background:'rgba(0,229,255,0.06)',padding:isMobile?'14px 10px':'18px 20px',marginBottom:14,display:'flex',flexDirection:'column'}}>
             <div style={{flex:1,minHeight:0}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:12}}>
               <div style={{flex:1,minWidth:0}}>

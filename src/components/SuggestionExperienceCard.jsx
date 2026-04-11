@@ -18,12 +18,19 @@ export default function SuggestionExperienceCard({
   isMobile,
   children,
 }) {
+  const heroMobile = !!(heroUrl && isMobile);
   const nameFs = isMobile ? 18 : 20;
-  const cardRadius = 14;
-  const cardMinH = heroUrl ? (isMobile ? 320 : 380) : undefined;
-  const txtSh = heroUrl ? "0 1px 3px rgba(0,0,0,0.95), 0 2px 22px rgba(0,0,0,0.55)" : undefined;
+  const cardRadius = heroMobile ? 12 : 14;
+  const cardMinH = heroUrl ? (isMobile ? 300 : 380) : undefined;
+  const txtSh = heroUrl
+    ? heroMobile
+      ? "0 1px 3px rgba(0,0,0,0.5)"
+      : "0 1px 3px rgba(0,0,0,0.95), 0 2px 22px rgba(0,0,0,0.55)"
+    : undefined;
   const whisperSh = heroUrl
-    ? "0 1px 3px rgba(0,0,0,0.98), 0 2px 16px rgba(0,0,0,0.75), 0 0 1px rgba(0,0,0,1)"
+    ? heroMobile
+      ? "0 1px 3px rgba(0,0,0,0.5)"
+      : "0 1px 3px rgba(0,0,0,0.98), 0 2px 16px rgba(0,0,0,0.75), 0 0 1px rgba(0,0,0,1)"
     : undefined;
 
   return (
@@ -33,7 +40,7 @@ export default function SuggestionExperienceCard({
         boxSizing: "border-box",
         position: "relative",
         WebkitTapHighlightColor: "transparent",
-        border: "1.5px solid rgba(255,255,255,0.14)",
+        border: heroMobile ? "1px solid rgba(255,255,255,0.12)" : "1.5px solid rgba(255,255,255,0.14)",
         borderLeft: `3px solid ${accent}`,
         borderRadius: cardRadius,
         background: heroUrl ? "transparent" : "rgba(255,159,67,0.09)",
@@ -72,7 +79,15 @@ export default function SuggestionExperienceCard({
               inset: 0,
               zIndex: 1,
               pointerEvents: "none",
-              background: `linear-gradient(
+              background: heroMobile
+                ? `linear-gradient(
+                180deg,
+                rgba(0,0,0,0.5) 0%,
+                rgba(0,0,0,0.56) 38%,
+                rgba(0,0,0,0.62) 72%,
+                rgba(0,0,0,0.65) 100%
+              )`
+                : `linear-gradient(
                 180deg,
                 rgba(10,7,5,0.18) 0%,
                 rgba(10,7,5,0.32) 20%,
@@ -92,9 +107,11 @@ export default function SuggestionExperienceCard({
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          padding: "16px 16px 18px",
+          padding: heroMobile ? "10px 10px 14px" : "16px 16px 18px",
           background: heroUrl
-            ? "linear-gradient(90deg, rgba(10,7,5,0.82) 0%, rgba(10,7,5,0.62) 48%, rgba(10,7,5,0.22) 100%)"
+            ? heroMobile
+              ? "linear-gradient(90deg, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.5) 52%, rgba(0,0,0,0.22) 100%)"
+              : "linear-gradient(90deg, rgba(10,7,5,0.82) 0%, rgba(10,7,5,0.62) 48%, rgba(10,7,5,0.22) 100%)"
             : undefined,
         }}
       >
@@ -148,14 +165,23 @@ export default function SuggestionExperienceCard({
           <div
             style={
               heroUrl
-                ? {
-                    textShadow: txtSh,
-                    padding: "12px 14px",
-                    marginBottom: 6,
-                    borderRadius: 10,
-                    background: "rgba(10,7,5,0.76)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                  }
+                ? heroMobile
+                  ? {
+                      textShadow: txtSh,
+                      padding: "0",
+                      marginBottom: 6,
+                      borderRadius: 0,
+                      background: "rgba(0,0,0,0.28)",
+                      border: "none",
+                    }
+                  : {
+                      textShadow: txtSh,
+                      padding: "12px 14px",
+                      marginBottom: 6,
+                      borderRadius: 10,
+                      background: "rgba(10,7,5,0.76)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                    }
                 : { textShadow: txtSh }
             }
           >
@@ -203,10 +229,10 @@ export default function SuggestionExperienceCard({
               lineHeight: 1.5,
               marginBottom: disclaimer ? 8 : 10,
               textShadow: heroUrl ? whisperSh : txtSh,
-              padding: heroUrl ? "10px 12px" : undefined,
-              borderRadius: heroUrl ? 8 : undefined,
-              background: heroUrl ? "rgba(10,7,5,0.72)" : undefined,
-              border: heroUrl ? "1px solid rgba(255,255,255,0.07)" : undefined,
+              padding: heroUrl ? (heroMobile ? "8px 0" : "10px 12px") : undefined,
+              borderRadius: heroUrl ? (heroMobile ? 0 : 8) : undefined,
+              background: heroUrl ? (heroMobile ? "rgba(0,0,0,0.35)" : "rgba(10,7,5,0.72)") : undefined,
+              border: heroUrl ? (heroMobile ? "none" : "1px solid rgba(255,255,255,0.07)") : undefined,
             }}
           >
             {whisper}

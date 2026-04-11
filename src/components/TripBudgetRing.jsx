@@ -6,7 +6,7 @@ const SEGMENTS_COMPACT = 8;
 /**
  * Planned spend vs expedition budget — segmented bar + total (Trip Console hero stat).
  */
-export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDGET", displayAmount = "", compact = false, helpTip = "" }) {
+export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDGET", displayAmount = "", compact = false, helpTip = "", helpTipDesktopOnly = true }) {
   const safeCap = cap > 0 ? cap : 0;
   const raw = safeCap > 0 ? planned / safeCap : 0;
   const over = safeCap > 0 && planned > safeCap;
@@ -59,7 +59,7 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
         >
           {labelText}
         </span>
-        {helpTip ? <HelpTip noLeadingMargin text={helpTip} /> : null}
+        {helpTip ? <HelpTip noLeadingMargin desktopOnly={helpTipDesktopOnly} text={helpTip} /> : null}
       </div>
       <div
         style={{
@@ -126,7 +126,7 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
             textAlign: "center",
           }}
         >
-          ALLOC
+          PLANNED
         </span>
       ) : null}
       {displayAmount ? (

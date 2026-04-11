@@ -3,8 +3,10 @@ import { createPortal } from "react-dom";
 import { useMobile } from "../hooks/useMobile";
 
 /** Small "?" help control: hover on desktop, tap to pin on mobile. Tooltip portals to document.body to avoid clipping. */
-export default function HelpTip({ text, noLeadingMargin = false, compact = false }) {
+export default function HelpTip({ text, noLeadingMargin = false, compact = false, desktopOnly = false }) {
   const isMobile = useMobile();
+  if (desktopOnly && isMobile) return null;
+
   const [hover, setHover] = useState(false);
   const [pinned, setPinned] = useState(false);
   const rootRef = useRef(null);
@@ -17,13 +19,41 @@ export default function HelpTip({ text, noLeadingMargin = false, compact = false
     const r = btnRef.current.getBoundingClientRect();
     const gap = 8;
     const maxW = "min(300px, calc(100vw - 32px))";
+    const centerX = r.left + r.width / 2;
+    const flipped = centerX > window.innerWidth / 2;
+
     if (isMobile) {
-      const cx = r.left + r.width / 2;
+      if (flipped) {
+        setTipStyle({
+          position: "fixed",
+          right: Math.max(8, window.innerWidth - r.right),
+          top: r.bottom + gap,
+          left: "auto",
+          transform: "none",
+          maxWidth: maxW,
+          width: "max-content",
+          zIndex: 200000,
+        });
+      } else {
+        const cx = r.left + r.width / 2;
+        setTipStyle({
+          position: "fixed",
+          left: Math.max(16, Math.min(window.innerWidth - 16, cx)),
+          top: r.bottom + gap,
+          right: "auto",
+          transform: "translateX(-50%)",
+          maxWidth: maxW,
+          width: "max-content",
+          zIndex: 200000,
+        });
+      }
+    } else if (flipped) {
       setTipStyle({
         position: "fixed",
-        left: Math.max(16, Math.min(window.innerWidth - 16, cx)),
-        top: r.bottom + gap,
-        transform: "translateX(-50%)",
+        right: Math.max(8, window.innerWidth - r.right),
+        top: r.top - gap,
+        left: "auto",
+        transform: "translateY(-100%)",
         maxWidth: maxW,
         width: "max-content",
         zIndex: 200000,
@@ -33,6 +63,7 @@ export default function HelpTip({ text, noLeadingMargin = false, compact = false
         position: "fixed",
         left: r.left + r.width / 2,
         top: r.top - gap,
+        right: "auto",
         transform: "translate(-50%, -100%)",
         maxWidth: maxW,
         width: "max-content",

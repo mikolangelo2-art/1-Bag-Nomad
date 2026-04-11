@@ -564,14 +564,14 @@ Return ONLY a JSON array:
           </div>
           <div style={{position:'relative',flex:1,minHeight:0}}>
             <div style={{position:'absolute',top:8,right:10,zIndex:2,pointerEvents:'auto'}}>
-              <HelpTip compact noLeadingMargin text="Your primary bag target — 15 lbs keeps you carry-on compliant on most airlines worldwide" />
+              <HelpTip compact noLeadingMargin desktopOnly text="Your primary bag target — 15 lbs keeps you carry-on compliant on most airlines worldwide" />
             </div>
             <CircularRing value={parseFloat((bpW*wM).toFixed(1))} max={wLim} label="MAIN BAG" sublabel="carry-on limit" color="#00E5FF" unit={unit}/>
           </div>
           <div style={{width:'1px',background:'rgba(255,255,255,0.06)',flexShrink:0}}/>
           <div style={{position:'relative',flex:1,minHeight:0}}>
             <div style={{position:'absolute',top:8,right:10,zIndex:2,pointerEvents:'auto'}}>
-              <HelpTip compact noLeadingMargin text="Track how much space your gear takes up — as you add items, this shows whether everything will actually fit in your bag" />
+              <HelpTip compact noLeadingMargin desktopOnly text="Track how much space your gear takes up — as you add items, this shows whether everything will actually fit in your bag" />
             </div>
             <CircularRing value={parseFloat(bpV.toFixed(1))} max={VL} label="MAIN BAG" sublabel="volume limit" color="#FF9F43" unit="L"/>
           </div>
@@ -582,9 +582,9 @@ Return ONLY a JSON array:
             <div key={s.label} className={s.label==="GEAR READY"&&gearPct>=100?"pack-gear-ready-seal--full":undefined} style={{background:"rgba(0,0,0,0.25)",border:`1.5px solid ${s.color}55`,borderTop:`1.5px solid ${s.color}99`,borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:`0 0 12px ${s.color}30, inset 0 1px 0 ${s.color}55`}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:3,marginBottom:2,flexWrap:"wrap",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.2}}>
                 <span style={{fontSize:9,fontWeight:700,color:"rgba(255,255,255,0.55)",letterSpacing:'0.06em'}}>{s.label}</span>
-                {s.label==="PERSONAL BAG"&&<HelpTip compact noLeadingMargin text="Your personal item — the under-seat bag that travels separately from your main carry-on" />}
-                {s.label==="GEAR READY"&&<HelpTip compact noLeadingMargin text="How much of your kit you already own — everything else becomes your pre-departure shopping list" />}
-                {s.label==="STILL NEED"&&<HelpTip compact noLeadingMargin text="Estimated spend to complete your pack — built from your gear list and what's still unpurchased" />}
+                {s.label==="PERSONAL BAG"&&<HelpTip compact noLeadingMargin desktopOnly text="Your personal item — the under-seat bag that travels separately from your main carry-on" />}
+                {s.label==="GEAR READY"&&<HelpTip compact noLeadingMargin desktopOnly text="How much of your kit you already own — everything else becomes your pre-departure shopping list" />}
+                {s.label==="STILL NEED"&&<HelpTip compact noLeadingMargin desktopOnly text="Estimated spend to complete your pack — built from your gear list and what's still unpurchased" />}
               </div>
               <div style={{fontSize:isMobile?13:18,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.value}</div>
             </div>
