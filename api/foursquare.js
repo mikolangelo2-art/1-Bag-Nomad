@@ -39,15 +39,23 @@ export default async function handler(req, res) {
     params.set("near", nearStr.trim());
   }
 
+  const timeoutMs = 8000;
   try {
     const searchUrl = `https://api.foursquare.com/v3/places/search?${params.toString()}`;
-    const searchRes = await fetch(searchUrl, {
-      headers: {
-        Authorization: key,
-        Accept: "application/json",
-        "X-Places-Api-Version": "2025-01-01",
-      },
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    let searchRes;
+    try {
+      searchRes = await fetch(searchUrl, {
+        headers: {
+          Authorization: key,
+          Accept: "application/json",
+        },
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
 
     const data = await searchRes.json();
 
@@ -89,9 +97,15 @@ export default async function handler(req, res) {
 
     res.status(200).json({ results });
   } catch (err) {
-    res.status(500).json({
-      error: String(err?.message || err),
+    const aborted =
+      err?.name === "AbortError" ||
+      (typeof err?.message === "string" && /aborted|abort/i.test(err.message));
+    res.status(aborted ? 504 : 500).json({
+      error: aborted
+        ? `Foursquare search exceeded ${timeoutMs}ms (aborted)`
+        : String(err?.message || err),
       keyPreview: keyPreview(),
+      ...(aborted ? { timedOut: true, timeoutMs } : {}),
     });
   }
 }
