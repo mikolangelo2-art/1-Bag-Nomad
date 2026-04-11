@@ -1,4 +1,17 @@
 /* Vite shell — expedition UI is styled via theme + App-injected CSS */
+/* Co-Architect composer: solid charcoal on the field itself (backup if App <style> parse fails) */
+.build-root .ca-chat-input,
+.dream-root .vision-refine-input,
+[data-ca-drawer] .ca-chat-input {
+  background-color: #0C1520 !important;
+  background-image: none !important;
+}
+.build-root .ca-chat-input-wrap,
+.dream-root .ca-chat-input-wrap,
+[data-ca-drawer] .ca-chat-input-wrap {
+  background-color: #0C1520 !important;
+}
+
 #root {
   width: 100%;
   max-width: 100%;

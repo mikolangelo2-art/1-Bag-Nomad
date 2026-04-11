@@ -155,7 +155,6 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
   .mc-tab{font-size:11px;padding:12px 16px}
   .chat-bubble{font-size:12px}
   .intel-section-label{font-size:12px}
-}
 
 .dream-content{max-width:800px;padding:40px 0 70px}
 .mc-content{padding:22px 36px}
@@ -168,7 +167,7 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 .vision-ta{font-size:17px;padding:16px 20px}
 .launch-btn{font-size:15px;padding:20px}
 .mc-tab{font-size:11px;padding:12px 16px}
-.chat-bubble{font-size:12px}}
+.chat-bubble{font-size:12px}
 
 .dream-root,.mc-root,.build-root{max-width:900px!important;margin:0 auto!important}
 @media(max-width:599px){.dream-root,.mc-root,.build-root{max-width:100%!important;margin:0!important;padding:0!important;width:100%!important}.dream-content{max-width:100%!important;margin:0!important;padding:14px 12px 80px!important;width:100%!important;box-sizing:border-box!important}}
@@ -182,7 +181,7 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 .vision-ta{font-size:17px!important;padding:16px 20px!important}
 .launch-btn{font-size:15px!important;padding:20px!important}
 .mc-tab{font-size:11px!important;padding:12px 16px!important}
-.chat-bubble{font-size:12px!important}}
+.chat-bubble{font-size:12px!important}
 @media(min-width:900px){html,body{font-size:18px}.dream-content{max-width:860px;margin:0 auto;padding:40px 40px 70px}.mc-content{max-width:1100px;margin:0 auto;padding:24px 48px}.overlay-pad{padding-left:48px;padding-right:48px}.g-label{font-size:18px}.g-desc{font-size:12px}.sec-label{font-size:13px;letter-spacing:5px}.f-label{font-size:12px}.f-input{font-size:16px;padding:13px 18px}.vision-ta{font-size:17px;padding:18px 22px}.launch-btn{font-size:16px;padding:22px}.mc-tab{font-size:12px;padding:14px 18px}.chat-bubble{font-size:12px}}
 .dream-root{font-family:var(--lux-font-body,'Inter',system-ui,-apple-system,sans-serif);min-height:100vh;color:var(--lux-text-primary,#f8f5f0);position:relative}
 .dream-content{position:relative;z-index:1;padding:26px 0 44px;max-width:720px;margin:0 auto}.mc-content{padding:20px 32px}.overlay-pad{padding-left:32px;padding-right:32px}.build-root,.mc-root{font-size:15px}.g-label{font-size:15px}.g-desc{font-size:10px}.launch-btn{font-size:15px}.sec-label{font-size:10px;letter-spacing:0.08em}.f-input{font-size:14px}.f-label{font-size:10px}}
@@ -203,7 +202,7 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 .f-label{font-size:13px;color:rgba(255,159,67,0.88);letter-spacing:0.10em}
 .f-input{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.30);border-radius:9px;color:#FFF;font-size:12px;padding:9px 13px;font-family:'Inter',system-ui,-apple-system,sans-serif;outline:none;width:100%;box-sizing:border-box;transition:border-color 0.2s,box-shadow 0.2s}
 .f-input:focus{border-color:rgba(255,159,67,0.65);box-shadow:0 0 0 2px rgba(255,159,67,0.15),0 0 20px rgba(255,159,67,0.1)}.f-input::placeholder{color:rgba(255,255,255,0.40)}
-input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.45)!important;font-style:italic}.ca-chat-input::placeholder,.vision-refine-input::placeholder{font-family:'Inter',system-ui,-apple-system,sans-serif!important;font-size:14px!important;color:rgba(255,255,255,0.4)!important;font-style:normal!important}.ca-chat-input-wrap{background-color:#0C1520!important;border:1px solid rgba(255,255,255,0.14)!important;border-radius:8px;box-sizing:border-box!important;transition:border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)}.ca-chat-input-wrap:focus-within{border-color:rgba(255,255,255,0.32)!important;box-shadow:0 0 0 2px rgba(255,255,255,0.06)!important}.build-root .ca-chat-input,.dream-root .vision-refine-input,[data-ca-drawer] .ca-chat-input{background:transparent!important;background-color:transparent!important;-webkit-appearance:none!important;appearance:none!important;border:none!important;box-shadow:none!important}.build-root .ca-chat-input:-webkit-autofill,.dream-root .vision-refine-input:-webkit-autofill,[data-ca-drawer] .ca-chat-input:-webkit-autofill{-webkit-text-fill-color:#FFF!important;-webkit-box-shadow:0 0 0 1000px #0C1520 inset!important;transition:background-color 99999s ease-out 0s}input[type="date"]{-webkit-appearance:none;appearance:none}input[type="date"]::-webkit-calendar-picker-indicator{opacity:0;width:28px;cursor:pointer;position:relative;z-index:2}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.45)!important;font-style:italic}.ca-chat-input::placeholder,.vision-refine-input::placeholder{font-family:'Inter',system-ui,-apple-system,sans-serif!important;font-size:14px!important;color:rgba(255,255,255,0.4)!important;font-style:normal!important}.ca-chat-input-wrap{background-color:#0C1520!important;border:1px solid rgba(255,255,255,0.14)!important;border-radius:8px;box-sizing:border-box!important;transition:border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)}.ca-chat-input-wrap:focus-within{border-color:rgba(255,255,255,0.32)!important;box-shadow:0 0 0 2px rgba(255,255,255,0.06)!important}.build-root .ca-chat-input,.dream-root .vision-refine-input,[data-ca-drawer] .ca-chat-input{background-color:#0C1520!important;background-image:none!important;-webkit-appearance:none!important;appearance:none!important;border:none!important;box-shadow:none!important}.build-root .ca-chat-input:-webkit-autofill,.dream-root .vision-refine-input:-webkit-autofill,[data-ca-drawer] .ca-chat-input:-webkit-autofill{-webkit-text-fill-color:#FFF!important;-webkit-box-shadow:0 0 0 1000px #0C1520 inset!important;transition:background-color 99999s ease-out 0s}input[type="date"]{-webkit-appearance:none;appearance:none}input[type="date"]::-webkit-calendar-picker-indicator{opacity:0;width:28px;cursor:pointer;position:relative;z-index:2}
 .launch-btn{width:100%;padding:17px;border-radius:14px;border:none;font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;letter-spacing:2.5px;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s}
 .launch-btn.off{background:linear-gradient(135deg,#8a3515 0%,#A9461D 40%,#C4571E 70%,#E06830 100%);color:rgba(255,255,255,0.5);cursor:default}
 .launch-btn.on{background:linear-gradient(135deg,#C4571E 0%,#E06830 30%,#FF9F43 60%,#FFD93D 100%);color:#FFF;animation:launchPulse 2.8s ease-in-out infinite;box-shadow:0 0 24px rgba(255,159,67,0.3),0 0 48px rgba(255,217,61,0.15)}
