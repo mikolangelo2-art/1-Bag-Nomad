@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { fmt, fD } from '../utils/dateHelpers';
-import { loadSeg } from '../utils/storageHelpers';
+import { loadSeg, TI } from '../utils/storageHelpers';
 import { findSuggestionForSegment, flatPhaseIndexForSegment, prevSegmentNameForSeg, STATUS_CFG } from '../utils/tripConsoleHelpers';
 import SegmentRow from './SegmentRow';
 import BottomSheet from './BottomSheet';
@@ -53,28 +53,36 @@ function PhaseCard({phase,intelData,idx,autoOpen=false,onTap=null,allSuggestions
   const phaseStatus=firstSeg.status||'planning';
   const statusDot=STATUS_CFG[phaseStatus]?.color||STATUS_CFG.planning.color;
 
-  // ── Mobile: slim itinerary row + BottomSheet (or page nav) ──────
+  // ── Mobile: slim itinerary row + BottomSheet (or page nav) — Session 51A hierarchy ──────
+  const seg0=phase.segments?.[0];
+  const destTitle=(seg0?.name||phase.name||"").trim();
+  const typeStr=seg0?`${TI[seg0.type]||"✈️"} ${seg0.type}`:"";
   if(isMobile) return(
     <>
       <div className="tap-scale" onClick={()=>onTap?onTap(phase):setSheetOpen(true)}
         onMouseOver={e=>{e.currentTarget.style.background='rgba(10,7,5,0.62)';e.currentTarget.style.border='1.5px solid rgba(0,229,255,0.48)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.5),inset 0 1px 0 rgba(232,220,200,0.11),inset 1px 0 0 rgba(0,229,255,0.18),inset -1px 0 0 rgba(0,229,255,0.18),inset 0 -1px 0 rgba(0,229,255,0.10)';}}
         onMouseOut={e=>{e.currentTarget.style.background='rgba(10,7,5,0.50)';e.currentTarget.style.border='1.5px solid rgba(0,229,255,0.30)';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.4),inset 0 1px 0 rgba(232,220,200,0.07),inset 1px 0 0 rgba(0,229,255,0.15),inset -1px 0 0 rgba(0,229,255,0.15),inset 0 -1px 0 rgba(0,229,255,0.08)';}}
         style={{display:'flex',flexDirection:'column',padding:'20px 14px',background:'rgba(23,27,32,0.72)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(0,229,255,0.28)',borderRadius:18,marginBottom:0,boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 0 1px rgba(201,160,76,0.08), 0 0 40px rgba(201,160,76,0.07), inset 0 1px 0 rgba(248,245,240,0.06)',animation:`fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx*0.07}s both`}}>
-        {/* Row 1: badge + flag + name + budget */}
-        <div style={{display:'flex',alignItems:'center',gap:8,width:'100%',overflow:'hidden'}}>
+        <div style={{display:'flex',alignItems:'flex-start',gap:10,width:'100%',overflow:'hidden'}}>
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
             <div style={{width:24,height:24,borderRadius:'50%',background:`${phase.color}16`,border:`1.5px solid ${phase.color}52`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:700,color:phase.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>{phase.id}</div>
             <span style={{fontSize:20,lineHeight:1}}>{phase.flag}</span>
           </div>
-          <div style={{flex:1,fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:500,color:'#F8F5F0',lineHeight:1.1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',minWidth:0}}>{phase.name}</div>
-          <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
-            {plannedOverBudget&&<span style={{fontSize:10,fontWeight:700,letterSpacing:0.5,color:'#FF6B6B',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>⚠ OVER</span>}
-            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:700,color:'#c9a04c',whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:600,color:'#FFFFFF',lineHeight:1.15,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{destTitle}</div>
+            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:'rgba(255,255,255,0.5)',marginTop:4,lineHeight:1.35}}>{phase.country}{typeStr?` · ${typeStr}`:""}</div>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,marginTop:8,flexWrap:'wrap'}}>
+              <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:'rgba(255,255,255,0.45)'}}>{fD(phase.arrival)} – {fD(phase.departure)}</span>
+              <span style={{display:'flex',alignItems:'center',gap:8}}>
+                <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,fontWeight:700,color:'#00D4FF'}}>{phase.totalNights}N</span>
+                {phase.totalDives>0&&<span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:'rgba(255,255,255,0.5)'}}>🤿{phase.totalDives}</span>}
+              </span>
+            </div>
           </div>
-        </div>
-        {/* Row 2: date + nights/dives */}
-        <div style={{display:'flex',alignItems:'center',gap:6,marginTop:5,paddingLeft:38,overflow:'hidden',width:'100%'}}>
-          <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,fontWeight:500,color:'rgba(255,255,255,0.75)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',flex:1,minWidth:0}}>{fD(phase.arrival)} – {fD(phase.departure)} · {phase.totalNights}N{phase.totalDives>0?` · 🤿${phase.totalDives}`:''}</span>
+          <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:4,flexShrink:0}}>
+            {plannedOverBudget&&<span style={{fontSize:10,fontWeight:700,letterSpacing:0.5,color:'#FF6B6B',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>⚠ OVER</span>}
+            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,fontWeight:700,color:'#D4AF37',whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</div>
+          </div>
         </div>
       </div>
       {!onTap&&<BottomSheet open={sheetOpen} onClose={()=>setSheetOpen(false)} zIndex={500} hideClose={anyAskOpen}>

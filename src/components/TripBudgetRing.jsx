@@ -6,7 +6,7 @@ const SEGMENTS_COMPACT = 8;
 /**
  * Planned spend vs expedition budget — segmented bar + total (Trip Console hero stat).
  */
-export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDGET", displayAmount = "", compact = false, helpTip = "", helpTipDesktopOnly = true }) {
+export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDGET", displayAmount = "", compact = false, helpTip = "", helpTipDesktopOnly = true, mobileStatBar = false }) {
   const safeCap = cap > 0 ? cap : 0;
   const raw = safeCap > 0 ? planned / safeCap : 0;
   const over = safeCap > 0 && planned > safeCap;
@@ -14,7 +14,7 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
   const pctShown = Math.round(fillRatio * 100);
   const n = compact ? SEGMENTS_COMPACT : SEGMENTS_DESKTOP;
   const filled = safeCap > 0 ? Math.min(n, Math.round(fillRatio * n)) : 0;
-  const fillColor = over ? "#FF6B6B" : "#C9A04C";
+  const fillColor = over ? "#FF6B6B" : mobileStatBar && compact ? "#D4AF37" : "#C9A04C";
   const segH = compact ? 4 : 5;
   const gap = compact ? 2 : 2;
 
@@ -53,8 +53,9 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
           style={{
             fontSize: compact ? 8 : 10,
             fontWeight: 700,
-            color: "rgba(248,245,240,0.48)",
+            color: mobileStatBar && compact ? "rgba(255,255,255,0.5)" : "rgba(248,245,240,0.48)",
             letterSpacing: compact ? 2 : 2.6,
+            textTransform: mobileStatBar && compact ? "uppercase" : "none",
           }}
         >
           {labelText}
@@ -108,7 +109,7 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
             fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
             lineHeight: 1,
             flexShrink: 0,
-            textShadow: over ? "none" : "0 0 14px rgba(201,160,76,0.22)",
+            textShadow: over ? "none" : mobileStatBar && compact ? "0 0 12px rgba(212,175,55,0.2)" : "0 0 14px rgba(201,160,76,0.22)",
           }}
         >
           {pctShown}%
@@ -135,11 +136,11 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
             fontSize: compact ? 13 : 20,
             fontWeight: 700,
             lineHeight: 1.05,
-            color: "#c9a04c",
+            color: mobileStatBar && compact ? "#D4AF37" : "#c9a04c",
             fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
             marginTop: compact ? 0 : 0,
             textAlign: "center",
-            textShadow: "0 0 22px rgba(201,160,76,0.24)",
+            textShadow: mobileStatBar && compact ? "0 0 18px rgba(212,175,55,0.22)" : "0 0 22px rgba(201,160,76,0.24)",
           }}
         >
           {displayAmount}
@@ -164,7 +165,7 @@ export default function TripBudgetRing({ planned = 0, cap = 0, labelText = "BUDG
           style={{
             fontSize: 8,
             fontWeight: 600,
-            color: "rgba(248,245,240,0.38)",
+            color: mobileStatBar && compact ? "rgba(255,255,255,0.35)" : "rgba(248,245,240,0.38)",
             letterSpacing: 1.5,
             marginTop: 1,
             fontFamily: "'Inter',system-ui,-apple-system,sans-serif",

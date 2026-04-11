@@ -88,7 +88,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
   }
 
   const heroStats=[{label:"DEPARTS IN",value:daysToDepart,unit:"DAYS",color:"#c9a04c",glow:"rgba(201,160,76,0.32)"},{label:"NIGHTS",value:totalNights,unit:"NIGHTS",color:"#F8F5F0",glow:"rgba(248,245,240,0.22)"},...(totalDives>0?[{label:"DIVES",value:totalDives,unit:"DIVES",color:"#00E5FF",glow:"rgba(0,229,255,0.4)"}]:[]),{label:"BUDGET",value:fmt(totalBudget),unit:"TOTAL",color:"#c9a04c",glow:"rgba(201,160,76,0.32)"}];
-  const mobileHeroCells=[{label:"DEPARTS IN",value:daysToDepart,sub:"DAYS",color:"#F8F5F0",kind:"stat"},{label:"NIGHTS",value:totalNights,sub:"NIGHTS",color:"#F8F5F0",kind:"stat"},...(totalDives>0?[{label:"DIVES",value:totalDives,sub:"DIVES",color:"#00E5FF",kind:"stat"}]:[]),{kind:"budget"}];
+  const mobileHeroCells=[{label:"DEPARTS IN",value:daysToDepart,sub:"DAYS",color:"#F59E0B",kind:"stat"},{label:"NIGHTS",value:totalNights,sub:"NIGHTS",color:"#FFFFFF",kind:"stat"},...(totalDives>0?[{label:"DIVES",value:totalDives,sub:"DIVES",color:"#FFFFFF",kind:"stat"}]:[]),{kind:"budget"}];
   const TABS=[{id:"next",label:"🗺️ EXPEDITION"},{id:"budget",label:"💰 BUDGET"},{id:"book",label:"🗓 TIMELINE"},{id:"intel",label:"🔭 INTEL"},{id:"blueprint",label:isMobile?"✦":"✦ BLUEPRINT"}];
   const allSegD=loadSeg();
   const totalPlannedSpend=segPhases.reduce((s,p)=>s+computePhasePlannedSpend(p,allSegD).total,0);
@@ -189,15 +189,15 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                 {mobileHeroCells.map((s)=>(
                   <div key={s.kind==="budget"?"budget":s.label} style={{textAlign:'center',padding:'5px 4px 6px'}}>
                     {s.kind==="budget"?(
-                      <TripBudgetRing compact planned={totalPlannedSpend} cap={totalBudget} labelText="BUDGET" displayAmount={fmt(totalBudget)} helpTip="Your estimated expedition total — tap phases to adjust individual costs" />
+                      <TripBudgetRing compact mobileStatBar planned={totalPlannedSpend} cap={totalBudget} labelText="BUDGET" displayAmount={fmt(totalBudget)} helpTip="Your estimated expedition total — tap phases to adjust individual costs" />
                     ):(
                       <>
                         <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:2,marginBottom:3}}>
-                          <div style={{fontSize:8,letterSpacing:'0.1em',color:'rgba(248,245,240,0.52)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{s.label}</div>
+                          <div style={{fontSize:8,letterSpacing:'0.12em',color:'rgba(255,255,255,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,textTransform:'uppercase'}}>{s.label}</div>
                           {s.label==='DIVES'&&<HelpTip noLeadingMargin compact desktopOnly text="Planned dives logged across your dive destinations" />}
                         </div>
-                        <div style={{fontSize:21,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.05,textShadow:s.color==='#c9a04c'?'0 0 28px rgba(201,160,76,0.25)':'none'}}>{s.value}</div>
-                        <div style={{fontSize:9,color:'rgba(248,245,240,0.58)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:2,letterSpacing:'0.06em'}}>{s.sub}</div>
+                        <div style={{fontSize:21,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.05,textShadow:s.color==='#F59E0B'?'0 0 24px rgba(245,158,11,0.28)':'none'}}>{s.value}</div>
+                        <div style={{fontSize:9,color:'rgba(255,255,255,0.35)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:2,letterSpacing:'0.06em',textTransform:'uppercase'}}>{s.sub}</div>
                       </>
                     )}
                   </div>

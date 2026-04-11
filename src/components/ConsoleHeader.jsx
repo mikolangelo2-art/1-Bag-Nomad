@@ -59,12 +59,12 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
   return (
     <>
     <div style={{background:bg,borderBottom:`1px solid ${bc}`,backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",flexShrink:0}}>
-      {/* Top row: [left slot] [center: logo+wordmark] [right slot] */}
+      {/* Top row: [left slot] [center: logo+wordmark] [right slot] — on mobile Dream, screenLabel moves below logo to avoid overlap */}
       <div style={{display:"flex",alignItems:"center",padding:isMobile?"5px 8px":"7px 14px",gap:6}}>
         {/* Left slot */}
         <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"flex-start",justifyContent:"center",gap:2}}>
           {(!isMobile&&(isTrip||isPack)) ? <TripBtn active={isTrip}/> : null}
-          {screenLabel&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#FFD93D",letterSpacing:2,textTransform:"uppercase",paddingLeft:2}}>{screenLabel}</div>}
+          {screenLabel&&!(isMobile&&isDream)&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#FFD93D",letterSpacing:2,textTransform:"uppercase",paddingLeft:2}}>{screenLabel}</div>}
         </div>
         {/* Center: logo + wordmark */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
@@ -86,6 +86,11 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
           ) : rightSlot||null}
         </div>
       </div>
+      {isMobile&&isDream&&screenLabel&&(
+        <div style={{textAlign:"center",padding:"0 12px 8px"}}>
+          <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:10,letterSpacing:3,color:"rgba(255,255,255,0.5)",textTransform:"uppercase"}}>{screenLabel}</div>
+        </div>
+      )}
       {/* Tagline bar */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:isMobile?10:28,padding:isMobile?"10px 14px":"14px 32px",borderTop:`1px solid ${bc}`,border:'1px solid rgba(255,159,67,0.35)',borderTopColor:'rgba(255,159,67,0.55)',borderRadius:isMobile?8:0,margin:isMobile?'0 8px':0,background:`linear-gradient(90deg,transparent,${isDream?"rgba(32,15,0,0.75)":isTrip?"rgba(0,20,45,0.65)":"rgba(40,16,0,0.65)"},transparent)`,boxShadow:'inset 0 1px 0 rgba(255,159,67,0.40),inset 0 -1px 0 rgba(255,159,67,0.08)',position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"80%",height:80,background:`radial-gradient(ellipse,${radial} 0%,transparent 70%)`,pointerEvents:"none"}}/>
