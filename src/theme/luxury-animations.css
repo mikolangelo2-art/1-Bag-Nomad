@@ -73,12 +73,11 @@
   animation: coArchitectPulse 2.5s ease-in-out infinite;
 }
 
-/* Trip console budget ring: smooth stroke (transition driven in component) */
-.trip-budget-ring__arc {
+/* Trip console budget bar: segment fill */
+.trip-budget-bar-seg {
   transition:
-    stroke-dasharray var(--lux-dur-2) var(--lux-ease-primary),
-    stroke var(--lux-dur-1) var(--lux-ease-primary),
-    filter var(--lux-dur-1) var(--lux-ease-primary);
+    background-color var(--lux-dur-2) var(--lux-ease-primary),
+    box-shadow var(--lux-dur-1) var(--lux-ease-primary);
 }
 
 /* Pack console: weight / volume rings */
@@ -222,7 +221,7 @@
     text-shadow: none !important;
   }
 
-  .trip-budget-ring__arc,
+  .trip-budget-bar-seg,
   .pack-ring__arc,
   .pack-cat-progress-fill,
   .pack-item-name,

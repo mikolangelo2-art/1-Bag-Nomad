@@ -186,7 +186,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
               </div>
               <div style={{height:1,background:'rgba(0,229,255,0.12)'}}/>
               <div style={{display:'grid',gridTemplateColumns:`repeat(${mobileHeroCells.length},1fr)`,overflow:'hidden'}}>
-                {mobileHeroCells.map((s,i)=>(
+                {mobileHeroCells.map((s)=>(
                   <div key={s.kind==="budget"?"budget":s.label} style={{textAlign:'center',padding:'5px 4px 6px'}}>
                     {s.kind==="budget"?(
                       <TripBudgetRing compact planned={totalPlannedSpend} cap={totalBudget} labelText="BUDGET" displayAmount={fmt(totalBudget)} helpTip="Your estimated expedition total — tap phases to adjust individual costs" />
@@ -207,7 +207,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
             </div>
           );
         })():(
-          <div style={{background:'rgba(23,27,32,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.62)',borderRadius:18,padding:'5px 4px 7px',overflow:'hidden',boxShadow:'0 14px 44px rgba(0,0,0,0.42), 0 0 56px rgba(201,160,76,0.08), inset 0 1px 0 rgba(0,229,255,0.12)'}}>
+          <div style={{background:'rgba(23,27,32,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.62)',borderRadius:18,padding:'4px 4px 5px',overflow:'hidden',boxShadow:'0 14px 44px rgba(0,0,0,0.42), 0 0 56px rgba(201,160,76,0.08), inset 0 1px 0 rgba(0,229,255,0.12)'}}>
             <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
               {heroStats.map((s,i)=>(
                 <div key={s.label} style={{textAlign:"center",padding:"2px 10px 0",borderLeft:i>0?"1px solid rgba(248,245,240,0.08)":"none"}}>
