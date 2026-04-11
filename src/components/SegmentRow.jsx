@@ -30,7 +30,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
   const hasStay=segData?.stay?.name?.length>0;
   const hasActivities=(segData?.activities?.length||0)>0;
   const completedCount=[hasTransport,hasStay,hasActivities].filter(Boolean).length;
-  const planStatus=status==="booked"||status==="confirmed"?null:completedCount===0?{label:"NOT STARTED",color:"rgba(255,255,255,0.85)",bg:"rgba(255,255,255,0.12)",border:"rgba(255,255,255,0.20)"}:completedCount===1?{label:"IN PROGRESS",color:"#FF9F43",bg:"rgba(255,159,67,0.10)",border:"rgba(255,159,67,0.30)"}:completedCount===2?{label:"MOSTLY DONE",color:"#c9a04c",bg:"rgba(255,217,61,0.10)",border:"rgba(255,217,61,0.30)"}:{label:"PLANNED",color:"#69F0AE",bg:"rgba(105,240,174,0.10)",border:"rgba(105,240,174,0.30)"};
+  const planStatus=status==="booked"||status==="confirmed"?null:completedCount===0?{label:"NOT STARTED",color:"rgba(255,255,255,0.85)",bg:"rgba(255,255,255,0.12)",border:"rgba(255,255,255,0.20)"}:completedCount===1?{label:"IN PROGRESS",color:"#FF9F43",bg:"rgba(255,159,67,0.10)",border:"rgba(255,159,67,0.30)"}:completedCount===2?{label:"MOSTLY DONE",color:"#c9a04c",bg:"rgba(201,160,76,0.10)",border:"rgba(201,160,76,0.30)"}:{label:"PLANNED",color:"#69F0AE",bg:"rgba(105,240,174,0.10)",border:"rgba(105,240,174,0.30)"};
   const isCancelled=status==='cancelled';
   const borderColor=status==='planning'?tc:sc.color;
 
@@ -78,7 +78,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
             <div style={{width:7,height:7,borderRadius:"50%",background:tc,flexShrink:0,boxShadow:open?`0 0 7px ${tc}`:"none"}}/>
             <span style={{fontSize:isMobile?15:16,fontWeight:600,color:isCancelled?"rgba(255,255,255,0.4)":"rgba(255,255,255,0.95)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textDecoration:isCancelled?"line-through":"none"}}>{segment.name}</span>
             <span style={{fontSize:11,color:`${tc}bb`,background:`${tc}0e`,border:`1px solid ${tc}1e`,borderRadius:6,padding:"1px 6px",letterSpacing:0.5,fontWeight:500,whiteSpace:"nowrap",flexShrink:0}}>{segment.type?.toUpperCase()}</span>
-            <span style={{fontSize:isMobile?12:14,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",flexShrink:0,textDecoration:isCancelled?"line-through":"none"}}>{fmt(segment.budget)}</span>
+            <span style={{fontSize:isMobile?12:14,fontWeight:600,color:"rgba(201,160,76,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",flexShrink:0,textDecoration:isCancelled?"line-through":"none"}}>{fmt(segment.budget)}</span>
           </div>
           {/* Row 2: date + nights + dives */}
           <div style={{display:"flex",alignItems:"center",gap:6,marginTop:4,paddingLeft:13,minWidth:0,flexWrap:"wrap"}}>
@@ -101,9 +101,9 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
             <span style={{fontSize:11,color:open?"#00E5FF":"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>▼</span>
           </div>
         </div>
-        <button onClick={e=>{e.stopPropagation();setAskOpen(o=>!o);}} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,padding:"8px 10px",background:askOpen?"rgba(255,217,61,0.1)":"rgba(255,217,61,0.03)",border:"none",borderLeft:`1px solid rgba(255,217,61,${askOpen?"0.45":"0.22"})`,cursor:"pointer",flexShrink:0,height:"100%",minWidth:38,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} title="Ask co-architect">
-          <span style={{fontSize:11,color:askOpen?"#c9a04c":"rgba(255,217,61,0.55)",lineHeight:1,textShadow:askOpen?"0 0 8px rgba(255,217,61,0.6)":"none",animation:askOpen?"none":"glowPulse 2.5s ease-in-out infinite"}}>✦</span>
-          <span style={{fontSize:10,color:askOpen?"#c9a04c":"rgba(255,217,61,0.4)",letterSpacing:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap"}}>ASK</span>
+        <button onClick={e=>{e.stopPropagation();setAskOpen(o=>!o);}} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,padding:"8px 10px",background:askOpen?"rgba(201,160,76,0.1)":"rgba(201,160,76,0.03)",border:"none",borderLeft:`1px solid rgba(201,160,76,${askOpen?"0.45":"0.22"})`,cursor:"pointer",flexShrink:0,height:"100%",minWidth:38,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} title="Ask co-architect">
+          <span style={{fontSize:11,color:askOpen?"#c9a04c":"rgba(201,160,76,0.55)",lineHeight:1,textShadow:askOpen?"0 0 8px rgba(201,160,76,0.6)":"none",animation:askOpen?"none":"glowPulse 2.5s ease-in-out infinite"}}>✦</span>
+          <span style={{fontSize:10,color:askOpen?"#c9a04c":"rgba(201,160,76,0.4)",letterSpacing:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap"}}>ASK</span>
         </button></>}
       </div>
       {!open&&segData&&(hasTransport||hasStay||hasActivities||segData.food?.dailyBudget)&&(
@@ -115,13 +115,13 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
         </div>
       )}
       {askOpen&&(
-        <div style={{background:"rgba(0,4,14,0.95)",borderTop:"1px solid rgba(255,217,61,0.12)",padding:"10px 14px",animation:"slideOpen 0.40s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
+        <div style={{background:"rgba(0,4,14,0.95)",borderTop:"1px solid rgba(201,160,76,0.12)",padding:"10px 14px",animation:"slideOpen 0.40s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
           <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
-            <span style={{fontSize:isMobile?11:15,color:"rgba(255,217,61,0.6)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1.5}}>✦ CO-ARCHITECT · {segment.name.toUpperCase()}</span>
+            <span style={{fontSize:isMobile?11:15,color:"rgba(201,160,76,0.6)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1.5}}>✦ CO-ARCHITECT · {segment.name.toUpperCase()}</span>
             <button onClick={()=>setAskOpen(false)} style={{marginLeft:"auto",background:"none",border:"none",color:"rgba(255,255,255,0.2)",fontSize:isMobile?13:15,cursor:"pointer",lineHeight:1}}>×</button>
           </div>
           {(status==='changed'||status==='cancelled')&&<div style={{marginBottom:8,padding:"6px 9px",borderRadius:7,background:status==='changed'?"rgba(255,107,107,0.08)":"rgba(136,136,136,0.08)",border:`1px solid ${sc.color}33`}}><span style={{fontSize:10,color:sc.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1}}>Looks like something changed with this {status==='cancelled'?'booking':'segment'}. Want help finding alternatives or adjusting your timeline?</span></div>}
-          {askChat.length===0&&<div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?12:15,fontStyle:"italic",color:"rgba(255,217,61,0.45)",marginBottom:8,lineHeight:1.6}}>"Ask me anything — best dive ops, where to stay, local tips..."</div>}
+          {askChat.length===0&&<div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?12:15,fontStyle:"italic",color:"rgba(201,160,76,0.45)",marginBottom:8,lineHeight:1.6}}>"Ask me anything — best dive ops, where to stay, local tips..."</div>}
           {askChat.length>0&&<div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:8,maxHeight:160,overflowY:"auto"}}>
             {askChat.map((m,i)=>(
               <div key={i} style={{display:"flex",gap:6,flexDirection:m.role==="user"?"row-reverse":"row",alignItems:"flex-start"}}>
@@ -133,11 +133,11 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
             <div ref={askEnd}/>
           </div>}
           <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:7}}>
-            {["Best dive ops?","Where to stay?","What to skip?","Budget tips?","Local food?"].map(p=><button type="button" key={p} onClick={()=>setAskInput(p)} style={{padding:isMobile?"2px 7px":"3px 9px",borderRadius:12,border:"1px solid rgba(255,217,61,0.2)",background:"rgba(255,217,61,0.05)",color:"rgba(255,217,61,0.65)",fontSize:isMobile?10:15,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap"}}>{p}</button>)}
+            {["Best dive ops?","Where to stay?","What to skip?","Budget tips?","Local food?"].map(p=><button type="button" key={p} onClick={()=>setAskInput(p)} style={{padding:isMobile?"2px 7px":"3px 9px",borderRadius:12,border:"1px solid rgba(201,160,76,0.2)",background:"rgba(201,160,76,0.05)",color:"rgba(201,160,76,0.65)",fontSize:isMobile?10:15,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap"}}>{p}</button>)}
           </div>
           <div style={{display:"flex",gap:6}}>
             <input value={askInput} onChange={e=>setAskInput(e.target.value)} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();sendAsk();}}} placeholder={`Ask about ${segment.name}...`} style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:7,color:"#FFF",fontSize:isMobile?12:15,padding:isMobile?"6px 8px":"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",minHeight:isMobile?30:34,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
-            <button type="button" onClick={sendAsk} style={{background:"rgba(255,217,61,0.12)",border:"1px solid rgba(255,217,61,0.3)",borderRadius:7,color:"#c9a04c",fontSize:isMobile?13:15,padding:isMobile?"5px 9px":"6px 11px",cursor:"pointer",minWidth:isMobile?30:34,minHeight:isMobile?30:34,fontWeight:700}}>↑</button>
+            <button type="button" onClick={sendAsk} style={{background:"rgba(201,160,76,0.12)",border:"1px solid rgba(201,160,76,0.3)",borderRadius:7,color:"#c9a04c",fontSize:isMobile?13:15,padding:isMobile?"5px 9px":"6px 11px",cursor:"pointer",minWidth:isMobile?30:34,minHeight:isMobile?30:34,fontWeight:700}}>↑</button>
           </div>
         </div>
       )}

@@ -12,10 +12,10 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
   const sublabel=isDream?"DREAM CONSOLE":isTrip?"TRIP CONSOLE":"PACK CONSOLE";
   const dbSize=isMobile?(isDream?18:14):(isDream?36:26);
   const tlSize=isMobile?(isPack?18:14):(isPack?36:26);
-  const dbColor=isDream?"#c9a04c":isTrip?"rgba(255,217,61,0.5)":"rgba(255,217,61,0.2)";
+  const dbColor=isDream?"#c9a04c":isTrip?"rgba(201,160,76,0.5)":"rgba(201,160,76,0.2)";
   const dbWeight=isDream?900:isTrip?700:300;
-  const tlColor=isPack?"#c9a04c":isTrip?"rgba(255,217,61,0.65)":"#c9a04c";
-  const tlShadow=isPack?"0 0 28px rgba(255,217,61,0.6)":isDream?"0 0 28px rgba(255,217,61,0.5)":"none";
+  const tlColor=isPack?"#c9a04c":isTrip?"rgba(201,160,76,0.65)":"#c9a04c";
+  const tlShadow=isPack?"0 0 28px rgba(201,160,76,0.6)":isDream?"0 0 28px rgba(201,160,76,0.5)":"none";
   const logoGlow=isDream?"rgba(0,229,255,0.25)":isTrip?"rgba(0,229,255,0.35)":"rgba(196,87,30,0.5)";
   const radial=isDream?"rgba(255,159,67,0.25)":isTrip?"rgba(0,229,255,0.1)":"rgba(169,70,29,0.52)";
   const divLine=isDream?"rgba(255,159,67,0.4)":isTrip?"rgba(0,229,255,0.35)":"rgba(255,159,67,0.4)";
@@ -97,7 +97,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
       {/* Tagline bar */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:isMobile?10:28,padding:isMobile?"10px 14px":"14px 32px",borderTop:`1px solid ${bc}`,border:'1px solid rgba(255,159,67,0.35)',borderTopColor:'rgba(255,159,67,0.55)',borderRadius:isMobile?8:0,margin:isMobile?'0 8px':0,background:`linear-gradient(90deg,transparent,${isDream?"rgba(32,15,0,0.75)":isTrip?"rgba(0,20,45,0.65)":"rgba(40,16,0,0.65)"},transparent)`,boxShadow:'inset 0 1px 0 rgba(255,159,67,0.40),inset 0 -1px 0 rgba(255,159,67,0.08)',position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"80%",height:80,background:`radial-gradient(ellipse,${radial} 0%,transparent 70%)`,pointerEvents:"none"}}/>
-        <div style={{fontFamily:"'Playfair Display',serif",fontSize:dbSize,fontWeight:isMobile?400:dbWeight,color:dbColor,letterSpacing:isMobile?0:7,lineHeight:1,whiteSpace:"nowrap",textShadow:isDream?"0 0 32px rgba(255,217,61,0.7),0 0 64px rgba(169,70,29,0.4)":"none",position:"relative",textTransform:"uppercase"}}>Dream Big</div>
+        <div style={{fontFamily:"'Playfair Display',serif",fontSize:dbSize,fontWeight:isMobile?400:dbWeight,color:dbColor,letterSpacing:isMobile?0:7,lineHeight:1,whiteSpace:"nowrap",textShadow:isDream?"0 0 32px rgba(201,160,76,0.7),0 0 64px rgba(169,70,29,0.4)":"none",position:"relative",textTransform:"uppercase"}}>Dream Big</div>
         <div style={{width:1,height:isMobile?22:30,background:`linear-gradient(180deg,transparent,${divLine},transparent)`,flexShrink:0}}/>
         <div style={{fontFamily:"'Playfair Display',serif",fontSize:tlSize,fontWeight:isPack?300:100,fontStyle:"italic",color:tlColor,letterSpacing:isMobile?0:8,lineHeight:1,whiteSpace:"nowrap",position:"relative",textShadow:tlShadow}}>travel light</div>
       </div>
@@ -106,13 +106,13 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
     {isMobile&&(isTrip||isPack)&&<BottomSheet open={profileOpen} onClose={()=>setProfileOpen(false)} zIndex={700}>
       <div style={{padding:"24px 20px 32px"}}>
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:12,marginBottom:28}}>
-          <div style={{width:72,height:72,borderRadius:"50%",border:"2px solid rgba(255,217,61,0.4)",background:"rgba(255,217,61,0.06)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 28px rgba(255,217,61,0.12)"}}>
+          <div style={{width:72,height:72,borderRadius:"50%",border:"2px solid rgba(201,160,76,0.4)",background:"rgba(201,160,76,0.06)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 28px rgba(201,160,76,0.12)"}}>
             <span style={{fontSize:32}}>👤</span>
           </div>
           <div style={{textAlign:"center"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:4}}>
               <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,fontStyle:"italic",color:"#FFF",letterSpacing:1}}>1 Bag Nomad</div>
-              <div style={{padding:"2px 8px",borderRadius:12,background:"rgba(255,217,61,0.15)",border:"1px solid rgba(255,217,61,0.4)",fontSize:9,fontWeight:700,letterSpacing:2,color:"#c9a04c",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>PRO</div>
+              <div style={{padding:"2px 8px",borderRadius:12,background:"rgba(201,160,76,0.15)",border:"1px solid rgba(201,160,76,0.4)",fontSize:9,fontWeight:700,letterSpacing:2,color:"#c9a04c",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>PRO</div>
             </div>
             <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1}}>explorer@1bagnomad.com</div>
           </div>

@@ -174,7 +174,7 @@ RULES:
                 height:5,
                 borderRadius:"50%",
                 background:n===1?"rgba(255,159,67,0.85)":n===2?"rgba(255,159,67,0.55)":n===3?"#c9a04c":"rgba(0,229,255,0.15)",
-                boxShadow:n===1?"0 0 6px rgba(255,159,67,0.5)":n===3?"0 0 8px rgba(255,217,61,0.7)":"none",
+                boxShadow:n===1?"0 0 6px rgba(255,159,67,0.5)":n===3?"0 0 8px rgba(201,160,76,0.7)":"none",
                 transition:"all 0.3s ease",
                 flexShrink:0,
               }}
@@ -192,7 +192,7 @@ RULES:
       </div>
       <div style={{display:"flex",alignItems:"center",gap:12,padding:isMobile?"8px 12px":"8px 14px",background:"rgba(255,255,255,0.02)",borderBottom:"1px solid #111D2A",flexShrink:0}}>
         <span style={{fontSize:isMobile?9:11,fontWeight:700,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:isMobile?"rgba(255,255,255,0.45)":"rgba(255,255,255,0.4)",letterSpacing:2}}>DEPARTURE</span>
-        <div style={{flex:1,minWidth:0,maxWidth:isMobile?"100%":220}}><DatePickerInput value={startDate} onChange={setStartDate} style={{background:isMobile?"rgba(255,255,255,0.06)":"rgba(255,255,255,0.04)",border:isMobile?"1px solid rgba(255,255,255,0.14)":"1px solid rgba(255,255,255,0.18)",borderRadius:6,color:isMobile?"#FFFFFF":"rgba(0,229,255,0.85)",fontSize:isMobile?13:14,padding:"3px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",colorScheme:"dark"}} onFocus={e=>{e.target.style.borderColor=isMobile?"rgba(245,158,11,0.55)":"rgba(255,159,67,0.5)";e.target.style.boxShadow=isMobile?"0 0 0 2px rgba(245,158,11,0.12)":"0 0 0 2px rgba(255,159,67,0.10)";}} onBlur={e=>{e.target.style.borderColor=isMobile?"rgba(255,255,255,0.14)":"rgba(255,255,255,0.18)";e.target.style.boxShadow="none";}} aria-label="Departure date" buttonStyle={isMobile?{border:"1px solid rgba(245,158,11,0.42)",background:"rgba(245,158,11,0.12)"}:{border:"1px solid rgba(0,229,255,0.28)",background:"rgba(0,229,255,0.08)"}}/></div>
+        <div style={{flex:1,minWidth:0,maxWidth:isMobile?"100%":220}}><DatePickerInput value={startDate} onChange={setStartDate} style={{background:isMobile?"rgba(255,255,255,0.06)":"rgba(255,255,255,0.04)",border:isMobile?"1px solid rgba(255,255,255,0.14)":"1px solid rgba(255,255,255,0.18)",borderRadius:6,color:isMobile?"#FFFFFF":"rgba(0,229,255,0.85)",fontSize:isMobile?13:14,padding:"3px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",colorScheme:"dark"}} onFocus={e=>{e.target.style.borderColor=isMobile?"rgba(201,160,76,0.55)":"rgba(255,159,67,0.5)";e.target.style.boxShadow=isMobile?"0 0 0 2px rgba(201,160,76,0.12)":"0 0 0 2px rgba(255,159,67,0.10)";}} onBlur={e=>{e.target.style.borderColor=isMobile?"rgba(255,255,255,0.14)":"rgba(255,255,255,0.18)";e.target.style.boxShadow="none";}} aria-label="Departure date" buttonStyle={isMobile?{border:"1px solid rgba(201,160,76,0.42)",background:"rgba(201,160,76,0.12)"}:{border:"1px solid rgba(0,229,255,0.28)",background:"rgba(0,229,255,0.08)"}}/></div>
         <span style={{fontSize:isMobile?11:13,color:isMobile?"#FFFFFF":"rgba(255,255,255,0.35)",marginLeft:"auto",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{totalNights}n</span>
       </div>
       {isMobile&&<div style={{display:"flex",borderBottom:"1px solid #1a2535",background:"#080D14",flexShrink:0}}>
@@ -212,7 +212,7 @@ RULES:
               const isWarn=!isOver&&pct>0.9;
               const color=isOver?"#FF6B6B":isWarn?"#c9a04c":"#69F0AE";
               return(
-                <div style={{marginBottom:10,padding:"6px 10px",borderRadius:8,background:isOver?"rgba(255,107,107,0.08)":isWarn?"rgba(255,217,61,0.06)":"rgba(105,240,174,0.06)",border:`1px solid ${color}44`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <div style={{marginBottom:10,padding:"6px 10px",borderRadius:8,background:isOver?"rgba(255,107,107,0.08)":isWarn?"rgba(201,160,76,0.06)":"rgba(105,240,174,0.06)",border:`1px solid ${color}44`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                   <span style={{fontSize:12,color:"rgba(255,255,255,0.5)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1}}>{isOver?"⚠ OVER BUDGET":isWarn?"NEAR LIMIT":"ON BUDGET"}</span>
                   <span style={{fontSize:13,fontWeight:700,color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{fmt(totalCost)} / {fmt(bAmt)} {isOver?`· ${fmt(Math.abs(remaining))} over`:`· ${fmt(Math.abs(remaining))} left`}</span>
                 </div>
@@ -236,7 +236,7 @@ RULES:
                 </div>
               );
             })}
-            <div style={{padding:"10px 12px",background:"#0C1520",border:"1px solid rgba(255,255,255,0.12)",borderRadius:10,display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
+            <div style={{padding:"10px 12px",background:"#0C1520",border:"1px solid rgba(201,160,76,0.45)",borderRadius:10,display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
               <div><div style={{fontSize:15,color:"rgba(255,255,255,0.35)"}}>{items.length} stops · {countries.length} countries</div><div style={{fontSize:15,color:"rgba(105,240,174,0.85)"}}>~{fmt(Math.round(totalCost/Math.max(totalNights,1)))}/night</div></div>
               <div style={{fontSize:20,fontWeight:900,color:"#c9a04c"}}>{fmt(totalCost)}</div>
             </div>

@@ -165,10 +165,10 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
                 </div>
               </div>
             ))}
-            {det.activities.length===0&&!(suggestion?.activities?.some((_,i)=>!isDismSD(`activity_${i}`)&&!det.activities.some(x=>x.suggestionActivityIdx===i)))&&<div style={{textAlign:"center",padding:"6px 0 10px",animation:"fadeIn 0.40s cubic-bezier(0.25,0.46,0.45,0.94)"}}><div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?11:13,fontStyle:"italic",color:"rgba(255,217,61,0.35)",lineHeight:1.5}}>Add your first activity — dives, tours, day trips</div></div>}
+            {det.activities.length===0&&!(suggestion?.activities?.some((_,i)=>!isDismSD(`activity_${i}`)&&!det.activities.some(x=>x.suggestionActivityIdx===i)))&&<div style={{textAlign:"center",padding:"6px 0 10px",animation:"fadeIn 0.40s cubic-bezier(0.25,0.46,0.45,0.94)"}}><div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?11:13,fontStyle:"italic",color:"rgba(201,160,76,0.35)",lineHeight:1.5}}>Add your first activity — dives, tours, day trips</div></div>}
             {det.activities.length>0&&<div style={{marginBottom:12}}>
               {det.activities.map(a=>(
-                <div key={a.id} style={{background:"rgba(255,217,61,0.03)",border:"1px solid rgba(255,217,61,0.10)",borderRadius:8,padding:"12px 14px",marginBottom:8}}>
+                <div key={a.id} style={{background:"rgba(201,160,76,0.03)",border:"1px solid rgba(201,160,76,0.10)",borderRadius:8,padding:"12px 14px",marginBottom:8}}>
                   <div style={{display:"flex",alignItems:"flex-start",gap:8}}>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontSize:15,fontWeight:600,color:"rgba(255,255,255,0.92)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:4}}>{a.name}</div>
@@ -200,11 +200,11 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
               ))}
               <div style={{paddingTop:8,display:"flex",justifyContent:"space-between"}}>
                 <span style={{fontSize:11,color:"rgba(255,255,255,0.25)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1}}>TOTAL ACTIVITIES</span>
-                <span style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
+                <span style={{fontSize:13,fontWeight:600,color:"rgba(201,160,76,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
               </div>
             </div>}
             <div style={{padding:"9px 0px"}}>
-              <div style={{fontSize:11,color:"rgba(255,217,61,0.4)",letterSpacing:1.5,marginBottom:6,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500}}>ADD ACTIVITY</div>
+              <div style={{fontSize:11,color:"rgba(201,160,76,0.4)",letterSpacing:1.5,marginBottom:6,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500}}>ADD ACTIVITY</div>
               <div style={{display:"flex",flexDirection:isMobile?"column":"row",gap:5,marginBottom:5,overflow:"hidden"}}>
                 <div style={{flex:1,minWidth:0}}><SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#c9a04c"/></div>
                 <div style={{flex:1,minWidth:0}}><SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#c9a04c"/></div>
@@ -214,7 +214,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
                 <SDF label="TRANSIT" value={nAct.transit} onChange={v=>setNAct(a=>({...a,transit:v}))} placeholder="Taxi from hotel..." accent="#c9a04c"/>
               </div>
               <SDF label="BOOKING LINK" value={nAct.link} onChange={v=>setNAct(a=>({...a,link:v}))} placeholder="https://klook.com / dive shop..." accent="#c9a04c"/>
-              <button onClick={()=>{if(!nAct.name)return;setDet(d=>({...d,activities:[...d.activities,{...nAct,id:Date.now()}]}));setNAct({name:"",date:"",cost:"",transit:"",link:""});}} style={{marginTop:8,padding:isMobile?"5px 12px":"6px 14px",borderRadius:5,border:`1px solid rgba(255,217,61,${nAct.name?"0.4":"0.14"})`,background:nAct.name?"rgba(255,217,61,0.1)":"transparent",color:nAct.name?"#c9a04c":"rgba(255,255,255,0.18)",fontSize:isMobile?11:15,cursor:nAct.name?"pointer":"default",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:700}}>+ ADD</button>
+              <button onClick={()=>{if(!nAct.name)return;setDet(d=>({...d,activities:[...d.activities,{...nAct,id:Date.now()}]}));setNAct({name:"",date:"",cost:"",transit:"",link:""});}} style={{marginTop:8,padding:isMobile?"5px 12px":"6px 14px",borderRadius:5,border:`1px solid rgba(201,160,76,${nAct.name?"0.4":"0.14"})`,background:nAct.name?"rgba(201,160,76,0.1)":"transparent",color:nAct.name?"#c9a04c":"rgba(255,255,255,0.18)",fontSize:isMobile?11:15,cursor:nAct.name?"pointer":"default",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:700}}>+ ADD</button>
             </div>
             <div style={{marginTop:12}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code, best time..." accent="#c9a04c" multiline/></div>
           </div>}
@@ -238,7 +238,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
             </div>
             {det.food.dailyBudget&&<div style={{display:"flex",justifyContent:"space-between",padding:"8px 12px",background:"rgba(255,159,67,0.05)",border:"1px solid rgba(255,159,67,0.16)",borderRadius:7}}>
               <span style={{fontSize:12,color:"rgba(255,255,255,0.35)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{segment.nights} nights × ${det.food.dailyBudget}/day</span>
-              <span style={{fontSize:13,fontWeight:600,color:"rgba(255,217,61,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
+              <span style={{fontSize:13,fontWeight:600,color:"rgba(201,160,76,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${(parseFloat(det.food.dailyBudget)*segment.nights).toLocaleString()}</span>
             </div>}
             <SDF label="FOOD NOTES" value={det.food.notes} onChange={v=>uF("notes",v)} placeholder="Must-try dishes, market days, dietary notes..." accent="#FF9F43" multiline/>
           </div>}

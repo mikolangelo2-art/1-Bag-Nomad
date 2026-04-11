@@ -21,8 +21,8 @@ const LOGO_CSS = `
   50% { opacity: 0.15 }
 }
 @keyframes llThinkingGlow {
-  0%, 100% { opacity: 0.10; background: radial-gradient(circle, rgba(255,217,61,0.25) 0%, rgba(255,159,67,0.12) 50%, transparent 70%) }
-  50% { opacity: 0.22; background: radial-gradient(circle, rgba(255,159,67,0.30) 0%, rgba(255,217,61,0.15) 50%, transparent 70%) }
+  0%, 100% { opacity: 0.10; background: radial-gradient(circle, rgba(201,160,76,0.25) 0%, rgba(255,159,67,0.12) 50%, transparent 70%) }
+  50% { opacity: 0.22; background: radial-gradient(circle, rgba(255,159,67,0.30) 0%, rgba(201,160,76,0.15) 50%, transparent 70%) }
 }
 @keyframes llCelebratePulse {
   0% { transform: scale(1) }
@@ -30,12 +30,12 @@ const LOGO_CSS = `
   100% { transform: scale(1) }
 }
 @keyframes llCelebrateBurst {
-  0% { transform: scale(0.8); opacity: 0.6; border-color: rgba(255,217,61,0.8) }
-  100% { transform: scale(2.2); opacity: 0; border-color: rgba(255,217,61,0) }
+  0% { transform: scale(0.8); opacity: 0.6; border-color: rgba(201,160,76,0.8) }
+  100% { transform: scale(2.2); opacity: 0; border-color: rgba(201,160,76,0) }
 }
 @keyframes llCelebrateRingFlash {
-  0%, 100% { border-color: rgba(255,217,61,0.12) }
-  30% { border-color: rgba(255,217,61,0.7) }
+  0%, 100% { border-color: rgba(201,160,76,0.12) }
+  30% { border-color: rgba(201,160,76,0.7) }
 }
 `;
 
@@ -112,7 +112,7 @@ export const SharegoodLogo = memo(function SharegoodLogo({
           top: (size - ringSize) / 2, left: (size - ringSize) / 2,
           width: ringSize, height: ringSize,
           borderRadius: "50%",
-          border: "1.5px solid rgba(255,217,61,0.45)",
+          border: "1.5px solid rgba(201,160,76,0.45)",
           animation: c ? `llRingSpin ${c.ringSpeed} linear infinite${c.ringFlash ? `, ${c.ringFlash}` : ""}` : "none",
           pointerEvents: "none",
         }}/>}
@@ -132,7 +132,7 @@ export const SharegoodLogo = memo(function SharegoodLogo({
           top: -4, left: -4,
           width: size + 8, height: size + 8,
           borderRadius: "50%",
-          border: "2px solid rgba(255,217,61,0.8)",
+          border: "2px solid rgba(201,160,76,0.8)",
           animation: `llCelebrateBurst 600ms ${EASE} forwards`,
           pointerEvents: "none",
         }}/>}

@@ -195,17 +195,17 @@ Return ONLY valid JSON:
                 </div>
               );
             })()}
-            <div style={{background:"rgba(12,21,32,0.96)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:13,padding:14,marginBottom:18,overflow:"hidden",maxWidth:"100%",boxSizing:"border-box",marginLeft:0,marginRight:0,boxShadow:"0 4px 24px rgba(0,0,0,0.35)"}}>
+            <div style={{background:"rgba(12,21,32,0.96)",border:"1px solid rgba(201,160,76,0.45)",borderRadius:13,padding:14,marginBottom:18,overflow:"hidden",maxWidth:"100%",boxSizing:"border-box",marginLeft:0,marginRight:0,boxShadow:"0 4px 24px rgba(0,0,0,0.35)"}}>
               <div style={{fontSize:15,color:"rgba(201,160,76,0.9)",letterSpacing:2,marginBottom:10}}>💬 REFINE YOUR VISION</div>
               {loading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",marginBottom:8}}>✨ refining...</div>}
               <div style={{display:"flex",gap:7,alignItems:"stretch"}}>
                 <div className="ca-chat-input-wrap" style={{flex:1,minWidth:0,display:"flex",alignItems:"stretch",borderRadius:8,overflow:"hidden",backgroundColor:"#0C1520",boxSizing:"border-box"}}>
                   <input className="vision-refine-input" style={{flex:1,width:"100%",minWidth:0,backgroundColor:"#0C1520",color:"#FFF",fontSize:isMobile?14:15,padding:isMobile?"11px":"9px 11px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",colorScheme:"dark"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Reshape your vision — more culture, less beach, different vibe..."/>
                 </div>
-                <button style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.16)",borderRadius:8,color:"rgba(255,217,61,0.92)",fontSize:15,padding:"8px 12px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={refine}>↑</button>
+                <button style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(201,160,76,0.4)",borderRadius:8,color:"rgba(201,160,76,0.95)",fontSize:15,padding:"8px 12px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={refine}>↑</button>
               </div>
             </div>
-            <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.1),rgba(255,217,61,0.04))",border:"1px solid rgba(169,70,29,0.4)",borderRadius:16,padding:22,textAlign:"center"}}>
+            <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.1),rgba(201,160,76,0.04))",border:"1px solid rgba(169,70,29,0.4)",borderRadius:16,padding:22,textAlign:"center"}}>
               <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?13:20,fontWeight:300,color:"#FFF",marginBottom:6,lineHeight:1.3}}>This is your <em style={{color:"#c9a04c"}}>expedition.</em></div>
               <div style={{fontSize:15,color:"rgba(255,255,255,0.88)",letterSpacing:1,marginBottom:20,lineHeight:1.8}}>Does this feel right? Refine above until it does.<br/>When your gut says yes — it's time to build.</div>
               <button className="cta-build-btn" style={{minHeight:52,opacity:launching?0.7:1}} onClick={()=>{if(!launching){setLaunching(true);onBuild(vd);}}}>

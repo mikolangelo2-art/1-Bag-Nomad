@@ -146,7 +146,7 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
           <div className={`pack-item-name${item.owned?" pack-item-name--owned":""}`} style={{fontSize:13,fontWeight:500,color:item.owned?'rgba(105,240,174,0.82)':'#F8F5F0',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'normal',overflow:'visible',textOverflow:'clip',lineHeight:1.3}}>{item.essential&&<span style={{fontSize:9,color:'#c9a04c',marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:'rgba(255,255,255,0.3)',marginRight:2}}>~</span>}{item.name||'Unnamed'}</div>
           <div style={{display:'flex',gap:8,marginTop:2}}>
             {parseFloat(item.weight)>0&&<span style={{fontSize:11,color:'rgba(255,255,255,0.38)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
-            {parseFloat(item.cost)>0&&<span style={{fontSize:11,color:'rgba(255,217,61,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
+            {parseFloat(item.cost)>0&&<span style={{fontSize:11,color:'rgba(201,160,76,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
           </div>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
@@ -196,7 +196,7 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
             <div className={`pack-item-name${item.owned?" pack-item-name--owned":""}`} style={{fontSize:13,fontWeight:500,color:item.owned?"rgba(105,240,174,0.82)":"rgba(255,242,210,0.78)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2}}>{item.essential&&<span style={{fontSize:9,color:"#c9a04c",marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginRight:2}}>~</span>}{item.name||"Unnamed"}</div>
             <div style={{display:"flex",gap:8,alignItems:"center"}}>
               {parseFloat(item.weight)>0&&<span style={{fontSize:13,color:"rgba(255,255,255,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
-              {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(255,217,61,0.55)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
+              {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(201,160,76,0.55)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
               <span style={{fontSize:13,color:(BAG_C[item.bag]||"rgba(255,159,67,0.6)")+"aa",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{item.bag}</span>
             </div>
           </div>
@@ -699,13 +699,13 @@ Return ONLY a JSON array:
             </>}
           </>}
           <div style={{textAlign:"center",marginTop:8,padding:"8px 0",borderTop:"1px solid rgba(169,70,29,0.12)"}}>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.35)",letterSpacing:2}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(201,160,76,0.35)",letterSpacing:2}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
           </div>
         </div>
       )}
       {packTab==="tailor"&&(
         <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 16px",boxSizing:"border-box"}}>
-          <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.15),rgba(255,217,61,0.05))",border:"1px solid rgba(169,70,29,0.35)",borderRadius:12,marginBottom:16,overflow:"hidden"}}>
+          <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.15),rgba(201,160,76,0.05))",border:"1px solid rgba(169,70,29,0.35)",borderRadius:12,marginBottom:16,overflow:"hidden"}}>
             <button onClick={()=>{const next=!packBriefCollapsed;setPackBriefCollapsed(next);if(next)try{localStorage.setItem(briefKey,"1");}catch(e){}}} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"none",border:"none",cursor:"pointer"}}>
               <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#FF9F43",letterSpacing:2,fontWeight:700}}>✦ CO-ARCHITECT PACK BRIEF</div>
               <div style={{fontSize:10,color:"rgba(255,255,255,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{packBriefCollapsed?"▼":"▲"}</div>

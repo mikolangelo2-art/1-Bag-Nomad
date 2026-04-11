@@ -51,7 +51,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
         </div>
         <div style={{display:'flex',flexWrap:'wrap',alignItems:'center',justifyContent:'space-between',gap:8}}>
           <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.75)'}}>{fmt(plannedSpend)} / {fmt(phase.totalBudget)} · {allocPct}%</span>
-          {spendOverCap&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm over budget on the ${phase?.name||'this'} phase. Can you suggest alternatives that fit within my ${fmt(phase.totalBudget)} phase budget?`}}))} style={{background:'rgba(255,217,61,0.12)',border:'1px solid rgba(255,217,61,0.35)',borderRadius:8,color:'#c9a04c',fontSize:11,fontWeight:600,padding:'6px 12px',cursor:'pointer',letterSpacing:0.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Ask Co-Architect for alternatives</button>}
+          {spendOverCap&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm over budget on the ${phase?.name||'this'} phase. Can you suggest alternatives that fit within my ${fmt(phase.totalBudget)} phase budget?`}}))} style={{background:'rgba(201,160,76,0.12)',border:'1px solid rgba(201,160,76,0.35)',borderRadius:8,color:'#c9a04c',fontSize:11,fontWeight:600,padding:'6px 12px',cursor:'pointer',letterSpacing:0.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Ask Co-Architect for alternatives</button>}
         </div>
       </div>
       {/* Stats bar */}
@@ -62,12 +62,12 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       </div>
       {/* Warning flags */}
       {warningFlags.filter(w=>w.phaseIndex===phase.id-1).map((w,wi)=>(
-        <div key={wi} style={{border:'1.5px solid rgba(255,200,0,0.40)',borderRadius:12,background:'rgba(255,200,0,0.06)',padding:'14px 16px',margin:'8px 0',animation:'fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) both'}}>
-          <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,200,0,0.70)',letterSpacing:2,marginBottom:6}}>⚠️ {w.type==='date_conflict'?'DATE CONFLICT':'SEASONAL NOTICE'}</div>
+        <div key={wi} style={{border:'1.5px solid rgba(201,160,76,0.40)',borderRadius:12,background:'rgba(201,160,76,0.06)',padding:'14px 16px',margin:'8px 0',animation:'fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) both'}}>
+          <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(201,160,76,0.70)',letterSpacing:2,marginBottom:6}}>⚠️ {w.type==='date_conflict'?'DATE CONFLICT':'SEASONAL NOTICE'}</div>
           <div style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontStyle:'italic',color:'rgba(255,255,255,0.85)',lineHeight:1.6,marginBottom:4}}>{w.message}</div>
-          {w.suggestion&&<div style={{fontSize:12,color:'rgba(255,200,0,0.60)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:10}}>{w.suggestion}</div>}
+          {w.suggestion&&<div style={{fontSize:12,color:'rgba(201,160,76,0.60)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:10}}>{w.suggestion}</div>}
           <div style={{display:'flex',gap:8}}>
-            {w.dismissible&&<button onClick={()=>onDismissWarning?.(warningFlags.indexOf(w))} style={{padding:'8px 14px',borderRadius:8,border:'1px solid rgba(255,200,0,0.30)',background:'transparent',color:'rgba(255,200,0,0.60)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",cursor:'pointer',fontWeight:600,letterSpacing:1}}>DISMISS</button>}
+            {w.dismissible&&<button onClick={()=>onDismissWarning?.(warningFlags.indexOf(w))} style={{padding:'8px 14px',borderRadius:8,border:'1px solid rgba(201,160,76,0.30)',background:'transparent',color:'rgba(201,160,76,0.60)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",cursor:'pointer',fontWeight:600,letterSpacing:1}}>DISMISS</button>}
           </div>
         </div>
       ))}

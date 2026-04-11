@@ -21,7 +21,7 @@ function Timeline({ tripData }) {
       <div style={{background:'rgba(0,8,20,0.55)',borderRadius:12,padding:'24px 28px'}}>
       {/* Running total */}
       <div style={{textAlign:"center",marginBottom:28}}>
-        <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,217,61,0.6)",letterSpacing:3,marginBottom:4}}>TOTAL EXPEDITION BUDGET</div>
+        <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(201,160,76,0.6)",letterSpacing:3,marginBottom:4}}>TOTAL EXPEDITION BUDGET</div>
         <div style={{fontFamily:"'Playfair Display',serif",fontSize:32,color:"#c9a04c",fontWeight:700}}>{fmt(totalBudget)}</div>
         <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,255,255,0.4)",marginTop:4}}>{totalNights} nights · {phases.filter(p=>p.type!=="Return").length} destinations</div>
       </div>
@@ -33,9 +33,9 @@ function Timeline({ tripData }) {
 
         {/* Departure header */}
         <div style={{position:"relative",marginBottom:24,animation:"fadeUp 0.4s ease both"}}>
-          <div style={{position:"absolute",left:-22,top:4,width:8,height:8,borderRadius:"50%",background:"#c9a04c",boxShadow:"0 0 8px rgba(255,217,61,0.5)"}}/>
+          <div style={{position:"absolute",left:-22,top:4,width:8,height:8,borderRadius:"50%",background:"#c9a04c",boxShadow:"0 0 8px rgba(201,160,76,0.5)"}}/>
           <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:4}}>
-            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,217,61,0.6)",letterSpacing:3}}>DEPARTS</div>
+            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(201,160,76,0.6)",letterSpacing:3}}>DEPARTS</div>
           </div>
           <div style={{fontFamily:"'Playfair Display',serif",fontSize:28,color:"#F8F5F0",fontWeight:500}}>{startDate ? fD(startDate) : "Date TBD"}</div>
           {daysFromNow !== null && daysFromNow > 0 && <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#c9a04c",marginTop:4}}>{daysFromNow} DAYS FROM NOW</div>}
@@ -71,11 +71,11 @@ function Timeline({ tripData }) {
 
         {/* Homecoming footer */}
         <div style={{position:"relative",animation:"fadeUp 0.4s ease both",animationDelay:phases.length * 0.1 + "s"}}>
-          <div style={{position:"absolute",left:-22,top:4,width:8,height:8,borderRadius:"50%",background:"#c9a04c",boxShadow:"0 0 8px rgba(255,217,61,0.5)"}}/>
-          <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,217,61,0.6)",letterSpacing:3,marginBottom:4}}>HOMECOMING</div>
+          <div style={{position:"absolute",left:-22,top:4,width:8,height:8,borderRadius:"50%",background:"#c9a04c",boxShadow:"0 0 8px rgba(201,160,76,0.5)"}}/>
+          <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(201,160,76,0.6)",letterSpacing:3,marginBottom:4}}>HOMECOMING</div>
           {returnDate
             ? <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontStyle:"italic",color:"#c9a04c"}}>{fD(returnDate)}</div>
-            : <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontStyle:"italic",color:"rgba(255,217,61,0.5)"}}>Open-ended expedition</div>
+            : <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontStyle:"italic",color:"rgba(201,160,76,0.5)"}}>Open-ended expedition</div>
           }
         </div>
       </div>
