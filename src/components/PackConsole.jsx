@@ -239,22 +239,64 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
   const pct = catItems.length > 0 ? Math.round((ownedInCat / catItems.length) * 100) : 0;
   return (
     <div
+      className={isMobile ? undefined : "lux-card-interactive"}
       onClick={() => onSelectCategory(cat)}
       style={{
-        background: "rgba(255,255,255,0.015)",
-        border: `1.5px solid rgba(255,255,255,0.16)`,
-        borderTop: `1.5px solid ${cat.color}65`,
-        borderRadius: 12,
+        ...(isMobile
+          ? {
+              background: "rgba(255,255,255,0.015)",
+              border: `1.5px solid rgba(255,255,255,0.16)`,
+              borderTop: `1.5px solid ${cat.color}65`,
+              borderRadius: 12,
+              animation: `fadeUp 0.3s ease ${idx * 0.05}s both`,
+            }
+          : {
+              background: "rgba(23,27,32,0.62)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              border: "1px solid rgba(245,158,11,0.18)",
+              borderTop: "1px solid rgba(245,158,11,0.36)",
+              borderLeft: `3px solid ${cat.color}55`,
+              borderRadius: 18,
+              overflow: "hidden",
+              boxShadow:
+                "inset 0 1px 0 rgba(248,245,240,0.06), 0 14px 44px rgba(0,0,0,0.42), 0 0 52px rgba(201,160,76,0.08)",
+              transition: "all 0.38s cubic-bezier(0.25,0.46,0.45,0.94)",
+              animation: `fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx * 0.06}s both`,
+            }),
         padding: isMobile ? "14px 12px" : "14px 16px",
         marginBottom: 8,
         cursor: "pointer",
         display: "flex",
         flexDirection: "column",
         gap: 8,
-        animation: `fadeUp 0.3s ease ${idx * 0.05}s both`,
       }}
-      onMouseOver={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.035)")}
-      onMouseOut={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.015)")}
+      onMouseOver={
+        isMobile
+          ? (e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.035)";
+            }
+          : (e) => {
+              e.currentTarget.style.background = "rgba(23,27,32,0.72)";
+              e.currentTarget.style.borderColor = "rgba(245,158,11,0.32)";
+              e.currentTarget.style.borderLeft = `3px solid ${cat.color}66`;
+              e.currentTarget.style.boxShadow =
+                "inset 0 1px 0 rgba(248,245,240,0.08), 0 16px 48px rgba(0,0,0,0.48), 0 0 56px rgba(201,160,76,0.12)";
+            }
+      }
+      onMouseOut={
+        isMobile
+          ? (e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.015)";
+            }
+          : (e) => {
+              e.currentTarget.style.background = "rgba(23,27,32,0.62)";
+              e.currentTarget.style.borderColor = "rgba(245,158,11,0.18)";
+              e.currentTarget.style.borderLeft = `3px solid ${cat.color}55`;
+              e.currentTarget.style.boxShadow =
+                "inset 0 1px 0 rgba(248,245,240,0.06), 0 14px 44px rgba(0,0,0,0.42), 0 0 52px rgba(201,160,76,0.08)";
+            }
+      }
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <span style={{ fontSize: 24 }}>{cat.icon}</span>
