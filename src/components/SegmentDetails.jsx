@@ -79,7 +79,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
           {cat==="transport"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:7}}>
             {suggestion?.transport&&!isDismSD('transport')&&<div style={suggestionCardStyle}>
               <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
-              <div style={{fontSize:13,fontWeight:700,color:'#FFD93D',marginBottom:6,lineHeight:1.45,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
+              <div style={{fontSize:13,fontWeight:700,color:'#c9a04c',marginBottom:6,lineHeight:1.45,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
                 This leg: {plannedLegFrom} → {plannedLegTo}
                 <span style={{color:'rgba(255,245,220,0.45)',fontWeight:600}}> · </span>
                 Est. {suggestion.transport.estimatedCost}
@@ -128,7 +128,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
               <div style={suggestionHeaderStyle}>✦ CO-ARCHITECT SUGGESTION</div>
               <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{suggestion.stay.recommendation}</div>
               {suggestion.stay.suggestions?.length>0&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:3}}>Options: {suggestion.stay.suggestions.join(' · ')}</div>}
-              <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
+              <div style={{fontSize:14,color:'#c9a04c',fontWeight:600,marginBottom:3}}>Est. {suggestion.stay.estimatedNightly} · Total ~{suggestion.stay.estimatedTotal}</div>
               <div style={disclaimerStyle}>⚡ Estimates — actual prices vary when booked</div>
               <div style={{display:'flex',gap:6}}>
                 <button onClick={()=>acceptStaySD(suggestion.stay)} style={acceptBtnStyle}>ADD TO STAY NOTES</button>
@@ -156,7 +156,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
                 <div style={suggestionHeaderStyle}>✦ SUGGESTED ACTIVITY</div>
                 <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{activity.name}</div>
                 {activity.provider&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',marginBottom:3}}>{activity.provider}</div>}
-                <div style={{fontSize:14,color:'#FFD93D',fontWeight:600,marginBottom:3}}>Est. {activity.estimatedCost}</div>
+                <div style={{fontSize:14,color:'#c9a04c',fontWeight:600,marginBottom:3}}>Est. {activity.estimatedCost}</div>
                 {activity.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.70)',fontStyle:'italic',marginBottom:8}}>{activity.notes}</div>}
                 <div style={disclaimerStyle}>⚡ Estimates only — prices vary when booked</div>
                 <div style={{display:'flex',gap:6}}>
@@ -173,7 +173,7 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontSize:15,fontWeight:600,color:"rgba(255,255,255,0.92)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:4}}>{a.name}</div>
                       <div style={{fontSize:13,color:"rgba(255,255,255,0.65)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",display:"flex",gap:8,flexWrap:"wrap"}}>
-                        {a.date&&<span>{fD(a.date)}</span>}{a.cost&&<span style={{color:"#FFD93D"}}>${a.cost}</span>}{a.transit&&<span style={{color:"rgba(255,255,255,0.50)"}}>🚕 {a.transit}</span>}
+                        {a.date&&<span>{fD(a.date)}</span>}{a.cost&&<span style={{color:"#c9a04c"}}>${a.cost}</span>}{a.transit&&<span style={{color:"rgba(255,255,255,0.50)"}}>🚕 {a.transit}</span>}
                       </div>
                       {a.link&&<a href={a.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:"#00E5FF",textDecoration:"none",display:"inline-block",marginTop:4,maxWidth:"100%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
                     </div>
@@ -206,22 +206,22 @@ function SegmentDetails({phaseId,segment,intelSnippet,status="planning",onStatus
             <div style={{padding:"9px 0px"}}>
               <div style={{fontSize:11,color:"rgba(255,217,61,0.4)",letterSpacing:1.5,marginBottom:6,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500}}>ADD ACTIVITY</div>
               <div style={{display:"flex",flexDirection:isMobile?"column":"row",gap:5,marginBottom:5,overflow:"hidden"}}>
-                <div style={{flex:1,minWidth:0}}><SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#FFD93D"/></div>
-                <div style={{flex:1,minWidth:0}}><SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#FFD93D"/></div>
+                <div style={{flex:1,minWidth:0}}><SDF label="ACTIVITY" value={nAct.name} onChange={v=>setNAct(a=>({...a,name:v}))} placeholder="Dive / temple / hike..." accent="#c9a04c"/></div>
+                <div style={{flex:1,minWidth:0}}><SDF label="DATE" type="date" value={nAct.date} onChange={v=>setNAct(a=>({...a,date:v}))} accent="#c9a04c"/></div>
               </div>
               <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:5,marginBottom:6,overflow:"hidden"}}>
-                <SDF label="COST ($)" type="number" value={nAct.cost} onChange={v=>setNAct(a=>({...a,cost:v}))} placeholder="0" accent="#FFD93D"/>
-                <SDF label="TRANSIT" value={nAct.transit} onChange={v=>setNAct(a=>({...a,transit:v}))} placeholder="Taxi from hotel..." accent="#FFD93D"/>
+                <SDF label="COST ($)" type="number" value={nAct.cost} onChange={v=>setNAct(a=>({...a,cost:v}))} placeholder="0" accent="#c9a04c"/>
+                <SDF label="TRANSIT" value={nAct.transit} onChange={v=>setNAct(a=>({...a,transit:v}))} placeholder="Taxi from hotel..." accent="#c9a04c"/>
               </div>
-              <SDF label="BOOKING LINK" value={nAct.link} onChange={v=>setNAct(a=>({...a,link:v}))} placeholder="https://klook.com / dive shop..." accent="#FFD93D"/>
-              <button onClick={()=>{if(!nAct.name)return;setDet(d=>({...d,activities:[...d.activities,{...nAct,id:Date.now()}]}));setNAct({name:"",date:"",cost:"",transit:"",link:""});}} style={{marginTop:8,padding:isMobile?"5px 12px":"6px 14px",borderRadius:5,border:`1px solid rgba(255,217,61,${nAct.name?"0.4":"0.14"})`,background:nAct.name?"rgba(255,217,61,0.1)":"transparent",color:nAct.name?"#FFD93D":"rgba(255,255,255,0.18)",fontSize:isMobile?11:15,cursor:nAct.name?"pointer":"default",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:700}}>+ ADD</button>
+              <SDF label="BOOKING LINK" value={nAct.link} onChange={v=>setNAct(a=>({...a,link:v}))} placeholder="https://klook.com / dive shop..." accent="#c9a04c"/>
+              <button onClick={()=>{if(!nAct.name)return;setDet(d=>({...d,activities:[...d.activities,{...nAct,id:Date.now()}]}));setNAct({name:"",date:"",cost:"",transit:"",link:""});}} style={{marginTop:8,padding:isMobile?"5px 12px":"6px 14px",borderRadius:5,border:`1px solid rgba(255,217,61,${nAct.name?"0.4":"0.14"})`,background:nAct.name?"rgba(255,217,61,0.1)":"transparent",color:nAct.name?"#c9a04c":"rgba(255,255,255,0.18)",fontSize:isMobile?11:15,cursor:nAct.name?"pointer":"default",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:700}}>+ ADD</button>
             </div>
-            <div style={{marginTop:12}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code, best time..." accent="#FFD93D" multiline/></div>
+            <div style={{marginTop:12}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code, best time..." accent="#c9a04c" multiline/></div>
           </div>}
           {cat==="food"&&<div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:5}}>
             {suggestion?.food&&!isDismSD('food')&&<div style={suggestionCardStyle}>
               <div style={suggestionHeaderStyle}>✦ FOOD & DINING</div>
-              <div style={{fontSize:14,fontWeight:600,color:'#FFD93D',marginBottom:6}}>Est. {(suggestion.food.dailyBudget||"").replace(/\/day$/i,"")}/day{suggestion.food.totalEstimate?` · ~${suggestion.food.totalEstimate} total`:""}</div>
+              <div style={{fontSize:14,fontWeight:600,color:'#c9a04c',marginBottom:6}}>Est. {(suggestion.food.dailyBudget||"").replace(/\/day$/i,"")}/day{suggestion.food.totalEstimate?` · ~${suggestion.food.totalEstimate} total`:""}</div>
               {suggestion.food.recommendations?.map((rec,i)=>(
                 <div key={i} style={{fontSize:13,color:'rgba(255,255,255,0.75)',marginBottom:4,paddingLeft:8,borderLeft:'2px solid rgba(255,159,67,0.30)'}}>{rec}</div>
               ))}

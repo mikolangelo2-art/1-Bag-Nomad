@@ -141,7 +141,7 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 @media(max-width:768px){.sg-suggestion-card{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;padding:16px!important;box-sizing:border-box!important}}
 
   .dream-root,.mc-root,.build-root{font-size:18px}
-  .dream-content{max-width:780px;padding:40px 0 70px}@keyframes shimmerOnce{0%{background-position:-200% center}65%{background-position:200% center}100%{background-position:200% center}}.dream-big-shimmer{background:linear-gradient(90deg,#FFD93D 25%,#fff 45%,#FF9F43 55%,#FFD93D 75%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmerOnce 2s ease forwards}.dream-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,159,67,0.22),rgba(0,229,255,0.12),rgba(162,155,254,0.1),transparent);margin:4px 0 16px 0;border:none}.dream-accent-green{color:rgba(105,240,174,0.45)}
+  .dream-content{max-width:780px;padding:40px 0 70px}@keyframes shimmerOnce{0%{background-position:-200% center}65%{background-position:200% center}100%{background-position:200% center}}.dream-big-shimmer{background:linear-gradient(90deg,#c9a04c 25%,#fff 45%,#FF9F43 55%,#c9a04c 75%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmerOnce 2s ease forwards}.dream-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,159,67,0.22),rgba(0,229,255,0.12),rgba(162,155,254,0.1),transparent);margin:4px 0 16px 0;border:none}.dream-accent-green{color:rgba(105,240,174,0.45)}
   .mc-content{padding:22px 36px}
   .g-label{font-size:16px}
   .g-desc{font-size:11px}
@@ -169,7 +169,7 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 .mc-tab{font-size:11px;padding:12px 16px}
 .chat-bubble{font-size:12px}
 
-.dream-root,.mc-root,.build-root{max-width:900px!important;margin:0 auto!important}
+.dream-root,.mc-root,.build-root{max-width:min(100%,1320px)!important;margin:0 auto!important}
 @media(max-width:599px){.dream-root,.mc-root,.build-root{max-width:100%!important;margin:0!important;padding:0!important;width:100%!important}.dream-content{max-width:100%!important;margin:0!important;padding:14px 12px 80px!important;width:100%!important;box-sizing:border-box!important}}
 .dream-content{padding:40px 0 70px!important}
 .mc-content{padding:22px 36px!important}
@@ -205,7 +205,7 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.45)!important;font-style:italic}.ca-chat-input::placeholder,.vision-refine-input::placeholder{font-family:'Inter',system-ui,-apple-system,sans-serif!important;font-size:14px!important;color:rgba(255,255,255,0.4)!important;font-style:normal!important}.ca-chat-input-wrap{background-color:#0C1520!important;border:1px solid rgba(255,255,255,0.14)!important;border-radius:8px;box-sizing:border-box!important;transition:border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)}.ca-chat-input-wrap:focus-within{border-color:rgba(255,255,255,0.32)!important;box-shadow:0 0 0 2px rgba(255,255,255,0.06)!important}.build-root .ca-chat-input,.dream-root .vision-refine-input,[data-ca-drawer] .ca-chat-input{background-color:#0C1520!important;background-image:none!important;-webkit-appearance:none!important;appearance:none!important;border:none!important;box-shadow:none!important}.build-root .ca-chat-input:-webkit-autofill,.dream-root .vision-refine-input:-webkit-autofill,[data-ca-drawer] .ca-chat-input:-webkit-autofill{-webkit-text-fill-color:#FFF!important;-webkit-box-shadow:0 0 0 1000px #0C1520 inset!important;transition:background-color 99999s ease-out 0s}input[type="date"]{-webkit-appearance:none;appearance:none}input[type="date"]::-webkit-calendar-picker-indicator{opacity:0;width:28px;cursor:pointer;position:relative;z-index:2}
 .launch-btn{width:100%;padding:17px;border-radius:14px;border:none;font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;letter-spacing:2.5px;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s}
 .launch-btn.off{background:linear-gradient(135deg,#8a3515 0%,#A9461D 40%,#C4571E 70%,#E06830 100%);color:rgba(255,255,255,0.5);cursor:default}
-.launch-btn.on{background:linear-gradient(135deg,#C4571E 0%,#E06830 30%,#FF9F43 60%,#FFD93D 100%);color:#FFF;animation:launchPulse 2.8s ease-in-out infinite;box-shadow:0 0 24px rgba(255,159,67,0.3),0 0 48px rgba(255,217,61,0.15)}
+.launch-btn.on{background:linear-gradient(135deg,#C4571E 0%,#E06830 30%,#FF9F43 60%,#c9a04c 100%);color:#FFF;animation:launchPulse 2.8s ease-in-out infinite;box-shadow:0 0 24px rgba(255,159,67,0.3),0 0 48px rgba(255,217,61,0.15)}
 .launch-btn.on:hover{box-shadow:0 10px 38px rgba(255,159,67,0.45),0 0 48px rgba(201,160,76,0.22),0 4px 28px rgba(0,120,255,0.18);animation:none}
 .launch-btn.loading{background:linear-gradient(135deg,#C4571E,#E06830,#C4571E);color:rgba(255,255,255,0.92);cursor:wait;animation:launchPulse 1.4s ease-in-out infinite!important}
 .narrative-card{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(169,70,29,0.14),rgba(201,160,76,0.05));border:1px solid rgba(201,160,76,0.45);box-shadow:0 0 0 1px rgba(201,160,76,0.1),0 12px 40px rgba(0,0,0,0.45),0 0 48px rgba(201,160,76,0.12);border-radius:18px;padding:24px;margin-bottom:22px;animation:fadeUp 0.5s ease}
@@ -252,13 +252,13 @@ const MICHAEL_EXPEDITION = {
   phases:[
     {id:1, name:"Utila",              flag:"🇭🇳",country:"Honduras",  color:"#00E5FF",type:"Dive",       nights:10,budget:1435,cost:1435,diveCount:8, arrival:"2026-09-16",departure:"2026-09-26"},
     {id:2, name:"Roatan",             flag:"🇭🇳",country:"Honduras",  color:"#69F0AE",type:"Dive",       nights:8, budget:1970,cost:1970,diveCount:13,arrival:"2026-09-26",departure:"2026-10-04"},
-    {id:3, name:"San Ignacio",        flag:"🇧🇿",country:"Belize",    color:"#FFD93D",type:"Culture",    nights:3, budget:520, cost:520, diveCount:0, arrival:"2026-10-04",departure:"2026-10-08"},
+    {id:3, name:"San Ignacio",        flag:"🇧🇿",country:"Belize",    color:"#c9a04c",type:"Culture",    nights:3, budget:520, cost:520, diveCount:0, arrival:"2026-10-04",departure:"2026-10-08"},
     {id:4, name:"Caye Caulker",       flag:"🇧🇿",country:"Belize",    color:"#FF9F43",type:"Dive",       nights:7, budget:1200,cost:1200,diveCount:6, arrival:"2026-10-08",departure:"2026-10-15"},
     {id:5, name:"Bridgetown",         flag:"🇧🇧",country:"Barbados",  color:"#A29BFE",type:"Dive",       nights:10,budget:3525,cost:3525,diveCount:8, arrival:"2026-10-16",departure:"2026-10-27"},
     {id:6, name:"Cairo & Luxor",      flag:"🇪🇬",country:"Egypt",     color:"#FF7675",type:"Culture",    nights:6, budget:835, cost:835, diveCount:0, arrival:"2026-10-27",departure:"2026-11-02"},
     {id:7, name:"Red Sea · Bella 3",  flag:"🇪🇬",country:"Egypt",     color:"#00E5FF",type:"Dive",       nights:7, budget:1112,cost:1112,diveCount:12,arrival:"2026-11-06",departure:"2026-11-16"},
     {id:8, name:"New Delhi",          flag:"🇮🇳",country:"India",     color:"#FF9F43",type:"Exploration",nights:3, budget:530, cost:530, diveCount:0, arrival:"2026-11-10",departure:"2026-11-13"},
-    {id:9, name:"Varanasi",           flag:"🇮🇳",country:"India",     color:"#FFD93D",type:"Culture",    nights:3, budget:200, cost:200, diveCount:0, arrival:"2026-11-13",departure:"2026-11-16"},
+    {id:9, name:"Varanasi",           flag:"🇮🇳",country:"India",     color:"#c9a04c",type:"Culture",    nights:3, budget:200, cost:200, diveCount:0, arrival:"2026-11-13",departure:"2026-11-16"},
     {id:10,name:"Kannauj",            flag:"🇮🇳",country:"India",     color:"#69F0AE",type:"Exploration",nights:3, budget:1165,cost:1165,diveCount:0, arrival:"2026-11-16",departure:"2026-11-19"},
     {id:11,name:"Kerala",             flag:"🇮🇳",country:"India",     color:"#A29BFE",type:"Exploration",nights:5, budget:900, cost:900, diveCount:0, arrival:"2026-11-19",departure:"2026-11-24"},
     {id:12,name:"Komodo · Wild Frontier",flag:"🇮🇩",country:"Indonesia",color:"#FF6B6B",type:"Dive",    nights:7, budget:1520,cost:1520,diveCount:10,arrival:"2026-11-29",departure:"2026-12-09"},

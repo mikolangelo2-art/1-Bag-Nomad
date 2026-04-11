@@ -2,7 +2,7 @@ import { useDestinationPhoto } from "../hooks/useDestinationPhoto";
 import SuggestionExperienceCard from "./SuggestionExperienceCard";
 import { dismissBtnStyleOnHero } from "../utils/tripConsoleHelpers";
 
-const ACT_ACCENT = "#FFD93D";
+const ACT_ACCENT = "#c9a04c";
 const DEFAULT_ACT_DISCLAIMER =
   "\u26A1 Estimates only \u2014 prices vary when booked";
 

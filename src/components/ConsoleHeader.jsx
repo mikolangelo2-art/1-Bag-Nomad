@@ -7,14 +7,14 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
   const [profileOpen,setProfileOpen]=useState(false);
   const bg=isDream?"rgba(21,15,10,0.95)":isTrip?"rgba(21,15,10,0.92)":"rgba(21,15,10,0.95)";
   const bc=isDream?"rgba(232,220,200,0.08)":isTrip?"rgba(232,220,200,0.06)":"rgba(196,87,30,0.35)";
-  const dot=isDream?"#FFD93D":isTrip?"#00E5FF":"#FF9F43";
+  const dot=isDream?"#c9a04c":isTrip?"#00E5FF":"#FF9F43";
   const sub=isDream?"rgba(232,220,200,0.55)":isTrip?"rgba(232,220,200,0.55)":"rgba(232,220,200,0.55)";
   const sublabel=isDream?"DREAM CONSOLE":isTrip?"TRIP CONSOLE":"PACK CONSOLE";
   const dbSize=isMobile?(isDream?18:14):(isDream?36:26);
   const tlSize=isMobile?(isPack?18:14):(isPack?36:26);
-  const dbColor=isDream?"#FFD93D":isTrip?"rgba(255,217,61,0.5)":"rgba(255,217,61,0.2)";
+  const dbColor=isDream?"#c9a04c":isTrip?"rgba(255,217,61,0.5)":"rgba(255,217,61,0.2)";
   const dbWeight=isDream?900:isTrip?700:300;
-  const tlColor=isPack?"#FFD93D":isTrip?"rgba(255,217,61,0.65)":"#FFD93D";
+  const tlColor=isPack?"#c9a04c":isTrip?"rgba(255,217,61,0.65)":"#c9a04c";
   const tlShadow=isPack?"0 0 28px rgba(255,217,61,0.6)":isDream?"0 0 28px rgba(255,217,61,0.5)":"none";
   const logoGlow=isDream?"rgba(0,229,255,0.25)":isTrip?"rgba(0,229,255,0.35)":"rgba(196,87,30,0.5)";
   const radial=isDream?"rgba(255,159,67,0.25)":isTrip?"rgba(0,229,255,0.1)":"rgba(169,70,29,0.52)";
@@ -64,7 +64,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
         {/* Left slot */}
         <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"flex-start",justifyContent:"center",gap:2}}>
           {(!isMobile&&(isTrip||isPack)) ? <TripBtn active={isTrip}/> : null}
-          {screenLabel&&!(isMobile&&isDream)&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#FFD93D",letterSpacing:2,textTransform:"uppercase",paddingLeft:2}}>{screenLabel}</div>}
+          {screenLabel&&!(isMobile&&isDream)&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#c9a04c",letterSpacing:2,textTransform:"uppercase",paddingLeft:2}}>{screenLabel}</div>}
         </div>
         {/* Center: logo + wordmark */}
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
@@ -112,7 +112,7 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
           <div style={{textAlign:"center"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:4}}>
               <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,fontStyle:"italic",color:"#FFF",letterSpacing:1}}>1 Bag Nomad</div>
-              <div style={{padding:"2px 8px",borderRadius:12,background:"rgba(255,217,61,0.15)",border:"1px solid rgba(255,217,61,0.4)",fontSize:9,fontWeight:700,letterSpacing:2,color:"#FFD93D",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>PRO</div>
+              <div style={{padding:"2px 8px",borderRadius:12,background:"rgba(255,217,61,0.15)",border:"1px solid rgba(255,217,61,0.4)",fontSize:9,fontWeight:700,letterSpacing:2,color:"#c9a04c",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>PRO</div>
             </div>
             <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1}}>explorer@1bagnomad.com</div>
           </div>

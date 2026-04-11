@@ -173,7 +173,7 @@ RULES:
                 width:5,
                 height:5,
                 borderRadius:"50%",
-                background:n===1?"rgba(255,159,67,0.85)":n===2?"rgba(255,159,67,0.55)":n===3?"#FFD93D":"rgba(0,229,255,0.15)",
+                background:n===1?"rgba(255,159,67,0.85)":n===2?"rgba(255,159,67,0.55)":n===3?"#c9a04c":"rgba(0,229,255,0.15)",
                 boxShadow:n===1?"0 0 6px rgba(255,159,67,0.5)":n===3?"0 0 8px rgba(255,217,61,0.7)":"none",
                 transition:"all 0.3s ease",
                 flexShrink:0,
@@ -183,7 +183,7 @@ RULES:
         </div>
       )}/>
       <div style={{display:"flex",border:"none",background:"#080D14",flexShrink:0}}>
-        {(isMobile?[{label:"STOPS",val:items.length,c:"#FFFFFF"},{label:"COUNTRIES",val:countries.length,c:"#FFFFFF"},{label:"NIGHTS",val:totalNights,c:"#FFFFFF"},{label:"BUDGET",val:fmt(totalCost),c:"#D4AF37"}]:[{label:"STOPS",val:items.length,c:"#00E5FF"},{label:"COUNTRIES",val:countries.length,c:"#69F0AE"},{label:"NIGHTS",val:totalNights,c:"#A29BFE"},{label:"BUDGET",val:fmt(totalCost),c:"#FFD93D"}]).map((s,i)=>(
+        {(isMobile?[{label:"STOPS",val:items.length,c:"#FFFFFF"},{label:"COUNTRIES",val:countries.length,c:"#FFFFFF"},{label:"NIGHTS",val:totalNights,c:"#FFFFFF"},{label:"BUDGET",val:fmt(totalCost),c:"#D4AF37"}]:[{label:"STOPS",val:items.length,c:"#00E5FF"},{label:"COUNTRIES",val:countries.length,c:"#69F0AE"},{label:"NIGHTS",val:totalNights,c:"#A29BFE"},{label:"BUDGET",val:fmt(totalCost),c:"#c9a04c"}]).map((s,i)=>(
           <div key={s.label} style={{flex:1,minWidth:0,padding:isMobile?"6px 4px":"8px 6px",textAlign:"center",borderRight:i<3?"1px solid #111D2A":"none"}}>
             <div style={{fontSize:isMobile?8:13,color:isMobile?"rgba(255,255,255,0.5)":"rgba(255,255,255,0.35)",letterSpacing:isMobile?0.5:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textTransform:isMobile?"uppercase":"none"}}>{s.label}</div>
             <div style={{fontSize:isMobile?13:15,fontWeight:700,color:s.c,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.val}</div>
@@ -210,7 +210,7 @@ RULES:
               const pct=totalCost/bAmt;
               const isOver=remaining<0;
               const isWarn=!isOver&&pct>0.9;
-              const color=isOver?"#FF6B6B":isWarn?"#FFD93D":"#69F0AE";
+              const color=isOver?"#FF6B6B":isWarn?"#c9a04c":"#69F0AE";
               return(
                 <div style={{marginBottom:10,padding:"6px 10px",borderRadius:8,background:isOver?"rgba(255,107,107,0.08)":isWarn?"rgba(255,217,61,0.06)":"rgba(105,240,174,0.06)",border:`1px solid ${color}44`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                   <span style={{fontSize:12,color:"rgba(255,255,255,0.5)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1}}>{isOver?"⚠ OVER BUDGET":isWarn?"NEAR LIMIT":"ON BUDGET"}</span>
@@ -224,8 +224,8 @@ RULES:
                 <div key={item.id} style={{marginBottom:7,background:"#0C1520",borderRadius:11,overflow:"hidden",border:`1px solid ${c}22`,borderLeft:`3px solid ${c}`}}>
                   <div onClick={()=>setEditingId(isEd?null:item.id)} style={{padding:isMobile?"8px 10px":"10px 12px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,minHeight:44}}>
                     <div style={{width:18,height:18,borderRadius:"50%",background:`${c}18`,border:`1px solid ${c}44`,color:c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,flexShrink:0}}>{i+1}</div>
-                    <div style={{flex:1}}><div style={{fontSize:isMobile?13:15,fontWeight:700,color:"#FFF"}}>{item.flag} {item.destination}</div><div style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.75)"}}><span style={{color:isMobile?"rgba(16,185,129,0.7)":"#FFD93D",fontWeight:700}}>{item.country}</span> · {TI[item.type]} {item.type} · {fmtD(dates[i]?.arrival)}→{fmtD(dates[i]?.departure)}</div></div>
-                    <div style={{textAlign:"right",flexShrink:0,paddingRight:4}}><div style={{fontSize:15,fontWeight:900,color:isMobile?"rgba(0,212,255,0.75)":"#00D4FF",paddingRight:2}}>{coerceNightsVal(item.nights)}n</div><div style={{fontSize:15,color:isMobile?"rgba(212,175,55,0.8)":"#FFD93D"}}>{fmt(coerceCostVal(item.cost))}</div></div>
+                    <div style={{flex:1}}><div style={{fontSize:isMobile?13:15,fontWeight:700,color:"#FFF"}}>{item.flag} {item.destination}</div><div style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.75)"}}><span style={{color:isMobile?"rgba(16,185,129,0.7)":"#c9a04c",fontWeight:700}}>{item.country}</span> · {TI[item.type]} {item.type} · {fmtD(dates[i]?.arrival)}→{fmtD(dates[i]?.departure)}</div></div>
+                    <div style={{textAlign:"right",flexShrink:0,paddingRight:4}}><div style={{fontSize:15,fontWeight:900,color:isMobile?"rgba(0,212,255,0.75)":"#00D4FF",paddingRight:2}}>{coerceNightsVal(item.nights)}n</div><div style={{fontSize:15,color:isMobile?"rgba(212,175,55,0.8)":"#c9a04c"}}>{fmt(coerceCostVal(item.cost))}</div></div>
                     <span style={{fontSize:15,color:"rgba(255,255,255,0.25)",marginLeft:6}}>{isEd?"▲":"▼"}</span>
                   </div>
                   {isEd&&<div style={{padding:"10px 12px 12px",borderTop:"1px solid rgba(255,255,255,0.05)",background:"rgba(0,0,0,0.2)",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
@@ -238,7 +238,7 @@ RULES:
             })}
             <div style={{padding:"10px 12px",background:"rgba(105,240,174,0.04)",border:"1px solid rgba(105,240,174,0.14)",borderRadius:10,display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
               <div><div style={{fontSize:15,color:"rgba(255,255,255,0.35)"}}>{items.length} stops · {countries.length} countries</div><div style={{fontSize:15,color:"#69F0AE"}}>~{fmt(Math.round(totalCost/Math.max(totalNights,1)))}/night</div></div>
-              <div style={{fontSize:20,fontWeight:900,color:"#FFD93D"}}>{fmt(totalCost)}</div>
+              <div style={{fontSize:20,fontWeight:900,color:"#c9a04c"}}>{fmt(totalCost)}</div>
             </div>
             {isMobile&&<button style={{margin:"12px 0 0 0",width:"100%",padding:12,borderRadius:10,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#060A0F",fontSize:15,fontWeight:900,cursor:"pointer",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animation:"consolePulse 2.8s ease-in-out infinite"}} onClick={()=>onLaunch(buildHandoff())}>{data.isRevision?"✅  UPDATE":"🚀  LAUNCH TRIP CONSOLE"}</button>}
           </div>
@@ -252,20 +252,20 @@ RULES:
                   <div style={{width:22,height:22,borderRadius:"50%",background:msg.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{msg.role==="ai"?"✨":"👤"}</div>
                   {msg.isWelcome
                     ?<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"2px 0 6px",width:"100%"}}><div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?14:16,fontWeight:500,fontStyle:"normal",color:"rgba(245,240,232,0.95)",textAlign:"center",letterSpacing:0.3,lineHeight:1.45}}>{"Welcome, I'm your 1 Bag Nomad trip Co-Architect."}</div></div>
-                    :<div style={{background:msg.role==="ai"?"linear-gradient(rgba(0,0,0,0.35),rgba(0,0,0,0.35)),rgba(169,70,29,0.18)":"rgba(255,255,255,0.05)",border:msg.role==="ai"?"1px solid rgba(255,217,61,0.35)":`1px solid rgba(255,255,255,0.08)`,borderRadius:12,padding:msg.role==="ai"?(isMobile?"14px 12px":"18px 20px"):"10px 14px",fontSize:msg.role==="ai"?(isMobile?16:17):13,fontFamily:msg.role==="ai"?"'Fraunces',serif":"'Inter',system-ui,-apple-system,sans-serif",fontStyle:msg.role==="ai"?"italic":"normal",fontWeight:msg.role==="ai"?400:400,color:msg.role==="ai"?"rgba(255,255,255,0.92)":"#FFF",lineHeight:msg.role==="ai"?1.75:1.5,maxWidth:isMobile?"100%":"92%",boxShadow:msg.role==="ai"?"inset 0 0 22px rgba(0,0,0,0.2),0 0 20px rgba(169,70,29,0.12)":"none",textShadow:msg.role==="ai"?"0 1px 2px rgba(0,0,0,0.35)":"none"}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>}
+                    :<div style={{background:msg.role==="ai"?"rgba(255,255,255,0.06)":"rgba(255,255,255,0.05)",border:msg.role==="ai"?"1px solid rgba(255,255,255,0.12)":`1px solid rgba(255,255,255,0.08)`,borderRadius:12,padding:msg.role==="ai"?(isMobile?"14px 12px":"18px 20px"):"10px 14px",fontSize:msg.role==="ai"?(isMobile?16:17):13,fontFamily:msg.role==="ai"?"'Fraunces',serif":"'Inter',system-ui,-apple-system,sans-serif",fontStyle:msg.role==="ai"?"italic":"normal",fontWeight:msg.role==="ai"?400:400,color:msg.role==="ai"?"rgba(255,255,255,0.92)":"#FFF",lineHeight:msg.role==="ai"?1.75:1.5,maxWidth:isMobile?"100%":"92%",boxShadow:msg.role==="ai"?"inset 0 1px 0 rgba(0,0,0,0.25)":"none",textShadow:msg.role==="ai"?"0 1px 2px rgba(0,0,0,0.35)":"none"}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>}
                 </div>
               ))}
               {loading&&<div style={{display:"flex",gap:6,animation:"msgIn 0.25s ease"}}><div style={{width:20,height:20,borderRadius:"50%",background:"#A9461D",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>✨</div><div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",padding:"4px 0"}}>thinking...</div></div>}
               <div ref={chatEnd}/>
             </div>
             <div style={{padding:isMobile?"10px 12px":"10px",paddingRight:isMobile?72:10,borderTop:"1px solid #111D2A",display:"flex",gap:5,flexWrap:isMobile?"nowrap":"wrap",overflowX:"auto",flexShrink:0}}>
-              {QUICK_ACTIONS.map(a=><button type="button" key={a} onClick={()=>setInput(a)} onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.10)";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)";}} onTouchStart={e=>{e.currentTarget.style.background="rgba(255,255,255,0.10)";}} onTouchEnd={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)";}} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:20,padding:isMobile?"6px 12px":"7px 14px",fontSize:isMobile?11:15,fontWeight:700,color:"#F59E0B",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:isMobile?32:36,transition:"background 0.2s ease,border-color 0.2s ease",WebkitTapHighlightColor:"transparent"}}>{a}</button>)}
+              {QUICK_ACTIONS.map(a=><button type="button" key={a} onClick={()=>setInput(a)} onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.10)";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)";}} onTouchStart={e=>{e.currentTarget.style.background="rgba(255,255,255,0.10)";}} onTouchEnd={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)";}} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:20,padding:isMobile?"6px 12px":"7px 14px",fontSize:isMobile?11:15,fontWeight:700,color:"#c9a04c",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:isMobile?32:36,transition:"background 0.2s ease,border-color 0.2s ease",WebkitTapHighlightColor:"transparent"}}>{a}</button>)}
             </div>
             <div style={{padding:isMobile?"8px 12px":"8px 10px",borderTop:"1px solid #111D2A",display:"flex",gap:7,flexShrink:0,alignItems:"stretch"}}>
               <div className="ca-chat-input-wrap" style={{flex:1,minWidth:0,display:"flex",alignItems:"stretch",borderRadius:8,overflow:"hidden",backgroundColor:"#0C1520",boxSizing:"border-box"}}>
                 <input className="ca-chat-input" style={{flex:1,width:"100%",minWidth:0,backgroundColor:"#0C1520",color:"#FFF",fontSize:isMobile?14:15,padding:"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",minHeight:44,colorScheme:"dark"}} value={input} onChange={e=>setInput(e.target.value)} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();sendMsg();}}} placeholder="Now let's dial it in — what are you thinking?"/>
               </div>
-              <button type="button" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.16)",borderRadius:8,color:"rgba(255,217,61,0.92)",fontSize:15,padding:"8px 11px",cursor:"pointer",minWidth:44,minHeight:44,alignSelf:"stretch"}} onClick={sendMsg}>↑</button>
+              <button type="button" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.16)",borderRadius:8,color:"rgba(201,160,76,0.95)",fontSize:15,padding:"8px 11px",cursor:"pointer",minWidth:44,minHeight:44,alignSelf:"stretch"}} onClick={sendMsg}>↑</button>
             </div>
             {!isMobile&&<div style={{margin:"0 10px 10px",flexShrink:0}}>
               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>

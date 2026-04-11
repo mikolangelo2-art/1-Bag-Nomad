@@ -1,6 +1,7 @@
 // ── Core Palette ─────────────────────────────────────────────
 export const DIVE_CYAN       = "#00E5FF";
 export const SURF_GREEN      = "#69F0AE";
+/** Trip console hero / metallic text gold — prefer over bright #FFD93D for UI copy */
 export const CULTURE_GOLD    = "#C9A04C";
 export const EXPLORATION_ORANGE = "#FF9F43";
 export const NATURE_PURPLE   = "#A29BFE";

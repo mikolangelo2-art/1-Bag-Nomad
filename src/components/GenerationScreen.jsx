@@ -21,7 +21,7 @@ function GenerationScreen({onComplete}) {
       <div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(255,217,61,0.5)",letterSpacing:3,marginBottom:40,textAlign:"center",zIndex:1}}>The co-architect is working its magic ✦</div>
       <div style={{width:260,zIndex:1}}>
         <div style={{height:3,background:"rgba(255,255,255,0.07)",borderRadius:2,overflow:"hidden"}}>
-          <div style={{height:"100%",borderRadius:2,background:"linear-gradient(90deg,#A9461D,#FFD93D,#A9461D)",backgroundSize:"200% 100%",width:prog+"%",transition:"width 0.3s ease",animation:"shimmerBar 2s linear infinite"}}/>
+          <div style={{height:"100%",borderRadius:2,background:"linear-gradient(90deg,#A9461D,#c9a04c,#A9461D)",backgroundSize:"200% 100%",width:prog+"%",transition:"width 0.3s ease",animation:"shimmerBar 2s linear infinite"}}/>
         </div>
         <div style={{display:"flex",justifyContent:"space-between",marginTop:6,fontSize:15,color:"rgba(255,255,255,0.2)",letterSpacing:2}}><span>BUILDING</span><span>{Math.round(prog)}%</span></div>
       </div>

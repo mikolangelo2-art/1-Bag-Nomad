@@ -13,7 +13,7 @@ const CATEGORY_COLORS = {
   'NATURE': '#69F0AE',
   'ADVENTURE': '#FF6B6B',
   'WELLNESS': '#C678DD',
-  'EXPLORATION': '#FFD93D',
+  'EXPLORATION': '#c9a04c',
   'MARINE': '#00E5FF',
   'TRANSIT': '#A29BFE',
 };
@@ -212,7 +212,7 @@ const IntelMap = memo(function IntelMap({ tripData, isMobile, onSelectPhase }) {
 
         // City dot markers — category colored, with labels
         resolved.forEach((phase, i) => {
-          const dotColor = CATEGORY_COLORS[phase.type?.toUpperCase()] || '#FFD93D';
+          const dotColor = CATEGORY_COLORS[phase.type?.toUpperCase()] || '#c9a04c';
 
           const el = document.createElement('div');
           el.className = 'intel-marker';

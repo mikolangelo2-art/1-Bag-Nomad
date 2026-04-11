@@ -23,14 +23,14 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
   const [status,setStatus]=useState(()=>{const d=loadSeg()[segKey];return d?.status||'planning';});
   const segData=loadSeg()[segKey]||null;
   const askEnd=useRef(null);
-  const tc=TC[segment.type]||"#FFD93D";
+  const tc=TC[segment.type]||"#c9a04c";
   const sc=STATUS_CFG[status]||STATUS_CFG.planning;
   // Planning completion status
   const hasTransport=segData&&Object.values(segData.transport||{}).some(v=>v&&String(v).length>0);
   const hasStay=segData?.stay?.name?.length>0;
   const hasActivities=(segData?.activities?.length||0)>0;
   const completedCount=[hasTransport,hasStay,hasActivities].filter(Boolean).length;
-  const planStatus=status==="booked"||status==="confirmed"?null:completedCount===0?{label:"NOT STARTED",color:"rgba(255,255,255,0.85)",bg:"rgba(255,255,255,0.12)",border:"rgba(255,255,255,0.20)"}:completedCount===1?{label:"IN PROGRESS",color:"#FF9F43",bg:"rgba(255,159,67,0.10)",border:"rgba(255,159,67,0.30)"}:completedCount===2?{label:"MOSTLY DONE",color:"#FFD93D",bg:"rgba(255,217,61,0.10)",border:"rgba(255,217,61,0.30)"}:{label:"PLANNED",color:"#69F0AE",bg:"rgba(105,240,174,0.10)",border:"rgba(105,240,174,0.30)"};
+  const planStatus=status==="booked"||status==="confirmed"?null:completedCount===0?{label:"NOT STARTED",color:"rgba(255,255,255,0.85)",bg:"rgba(255,255,255,0.12)",border:"rgba(255,255,255,0.20)"}:completedCount===1?{label:"IN PROGRESS",color:"#FF9F43",bg:"rgba(255,159,67,0.10)",border:"rgba(255,159,67,0.30)"}:completedCount===2?{label:"MOSTLY DONE",color:"#c9a04c",bg:"rgba(255,217,61,0.10)",border:"rgba(255,217,61,0.30)"}:{label:"PLANNED",color:"#69F0AE",bg:"rgba(105,240,174,0.10)",border:"rgba(105,240,174,0.30)"};
   const isCancelled=status==='cancelled';
   const borderColor=status==='planning'?tc:sc.color;
 
@@ -102,8 +102,8 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
           </div>
         </div>
         <button onClick={e=>{e.stopPropagation();setAskOpen(o=>!o);}} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,padding:"8px 10px",background:askOpen?"rgba(255,217,61,0.1)":"rgba(255,217,61,0.03)",border:"none",borderLeft:`1px solid rgba(255,217,61,${askOpen?"0.45":"0.22"})`,cursor:"pointer",flexShrink:0,height:"100%",minWidth:38,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} title="Ask co-architect">
-          <span style={{fontSize:11,color:askOpen?"#FFD93D":"rgba(255,217,61,0.55)",lineHeight:1,textShadow:askOpen?"0 0 8px rgba(255,217,61,0.6)":"none",animation:askOpen?"none":"glowPulse 2.5s ease-in-out infinite"}}>✦</span>
-          <span style={{fontSize:10,color:askOpen?"#FFD93D":"rgba(255,217,61,0.4)",letterSpacing:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap"}}>ASK</span>
+          <span style={{fontSize:11,color:askOpen?"#c9a04c":"rgba(255,217,61,0.55)",lineHeight:1,textShadow:askOpen?"0 0 8px rgba(255,217,61,0.6)":"none",animation:askOpen?"none":"glowPulse 2.5s ease-in-out infinite"}}>✦</span>
+          <span style={{fontSize:10,color:askOpen?"#c9a04c":"rgba(255,217,61,0.4)",letterSpacing:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap"}}>ASK</span>
         </button></>}
       </div>
       {!open&&segData&&(hasTransport||hasStay||hasActivities||segData.food?.dailyBudget)&&(
@@ -137,7 +137,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
           </div>
           <div style={{display:"flex",gap:6}}>
             <input value={askInput} onChange={e=>setAskInput(e.target.value)} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();sendAsk();}}} placeholder={`Ask about ${segment.name}...`} style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:7,color:"#FFF",fontSize:isMobile?12:15,padding:isMobile?"6px 8px":"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",minHeight:isMobile?30:34,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";}}/>
-            <button type="button" onClick={sendAsk} style={{background:"rgba(255,217,61,0.12)",border:"1px solid rgba(255,217,61,0.3)",borderRadius:7,color:"#FFD93D",fontSize:isMobile?13:15,padding:isMobile?"5px 9px":"6px 11px",cursor:"pointer",minWidth:isMobile?30:34,minHeight:isMobile?30:34,fontWeight:700}}>↑</button>
+            <button type="button" onClick={sendAsk} style={{background:"rgba(255,217,61,0.12)",border:"1px solid rgba(255,217,61,0.3)",borderRadius:7,color:"#c9a04c",fontSize:isMobile?13:15,padding:isMobile?"5px 9px":"6px 11px",cursor:"pointer",minWidth:isMobile?30:34,minHeight:isMobile?30:34,fontWeight:700}}>↑</button>
           </div>
         </div>
       )}

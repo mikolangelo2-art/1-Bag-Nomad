@@ -22,7 +22,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
   const allocPct=phaseCap>0?Math.round((plannedSpend/phaseCap)*100):0;
   const barFillPct=Math.min(allocPct,100);
   const spendOverCap=phaseCap>0&&plannedSpend>phaseCap;
-  const barColor=spendOverCap?'#FF6B6B':'#FFD93D';
+  const barColor=spendOverCap?'#FF6B6B':'#c9a04c';
   return(
     <>
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:BG_PAGE,overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
@@ -41,7 +41,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
         {isMobile&&<span style={{flex:1,minWidth:0,fontSize:18,fontWeight:500,color:'#FFFFFF',fontFamily:"'Playfair Display',serif",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{phase.name}</span>}
         {!isMobile&&<div style={{flex:1,minWidth:8}}/>}
         <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0,marginLeft:isMobile?'auto':0}}>
-          <span style={{fontSize:14,fontWeight:700,color:'#FFD93D',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</span>
+          <span style={{fontSize:14,fontWeight:700,color:'#c9a04c',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</span>
           <HelpTip compact noLeadingMargin desktopOnly text="Manage your flights, stays, activities and notes for this destination" />
         </div>
       </div>
@@ -51,7 +51,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
         </div>
         <div style={{display:'flex',flexWrap:'wrap',alignItems:'center',justifyContent:'space-between',gap:8}}>
           <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.75)'}}>{fmt(plannedSpend)} / {fmt(phase.totalBudget)} · {allocPct}%</span>
-          {spendOverCap&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm over budget on the ${phase?.name||'this'} phase. Can you suggest alternatives that fit within my ${fmt(phase.totalBudget)} phase budget?`}}))} style={{background:'rgba(255,217,61,0.12)',border:'1px solid rgba(255,217,61,0.35)',borderRadius:8,color:'#FFD93D',fontSize:11,fontWeight:600,padding:'6px 12px',cursor:'pointer',letterSpacing:0.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Ask Co-Architect for alternatives</button>}
+          {spendOverCap&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm over budget on the ${phase?.name||'this'} phase. Can you suggest alternatives that fit within my ${fmt(phase.totalBudget)} phase budget?`}}))} style={{background:'rgba(255,217,61,0.12)',border:'1px solid rgba(255,217,61,0.35)',borderRadius:8,color:'#c9a04c',fontSize:11,fontWeight:600,padding:'6px 12px',cursor:'pointer',letterSpacing:0.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Ask Co-Architect for alternatives</button>}
         </div>
       </div>
       {/* Stats bar */}

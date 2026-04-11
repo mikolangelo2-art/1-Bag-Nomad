@@ -42,7 +42,7 @@ function HomecomingScreen({tripData,onPlanNext}) {
           </div>
           {/* You did it. */}
           <div style={{textAlign:"center",opacity:ph>=1?1:0,transform:ph>=1?"translateY(0)":"translateY(20px)",transition:"opacity 0.7s ease,transform 0.7s ease"}}>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?40:56,fontWeight:900,color:"#FFD93D",textShadow:"0 0 50px rgba(255,217,61,0.45)",lineHeight:1,marginBottom:6}}>You did it.</div>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?40:56,fontWeight:900,color:"#c9a04c",textShadow:"0 0 50px rgba(255,217,61,0.45)",lineHeight:1,marginBottom:6}}>You did it.</div>
             <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?13:16,fontWeight:300,fontStyle:"italic",color:"rgba(255,159,67,0.65)",letterSpacing:1}}>{name}</div>
           </div>
           {/* Stats */}
@@ -59,14 +59,14 @@ function HomecomingScreen({tripData,onPlanNext}) {
           {/* Dream Big tagline */}
           <div style={{...fade3(0),textAlign:"center"}}>
             <div style={{width:60,height:1,background:"linear-gradient(90deg,transparent,rgba(255,217,61,0.35),transparent)",margin:"0 auto 16px"}}/>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?15:19,fontWeight:700,WebkitTextFillColor:"transparent",background:"linear-gradient(90deg,#FFD93D 25%,#FFF 45%,#FF9F43 55%,#FFD93D 75%)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",animation:"shimmerOnce 2.5s ease forwards",letterSpacing:2}}>Dream Big. Travel Light.</div>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?15:19,fontWeight:700,WebkitTextFillColor:"transparent",background:"linear-gradient(90deg,#c9a04c 25%,#FFF 45%,#FF9F43 55%,#c9a04c 75%)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",animation:"shimmerOnce 2.5s ease forwards",letterSpacing:2}}>Dream Big. Travel Light.</div>
           </div>
           {/* Buttons */}
           <div style={{...fade3(0.15),display:"flex",flexDirection:isMobile?"column":"row",gap:10,width:"100%",maxWidth:400}}>
             <button onClick={handleShare} style={{flex:1,padding:"14px 18px",borderRadius:12,border:"1px solid rgba(255,159,67,0.45)",background:"rgba(255,159,67,0.1)",color:"#FF9F43",fontSize:isMobile?11:13,fontWeight:700,letterSpacing:2,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:48,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onMouseOver={e=>e.currentTarget.style.background="rgba(255,159,67,0.2)"} onMouseOut={e=>e.currentTarget.style.background="rgba(255,159,67,0.1)"}>
               {copied?"✓ COPIED!":"✦ SHARE MY EXPEDITION"}
             </button>
-            <button onClick={onPlanNext} style={{flex:1,padding:"14px 18px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#C4571E,#FF9F43,#FFD93D)",color:"#060A0F",fontSize:isMobile?11:13,fontWeight:900,letterSpacing:2,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:48,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onMouseOver={e=>e.currentTarget.style.transform="translateY(-1px)"} onMouseOut={e=>e.currentTarget.style.transform="none"}>
+            <button onClick={onPlanNext} style={{flex:1,padding:"14px 18px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#C4571E,#FF9F43,#c9a04c)",color:"#060A0F",fontSize:isMobile?11:13,fontWeight:900,letterSpacing:2,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:48,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onMouseOver={e=>e.currentTarget.style.transform="translateY(-1px)"} onMouseOut={e=>e.currentTarget.style.transform="none"}>
               PLAN MY NEXT ONE →
             </button>
           </div>
