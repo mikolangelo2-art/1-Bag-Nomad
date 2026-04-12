@@ -167,7 +167,7 @@ export function StaySuggestionExperienceCard({
   const savedSubMerged = {
     ...savedSubStyle,
     display: "block",
-    fontFamily: "'Space Mono',monospace",
+    fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
   };
 
   if (inPlaceSaved) {

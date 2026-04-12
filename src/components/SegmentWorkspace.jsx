@@ -299,8 +299,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const planCommitCardPad=isMobile?'14px 10px':'18px 20px';
   const planCommitLabelStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(201,160,76,0.65)',letterSpacing:2};
   const planCommitAddedLineStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(201,160,76,0.92)',letterSpacing:0.35,lineHeight:1.45};
-  const savedCheckStyle={color:'#10B981',fontSize:14,fontFamily:"'Space Mono',monospace",fontWeight:700};
-  const savedSubStyle={color:'rgba(255,255,255,0.5)',fontSize:12,marginTop:4,lineHeight:1.5,fontFamily:"'Space Mono',monospace"};
+  const savedCheckStyle={color:'#10B981',fontSize:14,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700};
+  const savedSubStyle={color:'rgba(255,255,255,0.5)',fontSize:12,marginTop:4,lineHeight:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"};
   const animatedRouteLegIndex=useMemo(()=>{const idx=(allPhases||[]).findIndex(p=>p.name===segment.name&&(!segment.country||p.country===segment.country));if(idx<0)return undefined;const hasDep=!!(homeCity||"").trim();if(hasDep)return idx;return idx>0?idx-1:undefined;},[allPhases,segment.name,segment.country,homeCity]);
   const committedFooterWrapStyle={marginTop:14,paddingTop:12,borderTop:'1px solid rgba(255,255,255,0.06)'};
   const addedPlanLineStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(105,240,174,0.88)',letterSpacing:0.35,lineHeight:1.45};
