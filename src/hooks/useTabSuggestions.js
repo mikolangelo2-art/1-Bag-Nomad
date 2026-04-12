@@ -82,6 +82,8 @@ export function useTabSuggestions({ kind, segment, enabled }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const fetchedRef = useRef(null);
+  const segmentRef = useRef(segment);
+  segmentRef.current = segment;
 
   const cacheKey = useMemo(
     () =>
@@ -97,10 +99,11 @@ export function useTabSuggestions({ kind, segment, enabled }) {
     setError(null);
     (async () => {
       try {
+        const seg = segmentRef.current;
         let out = [];
-        if (kind === "stay") out = await fetchStayItems(segment);
-        else if (kind === "food") out = await fetchFoodItems(segment);
-        else if (kind === "activities") out = await fetchActivityItems(segment);
+        if (kind === "stay") out = await fetchStayItems(seg);
+        else if (kind === "food") out = await fetchFoodItems(seg);
+        else if (kind === "activities") out = await fetchActivityItems(seg);
         if (!cancelled) {
           setItems(out);
           fetchedRef.current = cacheKey;
@@ -117,7 +120,7 @@ export function useTabSuggestions({ kind, segment, enabled }) {
     return () => {
       cancelled = true;
     };
-  }, [cacheKey, enabled, kind, segment]);
+  }, [cacheKey, enabled, kind]);
 
   return { items, loading, error };
 }

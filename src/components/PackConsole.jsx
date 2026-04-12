@@ -595,7 +595,7 @@ Return ONLY a JSON array:
         </div>
       </div>}
       {/* Upper dashboard — desktop side inset matches card column / Trip Console */}
-      <div style={isMobile?undefined:{padding:'0 24px'}}>
+      <div style={isMobile?undefined:{maxWidth:1200,margin:'0 auto',padding:'0 24px',width:'100%',boxSizing:'border-box'}}>
       {/* Hero rings */}
       {!isFullscreen&&<div style={{background:'rgba(10,7,5,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)'}}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'center',padding:isMobile?'10px 12px 8px':'10px 0 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
