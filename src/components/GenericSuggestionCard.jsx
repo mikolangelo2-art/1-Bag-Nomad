@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDestinationPhoto } from "../hooks/useDestinationPhoto";
 
 /** Split-card hero height — taller band shows more of each photo (Stay/Food/Activities) */
@@ -25,6 +25,12 @@ const HERO_H = 200;
  *   addButtonLabel?: string,
  *   acceptButtonStyle?: import("react").CSSProperties,
  *   dismissButtonStyle?: import("react").CSSProperties,
+ *   inPlaceSaved?: boolean,
+ *   committedToolbar?: import("react").ReactNode,
+ *   savedCheckText?: string,
+ *   savedSubText?: string,
+ *   savedCheckStyle?: import("react").CSSProperties,
+ *   savedSubStyle?: import("react").CSSProperties,
  * }} props
  */
 export default function GenericSuggestionCard({
@@ -46,10 +52,23 @@ export default function GenericSuggestionCard({
   addButtonLabel = "ADD TO PLAN",
   acceptButtonStyle,
   dismissButtonStyle,
+  inPlaceSaved = false,
+  committedToolbar = null,
+  savedCheckText = "",
+  savedSubText = "",
+  savedCheckStyle,
+  savedSubStyle,
 }) {
   const [innerOpen, setInnerOpen] = useState(false);
   const isStacked = variant === "stacked";
-  const expanded = isStacked ? true : variant === "accordion" ? !!expandedProp : innerOpen;
+  const expanded = isStacked
+    ? true
+    : variant === "accordion"
+      ? !!expandedProp || inPlaceSaved
+      : innerOpen || inPlaceSaved;
+  useEffect(() => {
+    if (inPlaceSaved && variant === "expand") setInnerOpen(true);
+  }, [inPlaceSaved, variant]);
   function toggle() {
     if (isStacked) return;
     if (variant === "accordion") onToggle?.();
@@ -255,6 +274,18 @@ export default function GenericSuggestionCard({
     </>
   );
 
+  const savedBlock =
+    inPlaceSaved && (savedCheckText || savedSubText) ? (
+      <div style={{ marginTop: 10 }}>
+        {savedCheckText ? (
+          <span style={savedCheckStyle}>{savedCheckText}</span>
+        ) : null}
+        {savedSubText ? (
+          <span style={{ display: "block", ...savedSubStyle }}>{savedSubText}</span>
+        ) : null}
+      </div>
+    ) : null;
+
   const expandableDetailBody = (
     <div
       style={{
@@ -262,20 +293,27 @@ export default function GenericSuggestionCard({
         borderTop: "1px solid rgba(255,255,255,0.06)",
       }}
     >
+      {inPlaceSaved && committedToolbar ? (
+        <div style={{ marginBottom: 10 }}>{committedToolbar}</div>
+      ) : null}
       {sharedDetails}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onAddToPlan();
-        }}
-        style={{
-          ...defaultAddStyle,
-          ...acceptButtonStyle,
-        }}
-      >
-        {addLabelDisplay}
-      </button>
+      {!inPlaceSaved ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddToPlan();
+          }}
+          style={{
+            ...defaultAddStyle,
+            ...acceptButtonStyle,
+          }}
+        >
+          {addLabelDisplay}
+        </button>
+      ) : (
+        savedBlock
+      )}
       {photoCredit}
     </div>
   );
@@ -301,50 +339,57 @@ export default function GenericSuggestionCard({
           {disclaimer}
         </div>
       ) : null}
-      <div
-        style={{
-          display: "flex",
-          gap: 8,
-          flexDirection: isMobile ? "column" : "row",
-          flexWrap: "wrap",
-        }}
-      >
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onAddToPlan();
-          }}
+      {inPlaceSaved && committedToolbar ? (
+        <div style={{ marginBottom: 10 }}>{committedToolbar}</div>
+      ) : null}
+      {!inPlaceSaved ? (
+        <div
           style={{
-            ...defaultAddStyle,
-            ...acceptButtonStyle,
-            flex: isMobile ? "none" : 1,
-            width: isMobile ? "100%" : undefined,
+            display: "flex",
+            gap: 8,
+            flexDirection: isMobile ? "column" : "row",
+            flexWrap: "wrap",
           }}
         >
-          {addLabelDisplay}
-        </button>
-        {onSkip ? (
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onSkip();
+              onAddToPlan();
             }}
             style={{
               ...defaultAddStyle,
-              ...dismissButtonStyle,
+              ...acceptButtonStyle,
               flex: isMobile ? "none" : 1,
               width: isMobile ? "100%" : undefined,
-              background: dismissButtonStyle?.background ?? "rgba(0,0,0,0.35)",
-              color: dismissButtonStyle?.color ?? "rgba(255,255,255,0.88)",
-              border: dismissButtonStyle?.border ?? "1px solid rgba(255,255,255,0.12)",
             }}
           >
-            SKIP
+            {addLabelDisplay}
           </button>
-        ) : null}
-      </div>
+          {onSkip ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSkip();
+              }}
+              style={{
+                ...defaultAddStyle,
+                ...dismissButtonStyle,
+                flex: isMobile ? "none" : 1,
+                width: isMobile ? "100%" : undefined,
+                background: dismissButtonStyle?.background ?? "rgba(0,0,0,0.35)",
+                color: dismissButtonStyle?.color ?? "rgba(255,255,255,0.88)",
+                border: dismissButtonStyle?.border ?? "1px solid rgba(255,255,255,0.12)",
+              }}
+            >
+              SKIP
+            </button>
+          ) : null}
+        </div>
+      ) : (
+        savedBlock
+      )}
       {photoCredit}
     </div>
   );

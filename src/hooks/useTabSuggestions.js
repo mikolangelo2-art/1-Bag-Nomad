@@ -39,7 +39,7 @@ async function fetchStayItems(segment) {
 Return JSON only, no markdown:
 {"items":[{"name":"short property style or area label (not a real trademark)","description":"1-2 sentences","category":"e.g. Boutique Hotel","price":"$$ or $45-90/night","rating":8.2,"address":null,"meta":{}}]}
 Exactly 3 items in "items". Use realistic categories; do not invent real hotel brand names.`;
-  const raw = await askAI(prompt, 1400, 0.6);
+  const raw = await askAI(prompt, 600, 0.6);
   const parsed = parseJSON(raw);
   const arr = Array.isArray(parsed?.items) ? parsed.items : [];
   return arr.slice(0, 3).map(normalizeSuggestionItem);
@@ -53,7 +53,7 @@ async function fetchActivityItems(segment) {
 Return JSON only:
 {"items":[{"name":"activity name","description":"1-2 lines","category":"e.g. Day trip","price":"Est. $X","rating":8.0,"address":null,"meta":{}}]}
 Exactly 3 items. No markdown.`;
-  const raw = await askAI(prompt, 1400, 0.6);
+  const raw = await askAI(prompt, 600, 0.6);
   const parsed = parseJSON(raw);
   const arr = Array.isArray(parsed?.items) ? parsed.items : [];
   return arr.slice(0, 3).map(normalizeSuggestionItem);
@@ -67,7 +67,7 @@ async function fetchFoodItems(segment) {
 Return JSON only:
 {"items":[{"name":"restaurant style or dish focus","description":"1-2 lines","category":"e.g. Izakaya","price":"$$","rating":8.1,"address":null,"meta":{"cuisine":"short label"}}]}
 Exactly 3 items. No real trademarked chain names. No markdown.`;
-  const raw = await askAI(prompt, 1400, 0.6);
+  const raw = await askAI(prompt, 600, 0.6);
   const parsed = parseJSON(raw);
   const arr = Array.isArray(parsed?.items) ? parsed.items : [];
   return arr.slice(0, 3).map(normalizeSuggestionItem);

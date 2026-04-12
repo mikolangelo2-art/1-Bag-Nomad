@@ -22,6 +22,12 @@ export function StaySuggestionExperienceCard({
   acceptBtnStyle,
   dismissBtnStyle,
   extraActions,
+  /** When true, show committed shell + toolbar in place of the hero suggestion (Session 52). */
+  inPlaceSaved = false,
+  committedToolbar = null,
+  stayBodySummary = null,
+  savedCheckStyle,
+  savedSubStyle,
 }) {
   const s = suggestion;
   const propsList = s?.suggestions || [];
@@ -133,6 +139,33 @@ export function StaySuggestionExperienceCard({
     : { flex: 1, minWidth: 120, minHeight: 44 };
 
   const dismissMerged = heroUrl ? dismissBtnStyleOnHero : dismissBtnStyle;
+
+  if (inPlaceSaved) {
+    const shellBorder = isMobile
+      ? "1px solid rgba(201,160,76,0.45)"
+      : "1.5px solid rgba(201,160,76,0.55)";
+    return (
+      <div
+        style={{
+          border: shellBorder,
+          borderRadius: isMobile ? 12 : 14,
+          background: "rgba(201,160,76,0.06)",
+          padding: isMobile ? "14px 10px" : "18px 20px",
+          marginBottom: 14,
+          display: "flex",
+          flexDirection: "column",
+          textAlign: "left",
+        }}
+      >
+        {committedToolbar}
+        {stayBodySummary}
+        <span style={savedCheckStyle}>✓ Stay added to your plan.</span>
+        <span style={{ ...savedSubStyle, display: "block" }}>
+          Locked in — dates, links, and notes live here whenever you want to refine them.
+        </span>
+      </div>
+    );
+  }
 
   return (
     <SuggestionExperienceCard
