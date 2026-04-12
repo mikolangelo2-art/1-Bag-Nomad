@@ -18,13 +18,18 @@ export default function SuggestionExperienceCard({
   isMobile,
   /** Mobile Stay/Food: one visual layer — no inner gradient panel over the hero */
   flatMobile = false,
+  /** Override default min heights (300 mobile / 380 desktop) when set — e.g. tighter activity cards */
+  heroMinHeightPx = null,
+  /** Keep CTAs directly under copy instead of flex-pushing to the bottom (less dead space on hero cards) */
+  tightFooter = false,
   children,
 }) {
   const heroMobile = !!(heroUrl && isMobile);
   const flat = !!(flatMobile && heroMobile);
   const nameFs = isMobile ? 18 : 20;
   const cardRadius = heroMobile ? 12 : 14;
-  const cardMinH = heroUrl ? (isMobile ? 300 : 380) : undefined;
+  const defaultHeroMin = isMobile ? 300 : 380;
+  const cardMinH = heroUrl ? (heroMinHeightPx ?? defaultHeroMin) : undefined;
   const txtSh = heroUrl
     ? heroMobile
       ? "0 1px 3px rgba(0,0,0,0.5)"
@@ -107,7 +112,7 @@ export default function SuggestionExperienceCard({
         style={{
           position: "relative",
           zIndex: 2,
-          flex: 1,
+          flex: tightFooter ? "0 0 auto" : 1,
           display: "flex",
           flexDirection: "column",
           padding: flat ? "14px 16px 16px" : heroMobile ? "10px 10px 14px" : "16px 16px 18px",
@@ -293,7 +298,7 @@ export default function SuggestionExperienceCard({
             gap: 8,
             flexWrap: "wrap",
             flexDirection: isMobile ? "column" : "row",
-            marginTop: "auto",
+            marginTop: tightFooter ? 12 : "auto",
           }}
         >
           {children}

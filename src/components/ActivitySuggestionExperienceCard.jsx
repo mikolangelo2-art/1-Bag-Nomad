@@ -51,6 +51,9 @@ export function ActivitySuggestionExperienceCard({
       heroUrl={photo.ready ? photo.url : null}
       heroLink={photo.htmlLink}
       isMobile={isMobile}
+      flatMobile={isMobile}
+      heroMinHeightPx={isMobile ? 220 : 260}
+      tightFooter
     >
       <button type="button" onClick={onAdd} style={{ ...acceptBtnStyle, ...ctaFlex }}>
         + ADD TO PLAN

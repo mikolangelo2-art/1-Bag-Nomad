@@ -156,8 +156,8 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
               </div>
             )}
           </div>
-          {!isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:2,marginTop:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{[...new Set(flatPhases.map(p=>p.country))].join(" · ")}</div>}
-          <div style={{marginTop:5,display:"flex",alignItems:"center",gap:6}}>
+          <div style={{fontSize:isMobile?13:15,color:"rgba(232,220,200,0.72)",letterSpacing:isMobile?1.5:2,marginTop:6,textAlign:"center",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.45}}>{[...new Set(destFlatPhases.map(p=>p.country))].join(" · ")}</div>
+          <div style={{marginTop:8,display:"flex",alignItems:"center",justifyContent:"center",gap:6,width:"100%"}}>
             {editingDep?(
               <input
                 ref={depRef}
@@ -167,17 +167,17 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                 onBlur={saveDep}
                 onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();saveDep();}if(e.key==="Escape"){e.preventDefault();setDepInput(tripData.departureCity||tripData.city||"");setEditingDep(false);}}}
                 placeholder="Departure city..."
-                style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,color:"#c9a04c",background:"rgba(201,160,76,0.08)",border:"1px solid rgba(201,160,76,0.35)",borderRadius:5,padding:"3px 8px",outline:"none",width:isMobile?130:160}}
+                style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,fontWeight:700,letterSpacing:2,color:"#c9a04c",background:"rgba(201,160,76,0.12)",border:"1px solid rgba(201,160,76,0.45)",borderRadius:6,padding:"5px 10px",outline:"none",width:isMobile?140:180,boxShadow:"0 0 20px rgba(201,160,76,0.08)"}}
               />
             ):(
               <button
                 onClick={()=>setEditingDep(true)}
-                style={{display:"flex",alignItems:"center",gap:5,background:"none",border:"none",padding:0,cursor:"pointer"}}
+                style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",padding:"4px 2px",cursor:"pointer"}}
               >
-                <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:10,letterSpacing:2,color:depInput?"rgba(201,160,76,0.78)":"rgba(201,160,76,0.35)",fontWeight:700}}>
+                <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:isMobile?11:12,letterSpacing:2,color:depInput?"rgba(245,230,200,0.96)":"rgba(201,160,76,0.55)",fontWeight:700,textShadow:depInput?"0 1px 10px rgba(0,0,0,0.45)":undefined}}>
                   {depInput?`FROM · ${depInput.replace(/\s+International\s+Airport.*$/i,'').replace(/\s+Intl\s+Airport.*$/i,'').replace(/\s+Airport.*$/i,'').replace(/,\s*[A-Z]{2,3}$/,'').replace(/,.*$/,'').trim().toUpperCase()}`:"＋ SET DEPARTURE CITY"}
                 </span>
-                <span style={{fontSize:9,color:"rgba(201,160,76,0.35)"}}>✎</span>
+                <span style={{fontSize:11,color:"rgba(201,160,76,0.55)"}}>✎</span>
               </button>
             )}
           </div>
