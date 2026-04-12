@@ -7,10 +7,16 @@
   background-image: none !important;
 }
 .build-root .ca-chat-input-wrap,
-.dream-root .ca-chat-input-wrap,
+.dream-root .ca-chat-input-wrap:not(.vision-textarea-wrap),
 [data-ca-drawer] .ca-chat-input-wrap {
   background-color: #0C1520 !important;
   border: 1px solid rgba(201, 160, 76, 0.5) !important;
+}
+
+/* Dream expedition vision field — warm surface + gold (full glow in App.jsx <style>) */
+.dream-root .vision-textarea-wrap.ca-chat-input-wrap {
+  background-color: #0f0d0b !important;
+  border: 1px solid rgba(255, 215, 0, 0.58) !important;
 }
 
 #root {
