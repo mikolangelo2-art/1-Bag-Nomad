@@ -3,7 +3,7 @@ import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fmt, fD, formatSegmentCardDateHeader, formatTravelLegDates } from '../utils/dateHelpers';
 import { loadSeg, saveSeg } from '../utils/storageHelpers';
-import { returnToLogCopy } from '../utils/microcopy';
+import { returnToLogCopy, addedToPlanLine } from '../utils/microcopy';
 import { inferTransportMode, findSuggestionForSegment, flatPhaseIndexForSegment, loadSuggestionsFromStorage, loadDismissed, saveDismissed, suggestionCardStyle, suggestionHeaderStyle, disclaimerStyle, acceptBtnStyle, dismissBtnStyle, dismissBtnStyleOnHero, sanitizeAiDisplayText, stayBlurbForSelection, transportNotesFromSuggestion, transportSuggestionEstimateHint, parseTransportEstimateToCostDigits, suggestionRowHasPayload, isRowEmpty } from '../utils/tripConsoleHelpers';
 import SDF from './SDF';
 import CityInput from './CityInput';
@@ -265,8 +265,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const stayCostNum=Number(String(det.stay?.cost??"").replace(/[^0-9.]/g,""))||0;
   const hasStaySecondaryField=(!isRowEmpty(det.stay?.checkin)&&!isRowEmpty(det.stay?.checkout))||stayCostNum>0||(det.stay?.link||"").trim().length>0||(det.stay?.notes||"").trim().length>0;
   const showStayAccommodationCard=hasS&&hasStaySecondaryField&&!stayFocused;
+  const hasFoodBudget=!isRowEmpty(det.food?.dailyBudget);
   const stayInsight=useTabSuggestions({kind:"stay",segment,enabled:tab==="stay"&&!showStayAccommodationCard});
-  const foodInsight=useTabSuggestions({kind:"food",segment,enabled:tab==="food"});
+  const foodInsight=useTabSuggestions({kind:"food",segment,enabled:tab==="food"&&!hasFoodBudget});
   const actInsight=useTabSuggestions({kind:"activities",segment,enabled:tab==="activities"});
   const prevStop=(prevCity||"").trim();
   const homeStop=(homeCity||"").trim();
@@ -279,7 +280,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const suggestionHeaderReadable={...suggestionHeaderStyle,fontSize:12,lineHeight:1.45};
   const disclaimerReadable={...disclaimerStyle,fontSize:12,lineHeight:1.58};
   const ctaFlex=isMobile?{width:"100%",minHeight:44}:{flex:1,minWidth:120,minHeight:44};
-  const returnToLogFooterStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.36)',letterSpacing:'0.14em',lineHeight:1.58,marginTop:14,paddingTop:12,borderTop:'1px solid rgba(255,255,255,0.06)'};
+  const committedFooterWrapStyle={marginTop:14,paddingTop:12,borderTop:'1px solid rgba(255,255,255,0.06)'};
+  const addedPlanLineStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(105,240,174,0.88)',letterSpacing:0.35,lineHeight:1.45};
+  const returnToLogFooterStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.36)',letterSpacing:'0.14em',lineHeight:1.58,marginTop:8};
   const tripFieldLabel={fontSize:isMobile?12:14,color:"rgba(0,229,255,0.75)",letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,opacity:0.92};
   const cityInStyle={background:"rgba(0,0,0,0.55)",border:"1px solid rgba(255,255,255,0.22)",borderRadius:6,color:"#FFF",fontSize:isMobile?12:15,padding:isMobile?"4px 7px":"5px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",maxWidth:"100%",boxSizing:"border-box",lineHeight:1.6};
   const legChipStyle={padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.35)",background:"rgba(0,229,255,0.06)",color:"rgba(0,229,255,0.88)",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",minHeight:32,lineHeight:1.35};
@@ -423,7 +426,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               {suggestion.transport.route?<div style={{fontSize:13,color:'rgba(255,255,255,0.50)',lineHeight:1.52,marginBottom:8,whiteSpace:'pre-wrap'}}>{suggestion.transport.route}</div>:null}
               <div style={disclaimerReadable}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
             </CollapsibleSuggestion>}
-            {!editingTransport&&<div style={returnToLogFooterStyle}>{returnToLogCopy('Travel')}</div>}
+            {!editingTransport&&<div style={committedFooterWrapStyle}><div style={{...addedPlanLineStyle,color:'rgba(0,229,255,0.88)'}}>{addedToPlanLine('transport')}</div><div style={returnToLogFooterStyle}>{returnToLogCopy('Travel')}</div></div>}
           </div>}
           {bookDropdown==='transport'&&<div style={{position:'relative',zIndex:100,marginBottom:10}}><div style={{background:'rgba(0,8,20,0.95)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:12,padding:8,boxShadow:'0 8px 32px rgba(0,0,0,0.6)'}}>
             <div style={{fontSize:12,color:'rgba(255,255,255,0.60)',letterSpacing:2,padding:'4px 14px'}}>SEARCH FLIGHTS</div>
@@ -520,7 +523,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               {suggestion.stay.notes&&<div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontStyle:'italic',marginBottom:8,lineHeight:1.5}}>{suggestion.stay.notes}</div>}
               <div style={disclaimerReadable}>⚡ Estimates based on current market rates — actual prices vary when booked</div>
             </CollapsibleSuggestion>}
-            {!editingStay&&<div style={returnToLogFooterStyle}>{returnToLogCopy('Stay')}</div>}
+            {!editingStay&&<div style={committedFooterWrapStyle}><div style={addedPlanLineStyle}>{addedToPlanLine('stay')}</div><div style={returnToLogFooterStyle}>{returnToLogCopy('Stay')}</div></div>}
             </div>
           </div>}
           {showStayAccommodationCard&&!showStayResuggest&&<div style={{textAlign:'left',marginTop:8,marginBottom:4}}>
@@ -607,14 +610,14 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
                 </div>
                 <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4}}>{a.name}</div>
                 {a.provider&&<div style={{fontSize:12,color:'rgba(255,255,255,0.60)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:4}}>{a.provider}</div>}
-                {a.brief&&<div style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontStyle:'italic',color:'rgba(255,255,255,0.75)',marginBottom:8,marginTop:4,lineHeight:1.6}}>{a.brief}</div>}
+                {a.brief&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,fontStyle:'italic',color:'rgba(255,255,255,0.75)',marginBottom:8,marginTop:4,lineHeight:1.6}}>{a.brief}</div>}
                 <div style={{fontSize:13,color:'#FF9F43',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",display:'flex',gap:8,flexWrap:'wrap',marginBottom:a.tip||a.link?6:0}}>
                   {a.date?<span>{fD(a.date)}</span>:segment.arrival&&<span style={{fontStyle:'italic',color:'rgba(255,159,67,0.60)',fontSize:12}}>within {fD(segment.arrival)}–{fD(segment.departure)}</span>}{a.cost&&<span style={{color:'#c9a04c'}}>Est. ${a.cost}</span>}
                 </div>
                 {a.tip&&<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,color:'rgba(255,255,255,0.60)',lineHeight:1.5,marginTop:4}}>💡 {a.tip}</div>}
                 {a.link&&<a href={a.link} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:'#00E5FF',textDecoration:'none',display:'inline-block',marginTop:6}}>{a.link.replace(/^https?:\/\//,"").slice(0,40)}</a>}
                 </div>
-                <div style={returnToLogFooterStyle}>{returnToLogCopy('Activities')}</div>
+                <div style={committedFooterWrapStyle}><div style={{...addedPlanLineStyle,color:'rgba(201,160,76,0.92)'}}>{addedToPlanLine('activities')}</div><div style={returnToLogFooterStyle}>{returnToLogCopy('Activities')}</div></div>
               </div>
             ))}
             <div style={{display:'flex',justifyContent:'space-between',padding:'4px 2px'}}>
@@ -657,15 +660,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Local dining recommendations and daily food budget estimates for this destination" />
           </div>
-          {foodInsight.loading&&<SuggestionShimmer message={`Discovering flavors in ${dest||"this destination"}...`}/>}
-          {!foodInsight.loading&&foodInsight.items.length>0&&foodInsight.items.map((it,idx)=>(
-            <GenericSuggestionCard key={`food-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`food-tab-${idx}`} accent="#FF9F43" variant="accordion" isMobile={isMobile} expanded={foodAccordionOpen===idx} onToggle={()=>setFoodAccordionOpen(prev=>prev===idx?null:idx)} onAddToPlan={()=>{const bud=parseFoodInsightDailyBudget(it.price);setFoodAccordionOpen(null);setDet(d=>{const line=[it.name,it.description].filter(Boolean).join(" — ");const nextNotes=d.food.notes?`${d.food.notes}\n\n${line}`:line;const prev=parseFloat(d.food.dailyBudget)||0;const cur=parseFloat(bud)||0;const nextBud=bud?String(Math.round(Math.max(prev,cur))):d.food.dailyBudget;return{...d,food:{...d.food,dailyBudget:nextBud||d.food.dailyBudget,notes:nextNotes}};});}}/>
-          ))}
-          {!foodInsight.loading&&foodInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{foodInsight.error}</div>}
-          {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
-            <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
-            <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
-          </div>}
           {showFoodSummary&&<div style={{border:isMobile?'1px solid rgba(255,159,67,0.38)':'1.5px solid rgba(255,159,67,0.45)',borderRadius:isMobile?12:14,background:'rgba(0,229,255,0.06)',padding:isMobile?'14px 10px':'18px 20px',marginBottom:14,display:'flex',flexDirection:'column'}}>
             <div style={{flex:1,minHeight:0}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:12}}>
@@ -684,7 +678,16 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               {dedupeFoodRecommendations(suggestion.food.recommendations).slice(0,4).map((rec,i)=><div key={i} style={{fontSize:13,color:'rgba(255,255,255,0.55)',marginBottom:4,paddingLeft:6,borderLeft:'2px solid rgba(255,159,67,0.22)',lineHeight:1.48}}>{rec}</div>)}
               <div style={{...disclaimerReadable,marginTop:8}}>⚡ Suggestions based on current market knowledge — always verify locally</div>
             </CollapsibleSuggestion>}
-            {!editingFood&&<div style={returnToLogFooterStyle}>{returnToLogCopy('Food')}</div>}
+            {!editingFood&&<div style={committedFooterWrapStyle}><div style={{...addedPlanLineStyle,color:'rgba(255,159,67,0.88)'}}>{addedToPlanLine('food')}</div><div style={returnToLogFooterStyle}>{returnToLogCopy('Food')}</div></div>}
+          </div>}
+          {foodInsight.loading&&<SuggestionShimmer message={`Discovering flavors in ${dest||"this destination"}...`}/>}
+          {!foodInsight.loading&&foodInsight.items.length>0&&foodInsight.items.map((it,idx)=>(
+            <GenericSuggestionCard key={`food-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`food-tab-${idx}`} accent="#FF9F43" variant="accordion" isMobile={isMobile} expanded={foodAccordionOpen===idx} onToggle={()=>setFoodAccordionOpen(prev=>prev===idx?null:idx)} onAddToPlan={()=>{const bud=parseFoodInsightDailyBudget(it.price);setFoodAccordionOpen(null);setDet(d=>{const line=[it.name,it.description].filter(Boolean).join(" — ");const nextNotes=d.food.notes?`${d.food.notes}\n\n${line}`:line;const prev=parseFloat(d.food.dailyBudget)||0;const cur=parseFloat(bud)||0;const nextBud=bud?String(Math.round(Math.max(prev,cur))):d.food.dailyBudget;return{...d,food:{...d.food,dailyBudget:nextBud||d.food.dailyBudget,notes:nextNotes}};});}}/>
+          ))}
+          {!foodInsight.loading&&foodInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{foodInsight.error}</div>}
+          {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
+            <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
+            <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
           {showFoodSuggestionCard&&(()=>{const recs=dedupeFoodRecommendations(suggestion.food.recommendations);const first=recs[0]?parseFoodRecLine(recs[0]):{name:"",desc:""};const foodDescriptor=(first.desc||first.name)?String(first.desc||first.name).slice(0,120):`Tables, markets, and bites in ${segment.name||"town"}`;const foodTitle=`${String(segment.name||"This stop").trim()}\u2019s food scene`;const acceptFood=()=>{const nums=((suggestion.food.dailyBudget||"").match(/\d+/g)||[]).map(Number).filter(x=>x>0&&x<500);let bud="";if(nums.length===1)bud=String(nums[0]);else if(nums.length>=2)bud=String(Math.round((nums[0]+nums[1])/2));if(bud)setDet(d=>({...d,food:{...d.food,dailyBudget:bud,notes:suggestion.food.recommendations?.join("\n")||d.food.notes}}));dismiss("food");setEditingFood(false);setShowFoodResuggest(false);};const mid=recs.length>0?<div style={{marginBottom:12}}>{recs.map((rec,i)=>{const {name,desc}=parseFoodRecLine(rec);return(<div key={i} style={{padding:"8px 0",borderBottom:i<recs.length-1?"1px solid rgba(255,255,255,0.22)":undefined,wordBreak:isMobile?"break-word":"normal"}}><span style={{fontSize:14,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"#FFFFFF"}}>{name}</span>{desc?<><span style={{color:"rgba(255,255,255,0.35)",margin:"0 6px"}}>{'\u00B7'}</span><span style={{fontSize:14,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"rgba(255,255,255,0.70)"}}>{desc}</span></>:null}</div>);})}</div>:null;return(<SuggestionExperienceCard accent="#FF9F43" categoryLabel="FOOD & DINING" title={foodTitle} descriptor={foodDescriptor} middle={mid} priceLine={`Est. ${(suggestion.food.dailyBudget||"").replace(/\/day$/i,"")}/day${suggestion.food.totalEstimate?` \u00B7 ~${suggestion.food.totalEstimate} total`:""}`} priceSubline={null} whisper={sanitizeAiDisplayText(suggestion.food.notes||"")||null} disclaimer={"\u26A1 Suggestions based on current market knowledge \u2014 always verify locally"} heroUrl={foodPhoto.ready?foodPhoto.url:null} heroLink={foodPhoto.htmlLink} isMobile={isMobile} flatMobile={isMobile}><button type="button" onClick={acceptFood} style={{...acceptBtnStyle,...ctaFlex}}>USE THESE ESTIMATES</button><button type="button" onClick={()=>{dismiss("food");setShowFoodResuggest(false);setFoodManualOpen(true);}} style={{...(foodPhoto.ready&&foodPhoto.url?dismissBtnStyleOnHero:dismissBtnStyle),...ctaFlex}}>PLAN MY OWN</button></SuggestionExperienceCard>);})()}
           {showFoodManualBase&&<>
@@ -737,11 +740,11 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
               <HelpTip compact noLeadingMargin text="Your phase budget at a glance — costs flow in automatically as you plan transport, stays, and activities" />
             </div>
-            <div style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,159,67,0.65)',letterSpacing:2,marginBottom:12,textAlign:'left',lineHeight:1.4}}>PHASE BUDGET</div>
-            <div style={{fontSize:15,fontWeight:700,color:'#FFFFFF',marginBottom:4,textAlign:'left'}}>{segment.name}</div>
-            <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:16,textAlign:'left'}}>{segment.nights} Nights · Budget: {fmt(budget)}</div>
+            <div style={{fontSize:13,fontFamily:'Fraunces, serif',fontWeight:600,color:'rgba(255,159,67,0.78)',letterSpacing:2,marginBottom:12,textAlign:'left',lineHeight:1.4}}>PHASE BUDGET</div>
+            <div style={{fontSize:17,fontWeight:600,color:'#FFFFFF',fontFamily:'Fraunces, serif',marginBottom:4,textAlign:'left'}}>{segment.name}</div>
+            <div style={{fontSize:13,color:'rgba(255,255,255,0.55)',fontFamily:'Inter, system-ui, sans-serif',marginBottom:16,textAlign:'left'}}>{segment.nights} Nights · Budget: {fmt(budget)}</div>
             {budgetRows.map(r=>{
-              const snapStyle={fontSize:isMobile?16:18,fontFamily:"'Playfair Display',serif",fontStyle:'italic',fontWeight:500,color:'rgba(255,245,220,0.90)',marginTop:7,lineHeight:1.55,wordBreak:'break-word',letterSpacing:'0.01em',textShadow:'0 1px 10px rgba(0,0,0,0.35)',textAlign:'left'};
+              const snapStyle={fontSize:isMobile?13:14,fontStyle:'normal',fontWeight:500,color:'rgba(255,245,220,0.88)',marginTop:7,lineHeight:1.55,wordBreak:'break-word',letterSpacing:'0.02em',textAlign:'left',fontFamily:'Inter, system-ui, sans-serif'};
               return(
               <div key={r.label} style={{display:'flex',alignItems:'flex-start',gap:isMobile?8:12,padding:isMobile?'14px 0':'15px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
                 <span style={{width:isMobile?30:36,fontSize:isMobile?22:24,flexShrink:0,lineHeight:1.2,textAlign:'left'}}>{r.icon}</span>
