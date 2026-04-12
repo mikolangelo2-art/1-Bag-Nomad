@@ -107,6 +107,12 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const blank={transport:{mode:"",from:"",to:"",departDate:"",departTime:"",arriveDate:"",arriveTime:"",depTime:"",arrTime:"",cost:"",notes:"",link:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
   const [det,setDet]=useState(()=>{const a=loadSeg();const base=a[key]?{...blank,...a[key]}:blank;const stay={...base.stay};if(!(String(stay.checkin||"").trim())&&segment?.arrival)stay.checkin=segment.arrival;if(!(String(stay.checkout||"").trim())&&segment?.departure)stay.checkout=segment.departure;const transport=applyTransportDateDefaults({...blank.transport,...base.transport},segment);return{...base,stay,transport};});
   const [tab,setTab]=useState("transport");
+  const [visitedTabs,setVisitedTabs]=useState(()=>new Set([tab]));
+  const visitedKeyRef=useRef(key);
+  useEffect(()=>{
+    if(visitedKeyRef.current!==key){visitedKeyRef.current=key;setVisitedTabs(new Set([tab]));return;}
+    setVisitedTabs(prev=>{if(prev.has(tab))return prev;const next=new Set(prev);next.add(tab);return next;});
+  },[tab,key]);
   const [editingTransport,setEditingTransport]=useState(false);
   const [planningOwn,setPlanningOwn]=useState(false);
   const [transportFocused,setTransportFocused]=useState(false);
@@ -312,13 +318,13 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         );})}
         {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
       </div>
-      {/* Tab content */}
-      <div key={tab} style={{border:segMobileLoose?'none':'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(0,8,20,0.85)',padding:segMobileLoose?'10px 10px':'16px 14px',margin:segMobileLoose?'6px 0':'12px 0',minHeight:300,textAlign:'left',animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+      {/* Tab content — visited tabs stay mounted; visibility toggles (Session 51H) */}
+      <div style={{border:segMobileLoose?'none':'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(0,8,20,0.85)',padding:segMobileLoose?'10px 10px':'16px 14px',margin:segMobileLoose?'6px 0':'12px 0',minHeight:300,textAlign:'left',animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
         {(tab==="transport"||tab==="stay"||tab==="activities"||tab==="food")&&!!segmentCardDateHeader&&<div style={{textAlign:'center',margin:segMobileLoose?'0 0 10px':'0 0 14px',padding:segMobileLoose?'0 0 10px':'0 8px 12px',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
           <div style={{fontSize:isMobile?13:14,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.52)',letterSpacing:0.35,lineHeight:1.52}}>{segmentCardDateHeader}</div>
         </div>}
         {/* TRANSPORT */}
-        {tab==="transport"&&<div style={{padding:0}}>
+        {visitedTabs.has("transport")&&<div style={{display:tab==="transport"?"block":"none",padding:0}}>
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Plan your transport to this destination — use the Co-Architect's suggestion or build your own route with flights, ferries, or ground transport" />
           </div>
@@ -423,7 +429,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
         </div>}
         {/* STAY */}
-        {tab==="stay"&&<div style={{padding:0}}>
+        {visitedTabs.has("stay")&&<div style={{display:tab==="stay"?"block":"none",padding:0}}>
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Find your accommodation for this stop — use the Co-Architect's suggestion or search for your own property" />
           </div>
@@ -512,7 +518,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </>}
         </div>}
         {/* ACTIVITIES */}
-        {tab==="activities"&&<div style={{padding:0}}>
+        {visitedTabs.has("activities")&&<div style={{display:tab==="activities"?"block":"none",padding:0}}>
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Curated activities and experiences for this destination — add them to your plan or skip to move on" />
           </div>
@@ -597,7 +603,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <div style={{marginTop:14}}><SDF label="ACTIVITY NOTES" value={det.actNotes||""} onChange={v=>setDet(d=>({...d,actNotes:v}))} placeholder="Tips, what to bring, dress code..." accent="#c9a04c" multiline/></div>
         </div>}
         {/* FOOD */}
-        {tab==="food"&&(()=>{const hasFood=!isRowEmpty(det.food?.dailyBudget);const showFoodSummary=hasFood&&!editingFood&&!foodFocused&&!showFoodResuggest;const showFoodSuggestionCard=!!(suggestion?.food&&(showFoodResuggest||(!hasFood&&!isDism('food'))));const showFoodManualBase=!showFoodSummary&&!showFoodSuggestionCard&&!(suggestionsLoading&&!suggestion);const showFoodManualForm=showFoodManualBase&&(foodManualOpen||editingFood);return(<div style={{padding:0}} onFocus={()=>setFoodFocused(true)} onBlur={(e)=>{if(!e.currentTarget.contains(e.relatedTarget))setFoodFocused(false);}}>
+        {visitedTabs.has("food")&&<div style={{display:tab==="food"?"block":"none"}}>{(()=>{const hasFood=!isRowEmpty(det.food?.dailyBudget);const showFoodSummary=hasFood&&!editingFood&&!foodFocused&&!showFoodResuggest;const showFoodSuggestionCard=!!(suggestion?.food&&(showFoodResuggest||(!hasFood&&!isDism('food'))));const showFoodManualBase=!showFoodSummary&&!showFoodSuggestionCard&&!(suggestionsLoading&&!suggestion);const showFoodManualForm=showFoodManualBase&&(foodManualOpen||editingFood);return(<div style={{padding:0}} onFocus={()=>setFoodFocused(true)} onBlur={(e)=>{if(!e.currentTarget.contains(e.relatedTarget))setFoodFocused(false);}}>
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Local dining recommendations and daily food budget estimates for this destination" />
           </div>
@@ -661,9 +667,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </>}
           </>}
           <button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm craving something specific in ${dest} — help me find the right spot.`}}))} style={{background:'none',border:'none',padding:'8px 0',marginTop:4,cursor:'pointer',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(201,160,76,0.75)',textAlign:'left',width:'100%'}}>Craving something specific? Your Co-Architect can find it</button>
-        </div>);})()}
+        </div>);})()}</div>}
         {/* BUDGET */}
-        {tab==="budget"&&(()=>{const tCost=parseFloat(det.transport?.cost)||0;const sCost=parseFloat(det.stay?.cost)||0;const aCost=det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0);const fCost=(parseFloat(det.food?.dailyBudget)||0)*segment.nights;const mCost=det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0);const total=tCost+sCost+aCost+fCost+mCost;const budget=segment.budget||0;const pct=budget>0?Math.round((total/budget)*100):0;const barColor=pct>=100?'#FF6B6B':pct>=80?'#c9a04c':'#00E5FF';
+        {visitedTabs.has("budget")&&<div style={{display:tab==="budget"?"block":"none"}}>{(()=>{const tCost=parseFloat(det.transport?.cost)||0;const sCost=parseFloat(det.stay?.cost)||0;const aCost=det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0);const fCost=(parseFloat(det.food?.dailyBudget)||0)*segment.nights;const mCost=det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0);const total=tCost+sCost+aCost+fCost+mCost;const budget=segment.budget||0;const pct=budget>0?Math.round((total/budget)*100):0;const barColor=pct>=100?'#FF6B6B':pct>=80?'#c9a04c':'#00E5FF';
           const tf=(det.transport?.from||'').trim();const tt=(det.transport?.to||'').trim();const tMode=(det.transport?.mode||'').trim();
           const transportSnap=(tf||tt)?`${tf||'…'} → ${tt||segment.name}`:(tMode||'');
           const stayNm=(det.stay?.name||'').trim();
@@ -718,9 +724,9 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <div style={{color:'rgba(255,255,255,0.55)',fontSize:12,marginBottom:12,lineHeight:1.5}}>Want help finding options that fit your budget?</div>
               <button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm over budget on ${segment?.name||'this segment'} by ${fmt(total-budget)}. Can you suggest alternatives that fit within my ${fmt(budget)} budget?`}}))} style={{background:'rgba(201,160,76,0.12)',border:'1px solid rgba(201,160,76,0.35)',borderRadius:8,color:'#c9a04c',fontSize:12,fontWeight:600,padding:'8px 14px',cursor:'pointer',letterSpacing:0.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>✦ Ask Co-Architect for alternatives</button>
             </div>}
-          </div>);})()}
+          </div>);})()}</div>}
         {/* DOCS & VISA */}
-        {tab==="docs"&&<div style={{padding:0}}>
+        {visitedTabs.has("docs")&&<div style={{display:tab==="docs"?"block":"none",padding:0}}>
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Generate visa requirements, travel advisories, and document checklists tailored to this destination" />
           </div>
@@ -740,7 +746,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
           <div style={{marginTop:16}}><SDF label="PERSONAL NOTES" value={docsNote} onChange={v=>{setDocsNote(v);setDet(d=>({...d,intel:{...d.intel,notes:v}}));}} placeholder="Visa application status, insurance details, personal contacts..." accent="#FF9F43" multiline/></div>
         </div>}
-        {tab==="calendar"&&(()=>{const items=[];if(det.transport.mode||det.transport.from){const mode=(det.transport.mode||"Transport").trim();const fromTo=`${(det.transport.from||"").trim()}→${(det.transport.to||"").trim()}`;const desc=truncateCalendarLine(`${mode} · ${fromTo}`);items.push({type:"transport",icon:"✈️",label:mode||"Transport",desc,color:"#00E5FF",date:segment.arrival});}if(det.stay.name){const noteHead=sanitizeAiDisplayText((det.stay.notes||"").split(/[\n.]/)[0]||"").slice(0,28).trim();const desc=truncateCalendarLine(noteHead?`${noteHead} · ${segment.name||""}`.trim():`Stay · ${segment.name||"destination"}`);items.push({type:"stay",icon:"🏨",label:det.stay.name,desc,color:"#69F0AE",date:det.stay.checkin||segment.arrival});}det.activities.forEach(a=>{const cat=(a.provider||"Activity").trim();const brief=(a.brief||"").trim()||(String(a.notes||"").split("\n")[0]||"").trim();const desc=truncateCalendarLine(brief?`${cat} · ${brief}`:`${cat} · self-guided`);items.push({type:"activity",icon:"🎯",label:a.name,desc,color:"#c9a04c",date:a.date});});if(det.food.dailyBudget){const foodHint=sanitizeAiDisplayText((det.food.notes||"").split("\n")[0]||"").trim();const desc=truncateCalendarLine(foodHint||`Daily dining · $${det.food.dailyBudget}/day`);items.push({type:"food",icon:"🍜",label:`Food · $${det.food.dailyBudget}/day`,desc,color:"#FF9F43"});}const hasItems=items.length>0;return(
+        {visitedTabs.has("calendar")&&<div style={{display:tab==="calendar"?"block":"none"}}>{(()=>{const items=[];if(det.transport.mode||det.transport.from){const mode=(det.transport.mode||"Transport").trim();const fromTo=`${(det.transport.from||"").trim()}→${(det.transport.to||"").trim()}`;const desc=truncateCalendarLine(`${mode} · ${fromTo}`);items.push({type:"transport",icon:"✈️",label:mode||"Transport",desc,color:"#00E5FF",date:segment.arrival});}if(det.stay.name){const noteHead=sanitizeAiDisplayText((det.stay.notes||"").split(/[\n.]/)[0]||"").slice(0,28).trim();const desc=truncateCalendarLine(noteHead?`${noteHead} · ${segment.name||""}`.trim():`Stay · ${segment.name||"destination"}`);items.push({type:"stay",icon:"🏨",label:det.stay.name,desc,color:"#69F0AE",date:det.stay.checkin||segment.arrival});}det.activities.forEach(a=>{const cat=(a.provider||"Activity").trim();const brief=(a.brief||"").trim()||(String(a.notes||"").split("\n")[0]||"").trim();const desc=truncateCalendarLine(brief?`${cat} · ${brief}`:`${cat} · self-guided`);items.push({type:"activity",icon:"🎯",label:a.name,desc,color:"#c9a04c",date:a.date});});if(det.food.dailyBudget){const foodHint=sanitizeAiDisplayText((det.food.notes||"").split("\n")[0]||"").trim();const desc=truncateCalendarLine(foodHint||`Daily dining · $${det.food.dailyBudget}/day`);items.push({type:"food",icon:"🍜",label:`Food · $${det.food.dailyBudget}/day`,desc,color:"#FF9F43"});}const hasItems=items.length>0;return(
           <div style={{padding:0}}>
             {!hasItems&&<div style={{textAlign:"center",padding:"40px 20px",minHeight:"auto"}}>
               <div style={{fontSize:32,marginBottom:12}}>📅</div>
@@ -761,7 +767,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               </div>
             </div>}
           </div>
-        );})()}
+        );})()}</div>}
       </div>
       </div>
     </div>
