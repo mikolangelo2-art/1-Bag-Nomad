@@ -8,7 +8,7 @@ import HelpTip from './HelpTip';
 import { useMobile } from '../hooks/useMobile';
 import { askAI, parseJSON } from '../utils/aiHelpers';
 import { TI } from '../utils/storageHelpers';
-import { BAG_COLORS, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS, BG_PACK_GRADIENT } from '../constants/colors';
+import { BAG_COLORS, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS } from '../constants/colors';
 import { buildTripPack, getDefaultPack, mapPackItemsWithVolumes } from '../utils/packHelpers';
 
 const STORAGE_PACK_EXPANDED = "1bn_pack_expanded";
@@ -578,7 +578,7 @@ Return ONLY a JSON array:
   const packMobileNavSpacer=isMobile?"calc(88px + env(safe-area-inset-bottom))":"0px";
 
   return(
-    <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",background:BG_PACK_GRADIENT,minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
+    <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",background:"transparent",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
       <WorldMapBackground phases={tripData?.phases||[]} console="pack" departureCity={tripData?.departureCity||tripData?.city||""}/>
       <div style={{position:'relative',zIndex:1,display:'flex',flexDirection:'column',flex:1,minHeight:'100vh',background:'transparent'}}>
       {/* Header */}
