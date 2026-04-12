@@ -583,7 +583,9 @@ Return ONLY a JSON array:
       <div style={{position:'relative',zIndex:1,display:'flex',flexDirection:'column',flex:1,minHeight:'100vh',background:'transparent'}}>
       {/* Header */}
       {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} onTripConsole={onExpedition} onPackConsole={()=>{}}/>}
-      {/* Console switcher */}
+      {/* Upper dashboard — desktop side inset matches card column / Trip Console */}
+      <div style={isMobile?undefined:{maxWidth:1200,margin:'0 auto',padding:'0 24px',width:'100%',boxSizing:'border-box'}}>
+      {/* Console switcher (inside maxWidth so it aligns with rings / tabs) */}
       {!isFullscreen&&!isMobile&&<div style={{display:"flex",border:"1px solid rgba(255,255,255,0.10)",borderTop:"1px solid rgba(255,255,255,0.18)",background:"rgba(10,7,5,0.45)",backdropFilter:"blur(14px)",WebkitBackdropFilter:"blur(14px)",flexShrink:0}}>
         <div onClick={onExpedition} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",borderRight:"1px solid rgba(196,87,30,0.2)",opacity:0.55}} onMouseOver={e=>{e.currentTarget.style.background="rgba(0,229,255,0.06)";e.currentTarget.style.opacity="1";}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.opacity="0.55";}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(0,229,255,0.4)"}}/>
@@ -594,8 +596,6 @@ Return ONLY a JSON array:
           <span style={{fontSize:isMobile?11:13,fontWeight:700,color:"#FF9F43",letterSpacing:isMobile?0:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>PACK CONSOLE</span>
         </div>
       </div>}
-      {/* Upper dashboard — desktop side inset matches card column / Trip Console */}
-      <div style={isMobile?undefined:{maxWidth:1200,margin:'0 auto',padding:'0 24px',width:'100%',boxSizing:'border-box'}}>
       {/* Hero rings */}
       {!isFullscreen&&<div style={{background:'rgba(10,7,5,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)'}}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'center',padding:isMobile?'10px 12px 8px':'10px 0 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
@@ -642,14 +642,14 @@ Return ONLY a JSON array:
         const getClimateAdvisory=(climate,season)=>{const map={'tropical-hot':{dry:{label:'Tropical',advice:'Pack light — reef-safe sunscreen essential'},wet:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'},default:{label:'Tropical',advice:'Pack light, breathable fabrics only'}},'tropical-wet':{default:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'}},'temperate-cool':{default:{label:'Temperate',advice:'Layer up — mornings cold, afternoons warm'}},'cold-alpine':{default:{label:'Alpine Cold',advice:'Warm layers essential — windproof shell critical'}},'mediterranean':{default:{label:'Mediterranean',advice:'Light clothing + one smart dinner outfit'}},'desert-hot':{default:{label:'Desert',advice:'UV protection critical — cover up at midday'}},'varied':{default:{label:'Mixed Climate',advice:'Pack for range — layers are your friend'}}};return map[climate]?.[season]||map[climate]?.default||{label:'Varied',advice:'Check conditions per destination'};};
         const ca=pp.climate?getClimateAdvisory(pp.climate,pp.season):null;
         return <div style={{padding:isMobile?"6px 12px":"6px 0",background:"rgba(255,159,67,0.04)",borderBottom:"1px solid rgba(255,159,67,0.12)",overflow:"hidden"}}>
-          <div style={{display:"flex",alignItems:"center",gap:6}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
             <span style={{fontSize:11,color:"rgba(255,159,67,0.7)",flexShrink:0}}>✦</span>
-            <span style={{fontSize:isMobile?11:12,color:"rgba(255,255,255,0.70)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Built for: {tripData.tripName||"Your Trip"} · {totalNights}n · {pp.tripType}{coupleMode?" · for 2":""}</span>
+            <span style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.70)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,whiteSpace:"nowrap"}}>Built for: {tripData.tripName||"Your Trip"} · {totalNights}n · {pp.tripType}{coupleMode?" · for 2":""}</span>
+            {ca&&<>
+              <span style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.70)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,whiteSpace:"nowrap"}}>🌡 {ca.label}{pp.tempRange?" · "+pp.tempRange:""}</span>
+              <span style={{fontSize:isMobile?10:12,fontFamily:"'Playfair Display',serif",fontStyle:"italic",color:"rgba(255,159,67,0.5)",whiteSpace:"nowrap"}}>{ca.advice}</span>
+            </>}
           </div>
-          {ca&&<div style={{display:"flex",alignItems:"center",gap:6,marginTop:2,paddingLeft:17}}>
-            <span style={{fontSize:11,color:"rgba(255,255,255,0.70)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,whiteSpace:"nowrap"}}>🌡 {ca.label}{pp.tempRange?" · "+pp.tempRange:""}</span>
-            <span style={{fontSize:10,fontFamily:"'Playfair Display',serif",fontStyle:"italic",color:"rgba(255,159,67,0.5)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{ca.advice}</span>
-          </div>}
         </div>;
       })()}
       {/* Tab bar */}
