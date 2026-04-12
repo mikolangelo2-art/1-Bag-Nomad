@@ -3,6 +3,28 @@ import {
   dismissBtnStyleOnHero,
   stayBlurbForSelection,
 } from "../utils/tripConsoleHelpers";
+import { addedToPlanLine, returnToLogCopy } from "../utils/microcopy";
+
+const committedFooterWrapStyle = {
+  marginTop: 14,
+  paddingTop: 12,
+  borderTop: "1px solid rgba(255,255,255,0.06)",
+};
+const planCommitAddedLineStyle = {
+  fontSize: 12,
+  fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+  color: "rgba(201,160,76,0.92)",
+  letterSpacing: 0.35,
+  lineHeight: 1.45,
+};
+const returnToLogFooterStyle = {
+  fontSize: 12,
+  fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+  color: "rgba(255,255,255,0.36)",
+  letterSpacing: "0.14em",
+  lineHeight: 1.58,
+  marginTop: 8,
+};
 
 const STAY_ACCENT = "#69F0AE";
 const STAY_DISCLAIMER =
@@ -160,9 +182,10 @@ export function StaySuggestionExperienceCard({
         {committedToolbar}
         {stayBodySummary}
         <span style={savedCheckStyle}>✓ Stay added to your plan.</span>
-        <span style={{ ...savedSubStyle, display: "block" }}>
-          Locked in — dates, links, and notes live here whenever you want to refine them.
-        </span>
+        <div style={committedFooterWrapStyle}>
+          <div style={planCommitAddedLineStyle}>{addedToPlanLine("stay")}</div>
+          <div style={returnToLogFooterStyle}>{returnToLogCopy("Stay")}</div>
+        </div>
       </div>
     );
   }

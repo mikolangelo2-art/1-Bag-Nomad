@@ -31,6 +31,7 @@ const HERO_H = 200;
  *   savedSubText?: string,
  *   savedCheckStyle?: import("react").CSSProperties,
  *   savedSubStyle?: import("react").CSSProperties,
+ *   footerSlot?: import("react").ReactNode,
  * }} props
  */
 export default function GenericSuggestionCard({
@@ -58,6 +59,7 @@ export default function GenericSuggestionCard({
   savedSubText = "",
   savedCheckStyle,
   savedSubStyle,
+  footerSlot = null,
 }) {
   const [innerOpen, setInnerOpen] = useState(false);
   const isStacked = variant === "stacked";
@@ -312,7 +314,10 @@ export default function GenericSuggestionCard({
           {addLabelDisplay}
         </button>
       ) : (
-        savedBlock
+        <>
+          {savedBlock}
+          {inPlaceSaved && footerSlot ? <div style={{ marginTop: 10 }}>{footerSlot}</div> : null}
+        </>
       )}
       {photoCredit}
     </div>
@@ -388,7 +393,10 @@ export default function GenericSuggestionCard({
           ) : null}
         </div>
       ) : (
-        savedBlock
+        <>
+          {savedBlock}
+          {inPlaceSaved && footerSlot ? <div style={{ marginTop: 10 }}>{footerSlot}</div> : null}
+        </>
       )}
       {photoCredit}
     </div>
