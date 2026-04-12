@@ -38,6 +38,7 @@ export function StaySuggestionExperienceCard({
   selectedStayProp,
   setSelectedStayProp,
   heroUrl,
+  heroThumb,
   heroLink,
   isMobile,
   onUseThisStay,
@@ -184,6 +185,7 @@ export function StaySuggestionExperienceCard({
         whisper={null}
         disclaimer={null}
         heroUrl={heroUrl}
+        heroThumb={heroThumb}
         heroLink={heroLink}
         isMobile={isMobile}
         flatMobile={isMobile}
@@ -214,6 +216,7 @@ export function StaySuggestionExperienceCard({
       whisper={null}
       disclaimer={STAY_DISCLAIMER}
       heroUrl={heroUrl}
+      heroThumb={heroThumb}
       heroLink={heroLink}
       isMobile={isMobile}
       flatMobile={isMobile}

@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 /**
  * Shared hero + hierarchy for Food / Stay / Activities Co-Architect suggestion cards.
  * Full-bleed hero (when present) with a strong bottom-weighted scrim so copy and CTAs stay readable.
@@ -14,6 +16,8 @@ export default function SuggestionExperienceCard({
   whisper,
   disclaimer,
   heroUrl,
+  /** Tiny Unsplash thumb — blurred placeholder until heroUrl loads (matches GenericSuggestionCard) */
+  heroThumb,
   heroLink,
   isMobile,
   /** Mobile Stay/Food: one visual layer — no inner gradient panel over the hero */
@@ -24,6 +28,12 @@ export default function SuggestionExperienceCard({
   tightFooter = false,
   children,
 }) {
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  useEffect(() => {
+    setImgLoaded(false);
+  }, [heroUrl]);
+
   const heroMobile = !!(heroUrl && isMobile);
   const flat = !!(flatMobile && heroMobile);
   const nameFs = isMobile ? 18 : 20;
@@ -62,6 +72,34 @@ export default function SuggestionExperienceCard({
     >
       {heroUrl ? (
         <>
+          {!imgLoaded && heroThumb ? (
+            <img
+              src={heroThumb}
+              alt=""
+              decoding="async"
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                filter: "blur(8px)",
+                transform: "scale(1.05)",
+                transition: "opacity 0.3s ease",
+                zIndex: 0,
+              }}
+            />
+          ) : !imgLoaded && !heroThumb ? (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "rgba(201,160,76,0.08)",
+                animation: "pulse 1.5s ease-in-out infinite",
+                zIndex: 0,
+              }}
+            />
+          ) : null}
           <img
             key={heroUrl}
             src={heroUrl}
@@ -69,7 +107,10 @@ export default function SuggestionExperienceCard({
             loading="lazy"
             decoding="async"
             className="lux-img-reveal lux-img-hero-grade"
-            onLoad={(e) => e.currentTarget.classList.add("lux-img-reveal--loaded")}
+            onLoad={(e) => {
+              setImgLoaded(true);
+              e.currentTarget.classList.add("lux-img-reveal--loaded");
+            }}
             style={{
               position: "absolute",
               inset: 0,
@@ -77,7 +118,9 @@ export default function SuggestionExperienceCard({
               height: "100%",
               objectFit: "cover",
               display: "block",
-              zIndex: 0,
+              opacity: imgLoaded ? 1 : 0,
+              transition: "opacity 0.4s ease",
+              zIndex: 1,
             }}
           />
           <div
@@ -85,7 +128,7 @@ export default function SuggestionExperienceCard({
             style={{
               position: "absolute",
               inset: 0,
-              zIndex: 1,
+              zIndex: 2,
               pointerEvents: "none",
               background: heroMobile
                 ? `linear-gradient(
