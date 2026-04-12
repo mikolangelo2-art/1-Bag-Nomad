@@ -24,6 +24,33 @@ function parsePriceDigits(s){
   return m?m[0]:'';
 }
 
+/** Daily USD for food insight cards: $12 from "$12", else $ / $$ / $$$ tiers when AI sends no digits. */
+function parseFoodInsightDailyBudget(priceStr) {
+  const s = String(priceStr || "");
+  const explicit = s.match(/\$\s*(\d+)/);
+  if (explicit) {
+    const n = parseInt(explicit[1], 10);
+    if (n > 0 && n < 500) return String(n);
+  }
+  const perDay = s.match(/(\d+)\s*(?:\/day|per\s*day)/i);
+  if (perDay) {
+    const n = parseInt(perDay[1], 10);
+    if (n > 0 && n < 500) return String(n);
+  }
+  const dollarCount = (s.match(/\$/g) || []).length;
+  if (dollarCount >= 1) {
+    const tier = Math.min(dollarCount, 4);
+    const tierToUsd = { 1: 22, 2: 38, 3: 58, 4: 85 };
+    return String(tierToUsd[tier]);
+  }
+  const nums = s.match(/\d+/g);
+  if (nums && nums.length) {
+    const n = parseInt(nums[0], 10);
+    if (n > 0 && n < 500) return String(n);
+  }
+  return "";
+}
+
 function parseFoodRecLine(s) {
   const t = sanitizeAiDisplayText(String(s || "").trim());
   if (!t) return { name: "", desc: "" };
@@ -632,7 +659,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>
           {foodInsight.loading&&<SuggestionShimmer message={`Discovering flavors in ${dest||"this destination"}...`}/>}
           {!foodInsight.loading&&foodInsight.items.length>0&&foodInsight.items.map((it,idx)=>(
-            <GenericSuggestionCard key={`food-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`food-tab-${idx}`} accent="#FF9F43" variant="accordion" isMobile={isMobile} expanded={foodAccordionOpen===idx} onToggle={()=>setFoodAccordionOpen(prev=>prev===idx?null:idx)} onAddToPlan={()=>{const nums=String(it.price||"").match(/\d+/g);let bud="";if(nums&&nums.length){const n=parseInt(nums[0],10);if(n>0&&n<500)bud=String(n);}setFoodAccordionOpen(null);setDet(d=>{const line=[it.name,it.description].filter(Boolean).join(" — ");const nextNotes=d.food.notes?`${d.food.notes}\n\n${line}`:line;return{...d,food:{...d.food,...(bud?{dailyBudget:bud}:{}),notes:nextNotes}};});}}/>
+            <GenericSuggestionCard key={`food-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`food-tab-${idx}`} accent="#FF9F43" variant="accordion" isMobile={isMobile} expanded={foodAccordionOpen===idx} onToggle={()=>setFoodAccordionOpen(prev=>prev===idx?null:idx)} onAddToPlan={()=>{const bud=parseFoodInsightDailyBudget(it.price);setFoodAccordionOpen(null);setDet(d=>{const line=[it.name,it.description].filter(Boolean).join(" — ");const nextNotes=d.food.notes?`${d.food.notes}\n\n${line}`:line;const prev=parseFloat(d.food.dailyBudget)||0;const cur=parseFloat(bud)||0;const nextBud=bud?String(Math.round(Math.max(prev,cur))):d.food.dailyBudget;return{...d,food:{...d.food,dailyBudget:nextBud||d.food.dailyBudget,notes:nextNotes}};});}}/>
           ))}
           {!foodInsight.loading&&foodInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{foodInsight.error}</div>}
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
@@ -774,7 +801,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {!hasItems&&<div style={{textAlign:"center",padding:"40px 20px",minHeight:"auto"}}>
               <div style={{fontSize:32,marginBottom:12}}>📅</div>
               <div style={{color:"rgba(255,255,255,0.5)",fontFamily:"'Playfair Display',serif",fontStyle:"italic",fontSize:15,lineHeight:1.6}}>Your calendar fills as you plan.</div>
-              <div style={{color:"rgba(255,159,67,0.6)",fontSize:12,letterSpacing:2,marginTop:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>ADD TRANSPORT · STAY · ACTIVITIES TO SEE YOUR DAYS</div>
+              <div style={{color:"rgba(255,159,67,0.6)",fontSize:12,letterSpacing:2,marginTop:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>ADD TRANSPORT · STAY · ACTIVITIES · FOOD TO SEE YOUR DAYS</div>
             </div>}
             {hasItems&&<div>
               <div style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"rgba(255,159,67,0.65)",letterSpacing:2,marginBottom:12}}>PLANNED ITEMS</div>
