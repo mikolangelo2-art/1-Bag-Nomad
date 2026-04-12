@@ -594,9 +594,11 @@ Return ONLY a JSON array:
           <span style={{fontSize:isMobile?11:13,fontWeight:700,color:"#FF9F43",letterSpacing:isMobile?0:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>PACK CONSOLE</span>
         </div>
       </div>}
+      {/* Upper dashboard — desktop side inset matches card column / Trip Console */}
+      <div style={isMobile?undefined:{padding:'0 24px'}}>
       {/* Hero rings */}
       {!isFullscreen&&<div style={{background:'rgba(10,7,5,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)'}}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'center',padding:'10px 12px 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',padding:isMobile?'10px 12px 8px':'10px 0 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
           <span style={{fontSize:10,letterSpacing:2,fontWeight:700,color:'rgba(255,159,67,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>WEIGHT & VOLUME</span>
         </div>
         <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',position:'relative',boxShadow:'inset 0 1px 0 rgba(255,159,67,0.40),inset 1px 0 0 rgba(255,159,67,0.12),inset -1px 0 0 rgba(255,159,67,0.12),inset 0 -1px 0 rgba(255,159,67,0.06)'}}>
@@ -621,7 +623,7 @@ Return ONLY a JSON array:
           </div>
         </div>
         {/* 4 mini stats */}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%",padding:'10px 12px'}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%",padding:isMobile?'10px 12px':'10px 0'}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit,color:"#00E5FF"},{label:"GEAR READY",value:gearPct+"%",color:"#FF9F43"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString(),color:"#c9a04c"},{label:"TOTAL ITEMS",value:items.length,color:"#FF9F43"}].map(s=>(
             <div key={s.label} className={s.label==="GEAR READY"&&gearPct>=100?"pack-gear-ready-seal--full":undefined} style={{background:"rgba(0,0,0,0.25)",border:`1.5px solid ${s.color}55`,borderTop:`1.5px solid ${s.color}99`,borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:`0 0 12px ${s.color}30, inset 0 1px 0 ${s.color}55`}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:3,marginBottom:2,flexWrap:"wrap",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.2}}>
@@ -639,7 +641,7 @@ Return ONLY a JSON array:
       {!isFullscreen&&pp&&(()=>{
         const getClimateAdvisory=(climate,season)=>{const map={'tropical-hot':{dry:{label:'Tropical',advice:'Pack light — reef-safe sunscreen essential'},wet:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'},default:{label:'Tropical',advice:'Pack light, breathable fabrics only'}},'tropical-wet':{default:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'}},'temperate-cool':{default:{label:'Temperate',advice:'Layer up — mornings cold, afternoons warm'}},'cold-alpine':{default:{label:'Alpine Cold',advice:'Warm layers essential — windproof shell critical'}},'mediterranean':{default:{label:'Mediterranean',advice:'Light clothing + one smart dinner outfit'}},'desert-hot':{default:{label:'Desert',advice:'UV protection critical — cover up at midday'}},'varied':{default:{label:'Mixed Climate',advice:'Pack for range — layers are your friend'}}};return map[climate]?.[season]||map[climate]?.default||{label:'Varied',advice:'Check conditions per destination'};};
         const ca=pp.climate?getClimateAdvisory(pp.climate,pp.season):null;
-        return <div style={{padding:isMobile?"6px 12px":"6px 16px",background:"rgba(255,159,67,0.04)",borderBottom:"1px solid rgba(255,159,67,0.12)",overflow:"hidden"}}>
+        return <div style={{padding:isMobile?"6px 12px":"6px 0",background:"rgba(255,159,67,0.04)",borderBottom:"1px solid rgba(255,159,67,0.12)",overflow:"hidden"}}>
           <div style={{display:"flex",alignItems:"center",gap:6}}>
             <span style={{fontSize:11,color:"rgba(255,159,67,0.7)",flexShrink:0}}>✦</span>
             <span style={{fontSize:isMobile?11:12,color:"rgba(255,255,255,0.70)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Built for: {tripData.tripName||"Your Trip"} · {totalNights}n · {pp.tripType}{coupleMode?" · for 2":""}</span>
@@ -669,12 +671,13 @@ Return ONLY a JSON array:
         ))}
       </div>
       {/* Need to Buy pill (retained as a standalone shortcut) */}
-      {packTab==="pack"&&packView==="dashboard"&&<div style={{display:"flex",padding:isMobile?"8px 12px":"8px 16px",borderBottom:"1px solid rgba(169,70,29,0.2)",background:"transparent",flexShrink:0}}>
+      {packTab==="pack"&&packView==="dashboard"&&<div style={{display:"flex",padding:isMobile?"8px 12px":"8px 0",borderBottom:"1px solid rgba(169,70,29,0.2)",background:"transparent",flexShrink:0}}>
         <button onClick={()=>setFilterCat(f=>f==="needtobuy"?"all":"needtobuy")} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 16px",borderRadius:20,border:"1px solid "+(filterCat==="needtobuy"?"rgba(255,107,107,0.85)":"rgba(255,107,107,0.25)"),background:filterCat==="needtobuy"?"rgba(255,107,107,0.18)":"transparent",cursor:"pointer",whiteSpace:"nowrap",minHeight:34,boxShadow:filterCat==="needtobuy"?"0 0 10px rgba(255,107,107,0.30)":"none",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
           <span style={{fontSize:13}}>{filterCat==="needtobuy"?"←":"🛒"}</span>
           <span style={{fontSize:11,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.6)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:filterCat==="needtobuy"?700:400,letterSpacing:1}}>{filterCat==="needtobuy"?"ALL ITEMS":"NEED TO BUY"}</span>
         </button>
       </div>}
+      </div>
       {/* Main content */}
       {packTab==="pack"&&packView==="category"&&activeCategory&&(
         <>
@@ -683,7 +686,7 @@ Return ONLY a JSON array:
         </>
       )}
       {packTab==="pack"&&packView==="dashboard"&&(
-        <div className="pack-scroll-dashboard" style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"14px 24px 32px",boxSizing:"border-box",background:"transparent",backgroundImage:"none"}}>
+        <div className="pack-scroll-dashboard" style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 24px 32px",boxSizing:"border-box",background:"transparent",backgroundImage:"none"}}>
           {filterCat==="needtobuy"?(()=>{
             const unowned=[...items].filter(i=>!i.owned).sort((a,b)=>(parseFloat(b.cost)||0)-(parseFloat(a.cost)||0));
             const total=unowned.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
@@ -748,7 +751,7 @@ Return ONLY a JSON array:
         </div>
       )}
       {packTab==="tailor"&&(
-        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 16px",boxSizing:"border-box"}}>
+        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 24px",boxSizing:"border-box"}}>
           <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.15),rgba(201,160,76,0.05))",border:"1px solid rgba(169,70,29,0.35)",borderRadius:12,marginBottom:16,overflow:"hidden"}}>
             <button onClick={()=>{const next=!packBriefCollapsed;setPackBriefCollapsed(next);if(next)try{localStorage.setItem(briefKey,"1");}catch(e){}}} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"none",border:"none",cursor:"pointer"}}>
               <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#FF9F43",letterSpacing:2,fontWeight:700}}>✦ CO-ARCHITECT PACK BRIEF</div>
@@ -840,7 +843,7 @@ Return ONLY a JSON array:
         </div>
       )}
       {packTab==="weight"&&(
-        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 16px",boxSizing:"border-box"}}>
+        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 24px",boxSizing:"border-box"}}>
           <div style={{display:"flex",justifyContent:"flex-end",marginBottom:14}}>
             <button onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:15,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:6,padding:"7px 16px",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,fontWeight:700}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
           </div>

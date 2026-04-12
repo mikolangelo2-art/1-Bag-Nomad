@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { askAI, parseJSON } from "../utils/aiHelpers";
 import { normalizeSuggestionItem } from "../utils/suggestionCardShape";
 
@@ -81,6 +81,7 @@ export function useTabSuggestions({ kind, segment, enabled }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const fetchedRef = useRef(null);
 
   const cacheKey = useMemo(
     () =>
@@ -90,6 +91,7 @@ export function useTabSuggestions({ kind, segment, enabled }) {
 
   useEffect(() => {
     if (!enabled || !segment?.name) return undefined;
+    if (fetchedRef.current === cacheKey) return undefined;
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -99,7 +101,10 @@ export function useTabSuggestions({ kind, segment, enabled }) {
         if (kind === "stay") out = await fetchStayItems(segment);
         else if (kind === "food") out = await fetchFoodItems(segment);
         else if (kind === "activities") out = await fetchActivityItems(segment);
-        if (!cancelled) setItems(out);
+        if (!cancelled) {
+          setItems(out);
+          fetchedRef.current = cacheKey;
+        }
       } catch (e) {
         if (!cancelled) {
           setError(String(e?.message || e));
