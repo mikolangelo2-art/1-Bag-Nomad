@@ -175,6 +175,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const [foodAccordionOpen,setFoodAccordionOpen]=useState(null);
   const [stayCoarchInPlace,setStayCoarchInPlace]=useState(false);
   const [stayInsightSavedIdx,setStayInsightSavedIdx]=useState(null);
+  const [stayInsightBrowseAll,setStayInsightBrowseAll]=useState(false);
   const [transportRouteInPlace,setTransportRouteInPlace]=useState(false);
   const [foodInsightSavedIdx,setFoodInsightSavedIdx]=useState(null);
   const [foodInsightBrowseAll,setFoodInsightBrowseAll]=useState(false);
@@ -216,7 +217,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const [bookDropdown,setBookDropdown]=useState(null);
   async function loadDocs(){if(docsData||docsLoading)return;setDocsLoading(true);try{const raw=await askAI(`Travel advisor. Destination:${segment.name},${segment.country}. Home:USA. Return JSON only:{"visa":{"required":true,"details":"","cost":""},"health":{"required":[],"recommended":[],"notes":""},"money":{"currency":"","tips":"","warning":""},"connectivity":{"tips":""},"safety":{"level":"low","notes":""},"customs":{"tips":""},"emergency":{"police":"","ambulance":"","embassy":""}}`,800);const m=raw.match(/\{[\s\S]*\}/);if(m){const d=JSON.parse(m[0]);setDocsData(d);localStorage.setItem(`1bn_docs_${phaseId}_v1`,JSON.stringify(d));}}catch(e){}setDocsLoading(false);}
   useEffect(()=>{window.scrollTo(0,0);},[]);
-  useEffect(()=>{setPlanningOwnStay(false);setShowStayResuggest(false);setShowFoodResuggest(false);setStayCoarchInPlace(false);setStayInsightSavedIdx(null);setTransportRouteInPlace(false);setFoodInsightSavedIdx(null);setFoodInsightBrowseAll(false);},[key]);
+  useEffect(()=>{setPlanningOwnStay(false);setShowStayResuggest(false);setShowFoodResuggest(false);setStayCoarchInPlace(false);setStayInsightSavedIdx(null);setStayInsightBrowseAll(false);setTransportRouteInPlace(false);setFoodInsightSavedIdx(null);setFoodInsightBrowseAll(false);},[key]);
   useEffect(()=>{if(planningOwnStay)setStayManualOpen(true);},[planningOwnStay]);
   useEffect(()=>{if(planningOwn)setTravelManualOpen(true);},[planningOwn]);
   useEffect(()=>{if(editingFood)setFoodManualOpen(true);},[editingFood]);
@@ -225,7 +226,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const uT=(f,v)=>setDet(d=>({...d,transport:{...d.transport,[f]:v}}));
   const uS=(f,v)=>setDet(d=>({...d,stay:{...d.stay,[f]:v}}));
   const uF=(f,v)=>setDet(d=>({...d,food:{...d.food,[f]:v}}));
-  const clearStayPlan=()=>{setDet(d=>({...d,stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""}}));const nd={...dismissed};delete nd[`${dismissKey}_stay`];setDismissed(nd);saveDismissed(nd);setPlanningOwnStay(false);setShowStayResuggest(false);setStayCoarchInPlace(false);setStayInsightSavedIdx(null);setBookDropdown(b=>b==='stay'?null:b);};
+  const clearStayPlan=()=>{setDet(d=>({...d,stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""}}));const nd={...dismissed};delete nd[`${dismissKey}_stay`];setDismissed(nd);saveDismissed(nd);setPlanningOwnStay(false);setShowStayResuggest(false);setStayCoarchInPlace(false);setStayInsightSavedIdx(null);setStayInsightBrowseAll(false);setBookDropdown(b=>b==='stay'?null:b);};
   async function aiFood(){
     setAiLoad(true);
     try{
@@ -278,7 +279,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const hasStaySecondaryField=(!isRowEmpty(det.stay?.checkin)&&!isRowEmpty(det.stay?.checkout))||stayCostNum>0||(det.stay?.link||"").trim().length>0||(det.stay?.notes||"").trim().length>0;
   const showStayAccommodationCard=hasS&&hasStaySecondaryField&&!stayFocused;
   const hasFoodBudget=!isRowEmpty(det.food?.dailyBudget);
-  const stayInsight=useTabSuggestions({kind:"stay",segment,enabled:tab==="stay"&&(!showStayAccommodationCard||stayInsightSavedIdx!=null)});
+  const stayInsight=useTabSuggestions({kind:"stay",segment,enabled:tab==="stay"&&(!showStayAccommodationCard||stayInsightSavedIdx!=null||stayInsightBrowseAll)});
   const foodInsight=useTabSuggestions({kind:"food",segment,enabled:tab==="food"&&(!hasFoodBudget||foodInsightSavedIdx!=null||foodInsightBrowseAll)});
   const actInsight=useTabSuggestions({kind:"activities",segment,enabled:tab==="activities"});
   const prevStop=(prevCity||"").trim();
@@ -528,7 +529,10 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Find your accommodation for this stop — use the Co-Architect's suggestion or search for your own property" />
           </div>
-          {(!showStayAccommodationCard||stayInsightSavedIdx!=null)&&(
+          {stayInsightSavedIdx!=null&&stayInsight.items.length>0&&<div style={{marginBottom:12}}>
+            <button type="button" onClick={()=>{setStayInsightSavedIdx(null);setStayInsightBrowseAll(true);}} style={{width:'100%',textAlign:'left',background:'transparent',border:'1px solid rgba(0,229,255,0.35)',borderRadius:10,color:'rgba(0,229,255,0.85)',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,padding:'10px 14px',cursor:'pointer',minHeight:44}}>Browse all stay suggestions</button>
+          </div>}
+          {(!showStayAccommodationCard||stayInsightSavedIdx!=null||stayInsightBrowseAll)&&(
             <>
               {stayInsight.loading&&<SuggestionShimmer message={`Finding the best stays in ${dest||"this destination"}...`}/>}
               {!stayInsight.loading&&stayInsight.items.length>0&&stayInsight.items.map((it,idx)=>{
@@ -542,7 +546,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
                   </div>
                 );
                 return(
-                <GenericSuggestionCard key={`stay-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`stay-tab-${idx}`} accent="#69F0AE" variant="expand" isMobile={isMobile} warmLine={it.name?`Great choice. ${it.name} puts you right in the heart of ${dest}.`:undefined} savedCheckStyle={savedCheckStyle} savedSubStyle={savedSubStyle} savedCheckText="✓ Stay added to your plan." savedSubText="" footerSlot={stayInsightSavedIdx===idx?<div style={committedFooterWrapStyle}><div style={planCommitAddedLineStyle}>{addedToPlanLine('stay')}</div><div style={returnToLogFooterStyle}>{returnToLogCopy('Stay')}</div></div>:null} inPlaceSaved={stayInsightSavedIdx===idx} committedToolbar={stayInsightSavedIdx===idx?stayInsightToolbar:null} onAddToPlan={()=>{const cost=parsePriceDigits(String(it.price));uS("name",it.name);if(cost)uS("cost",cost);if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",it.description||"");setStayInsightSavedIdx(idx);}}/>
+                <GenericSuggestionCard key={`stay-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`stay-tab-${idx}`} accent="#69F0AE" variant="expand" isMobile={isMobile} warmLine={it.name?`Great choice. ${it.name} puts you right in the heart of ${dest}.`:undefined} savedCheckStyle={savedCheckStyle} savedSubStyle={savedSubStyle} savedCheckText="✓ Stay added to your plan." savedSubText="" footerSlot={stayInsightSavedIdx===idx?<div style={committedFooterWrapStyle}><div style={planCommitAddedLineStyle}>{addedToPlanLine('stay')}</div><div style={returnToLogFooterStyle}>{returnToLogCopy('Stay')}</div></div>:null} inPlaceSaved={stayInsightSavedIdx===idx} committedToolbar={stayInsightSavedIdx===idx?stayInsightToolbar:null} onAddToPlan={()=>{setStayInsightBrowseAll(false);const cost=parsePriceDigits(String(it.price));uS("name",it.name);if(cost)uS("cost",cost);if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",it.description||"");setStayInsightSavedIdx(idx);}}/>
                 );
               })}
               {!stayInsight.loading&&stayInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{stayInsight.error}</div>}
