@@ -5,7 +5,7 @@ import { askAI } from '../utils/aiHelpers';
 import { fmt, daysBetween } from '../utils/dateHelpers';
 import { urgencyColor } from '../constants/colors';
 import { loadSeg, saveSeg, loadReturn, saveReturn, TI } from '../utils/storageHelpers';
-import { STATUS_CFG, STATUS_NEXT } from '../utils/tripConsoleHelpers';
+import { STATUS_CFG, STATUS_NEXT, formatTripNameDisplay } from '../utils/tripConsoleHelpers';
 import { toSegPhases, computePhasePlannedSpend } from '../utils/tripHelpers';
 import ConsoleHeader from './ConsoleHeader';
 import BottomNav from './BottomNav';
@@ -114,9 +114,21 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
       {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:isMobile?"8px 12px 6px":"10px 0 8px",background:isMobile?"rgba(0,8,16,0.10)":"linear-gradient(180deg,rgba(21,15,10,0.45),rgba(21,15,10,0.50))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden",zIndex:1}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(232,220,200,0.02) 0%,transparent 60%)",pointerEvents:"none"}}/>
         {tripData.tripName&&<div style={{marginBottom:isMobile?8:12,position:"relative"}}>
-          <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:8}}>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?16:24,fontWeight:400,fontStyle:"italic",color:"#F8F5F0",lineHeight:1.12,letterSpacing:"0.02em"}}>{tripData.tripName}</div>
+          <div
+            style={{
+              display:isMobile?"flex":"grid",
+              flexDirection:isMobile?"column":undefined,
+              gridTemplateColumns:!isMobile?(tripData.isDemo&&typeof onExitDemo==="function"?"1fr auto 1fr":"1fr"):undefined,
+              alignItems:"center",
+              justifyContent:isMobile?"center":undefined,
+              gap:isMobile&&tripData.isDemo&&typeof onExitDemo==="function"?10:0,
+              width:"100%",
+            }}
+          >
+            {!isMobile&&tripData.isDemo&&typeof onExitDemo==="function"&&<div aria-hidden />}
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?16:24,fontWeight:400,fontStyle:"italic",color:"#F8F5F0",lineHeight:1.12,letterSpacing:"0.02em",textAlign:"center"}}>{formatTripNameDisplay(tripData.tripName)}</div>
             {tripData.isDemo&&typeof onExitDemo==="function"&&(
+              <div style={{display:"flex",justifyContent:isMobile?"center":"flex-end",width:isMobile?"100%":"auto"}}>
               <button
                 type="button"
                 onClick={()=>onExitDemo()}
@@ -131,7 +143,6 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                   fontFamily:"'Inter',system-ui,-apple-system,sans-serif",
                   letterSpacing:"0.09em",
                   cursor:"pointer",
-                  marginLeft:isMobile?0:10,
                   flexShrink:0,
                   minHeight:isMobile?44:46,
                   boxShadow:"0 0 28px rgba(201,160,76,0.18)",
@@ -142,6 +153,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
               >
                 ← exit demo
               </button>
+              </div>
             )}
           </div>
           {!isMobile&&<div style={{fontSize:15,color:"rgba(232,220,200,0.45)",letterSpacing:2,marginTop:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{[...new Set(flatPhases.map(p=>p.country))].join(" · ")}</div>}

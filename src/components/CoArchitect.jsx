@@ -9,6 +9,7 @@ import { TI } from '../utils/storageHelpers';
 import { GOAL_PRESETS, QUICK_ACTIONS } from '../constants/dreamData';
 import { PALETTE_8 } from '../constants/colors';
 import DatePickerInput from './DatePickerInput';
+import { formatTripNameDisplay } from '../utils/tripConsoleHelpers';
 
 function CoArchitect({data,visionData,onLaunch,onBack}) {
   const isMobile=useMobile();
@@ -156,7 +157,7 @@ RULES:
     const lastDepDate=dates[items.length-1]?.departure?.toISOString().split("T")[0]||"";
     const rp=returnPhaseData||{destination:data.city||"Home",country:"United States",type:"Return",nights:0,cost:Math.round(totalCost*0.08/10)*10,budget:Math.round(totalCost*0.08/10)*10,flag:"🏠",color:"#94A3B8",why:`Homebound from ${items[items.length-1]?.destination||"final destination"}`};
     const returnPhaseHandoff={id:destPhases.length+1,name:rp.destination,flag:rp.flag||"🏠",color:rp.color||"#94A3B8",budget:rp.budget||rp.cost||0,nights:0,type:"Return",arrival:lastDepDate,departure:data.returnDate||lastDepDate,country:rp.country||"United States",diveCount:0,cost:rp.budget||rp.cost||0,note:rp.why||""};
-    return{tripName:data.tripName||"My Expedition",startDate,departureCity:data.city||"",vision:data.vision,visionNarrative:visionData.narrative,visionHighlight:visionData.highlight,goalLabel,
+    return{tripName:formatTripNameDisplay(data.tripName||"My Expedition"),startDate,departureCity:data.city||"",vision:data.vision,visionNarrative:visionData.narrative,visionHighlight:visionData.highlight,goalLabel,
       budgetBreakdown:visionData.budgetBreakdown||null,travelerProfile:data.travelerProfile||null,packProfile:visionData.packProfile||null,
       phases:[...destPhases,returnPhaseHandoff],
       budgetCap:(data.budgetMode!=="dream"&&Number(data.budgetAmount)>0)?Number(data.budgetAmount):0,

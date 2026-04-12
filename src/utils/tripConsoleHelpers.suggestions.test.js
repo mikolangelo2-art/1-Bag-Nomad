@@ -1,6 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
+  formatTripNameDisplay,
   getSuggestionsTripId,
   flatPhaseIndexForSegment,
   prevSegmentNameForSeg,
@@ -10,6 +11,22 @@ import {
   parseTransportEstimateToCostDigits,
   inferTransportMode,
 } from "./tripConsoleHelpers.js";
+
+describe("formatTripNameDisplay", () => {
+  it("title-cases words", () => {
+    assert.equal(formatTripNameDisplay("latin dream"), "Latin Dream");
+    assert.equal(formatTripNameDisplay("MY GRAND TRIP"), "My Grand Trip");
+  });
+
+  it("preserves digit-led tokens", () => {
+    assert.equal(formatTripNameDisplay("2026/27 global tour"), "2026/27 Global Tour");
+  });
+
+  it("handles empty", () => {
+    assert.equal(formatTripNameDisplay(""), "");
+    assert.equal(formatTripNameDisplay("   "), "");
+  });
+});
 
 describe("getSuggestionsTripId", () => {
   it("returns tripName when set", () => {

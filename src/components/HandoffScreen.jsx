@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { BG_PAGE } from '../constants/colors';
 import SharegoodLogo from './SharegoodLogo';
+import { formatTripNameDisplay } from '../utils/tripConsoleHelpers';
 
 function HandoffScreen({tripData,onComplete}) {
   const isMobile=useMobile();
@@ -46,7 +47,7 @@ function HandoffScreen({tripData,onComplete}) {
             ))}
           </div>
           <div style={{opacity:ph>=3?1:0,transform:ph>=3?"translateY(0)":"translateY(16px)",transition:"opacity 0.7s ease,transform 0.7s ease",textAlign:"center",width:"100%"}}>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?16:"clamp(1.35rem, 3vw, 2.25rem)",fontWeight:400,fontStyle:"italic",color:"#c9a04c",marginBottom:8,textShadow:"0 0 36px rgba(201,160,76,0.35)"}}>{tripData.tripName}</div>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?16:"clamp(1.35rem, 3vw, 2.25rem)",fontWeight:400,fontStyle:"italic",color:"#c9a04c",marginBottom:8,textShadow:"0 0 36px rgba(201,160,76,0.35)"}}>{formatTripNameDisplay(tripData.tripName)}</div>
             <div style={{width:100,height:1,background:"linear-gradient(90deg,transparent,rgba(201,160,76,0.45),transparent)",margin:"12px auto 20px"}}/>
             <div style={{display:"flex",justifyContent:"center",gap:isMobile?16:28,marginBottom:isMobile?28:36,flexWrap:"wrap"}}>
               {[{value:totalNights,label:"NIGHTS"},{value:"$"+Math.round(totalBudget/1000)+"k",label:"BUDGET"},{value:countries,label:"COUNTRIES"}].map((s,i)=>(

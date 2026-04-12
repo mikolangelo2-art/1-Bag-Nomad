@@ -14,6 +14,26 @@ export const DISMISS_KEY = "1bn_dismissed_suggestions";
 export const loadDismissed = () => { try { return JSON.parse(localStorage.getItem(DISMISS_KEY) || "{}"); } catch(e) { return {}; } };
 export const saveDismissed = d => { try { localStorage.setItem(DISMISS_KEY, JSON.stringify(d)); } catch(e) {} };
 
+/** Title case for trip names: "latin dream" → "Latin Dream". Preserves digit-led tokens (e.g. years). */
+export function formatTripNameDisplay(name) {
+  if (name == null || typeof name !== "string") return "";
+  const s = name.trim();
+  if (!s) return "";
+  return s
+    .split(/\s+/)
+    .map((word) => {
+      if (/^\d/.test(word)) return word;
+      if (word.includes("-")) {
+        return word
+          .split("-")
+          .map((part) => (part.length === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()))
+          .join("-");
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(" ");
+}
+
 // ── Trip id for suggestion cache (must match generate + localStorage) ──
 export function getSuggestionsTripId(td) {
   if (!td || !Array.isArray(td.phases) || td.phases.length === 0) return "";

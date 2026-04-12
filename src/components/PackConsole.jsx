@@ -10,6 +10,7 @@ import { askAI, parseJSON } from '../utils/aiHelpers';
 import { TI } from '../utils/storageHelpers';
 import { BAG_COLORS, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS } from '../constants/colors';
 import { buildTripPack, getDefaultPack, mapPackItemsWithVolumes } from '../utils/packHelpers';
+import { formatTripNameDisplay } from '../utils/tripConsoleHelpers';
 
 const STORAGE_PACK_EXPANDED = "1bn_pack_expanded";
 function loadPackExpandedCats() {
@@ -104,7 +105,7 @@ function CircularRing({ value, max, label, sublabel, color, unit, isMobile }) {
 function getPackBrief(pp,tripData){
   if(!pp)return null;
   const {tripType,climate,duration}=pp;
-  const tripName=tripData?.tripName||"your expedition";
+  const tripName=formatTripNameDisplay(tripData?.tripName||"your expedition");
   const typeContext={dive:"underwater exploration — dive gear is front and center, everything else is minimal",adventure:"physical adventure — durability and weather protection are priorities",culture:"city and cultural exploration — versatile, presentable, lightweight",luxury:"premium travel — quality over quantity, smart casual essentials",nomad:"long-term travel — tech-forward, laundry-friendly, multi-purpose items",beach:"coastal living — sun protection, quick-dry, minimal footprint",moto:"motorbike travel — weather protection, packable layers, security essentials",wellness:"wellness retreat — comfortable layers, yoga-friendly, minimal distractions",Trek:"alpine trekking — layered warmth, durable footwear, weather protection",Exploration:"broad exploration — versatile pieces that work across settings",Relax:"relaxed travel — comfort-first, easy layers, minimal fuss",Surf:"surf travel — boardshorts, rashguards, reef-safe sun protection",Nature:"nature immersion — earth tones, insect protection, quick-dry layers",Transit:"transit-heavy routing — wrinkle-resistant, packable, security-conscious"};
   const climateAdvice={"tropical-hot":"The heat and humidity mean breathable fabrics are essential — avoid anything that traps moisture.","tropical-wet":"Wet season means rain is guaranteed — waterproof everything, quick-dry only.","temperate-cool":"Layering is key — mornings and evenings will be cold even if afternoons are mild.","cold-alpine":"Warmth is non-negotiable — down layers, windproof shell, thermal base layers.",mediterranean:"Mild days, cooler evenings — one light layer handles most situations.","desert-hot":"UV protection is critical — cover up during midday, light breathable fabrics."};
   let msg=`For ${tripName}, I've selected gear appropriate for `+(typeContext[tripType]||"your specific trip type")+". "+(climateAdvice[climate]||"");
@@ -535,7 +536,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     const prompt=`You are a travel packing expert and co-architect for a ${pp?.tripType||"exploration"} trip.
 
 TRIP DETAILS:
-- Trip: ${tripData.tripName||"expedition"}
+- Trip: ${formatTripNameDisplay(tripData.tripName||"expedition")}
 - Duration: ${pp?.duration||"medium"} (${totalNights} nights)
 - Destinations: ${tripData.phases.map(p=>`${p.name||p.destination||""}, ${p.country} (${p.nights}n, ${p.type})`).join("; ")}
 - Climate: ${pp?.climate?.replace(/-/g," ")||"mixed"}, ${pp?.season||"dry"} season
@@ -644,7 +645,7 @@ Return ONLY a JSON array:
         return <div style={{padding:isMobile?"6px 12px":"6px 0",background:"rgba(255,159,67,0.04)",borderBottom:"1px solid rgba(255,159,67,0.12)",overflow:"hidden"}}>
           <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
             <span style={{fontSize:11,color:"rgba(255,159,67,0.7)",flexShrink:0}}>✦</span>
-            <span style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.70)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,whiteSpace:"nowrap"}}>Built for: {tripData.tripName||"Your Trip"} · {totalNights}n · {pp.tripType}{coupleMode?" · for 2":""}</span>
+            <span style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.70)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,whiteSpace:"nowrap"}}>Built for: {formatTripNameDisplay(tripData.tripName||"Your Trip")} · {totalNights}n · {pp.tripType}{coupleMode?" · for 2":""}</span>
             {ca&&<>
               <span style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.70)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,whiteSpace:"nowrap"}}>🌡 {ca.label}{pp.tempRange?" · "+pp.tempRange:""}</span>
               <span style={{fontSize:isMobile?10:12,fontFamily:"'Playfair Display',serif",fontStyle:"italic",color:"rgba(255,159,67,0.5)",whiteSpace:"nowrap"}}>{ca.advice}</span>
@@ -760,7 +761,7 @@ Return ONLY a JSON array:
             <div style={{maxHeight:packBriefCollapsed?0:400,overflow:"hidden",transition:"max-height 0.28s ease-out"}}>
               <div style={{padding:"0 12px 12px"}}>
                 <div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontStyle:"italic",color:"rgba(255,255,255,0.85)",lineHeight:1.7,marginBottom:10}}>{getPackBrief(pp,tripData)||`Reviewing your pack for a ${goalLabel} trip across ${countries.slice(0,3).join(", ")}${countries.length>3?" +"+(countries.length-3)+" more":""} — ${totalNights} nights.`}</div>
-                <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,255,255,0.55)",letterSpacing:1,marginBottom:8}}>Built for: {tripData?.tripName||"your expedition"} · {totalNights} nights · {pp?.tripType||goalLabel} · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
+                <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,255,255,0.55)",letterSpacing:1,marginBottom:8}}>Built for: {formatTripNameDisplay(tripData?.tripName||"your expedition")} · {totalNights} nights · {pp?.tripType||goalLabel} · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
                 <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{tripTypes.map(t=><span key={t} style={{fontSize:11,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.18)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:10,padding:"3px 9px",letterSpacing:1,fontWeight:700}}>{TI[t]||"🗺️"} {t}</span>)}</div>
               </div>
             </div>
@@ -772,7 +773,7 @@ Return ONLY a JSON array:
                 <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(255,159,67,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,animation:"logoPulse 2s ease-in-out infinite"}}>✦</div>
               </div>
               <div style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:4}}>Analyzing your trip and current pack...</div>
-              <div style={{fontSize:10,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{tripData.tripName||"your expedition"} · {totalNights}N · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
+              <div style={{fontSize:10,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{formatTripNameDisplay(tripData.tripName||"your expedition")} · {totalNights}N · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
             </div>
             {[0,1,2].map(i=><div key={i} style={{borderRadius:12,marginBottom:9,background:"rgba(18,8,0,0.85)",border:"1px solid rgba(255,255,255,0.06)",padding:"14px 12px",animation:`shimmer 1.5s ease-in-out infinite ${i*0.2}s`}}>
               <div style={{display:"flex",gap:8,marginBottom:10}}>

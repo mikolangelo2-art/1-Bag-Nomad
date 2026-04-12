@@ -8,6 +8,7 @@ import DreamHeader from './DreamHeader';
 import VisionReveal from './VisionReveal';
 import CityInput from './CityInput';
 import DatePickerInput from './DatePickerInput';
+import { formatTripNameDisplay } from '../utils/tripConsoleHelpers';
 
 function DreamScreen({onGoGen,onLoadDemo,prefilledVision="",onBackToWelcome}) {
   const isMobile=useMobile();
@@ -194,7 +195,7 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
         parsed.packProfile={categories:cats,hiddenCategories:hidden,tripType:phTypes[0]||"culture",climate,season:"dry",tempRange:climate==="tropical-hot"?"28-35C":climate==="temperate-cool"?"10-18C":"18-28C",activities:[...new Set(acts)],duration:dur,essentialItems:essential,optionalItems:hasDive?[]:["wetsuit","dive computer","BCD"]};
       }
       console.log('[1BN] packProfile:',parsed?.packProfile);
-      if(parsed){setLogoState("done");setTimeout(()=>setLogoState("idle"),600);setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:tripName||"My Expedition",city,date,returnDate,budgetMode,budgetAmount,travelerProfile:{group:travelerGroup,style:travelStyle,interests,specialtyInterests}});}
+      if(parsed){setLogoState("done");setTimeout(()=>setLogoState("idle"),600);setVisionData({visionData:parsed,selectedGoal:"custom",vision,tripName:formatTripNameDisplay(tripName||"My Expedition"),city,date,returnDate,budgetMode,budgetAmount,travelerProfile:{group:travelerGroup,style:travelStyle,interests,specialtyInterests}});}
       else{setLogoState("error");setTimeout(()=>setLogoState("idle"),2000);setLoadErrorMsg("Could not read expedition data — try again.");setLoadError(true);setLoading(false);}
     } catch(e){
       setLogoState("error");
@@ -293,7 +294,7 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
         </div>
         <div className="sec-label">EXPEDITION DETAILS</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10,marginBottom:22,overflow:"visible"}}>
-          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onClick={e=>e.stopPropagation()} onChange={e=>setTripName(e.target.value)} placeholder="MY GRAND EXPEDITION" style={{textTransform:"uppercase",borderColor:"rgba(0,229,255,0.72)",boxShadow:"0 0 14px rgba(0,229,255,0.18),0 0 32px rgba(0,229,255,0.07)"}}/></div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">JOURNEY NAME</div><input className="f-input" value={tripName} onClick={e=>e.stopPropagation()} onChange={e=>setTripName(e.target.value)} onBlur={()=>setTripName(t=>formatTripNameDisplay(t))} placeholder="My Grand Expedition" style={{borderColor:"rgba(0,229,255,0.72)",boxShadow:"0 0 14px rgba(0,229,255,0.18),0 0 32px rgba(0,229,255,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5,position:"relative",zIndex:30,overflow:"visible"}}><div className="f-label">DEPARTS FROM</div><CityInput className="f-input" value={city} onChange={v=>setCity(v)} placeholder="Los Angeles, CA" style={{borderColor:"rgba(201,160,76,0.72)",boxShadow:"0 0 14px rgba(201,160,76,0.18),0 0 32px rgba(201,160,76,0.07)"}}/></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">TARGET START DATE</div><div style={{width:"100%",overflow:"clip",boxSizing:"border-box"}}><DatePickerInput className="f-input" value={date} onChange={setDate} style={{width:"100%",boxSizing:"border-box",fontSize:16,display:"block",borderColor:"rgba(105,240,174,0.72)",boxShadow:"0 0 14px rgba(105,240,174,0.18),0 0 32px rgba(105,240,174,0.07)"}} aria-label="Target start date" buttonStyle={{border:"1px solid rgba(105,240,174,0.35)",background:"rgba(105,240,174,0.12)"}}/></div></div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}><div className="f-label">RETURN DATE</div><div key={`return-${date}`} style={{width:"100%",overflow:"clip",boxSizing:"border-box"}}><DatePickerInput className="f-input" value={returnDate||date} min={date||undefined} onChange={setReturnDate} style={{width:"100%",boxSizing:"border-box",fontSize:16,display:"block",borderColor:"rgba(201,160,76,0.72)",boxShadow:"0 0 14px rgba(201,160,76,0.18),0 0 32px rgba(201,160,76,0.07)"}} aria-label="Return date" buttonStyle={{border:"1px solid rgba(201,160,76,0.35)",background:"rgba(201,160,76,0.10)"}}/></div><div style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontStyle:"italic",color:"rgba(201,160,76,0.65)",marginTop:3}}>optional · open-ended</div>{date&&returnDate&&(()=>{const d0=new Date(date+"T12:00:00"),d1=new Date(returnDate+"T12:00:00");const n=Math.round((d1-d0)/86400000);return n>0?<div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:11,color:"rgba(255,255,255,0.55)",marginTop:4}}>{n} nights</div>:null;})()}</div>
