@@ -21,6 +21,22 @@ function sessionKeyForQuery(q, orient = "landscape") {
   return `${normalizePhotoQueryKey(q)}__${orient}`;
 }
 
+const UNSPLASH_FETCH_MS = 6000;
+
+/** Abortable fetch for Unsplash proxy — avoids hung cards when network stalls */
+async function fetchUnsplashWithTimeout(url) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), UNSPLASH_FETCH_MS);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    return res;
+  } catch (e) {
+    clearTimeout(timeoutId);
+    throw e;
+  }
+}
+
 /** Accepts minimal API shape or legacy full Unsplash JSON */
 function extractFromUnsplashPayload(data) {
   if (!data || typeof data !== "object") return null;
@@ -185,8 +201,8 @@ export function buildUnsplashQuery(destination, category, country) {
 }
 
 /**
- * True if Unsplash metadata plausibly matches this stop. When `country` is set,
- * require it to appear in metadata (avoids Kingston UK vs Kingston Jamaica).
+ * Accept-first: Unsplash metadata is sparse — bias comes from query tiers, not rejection here.
+ * Session 53C: do not reject photos solely because alt/tags omit the city name.
  */
 export function photoMatchesDestination(photo, destination, country) {
   const tags = Array.isArray(photo?.tags)
@@ -204,18 +220,14 @@ export function photoMatchesDestination(photo, destination, country) {
     .join(" ")
     .toLowerCase();
 
-  const destLower = String(destination || "").trim().toLowerCase();
-  const countryLower = String(country || "").trim().toLowerCase();
-
-  // Many Unsplash results ship without location/tags; rejecting all yields empty heroes.
   if (!haystack.trim()) return true;
 
-  if (countryLower) {
-    if (haystack.includes(countryLower)) return true;
-    return false;
-  }
+  const destLower = String(destination || "").trim().toLowerCase();
+  const countryLower = String(country || "").trim().toLowerCase();
+  if (countryLower && haystack.includes(countryLower)) return true;
   if (destLower && haystack.includes(destLower)) return true;
-  return false;
+
+  return true;
 }
 
 function readCache(cacheKey) {
@@ -275,9 +287,16 @@ export function useDestinationPhoto(destination, category, country, options = {}
           let data = sessionUnsplashByQuery.get(sk);
 
           if (!data) {
-            const res = await fetch(
-              `/api/unsplash?query=${encodeURIComponent(q)}&orientation=landscape`
-            );
+            let res;
+            try {
+              res = await fetchUnsplashWithTimeout(
+                `/api/unsplash?query=${encodeURIComponent(q)}&orientation=landscape`
+              );
+            } catch (err) {
+              if (err?.name === "AbortError") continue;
+              console.error("[1BN] Unsplash fetch error:", err);
+              continue;
+            }
             if (!res.ok) continue;
             data = await res.json();
             if (cancelled) return;
@@ -315,21 +334,50 @@ export function useDestinationPhoto(destination, category, country, options = {}
             return;
           }
 
-          if (import.meta.env.DEV) {
-            console.warn("[1BN] Unsplash photo rejected (metadata mismatch)", {
-              query: q,
-              destination: destTrim,
-              country: coTrim,
-              alt_description: meta?.alt_description,
-            });
-          }
         } catch (err) {
+          if (err?.name === "AbortError") continue;
           console.error("[1BN] Unsplash fetch error:", err);
         }
       }
 
+      if (!cancelled && !fallback) {
+        try {
+          const genericQuery = String(destination || "travel landscape").trim();
+          const sk = sessionKeyForQuery(genericQuery, "landscape");
+          let data = sessionUnsplashByQuery.get(sk);
+          if (!data) {
+            let res;
+            try {
+              res = await fetchUnsplashWithTimeout(
+                `/api/unsplash?query=${encodeURIComponent(genericQuery)}&orientation=landscape`
+              );
+            } catch (e) {
+              if (e?.name !== "AbortError") console.error("[1BN] Unsplash generic fetch:", e);
+            }
+            if (res?.ok) {
+              data = await res.json();
+              if (data) sessionUnsplashByQuery.set(sk, data);
+            }
+          }
+          if (data) {
+            const extracted = extractFromUnsplashPayload(data);
+            if (extracted?.imgUrl) {
+              fallback = {
+                imgUrl: extracted.imgUrl,
+                thumb: extracted.thumb,
+                htmlLink: extracted.htmlLink,
+                data: extracted.meta,
+                query: genericQuery,
+              };
+            }
+          }
+        } catch {
+          /* last-resort generic query failed */
+        }
+      }
+
       if (!cancelled && fallback) {
-        console.warn("[1BN] Unsplash: all tiers failed metadata validation; using last image", {
+        console.warn("[1BN] Unsplash: using fallback image for destination", {
           destination: destTrim,
           country: coTrim,
           query: fallback.query,
