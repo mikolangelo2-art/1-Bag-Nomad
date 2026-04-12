@@ -17,18 +17,15 @@ export function normalizePhotoQueryKey(q) {
     .replace(/\s+/g, " ");
 }
 
-/** Pages 1–5 per card so Pexels/Unsplash search offsets differ (string instanceIds hashed) */
-export function photoPageFromInstanceId(instanceId) {
-  if (instanceId == null || instanceId === "") return 1;
+/** Trailing number from instanceId (e.g. food-tab-2 → 2); else hash mod 3. Used to rotate query tiers per card (Session 53E). */
+export function cardIndexFromInstanceId(instanceId) {
+  if (instanceId == null) return 0;
   const s = String(instanceId);
-  const digits = s.replace(/\D/g, "");
-  if (digits.length > 0) {
-    const n = parseInt(digits.slice(0, 4), 10);
-    if (!Number.isNaN(n)) return (n % 5) + 1;
-  }
+  const m = s.match(/(\d+)$/);
+  if (m) return parseInt(m[1], 10);
   let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
-  return (Math.abs(h) % 5) + 1;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) & 0xffff;
+  return h % 3;
 }
 
 function sessionKeyPhoto(provider, q, orient, pageNum) {
@@ -264,7 +261,7 @@ function readCache(cacheKey) {
 }
 
 /**
- * Pexels-first, then Unsplash (Session 53D). Per-card page offset via instanceId.
+ * Pexels-first, then Unsplash (Session 53D). Tier order rotated per card (Session 53E); page=1.
  * @param {string} [country] optional; improves tier-3 regional fallback.
  * @param {{ instanceId?: string }} [options] per-card cache slot (e.g. activity list index) so parallel activities do not share one cached URL.
  */
@@ -297,7 +294,15 @@ export function useDestinationPhoto(destination, category, country, options = {}
     (async () => {
       const destTrim = String(destination || "").trim();
       const coTrim = normalizeCountry(country);
-      const pageNum = photoPageFromInstanceId(instanceId);
+      const cardIdx =
+        queryTiers.length > 0
+          ? cardIndexFromInstanceId(instanceId) % queryTiers.length
+          : 0;
+      const rotatedTiers =
+        queryTiers.length > 0
+          ? [...queryTiers.slice(cardIdx), ...queryTiers.slice(0, cardIdx)]
+          : [];
+      const PAGE = 1;
       let fallback = null;
 
       function commitSuccess(imgUrl, htmlLink, thumb) {
@@ -320,17 +325,17 @@ export function useDestinationPhoto(destination, category, country, options = {}
         });
       }
 
-      for (const q of queryTiers) {
+      for (const q of rotatedTiers) {
         if (cancelled) return;
         try {
-          const sk = sessionKeyPhoto("pexels", q, "landscape", pageNum);
+          const sk = sessionKeyPhoto("pexels", q, "landscape", PAGE);
           let data = sessionPhotoByKey.get(sk);
 
           if (!data) {
             let res;
             try {
               res = await fetchPhotoWithTimeout(
-                `/api/pexels?query=${encodeURIComponent(q)}&orientation=landscape&page=${pageNum}`
+                `/api/pexels?query=${encodeURIComponent(q)}&orientation=landscape&page=${PAGE}`
               );
             } catch (err) {
               if (err?.name === "AbortError") continue;
@@ -362,17 +367,17 @@ export function useDestinationPhoto(destination, category, country, options = {}
         }
       }
 
-      for (const q of queryTiers) {
+      for (const q of rotatedTiers) {
         if (cancelled) return;
         try {
-          const sk = sessionKeyPhoto("unsplash", q, "landscape", pageNum);
+          const sk = sessionKeyPhoto("unsplash", q, "landscape", PAGE);
           let data = sessionPhotoByKey.get(sk);
 
           if (!data) {
             let res;
             try {
               res = await fetchPhotoWithTimeout(
-                `/api/unsplash?query=${encodeURIComponent(q)}&orientation=landscape&page=${pageNum}`
+                `/api/unsplash?query=${encodeURIComponent(q)}&orientation=landscape&page=${PAGE}`
               );
             } catch (err) {
               if (err?.name === "AbortError") continue;
@@ -407,13 +412,13 @@ export function useDestinationPhoto(destination, category, country, options = {}
       if (!cancelled && !fallback) {
         try {
           const genericQuery = String(destination || "travel landscape").trim();
-          const skP = sessionKeyPhoto("pexels", genericQuery, "landscape", pageNum);
+          const skP = sessionKeyPhoto("pexels", genericQuery, "landscape", PAGE);
           let data = sessionPhotoByKey.get(skP);
           if (!data) {
             let res;
             try {
               res = await fetchPhotoWithTimeout(
-                `/api/pexels?query=${encodeURIComponent(genericQuery)}&orientation=landscape&page=${pageNum}`
+                `/api/pexels?query=${encodeURIComponent(genericQuery)}&orientation=landscape&page=${PAGE}`
               );
             } catch (e) {
               if (e?.name !== "AbortError") console.error("[1BN] Pexels generic fetch:", e);
@@ -443,13 +448,13 @@ export function useDestinationPhoto(destination, category, country, options = {}
       if (!cancelled && !fallback) {
         try {
           const genericQuery = String(destination || "travel landscape").trim();
-          const skU = sessionKeyPhoto("unsplash", genericQuery, "landscape", pageNum);
+          const skU = sessionKeyPhoto("unsplash", genericQuery, "landscape", PAGE);
           let data = sessionPhotoByKey.get(skU);
           if (!data) {
             let res;
             try {
               res = await fetchPhotoWithTimeout(
-                `/api/unsplash?query=${encodeURIComponent(genericQuery)}&orientation=landscape&page=${pageNum}`
+                `/api/unsplash?query=${encodeURIComponent(genericQuery)}&orientation=landscape&page=${PAGE}`
               );
             } catch (e) {
               if (e?.name !== "AbortError") console.error("[1BN] Unsplash generic fetch:", e);
