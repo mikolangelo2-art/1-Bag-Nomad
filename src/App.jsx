@@ -221,6 +221,7 @@ input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.45)!important;
 .mc-tab{background:none;border:none;cursor:pointer;padding:9px 12px;font-size:11px;letter-spacing:2px;white-space:nowrap;color:rgba(248,245,240,0.72);border-bottom:2px solid transparent;transition:all 0.30s cubic-bezier(0.25,0.46,0.45,0.94);font-family:'Inter',system-ui,-apple-system,sans-serif;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
 .mc-tab.active{color:#f8f5f0;border-bottom-color:#00E5FF}
 .mc-content{padding:14px 22px;overflow-y:auto;flex:1;min-height:0}
+.mc-root .mc-content.mc-content--trip{max-width:min(100%,1320px)!important;padding:14px 24px!important;background:transparent!important}
 .intel-section{background:rgba(255,255,255,0.04);border:1px solid rgba(232,185,35,0.1);border-radius:var(--lux-radius-md,16px);padding:11px;margin-bottom:10px}
 .intel-section-label{font-size:12px;letter-spacing:2px;margin-bottom:7px}
 .street-card{display:flex;gap:9px;padding:9px 11px;background:rgba(0,0,0,0.25);border-radius:8px;margin-bottom:7px}

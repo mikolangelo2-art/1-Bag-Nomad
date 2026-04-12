@@ -276,14 +276,27 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
         <span style={{fontSize:15,color:"rgba(255,107,107,0.9)",letterSpacing:1}}>⚠️ This will clear your expedition. Tap CONFIRM? again to proceed.</span>
         <button onClick={()=>setConfirmNewTrip(false)} style={{fontSize:15,color:"rgba(255,255,255,0.4)",background:"none",border:"none",cursor:"pointer",padding:"2px 6px"}}>✕</button>
       </div>}
-      <div className="mc-content" style={{position:"relative",zIndex:1}}>
+      <div className="mc-content mc-content--trip" style={{position:"relative",zIndex:1}}>
         {tab==="next"&&(
-          <div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div style={{display:"flex",flexDirection:"column",gap:14,background:"transparent"}}>
             {isComplete&&<div onClick={onHomecoming} style={{marginBottom:4,padding:"11px 14px",background:"linear-gradient(135deg,rgba(201,160,76,0.1),rgba(255,159,67,0.06))",border:"1px solid rgba(201,160,76,0.35)",borderRadius:10,cursor:"pointer",display:"flex",alignItems:"center",gap:8,animation:"consolePulse 2.8s ease-in-out infinite"}} onMouseOver={e=>e.currentTarget.style.background="linear-gradient(135deg,rgba(201,160,76,0.18),rgba(255,159,67,0.12))"} onMouseOut={e=>e.currentTarget.style.background="linear-gradient(135deg,rgba(201,160,76,0.1),rgba(255,159,67,0.06))"}>
               <span style={{fontSize:16}}>🏆</span>
               <span style={{fontSize:11,fontWeight:700,color:"#c9a04c",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flex:1}}>✦ EXPEDITION COMPLETE · TAP TO CELEBRATE</span>
               <span style={{fontSize:12,color:"rgba(201,160,76,0.5)"}}>→</span>
             </div>}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 14,
+                maxWidth: isMobile ? "100%" : 880,
+                margin: isMobile ? undefined : "0 auto",
+                width: "100%",
+                padding: isMobile ? "0 8px" : 0,
+                boxSizing: "border-box",
+                background: "transparent",
+              }}
+            >
             <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:6,marginBottom:8,marginTop:4,position:"relative",zIndex:5}}>
               <span style={{fontSize:isMobile?12:14,color:"#F8F5F0",letterSpacing:isMobile?1.5:2.8,fontWeight:500,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:isMobile?"normal":"nowrap"}}>YOUR EXPEDITION · {destFlatPhases.length} {destFlatPhases.length===1?"DESTINATION":"DESTINATIONS"}</span>
               <HelpTip noLeadingMargin compact desktopOnly text="Tap any destination to plan your transport, stays, activities, and budget for that stop" />
@@ -314,18 +327,6 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                 </div>}
               </div>
             )}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 14,
-                maxWidth: isMobile ? "100%" : 880,
-                margin: isMobile ? undefined : "0 auto",
-                width: "100%",
-                padding: isMobile ? "0 8px" : "0 24px",
-                background: "transparent",
-              }}
-            >
             {segPhases.map((phase,i)=>{const plannedOverBudget=computePhasePlannedSpend(phase,allSegD).total>(Number(phase.totalBudget)||0);return <PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} allPhases={tripData.phases||[]} segPhases={segPhases} homeCity={tripData.departureCity||tripData.city||""} plannedOverBudget={plannedOverBudget}/>;})}
             {returnPhase&&<PhaseCard key="return" phase={returnPhase} intelData={explorerData} idx={segPhases.length} onTap={null} allSuggestions={null} suggestionsLoading={false}/>}
             </div>

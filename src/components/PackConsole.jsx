@@ -580,7 +580,7 @@ Return ONLY a JSON array:
   return(
     <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",background:BG_PACK_GRADIENT,minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
       <WorldMapBackground phases={tripData?.phases||[]} console="pack" departureCity={tripData?.departureCity||tripData?.city||""}/>
-      <div style={{position:'relative',zIndex:1,display:'flex',flexDirection:'column',flex:1,minHeight:'100vh'}}>
+      <div style={{position:'relative',zIndex:1,display:'flex',flexDirection:'column',flex:1,minHeight:'100vh',background:'transparent'}}>
       {/* Header */}
       {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} onTripConsole={onExpedition} onPackConsole={()=>{}}/>}
       {/* Console switcher */}
@@ -683,7 +683,7 @@ Return ONLY a JSON array:
         </>
       )}
       {packTab==="pack"&&packView==="dashboard"&&(
-        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 16px 32px",boxSizing:"border-box",background:"transparent"}}>
+        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 24px 32px",boxSizing:"border-box",background:"transparent"}}>
           {filterCat==="needtobuy"?(()=>{
             const unowned=[...items].filter(i=>!i.owned).sort((a,b)=>(parseFloat(b.cost)||0)-(parseFloat(a.cost)||0));
             const total=unowned.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
@@ -724,7 +724,7 @@ Return ONLY a JSON array:
               )}
             </div>);
           })():<>
-            <div style={{maxWidth:isMobile?"100%":880,margin:isMobile?undefined:"0 auto",width:"100%",padding:isMobile?undefined:"0 24px",background:"transparent"}}>
+            <div style={{maxWidth:isMobile?"100%":880,margin:isMobile?undefined:"0 auto",width:"100%",padding:isMobile?undefined:0,boxSizing:"border-box",background:"transparent"}}>
               {CATS.map((cat,i)=><CatCard key={cat.id} cat={cat} idx={i} isMobile={isMobile} itemsForCat={itemsForCat} wM={wM} unit={unit} onSelectCategory={selectCategory}/>)}
             </div>
             {pp&&<>
