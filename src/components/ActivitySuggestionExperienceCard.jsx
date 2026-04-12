@@ -1,11 +1,20 @@
-import { useDestinationPhoto } from "../hooks/useDestinationPhoto";
-import SuggestionExperienceCard from "./SuggestionExperienceCard";
-import { dismissBtnStyleOnHero } from "../utils/tripConsoleHelpers";
+import GenericSuggestionCard from "./GenericSuggestionCard";
 
 const ACT_ACCENT = "#c9a04c";
 const DEFAULT_ACT_DISCLAIMER =
   "\u26A1 Estimates only \u2014 prices vary when booked";
 
+function formatActivityPrice(raw) {
+  const s = String(raw || "").trim();
+  if (!s) return "\u2014";
+  const n = s.replace(/^\$/, "");
+  return `Est. $${n}`;
+}
+
+/**
+ * Co-Architect activity suggestion — same split layout as Stay/Food insight cards
+ * (hero band + title block + details + actions).
+ */
 export function ActivitySuggestionExperienceCard({
   segmentName,
   segmentCountry = "",
@@ -20,49 +29,36 @@ export function ActivitySuggestionExperienceCard({
   disclaimerText = DEFAULT_ACT_DISCLAIMER,
 }) {
   const name = (activity?.name || activity?.title || "").trim() || "Activity";
-  const photo = useDestinationPhoto(
-    segmentName,
-    name === "Activity" ? "sightseeing" : name,
-    segmentCountry,
-    photoInstanceId ? { instanceId: photoInstanceId } : undefined
-  );
   const provider = (activity?.provider || "").trim();
   const notes = (activity?.notes || activity?.brief || "").trim();
   const costRaw = activity?.estimatedCost || activity?.cost || "";
 
-  const ctaFlex = isMobile
-    ? { width: "100%", minHeight: 44 }
-    : { flex: 1, minWidth: 120, minHeight: 44 };
-
-  const dismissMerged =
-    photo.ready && photo.url ? dismissBtnStyleOnHero : dismissBtnStyle;
+  const item = {
+    name,
+    category: "SUGGESTED ACTIVITY",
+    description: notes || "",
+    price: formatActivityPrice(costRaw),
+    rating: null,
+    address: null,
+  };
 
   return (
-    <SuggestionExperienceCard
+    <GenericSuggestionCard
+      variant="stacked"
+      item={item}
+      destination={segmentName}
+      country={segmentCountry}
+      instanceId={photoInstanceId || "sug-act"}
       accent={ACT_ACCENT}
-      categoryLabel="SUGGESTED ACTIVITY"
-      title={name}
-      descriptor={provider || null}
-      middle={null}
-      priceLine={costRaw ? `Est. ${costRaw}` : null}
-      priceSubline={null}
-      whisper={notes || null}
-      disclaimer={disclaimerText}
-      heroUrl={photo.ready ? photo.url : null}
-      heroLink={photo.htmlLink}
       isMobile={isMobile}
-      flatMobile={isMobile}
-      heroMinHeightPx={isMobile ? 220 : 260}
-      tightFooter
-    >
-      <button type="button" onClick={onAdd} style={{ ...acceptBtnStyle, ...ctaFlex }}>
-        + ADD TO PLAN
-      </button>
-      {showSkip && onSkip ? (
-        <button type="button" onClick={onSkip} style={{ ...dismissMerged, ...ctaFlex }}>
-          SKIP
-        </button>
-      ) : null}
-    </SuggestionExperienceCard>
+      subtitle={provider || undefined}
+      photoQueryOverride={name === "Activity" ? "sightseeing" : name}
+      onAddToPlan={onAdd}
+      onSkip={showSkip ? onSkip : undefined}
+      disclaimer={disclaimerText}
+      addButtonLabel="ADD TO PLAN"
+      acceptButtonStyle={acceptBtnStyle}
+      dismissButtonStyle={dismissBtnStyle}
+    />
   );
 }
