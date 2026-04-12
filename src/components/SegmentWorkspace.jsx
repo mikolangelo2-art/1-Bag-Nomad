@@ -292,20 +292,43 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
       <WorldMapBackground phases={allPhases} activeCountry={(() => { const match = (allPhases||[]).find(p => p.name === phaseLabelName); return match ? match.country : phaseLabelName; })()} departureCity={homeCity||""}/>
       <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box',position:'relative',zIndex:1}}>
       {/* Header */}
-      <div style={{display:'flex',alignItems:'center',padding:'12px 0',gap:10,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(255,159,67,0.15)',position:'sticky',top:0,zIndex:10}}>
-        {isMobile?<button type="button" onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6}}>‹ <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,opacity:0.65}}>{phaseLabelName.toUpperCase()}</span></button>
-        :<div style={{display:'flex',alignItems:'center',gap:8,fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
-          <span onClick={onBackToExpedition||onBack} style={{color:'#FF9F43',cursor:'pointer'}}>←</span>
-          <span onClick={onBackToExpedition||onBack} style={{color:'rgba(255,255,255,0.60)',cursor:'pointer',letterSpacing:1}}>EXPEDITION</span>
-          <span style={{color:'rgba(255,255,255,0.30)'}}>›</span>
-          <span onClick={onBack} style={{color:'rgba(255,255,255,0.60)',cursor:'pointer',letterSpacing:1}}>{phaseLabelName.toUpperCase()}</span>
-          <span style={{color:'rgba(255,255,255,0.25)'}}>›</span>
-          <span style={{color:'rgba(255,255,255,0.85)',letterSpacing:1}}>{segment.name.toUpperCase()}</span>
-        </div>}
-        <div style={{flex:1,minWidth:0}}>
-          {isMobile&&<div style={{fontSize:17,fontWeight:600,color:'#FFFFFF',fontFamily:"'Playfair Display',serif"}}>{segment.name}</div>}
-          <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:isMobile?2:0}}>{isMobile?`${segment.nights}n`:`${segment.nights} Nights`} · {segment.type} · {fmt(segment.budget)}</div>
-        </div>
+      <div style={{display:'flex',alignItems:'center',padding:isMobile?'12px 0':'12px 4px',gap:10,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(255,159,67,0.15)',position:'sticky',top:0,zIndex:10}}>
+        {isMobile?(
+          <>
+            <button type="button" onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6}}>‹ <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,opacity:0.65}}>{phaseLabelName.toUpperCase()}</span></button>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:17,fontWeight:600,color:'#FFFFFF',fontFamily:"'Playfair Display',serif"}}>{segment.name}</div>
+              <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:2}}>{`${segment.nights}n`} · {segment.type} · {fmt(segment.budget)}</div>
+            </div>
+          </>
+        ):(
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',gap:16,flexWrap:'wrap'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flex:'1 1 220px',minWidth:0}}>
+              <span onClick={onBackToExpedition||onBack} style={{color:'#FF9F43',cursor:'pointer',flexShrink:0}}>←</span>
+              <span onClick={onBackToExpedition||onBack} style={{color:'rgba(255,255,255,0.60)',cursor:'pointer',letterSpacing:1,whiteSpace:'nowrap'}}>EXPEDITION</span>
+              <span style={{color:'rgba(255,255,255,0.30)',flexShrink:0}}>›</span>
+              <span onClick={onBack} style={{color:'rgba(255,255,255,0.60)',cursor:'pointer',letterSpacing:1,whiteSpace:'nowrap'}}>{phaseLabelName.toUpperCase()}</span>
+              <span style={{color:'rgba(255,255,255,0.25)',flexShrink:0}}>›</span>
+              <span style={{color:'rgba(255,255,255,0.92)',letterSpacing:0.5,fontWeight:600,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{segment.name}</span>
+            </div>
+            <div style={{display:'flex',alignItems:'stretch',border:'1px solid rgba(255,255,255,0.10)',borderRadius:12,overflow:'hidden',background:'rgba(0,8,24,0.55)',flexShrink:0,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.04)'}}>
+              <div style={{padding:'8px 14px',textAlign:'center',minWidth:72}}>
+                <div style={{fontSize:9,letterSpacing:2,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:2}}>NIGHTS</div>
+                <div style={{fontSize:17,fontWeight:700,color:'#F8F5F0',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.1}}>{segment.nights}</div>
+              </div>
+              <div style={{width:1,background:'rgba(255,255,255,0.08)',alignSelf:'stretch'}} />
+              <div style={{padding:'8px 14px',textAlign:'center',minWidth:88,maxWidth:140}}>
+                <div style={{fontSize:9,letterSpacing:2,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:2}}>STYLE</div>
+                <div style={{fontSize:13,fontWeight:600,color:'#F8F5F0',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.2,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}} title={segment.type}>{segment.type}</div>
+              </div>
+              <div style={{width:1,background:'rgba(255,255,255,0.08)',alignSelf:'stretch'}} />
+              <div style={{padding:'8px 14px',textAlign:'center',minWidth:88}}>
+                <div style={{fontSize:9,letterSpacing:2,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:2}}>BUDGET</div>
+                <div style={{fontSize:17,fontWeight:700,color:'#c9a04c',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.1}}>{fmt(segment.budget)}</div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       {/* Tab bar */}
       <div style={{display:'flex',justifyContent:'center',background:'rgba(0,4,12,0.95)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:isMobile?68:56,zIndex:9}}>

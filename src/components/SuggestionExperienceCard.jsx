@@ -28,7 +28,7 @@ export default function SuggestionExperienceCard({
   const flat = !!(flatMobile && heroMobile);
   const nameFs = isMobile ? 18 : 20;
   const cardRadius = heroMobile ? 12 : 14;
-  const defaultHeroMin = isMobile ? 300 : 380;
+  const defaultHeroMin = isMobile ? 320 : 420;
   const cardMinH = heroUrl ? (heroMinHeightPx ?? defaultHeroMin) : undefined;
   const txtSh = heroUrl
     ? heroMobile

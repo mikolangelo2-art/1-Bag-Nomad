@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useDestinationPhoto } from "../hooks/useDestinationPhoto";
 
-/** Split-card hero height — aligned across Stay/Food/Activities insight rows */
-const HERO_H = 140;
+/** Split-card hero height — taller band shows more of each photo (Stay/Food/Activities) */
+const HERO_H = 200;
 
 /**
  * Unsplash-powered suggestion tile (generic shape).

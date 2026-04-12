@@ -221,9 +221,9 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
           );
         })():(
           <div style={{background:'rgba(23,27,32,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.62)',borderRadius:18,padding:'4px 4px 5px',overflow:'visible',boxShadow:'0 14px 44px rgba(0,0,0,0.42), 0 0 56px rgba(201,160,76,0.08), inset 0 1px 0 rgba(0,229,255,0.12)'}}>
-            <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative"}}>
+            <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative",alignItems:"stretch"}}>
               {heroStats.map((s,i)=>(
-                <div key={s.label} style={{textAlign:"center",padding:"2px 10px 0",borderLeft:i>0?"1px solid rgba(248,245,240,0.08)":"none"}}>
+                <div key={s.label} style={{textAlign:"center",padding:"6px 10px 8px",borderLeft:i>0?"1px solid rgba(248,245,240,0.08)":"none",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start"}}>
                   {s.label==="BUDGET"?(
                     <TripBudgetRing planned={totalPlannedSpend} cap={totalBudget} labelText={s.label} displayAmount={fmt(totalBudget)} helpTip="Your estimated expedition total — tap phases to adjust individual costs" />
                   ):(
