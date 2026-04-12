@@ -119,7 +119,7 @@ Return ONLY valid JSON:
     setLoading(false);
   }
   return (
-    <div className="dream-root" style={{opacity:mounted?1:0,transform:mounted?"scale(1)":"scale(0.97)",transition:"opacity 0.7s ease-in-out, transform 0.7s ease-in-out"}}>
+    <div className="dream-root dream-bleed" style={{opacity:mounted?1:0,transform:mounted?"scale(1)":"scale(0.97)",transition:"opacity 0.7s ease-in-out, transform 0.7s ease-in-out"}}>
       <div className="dream-glow"/>
       <DreamHeader step={2} screenLabel="VISION REVEAL"/>
       <div className="dream-content" style={{maxWidth:1100,position:"relative",zIndex:10}}>

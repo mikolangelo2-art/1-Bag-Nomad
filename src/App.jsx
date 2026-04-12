@@ -222,6 +222,7 @@ input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.45)!important;
 .cta-build-btn:hover{animation:none}
 .build-root{font-family:var(--lux-font-body,'Inter',system-ui,-apple-system,sans-serif);background:var(--lux-bg-main,#121212);min-height:100vh;color:var(--lux-text-primary,#f8f5f0);display:flex;flex-direction:column}
 .mc-root{font-family:var(--lux-font-body,'Inter',system-ui,-apple-system,sans-serif);background:radial-gradient(ellipse at 50% 0%,rgba(0,229,255,0.06) 0%,transparent 55%) no-repeat fixed,var(--lux-bg-trip,#171b20);min-height:100vh;color:var(--lux-text-primary,#f8f5f0);display:flex;flex-direction:column}@media(min-width:600px){.mc-root{background:radial-gradient(ellipse at 50% 0%,rgba(0,229,255,0.06) 0%,transparent 55%) no-repeat fixed,transparent}}.mc-root.mc-trip-bleed{max-width:100%!important;width:100%!important}
+.dream-root.dream-bleed{max-width:100%!important;width:100%!important}
 .mc-tab{background:none;border:none;cursor:pointer;padding:9px 12px;font-size:11px;letter-spacing:2px;white-space:nowrap;color:rgba(248,245,240,0.72);border-bottom:2px solid transparent;transition:all 0.30s cubic-bezier(0.25,0.46,0.45,0.94);font-family:'Inter',system-ui,-apple-system,sans-serif;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
 .mc-tab.active{color:#f8f5f0;border-bottom-color:#00E5FF}
 .mc-content{padding:14px 22px;overflow-y:auto;flex:1;min-height:0}

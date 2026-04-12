@@ -223,7 +223,7 @@ Required: all phase "budget" values must sum to $${bAmt}. "totalBudget" must be 
   }
   if(visionData) return <VisionReveal data={visionData} onBuild={vd=>onGoGen(visionData,vd)} onBack={()=>{setVisionData(null);setLoading(false);}} freshMount={true}/>;
   return (
-    <div className="dream-root">
+    <div className="dream-root dream-bleed">
       <WorldMapBackground dream/>
       <div className="dream-glow"/>
       <DreamHeader step={1}/>
