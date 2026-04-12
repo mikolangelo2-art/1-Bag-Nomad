@@ -139,8 +139,8 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, d
           zIndex: 0,
           overflow: "hidden",
           contain: "paint",
-          transform: parallaxY ? `translate3d(0, ${parallaxY}px, 0)` : undefined,
-          willChange: parallaxY ? "transform" : undefined,
+          transform: parallaxY ? `translate3d(0, ${parallaxY}px, 0)` : "translateZ(0)",
+          willChange: "transform",
         }}
       >
         <style>{`@keyframes dashMove{to{stroke-dashoffset:-72}}.route-line{animation:dashMove 14s linear infinite}@keyframes activePulseR{0%,100%{r:2.8}50%{r:5}}.active-dot{animation:activePulseR 1.4s ease-in-out infinite}@keyframes depPulse{0%,100%{opacity:0.55}50%{opacity:0.9}}.dep-ring{animation:depPulse 2.4s ease-in-out infinite}@media (prefers-reduced-motion: reduce){.route-line,.active-dot,.dep-ring{animation:none !important}}`}</style>

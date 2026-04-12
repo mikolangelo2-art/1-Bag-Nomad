@@ -29,6 +29,8 @@ const returnToLogFooterStyle = {
 const STAY_ACCENT = "#69F0AE";
 const STAY_DISCLAIMER =
   "\u26A1 Estimates based on current market rates \u2014 actual prices vary when booked";
+const STAY_SAVED_SUB =
+  "Locked in — dates, links, and notes live here whenever you want to refine them.";
 
 export function StaySuggestionExperienceCard({
   suggestion,
@@ -162,38 +164,47 @@ export function StaySuggestionExperienceCard({
 
   const dismissMerged = heroUrl ? dismissBtnStyleOnHero : dismissBtnStyle;
 
+  const savedSubMerged = {
+    ...savedSubStyle,
+    display: "block",
+    fontFamily: "'Space Mono',monospace",
+  };
+
   if (inPlaceSaved) {
-    const shellBorder = isMobile
-      ? "1px solid rgba(201,160,76,0.45)"
-      : "1.5px solid rgba(201,160,76,0.55)";
     return (
-      <div
-        style={{
-          border: shellBorder,
-          borderRadius: isMobile ? 12 : 14,
-          background: "rgba(201,160,76,0.06)",
-          padding: isMobile ? "14px 10px" : "18px 20px",
-          marginBottom: 14,
-          display: "flex",
-          flexDirection: "column",
-          textAlign: "left",
-        }}
+      <SuggestionExperienceCard
+        accent={STAY_ACCENT}
+        categoryLabel="🏨 ACCOMMODATION"
+        title={title}
+        descriptor={descriptor}
+        descriptorFontSize={15}
+        middle={null}
+        priceLine={priceLine}
+        priceSubline={priceSubline}
+        whisper={null}
+        disclaimer={null}
+        heroUrl={heroUrl}
+        heroLink={heroLink}
+        isMobile={isMobile}
+        flatMobile={isMobile}
+        tightFooter
       >
-        {committedToolbar}
+        {committedToolbar ? <div style={{ marginBottom: 10 }}>{committedToolbar}</div> : null}
         {stayBodySummary}
         <span style={savedCheckStyle}>✓ Stay added to your plan.</span>
+        <span style={savedSubMerged}>{STAY_SAVED_SUB}</span>
         <div style={committedFooterWrapStyle}>
           <div style={planCommitAddedLineStyle}>{addedToPlanLine("stay")}</div>
           <div style={returnToLogFooterStyle}>{returnToLogCopy("Stay")}</div>
         </div>
-      </div>
+      </SuggestionExperienceCard>
     );
   }
 
   return (
     <SuggestionExperienceCard
       accent={STAY_ACCENT}
-      categoryLabel="ACCOMMODATION"
+      categoryLabel="🏨 ACCOMMODATION"
       title={title}
       descriptor={descriptor}
       descriptorFontSize={15}
