@@ -99,7 +99,7 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, d
     const activeCoord = activeCountry ? EXPEDITION_COORDS[activeCountry] : null;
     const isMobileMap = typeof window!=='undefined' && window.innerWidth < 480;
     const geoFill = dream ? '#F8F5F0' : isPack ? '#FF9F43' : '#F8F5F0';
-    const geoFillOp = dream ? 0.04 : isPack ? 0.035 : (isMobileMap ? 0.08 : 0.06);
+    const geoFillOp = dream ? 0.04 : isPack ? 0.06 : (isMobileMap ? 0.08 : 0.06);
     const geoStroke = dream ? '#F8F5F0' : isPack ? '#FF9F43' : '#00E5FF';
     const geoStrokeOp = dream ? 0.03 : isPack ? 0.08 : (isMobileMap ? 0.22 : 0.18);
 

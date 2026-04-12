@@ -292,9 +292,10 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                 maxWidth: isMobile ? "100%" : 880,
                 margin: isMobile ? undefined : "0 auto",
                 width: "100%",
-                padding: isMobile ? "0 8px" : 0,
+                padding: isMobile ? "0 8px" : "0 24px",
                 boxSizing: "border-box",
                 background: "transparent",
+                boxShadow: "none",
               }}
             >
             <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:6,marginBottom:8,marginTop:4,position:"relative",zIndex:5}}>

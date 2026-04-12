@@ -245,9 +245,9 @@ input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.45)!important;
 .tap-scale{-webkit-tap-highlight-color:transparent;cursor:pointer}
 .tap-scale:active{transform:scale(0.97)!important;transition:transform 0.12s cubic-bezier(0.34,1.56,0.64,1)!important}
 /* Trip console main scroll — own class so global .mc-content !important rules cannot flatten layout */
-.mc-root .mc-trip-scroll{flex:1!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;width:100%!important;max-width:min(100%,1320px)!important;margin-left:auto!important;margin-right:auto!important;padding:14px 24px!important;box-sizing:border-box!important;background:transparent!important;background-color:transparent!important;position:relative;z-index:1}
+.mc-root .mc-trip-scroll{flex:1!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;width:100%!important;max-width:min(100%,1320px)!important;margin-left:auto!important;margin-right:auto!important;padding:14px 24px!important;box-sizing:border-box!important;background:transparent!important;background-color:transparent!important;background-image:none!important;box-shadow:none!important;position:relative;z-index:1}
 @media(max-width:599px){.mc-root .mc-trip-scroll{padding:12px 12px!important}}
-.pack-scroll-dashboard{background:transparent!important;background-color:transparent!important}`;
+.pack-scroll-dashboard{background:transparent!important;background-color:transparent!important;background-image:none!important;box-shadow:none!important}`;
 
 // ─── Michael's Expedition (compact) ──────────────────────────────
 const MICHAEL_EXPEDITION = {
