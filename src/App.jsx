@@ -221,7 +221,6 @@ input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.45)!important;
 .mc-tab{background:none;border:none;cursor:pointer;padding:9px 12px;font-size:11px;letter-spacing:2px;white-space:nowrap;color:rgba(248,245,240,0.72);border-bottom:2px solid transparent;transition:all 0.30s cubic-bezier(0.25,0.46,0.45,0.94);font-family:'Inter',system-ui,-apple-system,sans-serif;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
 .mc-tab.active{color:#f8f5f0;border-bottom-color:#00E5FF}
 .mc-content{padding:14px 22px;overflow-y:auto;flex:1;min-height:0}
-.mc-root .mc-content.mc-content--trip{max-width:min(100%,1320px)!important;padding:14px 24px!important;background:transparent!important}
 .intel-section{background:rgba(255,255,255,0.04);border:1px solid rgba(232,185,35,0.1);border-radius:var(--lux-radius-md,16px);padding:11px;margin-bottom:10px}
 .intel-section-label{font-size:12px;letter-spacing:2px;margin-bottom:7px}
 .street-card{display:flex;gap:9px;padding:9px 11px;background:rgba(0,0,0,0.25);border-radius:8px;margin-bottom:7px}
@@ -244,7 +243,11 @@ input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.45)!important;
 @keyframes statReveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .stat-val{animation:statReveal 0.5s cubic-bezier(0.34,1.56,0.64,1) both}
 .tap-scale{-webkit-tap-highlight-color:transparent;cursor:pointer}
-.tap-scale:active{transform:scale(0.97)!important;transition:transform 0.12s cubic-bezier(0.34,1.56,0.64,1)!important}`;
+.tap-scale:active{transform:scale(0.97)!important;transition:transform 0.12s cubic-bezier(0.34,1.56,0.64,1)!important}
+/* Trip console main scroll — own class so global .mc-content !important rules cannot flatten layout */
+.mc-root .mc-trip-scroll{flex:1!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;width:100%!important;max-width:min(100%,1320px)!important;margin-left:auto!important;margin-right:auto!important;padding:14px 24px!important;box-sizing:border-box!important;background:transparent!important;background-color:transparent!important;position:relative;z-index:1}
+@media(max-width:599px){.mc-root .mc-trip-scroll{padding:12px 12px!important}}
+.pack-scroll-dashboard{background:transparent!important;background-color:transparent!important}`;
 
 // ─── Michael's Expedition (compact) ──────────────────────────────
 const MICHAEL_EXPEDITION = {

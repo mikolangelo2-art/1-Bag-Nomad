@@ -276,7 +276,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
         <span style={{fontSize:15,color:"rgba(255,107,107,0.9)",letterSpacing:1}}>⚠️ This will clear your expedition. Tap CONFIRM? again to proceed.</span>
         <button onClick={()=>setConfirmNewTrip(false)} style={{fontSize:15,color:"rgba(255,255,255,0.4)",background:"none",border:"none",cursor:"pointer",padding:"2px 6px"}}>✕</button>
       </div>}
-      <div className="mc-content mc-content--trip" style={{position:"relative",zIndex:1}}>
+      <div className="mc-trip-scroll">
         {tab==="next"&&(
           <div style={{display:"flex",flexDirection:"column",gap:14,background:"transparent"}}>
             {isComplete&&<div onClick={onHomecoming} style={{marginBottom:4,padding:"11px 14px",background:"linear-gradient(135deg,rgba(201,160,76,0.1),rgba(255,159,67,0.06))",border:"1px solid rgba(201,160,76,0.35)",borderRadius:10,cursor:"pointer",display:"flex",alignItems:"center",gap:8,animation:"consolePulse 2.8s ease-in-out infinite"}} onMouseOver={e=>e.currentTarget.style.background="linear-gradient(135deg,rgba(201,160,76,0.18),rgba(255,159,67,0.12))"} onMouseOut={e=>e.currentTarget.style.background="linear-gradient(135deg,rgba(201,160,76,0.1),rgba(255,159,67,0.06))"}>

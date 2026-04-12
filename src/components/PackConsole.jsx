@@ -683,7 +683,7 @@ Return ONLY a JSON array:
         </>
       )}
       {packTab==="pack"&&packView==="dashboard"&&(
-        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 24px 32px",boxSizing:"border-box",background:"transparent"}}>
+        <div className="pack-scroll-dashboard" style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 24px 32px",boxSizing:"border-box",background:"transparent"}}>
           {filterCat==="needtobuy"?(()=>{
             const unowned=[...items].filter(i=>!i.owned).sort((a,b)=>(parseFloat(b.cost)||0)-(parseFloat(a.cost)||0));
             const total=unowned.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
