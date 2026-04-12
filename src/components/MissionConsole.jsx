@@ -314,7 +314,18 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                 </div>}
               </div>
             )}
-            <div style={{display:"flex",flexDirection:"column",gap:14}}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 14,
+                maxWidth: isMobile ? "100%" : 880,
+                margin: isMobile ? undefined : "0 auto",
+                width: "100%",
+                padding: isMobile ? "0 8px" : "0 24px",
+                background: "transparent",
+              }}
+            >
             {segPhases.map((phase,i)=>{const plannedOverBudget=computePhasePlannedSpend(phase,allSegD).total>(Number(phase.totalBudget)||0);return <PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} allPhases={tripData.phases||[]} segPhases={segPhases} homeCity={tripData.departureCity||tripData.city||""} plannedOverBudget={plannedOverBudget}/>;})}
             {returnPhase&&<PhaseCard key="return" phase={returnPhase} intelData={explorerData} idx={segPhases.length} onTap={null} allSuggestions={null} suggestionsLoading={false}/>}
             </div>
