@@ -95,7 +95,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
   const {changedSegs,cancelledSegs}=(()=>{const cs=[],xs=[];segPhases.forEach(p=>p.segments.forEach(s=>{const d=allSegD[`${p.id}-${s.id}`]||{};const st=d.status||'planning';if(st==='changed')cs.push({phase:p,seg:s});if(st==='cancelled')xs.push({phase:p,seg:s});}));return{changedSegs:cs,cancelledSegs:xs};})();
 
   return(
-    <div className="mc-root" style={{animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
+    <div className="mc-root mc-trip-bleed" style={{animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
       <WorldMapBackground phases={tripData.phases||[]} activeCountry={phaseDetailView?.country} departureCity={depInput}/>
       {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} homeCity={tripData.departureCity||tripData.city||""} segPhases={segPhases} warningFlags={warningFlags} onDismissWarning={dismissWarning} allPhases={tripData.phases||[]} onAmbientSegmentChange={setCaWorkspaceSegment}/>}
       {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto'}}><ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/></div>}
@@ -109,7 +109,9 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
           <button type="button" onClick={()=>onSaveAsFounderExpedition()} style={{background:"transparent",border:"1px solid rgba(201,160,76,0.20)",borderRadius:12,padding:"4px 10px",fontSize:10,color:"rgba(201,160,76,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",cursor:"pointer",minHeight:32}}>+ save as expedition</button>
         )}
       </div>}
-      {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:isMobile?"8px 12px 6px":"10px 16px 8px",background:isMobile?"rgba(0,8,16,0.10)":"linear-gradient(180deg,rgba(21,15,10,0.45),rgba(21,15,10,0.50))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden",zIndex:1}}>
+      {/* Upper trip dashboard — full viewport header above; column matches Pack Console (1200) */}
+      <div style={isMobile?undefined:{maxWidth:1200,margin:"0 auto",padding:"0 24px",width:"100%",boxSizing:"border-box"}}>
+      {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:isMobile?"8px 12px 6px":"10px 0 8px",background:isMobile?"rgba(0,8,16,0.10)":"linear-gradient(180deg,rgba(21,15,10,0.45),rgba(21,15,10,0.50))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden",zIndex:1}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(232,220,200,0.02) 0%,transparent 60%)",pointerEvents:"none"}}/>
         {tripData.tripName&&<div style={{marginBottom:isMobile?8:12,position:"relative"}}>
           <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:8}}>
@@ -272,6 +274,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
           )}
         </div>
       )}
+      </div>
       {confirmNewTrip&&<div style={{padding:"7px 14px",background:"rgba(255,107,107,0.1)",borderBottom:"1px solid rgba(255,107,107,0.3)",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,position:"relative",zIndex:1}}>
         <span style={{fontSize:15,color:"rgba(255,107,107,0.9)",letterSpacing:1}}>⚠️ This will clear your expedition. Tap CONFIRM? again to proceed.</span>
         <button onClick={()=>setConfirmNewTrip(false)} style={{fontSize:15,color:"rgba(255,255,255,0.4)",background:"none",border:"none",cursor:"pointer",padding:"2px 6px"}}>✕</button>
@@ -289,7 +292,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                 display: "flex",
                 flexDirection: "column",
                 gap: 14,
-                maxWidth: isMobile ? "100%" : 880,
+                maxWidth: isMobile ? "100%" : 1200,
                 margin: isMobile ? undefined : "0 auto",
                 width: "100%",
                 padding: isMobile ? "0 8px" : "0 24px",

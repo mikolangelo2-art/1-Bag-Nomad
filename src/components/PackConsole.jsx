@@ -727,7 +727,7 @@ Return ONLY a JSON array:
               )}
             </div>);
           })():<>
-            <div style={{maxWidth:isMobile?"100%":880,margin:isMobile?undefined:"0 auto",width:"100%",padding:isMobile?undefined:"0 24px",boxSizing:"border-box",background:"transparent"}}>
+            <div style={{maxWidth:isMobile?"100%":1200,margin:isMobile?undefined:"0 auto",width:"100%",padding:isMobile?undefined:"0 24px",boxSizing:"border-box",background:"transparent"}}>
               {CATS.map((cat,i)=><CatCard key={cat.id} cat={cat} idx={i} isMobile={isMobile} itemsForCat={itemsForCat} wM={wM} unit={unit} onSelectCategory={selectCategory}/>)}
             </div>
             {pp&&<>
