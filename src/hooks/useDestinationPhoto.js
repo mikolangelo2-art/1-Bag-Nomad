@@ -6,8 +6,8 @@ import { useState, useEffect, useMemo } from "react";
  */
 const LS_PREFIX = "1bn_unsplash_v5_";
 
-/** Session 52B: module-level cache — same query/orientation skips network for the SPA lifetime */
-const sessionUnsplashByQuery = new Map();
+/** Session 52B/53D: module-level cache — keys include provider + page so cards do not share one URL */
+const sessionPhotoByKey = new Map();
 
 export function normalizePhotoQueryKey(q) {
   return String(q || "")
@@ -17,14 +17,28 @@ export function normalizePhotoQueryKey(q) {
     .replace(/\s+/g, " ");
 }
 
-function sessionKeyForQuery(q, orient = "landscape") {
-  return `${normalizePhotoQueryKey(q)}__${orient}`;
+/** Pages 1–5 per card so Pexels/Unsplash search offsets differ (string instanceIds hashed) */
+export function photoPageFromInstanceId(instanceId) {
+  if (instanceId == null || instanceId === "") return 1;
+  const s = String(instanceId);
+  const digits = s.replace(/\D/g, "");
+  if (digits.length > 0) {
+    const n = parseInt(digits.slice(0, 4), 10);
+    if (!Number.isNaN(n)) return (n % 5) + 1;
+  }
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return (Math.abs(h) % 5) + 1;
+}
+
+function sessionKeyPhoto(provider, q, orient, pageNum) {
+  return `${provider}:${normalizePhotoQueryKey(q)}__${orient}__p${pageNum}`;
 }
 
 const UNSPLASH_FETCH_MS = 6000;
 
-/** Abortable fetch for Unsplash proxy — avoids hung cards when network stalls */
-async function fetchUnsplashWithTimeout(url) {
+/** Abortable fetch for photo APIs — avoids hung cards when network stalls */
+async function fetchPhotoWithTimeout(url) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), UNSPLASH_FETCH_MS);
   try {
@@ -37,7 +51,7 @@ async function fetchUnsplashWithTimeout(url) {
   }
 }
 
-/** Accepts minimal API shape or legacy full Unsplash JSON */
+/** Minimal shape from Unsplash or Pexels proxies (+ legacy full Unsplash JSON) */
 function extractFromUnsplashPayload(data) {
   if (!data || typeof data !== "object") return null;
   const regular = data.regular ?? data.urls?.regular ?? null;
@@ -46,8 +60,13 @@ function extractFromUnsplashPayload(data) {
   const imgUrl = regular || small || null;
   const htmlLink =
     data.links?.html ||
+    (data.source === "pexels" ? "https://www.pexels.com/" : null) ||
     "https://unsplash.com/?utm_source=1bag_nomad&utm_medium=referral";
-  return { imgUrl, thumb, htmlLink, meta: data };
+  const meta = {
+    ...data,
+    alt_description: data.alt_description ?? data.alt ?? "",
+  };
+  return { imgUrl, thumb, htmlLink, meta };
 }
 
 function slugPart(s) {
@@ -245,7 +264,7 @@ function readCache(cacheKey) {
 }
 
 /**
- * Fetches via /api/unsplash; tries query tiers until one returns a photo.
+ * Pexels-first, then Unsplash (Session 53D). Per-card page offset via instanceId.
  * @param {string} [country] optional; improves tier-3 regional fallback.
  * @param {{ instanceId?: string }} [options] per-card cache slot (e.g. activity list index) so parallel activities do not share one cached URL.
  */
@@ -278,19 +297,82 @@ export function useDestinationPhoto(destination, category, country, options = {}
     (async () => {
       const destTrim = String(destination || "").trim();
       const coTrim = normalizeCountry(country);
+      const pageNum = photoPageFromInstanceId(instanceId);
       let fallback = null;
+
+      function commitSuccess(imgUrl, htmlLink, thumb) {
+        if (k) {
+          try {
+            localStorage.setItem(
+              k,
+              JSON.stringify({ url: imgUrl, htmlLink, thumb: thumb || null })
+            );
+          } catch {
+            /* quota */
+          }
+        }
+        setNet({
+          forKey: k,
+          done: true,
+          url: imgUrl,
+          htmlLink,
+          thumb: thumb || null,
+        });
+      }
 
       for (const q of queryTiers) {
         if (cancelled) return;
         try {
-          const sk = sessionKeyForQuery(q, "landscape");
-          let data = sessionUnsplashByQuery.get(sk);
+          const sk = sessionKeyPhoto("pexels", q, "landscape", pageNum);
+          let data = sessionPhotoByKey.get(sk);
 
           if (!data) {
             let res;
             try {
-              res = await fetchUnsplashWithTimeout(
-                `/api/unsplash?query=${encodeURIComponent(q)}&orientation=landscape`
+              res = await fetchPhotoWithTimeout(
+                `/api/pexels?query=${encodeURIComponent(q)}&orientation=landscape&page=${pageNum}`
+              );
+            } catch (err) {
+              if (err?.name === "AbortError") continue;
+              console.error("[1BN] Pexels fetch error:", err);
+              continue;
+            }
+            if (!res.ok) continue;
+            data = await res.json();
+            if (cancelled) return;
+            const extractedProbe = extractFromUnsplashPayload(data);
+            if (!extractedProbe?.imgUrl) continue;
+            sessionPhotoByKey.set(sk, data);
+          }
+
+          if (cancelled) return;
+          const extracted = extractFromUnsplashPayload(data);
+          if (!extracted?.imgUrl) continue;
+
+          const { imgUrl, thumb, htmlLink, meta } = extracted;
+          fallback = { imgUrl, thumb, htmlLink, data: meta, query: q };
+
+          if (photoMatchesDestination(meta, destTrim, coTrim)) {
+            commitSuccess(imgUrl, htmlLink, thumb);
+            return;
+          }
+        } catch (err) {
+          if (err?.name === "AbortError") continue;
+          console.error("[1BN] Pexels fetch error:", err);
+        }
+      }
+
+      for (const q of queryTiers) {
+        if (cancelled) return;
+        try {
+          const sk = sessionKeyPhoto("unsplash", q, "landscape", pageNum);
+          let data = sessionPhotoByKey.get(sk);
+
+          if (!data) {
+            let res;
+            try {
+              res = await fetchPhotoWithTimeout(
+                `/api/unsplash?query=${encodeURIComponent(q)}&orientation=landscape&page=${pageNum}`
               );
             } catch (err) {
               if (err?.name === "AbortError") continue;
@@ -300,9 +382,9 @@ export function useDestinationPhoto(destination, category, country, options = {}
             if (!res.ok) continue;
             data = await res.json();
             if (cancelled) return;
-            const extracted = extractFromUnsplashPayload(data);
-            if (!extracted?.imgUrl) continue;
-            sessionUnsplashByQuery.set(sk, data);
+            const extractedProbe = extractFromUnsplashPayload(data);
+            if (!extractedProbe?.imgUrl) continue;
+            sessionPhotoByKey.set(sk, data);
           }
 
           if (cancelled) return;
@@ -310,30 +392,12 @@ export function useDestinationPhoto(destination, category, country, options = {}
           if (!extracted?.imgUrl) continue;
 
           const { imgUrl, thumb, htmlLink, meta } = extracted;
-
           fallback = { imgUrl, thumb, htmlLink, data: meta, query: q };
 
           if (photoMatchesDestination(meta, destTrim, coTrim)) {
-            if (k) {
-              try {
-                localStorage.setItem(
-                  k,
-                  JSON.stringify({ url: imgUrl, htmlLink, thumb: thumb || null })
-                );
-              } catch {
-                /* quota */
-              }
-            }
-            setNet({
-              forKey: k,
-              done: true,
-              url: imgUrl,
-              htmlLink,
-              thumb: thumb || null,
-            });
+            commitSuccess(imgUrl, htmlLink, thumb);
             return;
           }
-
         } catch (err) {
           if (err?.name === "AbortError") continue;
           console.error("[1BN] Unsplash fetch error:", err);
@@ -343,20 +407,20 @@ export function useDestinationPhoto(destination, category, country, options = {}
       if (!cancelled && !fallback) {
         try {
           const genericQuery = String(destination || "travel landscape").trim();
-          const sk = sessionKeyForQuery(genericQuery, "landscape");
-          let data = sessionUnsplashByQuery.get(sk);
+          const skP = sessionKeyPhoto("pexels", genericQuery, "landscape", pageNum);
+          let data = sessionPhotoByKey.get(skP);
           if (!data) {
             let res;
             try {
-              res = await fetchUnsplashWithTimeout(
-                `/api/unsplash?query=${encodeURIComponent(genericQuery)}&orientation=landscape`
+              res = await fetchPhotoWithTimeout(
+                `/api/pexels?query=${encodeURIComponent(genericQuery)}&orientation=landscape&page=${pageNum}`
               );
             } catch (e) {
-              if (e?.name !== "AbortError") console.error("[1BN] Unsplash generic fetch:", e);
+              if (e?.name !== "AbortError") console.error("[1BN] Pexels generic fetch:", e);
             }
             if (res?.ok) {
               data = await res.json();
-              if (data) sessionUnsplashByQuery.set(sk, data);
+              if (data) sessionPhotoByKey.set(skP, data);
             }
           }
           if (data) {
@@ -372,12 +436,48 @@ export function useDestinationPhoto(destination, category, country, options = {}
             }
           }
         } catch {
-          /* last-resort generic query failed */
+          /* generic Pexels failed */
+        }
+      }
+
+      if (!cancelled && !fallback) {
+        try {
+          const genericQuery = String(destination || "travel landscape").trim();
+          const skU = sessionKeyPhoto("unsplash", genericQuery, "landscape", pageNum);
+          let data = sessionPhotoByKey.get(skU);
+          if (!data) {
+            let res;
+            try {
+              res = await fetchPhotoWithTimeout(
+                `/api/unsplash?query=${encodeURIComponent(genericQuery)}&orientation=landscape&page=${pageNum}`
+              );
+            } catch (e) {
+              if (e?.name !== "AbortError") console.error("[1BN] Unsplash generic fetch:", e);
+            }
+            if (res?.ok) {
+              data = await res.json();
+              if (data) sessionPhotoByKey.set(skU, data);
+            }
+          }
+          if (data) {
+            const extracted = extractFromUnsplashPayload(data);
+            if (extracted?.imgUrl) {
+              fallback = {
+                imgUrl: extracted.imgUrl,
+                thumb: extracted.thumb,
+                htmlLink: extracted.htmlLink,
+                data: extracted.meta,
+                query: genericQuery,
+              };
+            }
+          }
+        } catch {
+          /* generic Unsplash failed */
         }
       }
 
       if (!cancelled && fallback) {
-        console.warn("[1BN] Unsplash: using fallback image for destination", {
+        console.warn("[1BN] Photo: using fallback image for destination", {
           destination: destTrim,
           country: coTrim,
           query: fallback.query,
@@ -418,7 +518,7 @@ export function useDestinationPhoto(destination, category, country, options = {}
     return () => {
       cancelled = true;
     };
-  }, [queryTiers, cacheKey, cached, destination, country]);
+  }, [queryTiers, cacheKey, cached, destination, country, instanceId]);
 
   const netMatches = net.forKey === cacheKey && net.done;
   const url = cached?.url ?? (netMatches ? net.url : null);
