@@ -91,7 +91,7 @@ const EXPEDITION_COORDS = {
   'Fiji':          [178.0, -17.7],
 };
 
-const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, dream, departureCity, parallaxTranslateY = 0}) => {
+const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, dream, departureCity, parallaxTranslateY = 0, animatedRouteLegIndex = undefined}) => {
   try {
     const isPack = consoleProp === 'pack';
     const phaseList = phases||[];
@@ -159,7 +159,9 @@ const WorldMapBackground = memo(({phases, activeCountry, console: consoleProp, d
           {routeCoords.length>1&&routeCoords.map((coord,i)=>{
             if(i===routeCoords.length-1)return null;
             const isDep = depCoord && i===0;
-            return(<Line key={i} from={coord} to={routeCoords[i+1]} stroke="#c9a04c" strokeWidth={isDep?0.95:1.15} strokeOpacity={isDep?(isPack?0.32:0.5):(isPack?0.58:0.88)} strokeDasharray={isDep?"2,7":"1.5,5.5"} strokeLinecap="round" filter="url(#luxRouteGlow)" className="route-line"/>);
+            const onlyOneLeg = animatedRouteLegIndex != null && typeof animatedRouteLegIndex === "number";
+            const dashAnim = onlyOneLeg ? i === animatedRouteLegIndex : true;
+            return(<Line key={i} from={coord} to={routeCoords[i+1]} stroke="#c9a04c" strokeWidth={isDep?0.95:1.15} strokeOpacity={isDep?(isPack?0.32:0.5):(isPack?0.58:0.88)} strokeDasharray={isDep?"2,7":"1.5,5.5"} strokeLinecap="round" filter="url(#luxRouteGlow)" className={dashAnim?"route-line":undefined}/>);
           })}
           {depCoord&&(
             <Marker coordinates={depCoord}>
