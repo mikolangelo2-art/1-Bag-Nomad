@@ -61,6 +61,7 @@ export default function GenericSuggestionCard({
   savedSubStyle,
   footerSlot = null,
 }) {
+  const [imgLoaded, setImgLoaded] = useState(false);
   const [innerOpen, setInnerOpen] = useState(false);
   const isStacked = variant === "stacked";
   const expanded = isStacked
@@ -79,6 +80,10 @@ export default function GenericSuggestionCard({
 
   const photoCat = photoQueryOverride ?? `${item.category} ${destination}`.trim();
   const photo = useDestinationPhoto(destination, photoCat, country, { instanceId });
+
+  useEffect(() => {
+    setImgLoaded(false);
+  }, [photo.url]);
 
   const priceStr =
     typeof item.price === "number"
@@ -113,20 +118,52 @@ export default function GenericSuggestionCard({
     addButtonLabel.startsWith("+") ? addButtonLabel : `+ ${addButtonLabel}`;
 
   const heroBlock = (
-    <div style={{ position: "relative", height: HERO_H, background: "#111" }}>
+    <div style={{ position: "relative", height: HERO_H, background: "#111", overflow: "hidden" }}>
       {photo.ready && photo.url ? (
         <>
+          {!imgLoaded && photo.thumb ? (
+            <img
+              src={photo.thumb}
+              alt=""
+              decoding="async"
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                filter: "blur(8px)",
+                transform: "scale(1.05)",
+                transition: "opacity 0.3s ease",
+                zIndex: 0,
+              }}
+            />
+          ) : !imgLoaded && !photo.thumb ? (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "rgba(201,160,76,0.08)",
+                animation: "pulse 1.5s ease-in-out infinite",
+                zIndex: 0,
+              }}
+            />
+          ) : null}
           <img
             src={photo.url}
             alt=""
             loading="lazy"
             decoding="async"
+            onLoad={() => setImgLoaded(true)}
             style={{
               position: "absolute",
               inset: 0,
               width: "100%",
               height: "100%",
               objectFit: "cover",
+              opacity: imgLoaded ? 1 : 0,
+              transition: "opacity 0.4s ease",
+              zIndex: 1,
             }}
           />
           <div
@@ -137,6 +174,7 @@ export default function GenericSuggestionCard({
               background:
                 "linear-gradient(180deg, rgba(201,160,76,0.12) 0%, rgba(0,0,0,0.45) 100%)",
               pointerEvents: "none",
+              zIndex: 2,
             }}
           />
         </>

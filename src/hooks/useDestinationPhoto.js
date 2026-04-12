@@ -6,6 +6,34 @@ import { useState, useEffect, useMemo } from "react";
  */
 const LS_PREFIX = "1bn_unsplash_v5_";
 
+/** Session 52B: module-level cache — same query/orientation skips network for the SPA lifetime */
+const sessionUnsplashByQuery = new Map();
+
+export function normalizePhotoQueryKey(q) {
+  return String(q || "")
+    .trim()
+    .toLowerCase()
+    .replace(/,/g, " ")
+    .replace(/\s+/g, " ");
+}
+
+function sessionKeyForQuery(q, orient = "landscape") {
+  return `${normalizePhotoQueryKey(q)}__${orient}`;
+}
+
+/** Accepts minimal API shape or legacy full Unsplash JSON */
+function extractFromUnsplashPayload(data) {
+  if (!data || typeof data !== "object") return null;
+  const regular = data.regular ?? data.urls?.regular ?? null;
+  const small = data.small ?? data.urls?.small ?? null;
+  const thumb = data.thumb ?? data.urls?.thumb ?? null;
+  const imgUrl = regular || small || null;
+  const htmlLink =
+    data.links?.html ||
+    "https://unsplash.com/?utm_source=1bag_nomad&utm_medium=referral";
+  return { imgUrl, thumb, htmlLink, meta: data };
+}
+
 function slugPart(s) {
   return String(s || "")
     .trim()
@@ -196,7 +224,9 @@ function readCache(cacheKey) {
     const raw = localStorage.getItem(cacheKey);
     if (!raw) return null;
     const p = JSON.parse(raw);
-    return p?.url ? { url: p.url, htmlLink: p.htmlLink || null } : null;
+    return p?.url
+      ? { url: p.url, htmlLink: p.htmlLink || null, thumb: p.thumb ?? null }
+      : null;
   } catch {
     return null;
   }
@@ -224,6 +254,7 @@ export function useDestinationPhoto(destination, category, country, options = {}
     done: false,
     url: null,
     htmlLink: null,
+    thumb: null,
   });
 
   useEffect(() => {
@@ -240,24 +271,36 @@ export function useDestinationPhoto(destination, category, country, options = {}
       for (const q of queryTiers) {
         if (cancelled) return;
         try {
-          const res = await fetch(
-            `/api/unsplash?query=${encodeURIComponent(q)}&orientation=landscape`
-          );
-          if (!res.ok) continue;
-          const data = await res.json();
+          const sk = sessionKeyForQuery(q, "landscape");
+          let data = sessionUnsplashByQuery.get(sk);
+
+          if (!data) {
+            const res = await fetch(
+              `/api/unsplash?query=${encodeURIComponent(q)}&orientation=landscape`
+            );
+            if (!res.ok) continue;
+            data = await res.json();
+            if (cancelled) return;
+            const extracted = extractFromUnsplashPayload(data);
+            if (!extracted?.imgUrl) continue;
+            sessionUnsplashByQuery.set(sk, data);
+          }
+
           if (cancelled) return;
-          const imgUrl = data?.urls?.regular || data?.urls?.small || null;
-          const htmlLink =
-            data?.links?.html ||
-            "https://unsplash.com/?utm_source=1bag_nomad&utm_medium=referral";
-          if (!imgUrl) continue;
+          const extracted = extractFromUnsplashPayload(data);
+          if (!extracted?.imgUrl) continue;
 
-          fallback = { imgUrl, htmlLink, data, query: q };
+          const { imgUrl, thumb, htmlLink, meta } = extracted;
 
-          if (photoMatchesDestination(data, destTrim, coTrim)) {
+          fallback = { imgUrl, thumb, htmlLink, data: meta, query: q };
+
+          if (photoMatchesDestination(meta, destTrim, coTrim)) {
             if (k) {
               try {
-                localStorage.setItem(k, JSON.stringify({ url: imgUrl, htmlLink }));
+                localStorage.setItem(
+                  k,
+                  JSON.stringify({ url: imgUrl, htmlLink, thumb: thumb || null })
+                );
               } catch {
                 /* quota */
               }
@@ -267,6 +310,7 @@ export function useDestinationPhoto(destination, category, country, options = {}
               done: true,
               url: imgUrl,
               htmlLink,
+              thumb: thumb || null,
             });
             return;
           }
@@ -276,7 +320,7 @@ export function useDestinationPhoto(destination, category, country, options = {}
               query: q,
               destination: destTrim,
               country: coTrim,
-              alt_description: data?.alt_description,
+              alt_description: meta?.alt_description,
             });
           }
         } catch (err) {
@@ -291,10 +335,13 @@ export function useDestinationPhoto(destination, category, country, options = {}
           query: fallback.query,
           alt_description: fallback.data?.alt_description,
         });
-        const { imgUrl, htmlLink } = fallback;
+        const { imgUrl, htmlLink, thumb } = fallback;
         if (k) {
           try {
-            localStorage.setItem(k, JSON.stringify({ url: imgUrl, htmlLink }));
+            localStorage.setItem(
+              k,
+              JSON.stringify({ url: imgUrl, htmlLink, thumb: thumb || null })
+            );
           } catch {
             /* quota */
           }
@@ -304,6 +351,7 @@ export function useDestinationPhoto(destination, category, country, options = {}
           done: true,
           url: imgUrl,
           htmlLink,
+          thumb: thumb || null,
         });
         return;
       }
@@ -314,6 +362,7 @@ export function useDestinationPhoto(destination, category, country, options = {}
           done: true,
           url: null,
           htmlLink: null,
+          thumb: null,
         });
       }
     })();
@@ -326,7 +375,8 @@ export function useDestinationPhoto(destination, category, country, options = {}
   const netMatches = net.forKey === cacheKey && net.done;
   const url = cached?.url ?? (netMatches ? net.url : null);
   const htmlLink = cached?.htmlLink ?? (netMatches ? net.htmlLink : null);
+  const thumb = cached?.thumb ?? (netMatches ? net.thumb : null);
   const ready = !queryTiers.length || !!cached || netMatches;
 
-  return { url, htmlLink, ready };
+  return { url, thumb, htmlLink, ready };
 }
