@@ -125,21 +125,21 @@ Return ONLY valid JSON:
       <div className="dream-content" style={{maxWidth:1100,position:"relative",zIndex:10}}>
         <div className="narrative-card">
           <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"90%",height:"130%",background:"radial-gradient(ellipse,rgba(169,70,29,0.22) 0%,transparent 68%)",pointerEvents:"none"}}/>
-          <div style={{fontSize:15,color:"#C4571E",letterSpacing:3,marginBottom:12,position:"relative"}}>✦ YOUR EXPEDITION VISION</div>
+          <div style={{fontSize:15,color:"#C4571E",letterSpacing:3,marginBottom:12,position:"relative",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>✦ YOUR EXPEDITION VISION</div>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?17:18,fontWeight:400,fontStyle:"italic",color:"rgba(255,255,255,0.92)",lineHeight:1.75,position:"relative",minHeight:80,letterSpacing:"0.01em",textShadow:"0 1px 12px rgba(0,0,0,0.4)",maxWidth:isMobile?"min(88vw,100%)":"none",margin:isMobile?"0 auto":undefined,boxSizing:"border-box",width:isMobile?"100%":undefined}}>"{narrative}{!narrativeDone&&<span className="hero-cursor">|</span>}"</div>
           {narrativeDone&&<div style={{display:"flex",gap:7,flexWrap:"wrap",marginTop:14,position:"relative"}}>{(vd.vibe||"").split(" · ").filter(Boolean).map((w,i)=><span key={i} className="vibe-tag">{w}</span>)}</div>}
         </div>
         {showStats&&(
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:isMobile?10:14,marginBottom:22,animation:"fadeUp 0.5s ease"}}>
             {[{label:"COUNTRIES",value:vd.countries,color:"#c9a04c"},{label:"PHASES",value:(vd.phases||[]).filter(p=>p.type!=="Return").length,color:"#c9a04c"},{label:"NIGHTS",value:vd.totalNights,color:"#c9a04c"},{label:"BUDGET",value:fmt(vd.totalBudget||0),color:"#c9a04c"}].map(s=>(
-              <div key={s.label} className="stat-card" style={{overflow:"hidden"}}><div style={{fontSize:isMobile?9:11,color:"rgba(255,255,255,0.45)",letterSpacing:isMobile?1:1.5,marginBottom:4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>{s.label}</div><div style={{fontSize:isMobile?16:22,fontWeight:700,color:s.color,whiteSpace:"nowrap"}}>{s.value}</div></div>
+              <div key={s.label} className="stat-card" style={{overflow:"hidden"}}><div style={{fontSize:isMobile?9:11,color:"rgba(255,255,255,0.45)",letterSpacing:isMobile?1:1.5,marginBottom:4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>{s.label}</div><div style={{fontSize:isMobile?16:22,fontWeight:700,color:s.color,whiteSpace:"nowrap",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.value}</div></div>
             ))}
           </div>
         )}
-        {narrativeDone&&vd.highlight&&<div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.1),rgba(201,160,76,0.04))",border:"1px solid rgba(201,160,76,0.35)",borderRadius:11,padding:"10px 12px",marginBottom:18,boxShadow:"0 0 20px rgba(169,70,29,0.1)"}}><div style={{fontSize:12,color:"rgba(201,160,76,0.95)",letterSpacing:2.5,marginBottom:7,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>⚡ EXPEDITION HIGHLIGHT</div><div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:300,fontStyle:"italic",color:"#FFF",lineHeight:1.7,opacity:0.90}}>{vd.highlight}</div></div>}
+        {narrativeDone&&vd.highlight&&<div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.1),rgba(201,160,76,0.04))",border:"1px solid rgba(201,160,76,0.35)",borderRadius:11,padding:"10px 12px",marginBottom:18,boxShadow:"0 0 20px rgba(169,70,29,0.1)"}}><div style={{fontSize:12,color:"rgba(201,160,76,0.95)",letterSpacing:2.5,marginBottom:7,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>⚡ EXPEDITION HIGHLIGHT</div><div style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:400,fontSize:15,color:"rgba(255,248,235,0.82)",lineHeight:1.65}}>{vd.highlight}</div></div>}
         {showPhases&&(
           <div style={{animation:"fadeUp 0.5s ease"}}>
-            <div style={{fontSize:15,color:"rgba(255,159,67,0.8)",letterSpacing:4,marginBottom:12,paddingBottom:7,borderBottom:"1px solid rgba(169,70,29,0.2)"}}>YOUR EXPEDITION PHASES</div>
+            <div style={{fontSize:15,color:"rgba(255,159,67,0.8)",letterSpacing:4,marginBottom:12,paddingBottom:7,borderBottom:"1px solid rgba(169,70,29,0.2)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>YOUR EXPEDITION PHASES</div>
             <div style={{display:"flex",flexDirection:"column",gap:14,marginBottom:24}}>
               {vd.phases?.map((p,i)=>{
                 const c=TC[p.type]||"#c9a04c";
@@ -148,11 +148,11 @@ Return ONLY valid JSON:
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontWeight:400,fontStyle:"normal",color:"rgba(255,245,220,0.94)",lineHeight:1.48,marginBottom:8,letterSpacing:"0.01em",textWrap:"balance",overflowWrap:"break-word",wordBreak:"break-word"}}>{p.why}</div>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2,flexWrap:"wrap"}}>
-                      <span style={{fontSize:isMobile?12:13,fontWeight:600,color:"rgba(255,255,255,0.92)",letterSpacing:0.3}}>{p.flag||"🌍"} {p.destination}</span>
-                      <span style={{fontSize:11,color:c}}>{TI[p.type]||"✈️"} {p.type}</span>
-                      <span style={{fontSize:isMobile?12:13,color:"rgba(255,255,255,0.82)",marginLeft:"auto"}}>🌙 {p.nights}n</span>
+                      <span style={{fontSize:isMobile?12:13,fontWeight:600,color:"rgba(255,255,255,0.92)",letterSpacing:0.3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{p.flag||"🌍"} {p.destination}</span>
+                      <span style={{fontSize:11,color:c,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{TI[p.type]||"✈️"} {p.type}</span>
+                      <span style={{fontSize:isMobile?12:13,color:"rgba(255,255,255,0.82)",marginLeft:"auto",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>🌙 {p.nights}n</span>
                     </div>
-                    <div style={{fontSize:isMobile?12:13,fontWeight:500,color:"rgba(255,255,255,0.72)",marginBottom:0,letterSpacing:0.4}}>{p.country}</div>
+                    <div style={{fontSize:isMobile?12:13,fontWeight:500,color:"rgba(255,255,255,0.72)",marginBottom:0,letterSpacing:0.4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{p.country}</div>
                   </div>
                 </div>);
               })}
@@ -173,7 +173,7 @@ Return ONLY valid JSON:
                         <div key={c.key} style={{display:"flex",alignItems:"center",padding:"7px 0",gap:8}}>
                           <span style={{fontSize:14,width:22,textAlign:"center",flexShrink:0}}>{c.icon}</span>
                           <span style={{fontSize:isMobile?12:14,color:"rgba(255,255,255,0.75)",fontWeight:600,width:isMobile?90:110,flexShrink:0}}>{c.label}</span>
-                          <span style={{flex:1,fontSize:isMobile?11:13,fontFamily:"'Playfair Display',serif",fontStyle:"italic",color:"rgba(255,255,255,0.45)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.note||""}</span>
+                          <span style={{flex:1,fontSize:13,fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:400,color:"rgba(255,248,235,0.55)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.note||""}</span>
                           <span style={{fontSize:isMobile?13:15,fontWeight:700,color:"#c9a04c",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0,marginLeft:8}}>~{fmt(val)}</span>
                         </div>
                       );})}
@@ -187,7 +187,7 @@ Return ONLY valid JSON:
                       {bd.routingNote&&(
                         <div style={{marginTop:10,borderLeft:"2px solid rgba(255,159,67,0.4)",paddingLeft:10}}>
                           <div style={{fontSize:11,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:3}}>✦ WHY THIS ROUTE</div>
-                          <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?12:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.6}}>{bd.routingNote}</div>
+                          <div style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:400,fontSize:14,color:"rgba(255,248,235,0.70)",lineHeight:1.6}}>{bd.routingNote}</div>
                         </div>
                       )}
                     </div>
@@ -196,7 +196,7 @@ Return ONLY valid JSON:
               );
             })()}
             <div style={{background:"rgba(12,21,32,0.96)",border:"1px solid rgba(201,160,76,0.45)",borderRadius:13,padding:14,marginBottom:18,overflow:"hidden",maxWidth:"100%",boxSizing:"border-box",marginLeft:0,marginRight:0,boxShadow:"0 4px 24px rgba(0,0,0,0.35)"}}>
-              <div style={{fontSize:15,color:"rgba(201,160,76,0.9)",letterSpacing:2,marginBottom:10}}>💬 REFINE YOUR VISION</div>
+              <div style={{fontSize:15,color:"rgba(201,160,76,0.9)",letterSpacing:2,marginBottom:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>💬 REFINE YOUR VISION</div>
               {loading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",marginBottom:8}}>✨ refining...</div>}
               <div style={{display:"flex",gap:7,alignItems:"stretch"}}>
                 <div className="ca-chat-input-wrap" style={{flex:1,minWidth:0,display:"flex",alignItems:"stretch",borderRadius:8,overflow:"hidden",backgroundColor:"#0C1520",boxSizing:"border-box"}}>
@@ -206,8 +206,8 @@ Return ONLY valid JSON:
               </div>
             </div>
             <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.1),rgba(201,160,76,0.04))",border:"1px solid rgba(169,70,29,0.4)",borderRadius:16,padding:22,textAlign:"center"}}>
-              <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?13:20,fontWeight:300,color:"#FFF",marginBottom:6,lineHeight:1.3}}>This is your <em style={{color:"#c9a04c"}}>expedition.</em></div>
-              <div style={{fontSize:15,color:"rgba(255,255,255,0.88)",letterSpacing:1,marginBottom:20,lineHeight:1.8}}>Does this feel right? Refine above until it does.<br/>When your gut says yes — it's time to build.</div>
+              <div style={{fontFamily:"'Fraunces',serif",fontSize:isMobile?15:20,fontWeight:400,color:"rgba(255,248,235,0.92)",marginBottom:6,lineHeight:1.35}}>This is your <em style={{color:"#c9a04c",fontStyle:"italic"}}>expedition.</em></div>
+              <div style={{fontFamily:"'Fraunces',serif",fontSize:15,color:"rgba(255,248,235,0.78)",letterSpacing:0.02,marginBottom:20,lineHeight:1.8}}>Does this feel right? Refine above until it does.<br/>When your gut says yes — it's time to build.</div>
               <button className="cta-build-btn" style={{minHeight:52,opacity:launching?0.7:1}} onClick={()=>{if(!launching){setLaunching(true);onBuild(vd);}}}>
                 {launching?"✨  Building...":"✅  YES — BUILD THIS EXPEDITION"}
               </button>
