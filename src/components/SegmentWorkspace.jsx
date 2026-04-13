@@ -128,6 +128,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const stayLockedCardRadius=14;
   const key=`${phaseId}-${segment.id}`;
   const blank={transport:{mode:"",from:"",to:"",departDate:"",departTime:"",arriveDate:"",arriveTime:"",depTime:"",arrTime:"",cost:"",notes:"",link:""},stay:{name:"",checkin:"",checkout:"",cost:"",link:"",notes:""},activities:[],actNotes:"",food:{dailyBudget:"",notes:""},misc:[],intel:{notes:""}};
+  const [ownRestaurantOpen,setOwnRestaurantOpen]=useState(false);
+  const [ownRestaurant,setOwnRestaurant]=useState({name:"",cuisine:"",priceTier:"",link:"",notes:""});
   const [det,setDet]=useState(()=>{const a=loadSeg();const base=a[key]?{...blank,...a[key]}:blank;const stay={...base.stay};if(!(String(stay.checkin||"").trim())&&segment?.arrival)stay.checkin=segment.arrival;if(!(String(stay.checkout||"").trim())&&segment?.departure)stay.checkout=segment.departure;const transport=applyTransportDateDefaults({...blank.transport,...base.transport},segment);return{...base,stay,transport};});
   const [tab,setTab]=useState("transport");
   const [visitedTabs,setVisitedTabs]=useState(()=>new Set([tab]));
@@ -210,7 +212,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const [bookDropdown,setBookDropdown]=useState(null);
   async function loadDocs(){if(docsData||docsLoading)return;setDocsLoading(true);try{const raw=await askAI(`Travel advisor. Destination:${segment.name},${segment.country}. Home:USA. Return JSON only:{"visa":{"required":true,"details":"","cost":""},"health":{"required":[],"recommended":[],"notes":""},"money":{"currency":"","tips":"","warning":""},"connectivity":{"tips":""},"safety":{"level":"low","notes":""},"customs":{"tips":""},"emergency":{"police":"","ambulance":"","embassy":""}}`,800);const m=raw.match(/\{[\s\S]*\}/);if(m){const d=JSON.parse(m[0]);setDocsData(d);localStorage.setItem(`1bn_docs_${phaseId}_v1`,JSON.stringify(d));}}catch(e){}setDocsLoading(false);}
   useEffect(()=>{window.scrollTo(0,0);},[]);
-  useEffect(()=>{setPlanningOwnStay(false);setStayInsightSavedIdx(null);setShowStayBookingForm(false);setTransportRouteInPlace(false);setFoodInsightSavedIdxs([]);setActInsightSavedIdxs([]);setEditingActIdx(null);setFoodConfirmedPinnedIdxs([]);},[key]);
+  useEffect(()=>{setPlanningOwnStay(false);setStayInsightSavedIdx(null);setShowStayBookingForm(false);setTransportRouteInPlace(false);setFoodInsightSavedIdxs([]);setActInsightSavedIdxs([]);setEditingActIdx(null);setFoodConfirmedPinnedIdxs([]);setOwnRestaurantOpen(false);setOwnRestaurant({name:"",cuisine:"",priceTier:"",link:"",notes:""});},[key]);
   useEffect(()=>{if(planningOwnStay)setStayManualOpen(true);},[planningOwnStay]);
   useEffect(()=>{if(planningOwn)setTravelManualOpen(true);},[planningOwn]);
   useEffect(()=>{if(editingFood)setFoodManualOpen(true);},[editingFood]);
@@ -303,7 +305,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const committedFooterWrapStyle={marginTop:14,paddingTop:12,borderTop:'1px solid rgba(255,255,255,0.06)'};
   const addedPlanLineStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(105,240,174,0.88)',letterSpacing:0.35,lineHeight:1.45};
   const returnToLogFooterStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.36)',letterSpacing:'0.14em',lineHeight:1.58,marginTop:8};
-  const caReminderStyle={fontFamily:"'Fraunces',serif",fontStyle:'italic',fontSize:14,color:'rgba(248,245,240,0.55)',textAlign:'center',padding:'12px 8px',width:'100%',background:'none',border:'none',cursor:'pointer',display:'block',lineHeight:1.5};
+  const caReminderStyle={fontFamily:"'Fraunces',serif",fontStyle:'italic',fontSize:16,color:'rgba(248,245,240,0.65)',textAlign:'center',padding:'14px 16px 10px',width:'100%',background:'none',border:'none',cursor:'pointer',display:'block',lineHeight:1.6};
   const tripFieldLabel={fontSize:isMobile?12:14,color:"rgba(0,229,255,0.75)",letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,opacity:0.92};
   const cityInStyle={background:"rgba(0,0,0,0.55)",border:"1px solid rgba(255,255,255,0.22)",borderRadius:6,color:"#FFF",fontSize:isMobile?12:15,padding:isMobile?"4px 7px":"5px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",maxWidth:"100%",boxSizing:"border-box",lineHeight:1.6};
   const legChipStyle={padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.35)",background:"rgba(0,229,255,0.06)",color:"rgba(0,229,255,0.88)",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",minHeight:32,lineHeight:1.35};
@@ -342,47 +344,45 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:300,background:BG_PAGE,overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
       <WorldMapBackground phases={allPhases} activeCountry={(() => { const match = (allPhases||[]).find(p => p.name === phaseLabelName); return match ? match.country : phaseLabelName; })()} departureCity={homeCity||""} animatedRouteLegIndex={animatedRouteLegIndex}/>
       <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box',position:'relative',zIndex:1}}>
-      {/* Header */}
-      <div style={{display:'flex',alignItems:'center',padding:isMobile?'12px 0':'16px 4px',gap:10,background:'rgba(21,15,10,0.95)',borderBottom:'1px solid rgba(201,160,76,0.15)',position:'sticky',top:0,zIndex:10}}>
+      {/* Header — glass card (Trip Console / PhaseCard language) */}
+      <div style={{display:'flex',alignItems:'center',padding:isMobile?'14px 10px':'18px 16px',gap:12,background:'rgba(23,27,32,0.65)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',borderBottom:'1px solid rgba(201,160,76,0.18)',borderTop:'1px solid rgba(255,255,255,0.06)',position:'sticky',top:0,zIndex:10,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.3), 0 0 24px rgba(201,160,76,0.04)'}}>
         {isMobile?(
           <>
-            <button type="button" onClick={onBack} style={{background:'none',border:'none',color:'#FF9F43',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6}}>‹ <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,opacity:0.65}}>{phaseLabelName.toUpperCase()}</span></button>
+            <button type="button" onClick={onBack} style={{background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6}}>‹ <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1.5,color:'rgba(255,255,255,0.45)'}}>{phaseLabelName.toUpperCase()}</span></button>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:17,fontWeight:600,color:'#FFFFFF',fontFamily:"'Playfair Display',serif"}}>{segment.name}</div>
-              <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:2}}>{`${segment.nights}n`} · {segment.type} · {fmt(segment.budget)}</div>
+              <div style={{fontSize:17,fontWeight:500,color:'rgba(255,245,220,0.94)',fontFamily:"'Fraunces',serif",lineHeight:1.2}}>{segment.name}</div>
+              <div style={{fontSize:13,color:'rgba(255,255,255,0.72)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:2}}>{`${segment.nights}n`} · {segment.type} · {fmt(segment.budget)}</div>
             </div>
           </>
         ):(
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',gap:16,flexWrap:'wrap'}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flex:'1 1 220px',minWidth:0}}>
-              <span onClick={onBackToExpedition||onBack} style={{color:'#FF9F43',cursor:'pointer',flexShrink:0}}>←</span>
-              <span onClick={onBackToExpedition||onBack} style={{color:'rgba(255,255,255,0.60)',cursor:'pointer',letterSpacing:1,whiteSpace:'nowrap'}}>EXPEDITION</span>
-              <span style={{color:'rgba(255,255,255,0.30)',flexShrink:0}}>›</span>
-              <span onClick={onBack} style={{color:'rgba(255,255,255,0.60)',cursor:'pointer',letterSpacing:1,whiteSpace:'nowrap'}}>{phaseLabelName.toUpperCase()}</span>
+            <div style={{display:'flex',alignItems:'center',gap:8,flex:'1 1 220px',minWidth:0,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
+              <span onClick={onBackToExpedition||onBack} style={{color:'rgba(255,255,255,0.35)',cursor:'pointer',flexShrink:0,fontSize:14}}>←</span>
+              <span onClick={onBackToExpedition||onBack} style={{color:'rgba(255,255,255,0.45)',cursor:'pointer',letterSpacing:1.5,fontSize:12,whiteSpace:'nowrap'}}>EXPEDITION</span>
               <span style={{color:'rgba(255,255,255,0.25)',flexShrink:0}}>›</span>
-              <span style={{color:'rgba(255,255,255,0.92)',letterSpacing:0.5,fontWeight:600,fontSize:14,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{segment.name}</span>
+              <span onClick={onBack} style={{color:'rgba(255,255,255,0.45)',cursor:'pointer',letterSpacing:1.5,fontSize:12,whiteSpace:'nowrap'}}>{phaseLabelName.toUpperCase()}</span>
+              <span style={{color:'rgba(255,255,255,0.25)',flexShrink:0}}>›</span>
+              <span style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:400,color:'rgba(255,255,255,0.90)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',minWidth:0}}>{segment.name}</span>
             </div>
-            <div style={{display:'flex',alignItems:'stretch',border:'1px solid rgba(255,255,255,0.10)',borderRadius:12,overflow:'hidden',background:'rgba(0,8,24,0.55)',flexShrink:0,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.04)'}}>
-              <div style={{padding:'8px 14px',textAlign:'center',minWidth:72}}>
-                <div style={{fontSize:9,letterSpacing:2,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:2}}>NIGHTS</div>
-                <div style={{fontSize:17,fontWeight:700,color:'#F8F5F0',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.1}}>{segment.nights}</div>
+            <div style={{display:'flex',alignItems:'stretch',gap:2,border:'1px solid rgba(255,255,255,0.10)',borderRadius:12,overflow:'hidden',background:'rgba(0,8,24,0.45)',flexShrink:0,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.04)'}}>
+              <div style={{padding:'8px 14px',textAlign:'center',minWidth:76}}>
+                <div style={{fontSize:10,letterSpacing:1.5,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,marginBottom:3}}>NIGHTS</div>
+                <div style={{fontSize:15,fontWeight:600,color:'#F8F5F0',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.15}}>{segment.nights}</div>
               </div>
-              <div style={{width:1,background:'rgba(255,255,255,0.08)',alignSelf:'stretch'}} />
-              <div style={{padding:'8px 14px',textAlign:'center',minWidth:88,maxWidth:140}}>
-                <div style={{fontSize:9,letterSpacing:2,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:2}}>STYLE</div>
-                <div style={{fontSize:13,fontWeight:600,color:'#F8F5F0',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.2,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}} title={segment.type}>{segment.type}</div>
+              <div style={{borderLeft:'1px solid rgba(255,255,255,0.08)',padding:'8px 14px',textAlign:'center',minWidth:88,maxWidth:150}}>
+                <div style={{fontSize:10,letterSpacing:1.5,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,marginBottom:3}}>STYLE</div>
+                <div style={{fontSize:15,fontWeight:600,color:'#F8F5F0',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.15,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}} title={segment.type}>{segment.type}</div>
               </div>
-              <div style={{width:1,background:'rgba(255,255,255,0.08)',alignSelf:'stretch'}} />
-              <div style={{padding:'8px 14px',textAlign:'center',minWidth:88}}>
-                <div style={{fontSize:9,letterSpacing:2,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:2}}>BUDGET</div>
-                <div style={{fontSize:17,fontWeight:700,color:'#c9a04c',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.1}}>{fmt(segment.budget)}</div>
+              <div style={{borderLeft:'1px solid rgba(255,255,255,0.08)',padding:'8px 14px',textAlign:'center',minWidth:88}}>
+                <div style={{fontSize:10,letterSpacing:1.5,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,marginBottom:3}}>BUDGET</div>
+                <div style={{fontSize:15,fontWeight:600,color:'#D4AF37',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.15}}>{fmt(segment.budget)}</div>
               </div>
             </div>
           </div>
         )}
       </div>
       {/* Tab bar */}
-      <div style={{display:'flex',justifyContent:'center',background:'rgba(0,4,12,0.95)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:isMobile?68:56,zIndex:9}}>
+      <div style={{display:'flex',justifyContent:'center',background:'rgba(0,4,12,0.92)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:isMobile?72:72,zIndex:9}}>
         {TABS.map(t=>{const on=tab===t.id;return(
           <button type="button" key={t.id} onClick={()=>setTab(t.id)} style={{flex:isMobile?1:undefined,minWidth:isMobile?0:undefined,padding:isMobile?'10px 2px':'10px 16px',background:'none',border:'none',borderBottom:on?'2px solid #FF9F43':'2px solid transparent',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:3,transition:'all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)',overflow:'hidden',opacity:on?1:0.75,transform:on?'scale(1.05)':'scale(1)'}}>
             <span style={{fontSize:isMobile?20:20,lineHeight:1}}>{t.icon}</span>
@@ -843,6 +843,16 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
           </>}
           </>}
+          <button type="button" onClick={()=>setOwnRestaurantOpen(o=>!o)} style={{width:'100%',border:'1px dashed rgba(212,175,55,0.35)',borderRadius:12,padding:'14px 16px',textAlign:'center',cursor:'pointer',color:'#D4AF37',fontSize:14,fontWeight:600,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,marginTop:12,background:'rgba(212,175,55,0.04)',transition:'all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)'}}>+ Add your own restaurant</button>
+          {ownRestaurantOpen&&<div style={{border:isMobile?'none':'1px solid rgba(255,255,255,0.10)',borderRadius:12,background:isMobile?'rgba(255,255,255,0.03)':'rgba(255,255,255,0.04)',padding:isMobile?'12px 10px':16,marginTop:10,marginBottom:4,animation:'slideOpen 0.40s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+            <div style={{fontSize:12,color:'rgba(201,160,76,0.60)',letterSpacing:2,marginBottom:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>YOUR RESTAURANT</div>
+            <SDF label="RESTAURANT NAME" value={ownRestaurant.name} onChange={v=>setOwnRestaurant(r=>({...r,name:v}))} placeholder="Name or neighborhood" accent="#FF9F43"/>
+            <div style={{marginTop:8}}><SDF label="CUISINE TYPE (OPTIONAL)" value={ownRestaurant.cuisine} onChange={v=>setOwnRestaurant(r=>({...r,cuisine:v}))} placeholder="e.g. Vietnamese, omakase" accent="#FF9F43"/></div>
+            <div style={{marginTop:8}}><SDF label="PRICE RANGE" value={ownRestaurant.priceTier} onChange={v=>setOwnRestaurant(r=>({...r,priceTier:v}))} placeholder="$ · $$ · $$$" accent="#FF9F43"/></div>
+            <div style={{marginTop:8}}><SDF label="BOOKING LINK" value={ownRestaurant.link} onChange={v=>setOwnRestaurant(r=>({...r,link:v}))} placeholder="https://..." accent="#FF9F43"/></div>
+            <div style={{marginTop:8}}><SDF label="NOTES" value={ownRestaurant.notes} onChange={v=>setOwnRestaurant(r=>({...r,notes:v}))} placeholder="Reservation time, dishes to try..." accent="#FF9F43" multiline/></div>
+            <button type="button" onClick={()=>{if(!ownRestaurant.name.trim())return;const t=(ownRestaurant.priceTier||"").trim();const est=t.includes("$$$")?"85":t.includes("$$")?"48":t.includes("$")?"28":"";const block=[`🍽 ${ownRestaurant.name.trim()}`,[ownRestaurant.cuisine,t].filter(Boolean).join(" · "),ownRestaurant.link?`Link: ${ownRestaurant.link}`:"",ownRestaurant.notes||""].filter(Boolean).join("\n");setDet(d=>{const prev=parseFloat(d.food.dailyBudget)||0;const nextBud=est?String(Math.max(prev,parseInt(est,10)||0)):d.food.dailyBudget;return{...d,food:{...d.food,dailyBudget:nextBud,notes:d.food.notes?`${d.food.notes}\n\n${block}`:block}};});setOwnRestaurant({name:"",cuisine:"",priceTier:"",link:"",notes:""});setOwnRestaurantOpen(false);}} style={{marginTop:12,padding:'12px 20px',borderRadius:10,border:'none',background:ownRestaurant.name.trim()?'linear-gradient(135deg,rgba(255,159,67,0.25),rgba(201,160,76,0.15))':'rgba(255,255,255,0.04)',color:ownRestaurant.name.trim()?'#c9a04c':'rgba(255,255,255,0.20)',fontSize:12,cursor:ownRestaurant.name.trim()?'pointer':'default',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1.5,fontWeight:700,width:'100%',minHeight:44}}>SAVE</button>
+          </div>}
         </div>);})()}</div>}
         {/* BUDGET */}
         {visitedTabs.has("budget")&&<div style={{display:tab==="budget"?"block":"none"}}>{(()=>{const tCost=parseFloat(det.transport?.cost)||0;const sCost=parseFloat(det.stay?.cost)||0;const aCost=det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0);const fCost=(parseFloat(det.food?.dailyBudget)||0)*segment.nights;const mCost=det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0);const total=tCost+sCost+aCost+fCost+mCost;const budget=segment.budget||0;const pct=budget>0?Math.round((total/budget)*100):0;const barColor=pct>=100?'#FF6B6B':pct>=80?'#c9a04c':'#00E5FF';

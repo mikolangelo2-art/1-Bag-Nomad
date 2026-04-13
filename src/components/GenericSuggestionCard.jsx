@@ -538,11 +538,28 @@ export default function GenericSuggestionCard({
             </span>
           </div>
           <div
-            style={{ flexShrink: 0 }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              flexShrink: 0,
+            }}
             onClick={(e) => e.stopPropagation()}
             onKeyDown={(e) => e.stopPropagation()}
           >
             {committedToolbar}
+            <span
+              aria-hidden
+              style={{
+                fontSize: 12,
+                color: "rgba(255,255,255,0.35)",
+                transition: "transform 0.3s ease",
+                transform: "rotate(0deg)",
+                lineHeight: 1,
+              }}
+            >
+              ▼
+            </span>
           </div>
         </div>
       </div>
@@ -582,7 +599,31 @@ export default function GenericSuggestionCard({
               textAlign: "left",
             }}
           >
-            {heroBlock}
+            {inPlaceSaved && variant === "expand" ? (
+              <div style={{ position: "relative" }}>
+                <span
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    top: 10,
+                    right: 12,
+                    zIndex: 15,
+                    fontSize: 12,
+                    color: "rgba(255,255,255,0.45)",
+                    transition: "transform 0.3s ease",
+                    transform: "rotate(180deg)",
+                    lineHeight: 1,
+                    pointerEvents: "none",
+                    textShadow: "0 1px 8px rgba(0,0,0,0.75)",
+                  }}
+                >
+                  ▼
+                </span>
+                {heroBlock}
+              </div>
+            ) : (
+              heroBlock
+            )}
             {summaryBlock}
           </button>
           {expanded ? expandableDetailBody : null}

@@ -29,16 +29,16 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       <WorldMapBackground phases={allPhases} activeCountry={phase.country} departureCity={homeCity||""}/>
       <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box',position:'relative',zIndex:1}}>
       {/* Header */}
-      <div style={{display:'flex',alignItems:'center',flexWrap:'nowrap',padding:'12px 0',gap:12,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(201,160,76,0.15)',position:'sticky',top:0,left:0,right:0,width:'100%',zIndex:10}}>
-        {isMobile?<button type="button" onClick={onBack} style={{background:'none',border:'none',color:'#00E5FF',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6,flexShrink:0}}>‹ <span style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,opacity:0.60}}>EXPEDITION</span></button>
+      <div style={{display:'flex',alignItems:'center',flexWrap:'nowrap',padding:isMobile?'14px 10px':'18px 0',gap:12,background:'rgba(23,27,32,0.65)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',borderBottom:'1px solid rgba(201,160,76,0.18)',borderTop:'1px solid rgba(255,255,255,0.06)',position:'sticky',top:0,left:0,right:0,width:'100%',zIndex:10,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.3), 0 0 24px rgba(201,160,76,0.04)'}}>
+        {isMobile?<button type="button" onClick={onBack} style={{background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:22,cursor:'pointer',padding:'0 6px 0 0',fontWeight:300,lineHeight:1,minWidth:28,minHeight:44,display:'flex',alignItems:'center',gap:6,flexShrink:0}}>‹ <span style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1.5,color:'rgba(255,255,255,0.45)'}}>EXPEDITION</span></button>
         :<div style={{display:'flex',alignItems:'center',gap:8,fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>
           <span onClick={onBack} style={{color:'rgba(255,255,255,0.35)',cursor:'pointer'}}>‹</span>
-          <span onClick={onBack} style={{color:'rgba(255,255,255,0.45)',cursor:'pointer',letterSpacing:2}}>EXPEDITION</span>
+          <span onClick={onBack} style={{color:'rgba(255,255,255,0.45)',cursor:'pointer',letterSpacing:1.5}}>EXPEDITION</span>
           <span style={{color:'rgba(255,255,255,0.25)'}}>›</span>
           <span style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:400,color:'rgba(255,255,255,0.90)'}}>{phase.name}</span>
         </div>}
         {isMobile&&<span style={{fontSize:20,flexShrink:0}}>{phase.flag}</span>}
-        {isMobile&&<span style={{flex:1,minWidth:0,fontSize:18,fontWeight:500,color:'#FFFFFF',fontFamily:"'Playfair Display',serif",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{phase.name}</span>}
+        {isMobile&&<span style={{flex:1,minWidth:0,fontSize:16,fontWeight:400,color:'rgba(255,255,255,0.90)',fontFamily:"'Fraunces',serif",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{phase.name}</span>}
         {!isMobile&&<div style={{flex:1,minWidth:8}}/>}
         <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0,marginLeft:isMobile?'auto':0}}>
           <span style={{fontSize:14,fontWeight:700,color:'#c9a04c',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'nowrap'}}>{fmt(phase.totalBudget)}</span>
