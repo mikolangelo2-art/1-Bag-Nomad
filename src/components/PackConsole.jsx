@@ -656,15 +656,10 @@ Return ONLY a JSON array:
       {!isFullscreen&&pp&&(()=>{
         const getClimateAdvisory=(climate,season)=>{const map={'tropical-hot':{dry:{label:'Tropical',advice:'Pack light — reef-safe sunscreen essential'},wet:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'},default:{label:'Tropical',advice:'Pack light, breathable fabrics only'}},'tropical-wet':{default:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'}},'temperate-cool':{default:{label:'Temperate',advice:'Layer up — mornings cold, afternoons warm'}},'cold-alpine':{default:{label:'Alpine Cold',advice:'Warm layers essential — windproof shell critical'}},'mediterranean':{default:{label:'Mediterranean',advice:'Light clothing + one smart dinner outfit'}},'desert-hot':{default:{label:'Desert',advice:'UV protection critical — cover up at midday'}},'varied':{default:{label:'Mixed Climate',advice:'Pack for range — layers are your friend'}}};return map[climate]?.[season]||map[climate]?.default||{label:'Varied',advice:'Check conditions per destination'};};
         const ca=pp.climate?getClimateAdvisory(pp.climate,pp.season):null;
+        const builtForPrimary=`✦ Built for: ${formatTripNameDisplay(tripData.tripName||"Your Trip")} · ${totalNights}n · ${pp.tripType}${coupleMode?" · for 2":""}${ca?` · 🌡 ${ca.label}${pp.tempRange?" · "+pp.tempRange:""}`:""}`;
         return <div style={{padding:isMobile?"6px 12px":"6px 0",background:"rgba(255,159,67,0.04)",borderBottom:"1px solid rgba(255,159,67,0.12)",overflow:"hidden"}}>
-          <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-            <span style={{fontSize:11,color:"rgba(255,159,67,0.7)",flexShrink:0}}>✦</span>
-            <span style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.70)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,whiteSpace:"nowrap"}}>Built for: {formatTripNameDisplay(tripData.tripName||"Your Trip")} · {totalNights}n · {pp.tripType}{coupleMode?" · for 2":""}</span>
-            {ca&&<>
-              <span style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.70)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,whiteSpace:"nowrap"}}>🌡 {ca.label}{pp.tempRange?" · "+pp.tempRange:""}</span>
-              <span style={{fontSize:isMobile?10:12,fontFamily:"'Playfair Display',serif",fontStyle:"italic",color:"rgba(255,159,67,0.5)",whiteSpace:"nowrap"}}>{ca.advice}</span>
-            </>}
-          </div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",fontWeight:400,color:"rgba(248,245,240,0.70)",lineHeight:1.55,letterSpacing:"0.02em"}}>{builtForPrimary}</div>
+          {ca?.advice&&<div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",fontWeight:400,color:"rgba(248,245,240,0.45)",lineHeight:1.5,marginTop:6}}>{ca.advice}</div>}
         </div>;
       })()}
       {/* Tab bar — glass strip to match dashboard layers (was near-opaque solid) */}
