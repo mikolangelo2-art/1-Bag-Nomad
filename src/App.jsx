@@ -139,7 +139,9 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 @media (min-width:769px){.welcome-beta-logo-btn{width:136px;height:136px;margin-bottom:10px}}
 @media (prefers-reduced-motion:reduce){.welcome-beta-logo-btn{animation:none!important;box-shadow:0 0 0 2px rgba(201,160,76,0.4),0 0 36px rgba(201,160,76,0.32);filter:drop-shadow(0 0 20px rgba(201,160,76,0.38))}}
 .welcome-click-hint{margin:0 0 4px;font-family:'Space Mono','Courier New',monospace;font-size:10px;font-weight:500;letter-spacing:0.28em;text-transform:uppercase;color:rgba(201,160,76,0.42)}
-.welcome-tagline{margin:0;font-family:'Fraunces',Georgia,serif;font-size:clamp(15px,3.2vw,18px);font-weight:400;font-style:italic;color:rgba(248,245,240,0.78);letter-spacing:0.05em;line-height:1.5}
+.welcome-tagline-row{display:flex;align-items:center;justify-content:center;gap:clamp(10px,2.5vw,16px);flex-wrap:wrap;margin:6px 0 0}
+.welcome-tagline-ornament{font-family:'Fraunces',Georgia,serif;font-size:clamp(12px,2.8vw,15px);font-weight:500;color:rgba(201,160,76,0.95);line-height:1;opacity:0.92;text-shadow:0 0 18px rgba(201,160,76,0.45),0 0 36px rgba(169,70,29,0.2);user-select:none}
+.welcome-tagline{margin:0;font-family:'Fraunces',Georgia,serif;font-size:clamp(16px,3.6vw,20px);font-weight:500;font-style:italic;letter-spacing:0.1em;line-height:1.45;max-width:22em;color:#f8f0e4;text-shadow:0 0 20px rgba(201,160,76,0.5),0 0 42px rgba(201,160,76,0.22),0 1px 0 rgba(201,160,76,0.35)}
 .welcome-footer{flex-shrink:0;padding:22px 20px calc(24px + env(safe-area-inset-bottom,0));text-align:center;border-top:1px solid rgba(201,160,76,0.12);max-width:min(520px,100%);align-self:center;width:100%;box-sizing:border-box}
 .welcome-creed{margin:0 0 8px;font-family:'Cinzel',Georgia,serif;font-size:clamp(10px,2.2vw,12px);font-weight:600;letter-spacing:0.26em;color:rgba(201,160,76,0.78);line-height:1.65}
 .welcome-patent{margin:0;font-family:'Space Mono','Courier New',monospace;font-size:10px;font-weight:400;letter-spacing:0.08em;color:rgba(248,245,240,0.38);line-height:1.5}
@@ -394,7 +396,15 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
             <br />
             is waiting.
           </div>
-          <p className="welcome-tagline">Dream Big, Travel Light</p>
+          <div className="welcome-tagline-row">
+            <span className="welcome-tagline-ornament" aria-hidden="true">
+              ✦
+            </span>
+            <p className="welcome-tagline">Dream Big, Travel Light</p>
+            <span className="welcome-tagline-ornament" aria-hidden="true">
+              ✦
+            </span>
+          </div>
         </div>
         <button
           type="button"
