@@ -130,14 +130,14 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 @keyframes drawerSlideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes caFabPulse{0%,100%{box-shadow:0 0 12px rgba(201,160,76,0.25)}50%{box-shadow:0 0 24px rgba(201,160,76,0.45)}}
 @keyframes welcomeLogoGlow{0%,100%{box-shadow:0 0 0 2px rgba(201,160,76,0.4),0 0 32px rgba(201,160,76,0.3),0 0 64px rgba(169,70,29,0.14),inset 0 0 22px rgba(255,255,255,0.05);filter:drop-shadow(0 0 20px rgba(201,160,76,0.38))}50%{box-shadow:0 0 0 2px rgba(201,160,76,0.55),0 0 46px rgba(201,160,76,0.42),0 0 84px rgba(169,70,29,0.2),inset 0 0 28px rgba(255,255,255,0.08);filter:drop-shadow(0 0 30px rgba(255,200,100,0.48))}}
-@keyframes welcomeCtaGlow{0%,100%{box-shadow:0 0 28px rgba(169,70,29,0.42),0 0 56px rgba(201,160,76,0.2),0 0 0 1px rgba(255,200,120,0.45),inset 0 1px 0 rgba(255,255,255,0.15)}50%{box-shadow:0 0 40px rgba(201,160,76,0.48),0 0 78px rgba(255,159,67,0.24),0 0 0 1px rgba(201,160,76,0.55),inset 0 1px 0 rgba(255,255,255,0.2)}}
-.welcome-beta-logo{width:118px;height:118px;border-radius:50%;object-fit:contain;box-sizing:border-box;border:2px solid rgba(201,160,76,0.48);margin-bottom:8px;animation:welcomeLogoGlow 3s ease-in-out infinite}
+.welcome-beta-logo-btn{display:inline-flex;align-items:center;justify-content:center;width:118px;height:118px;padding:0;border:2px solid rgba(201,160,76,0.48);border-radius:50%;background:transparent;cursor:pointer;margin-bottom:8px;box-sizing:border-box;animation:welcomeLogoGlow 3s ease-in-out infinite;transition:transform 0.2s ease;-webkit-tap-highlight-color:transparent}
+.welcome-beta-logo-btn:hover{transform:scale(1.03)}
+.welcome-beta-logo-btn:focus-visible{outline:2px solid rgba(201,160,76,0.55);outline-offset:4px}
+.welcome-beta-logo-btn img{width:100%;height:100%;object-fit:contain;border-radius:50%;display:block;pointer-events:none}
 .welcome-beta-wordmark{margin:0 0 6px;font-family:'Playfair Display',Georgia,serif;font-size:clamp(17px,3.4vw,22px);font-weight:500;letter-spacing:0.14em;color:rgba(201,160,76,0.9);text-rendering:optimizeLegibility;font-variant-numeric:lining-nums}
 .welcome-beta-wordmark-one{font-size:1.22em;font-weight:600;letter-spacing:0.14em;display:inline-block;vertical-align:-0.02em}
-@media (min-width:769px){.welcome-beta-logo{width:136px;height:136px;margin-bottom:10px}}
-.welcome-beta-cta{transition:transform 0.2s ease,filter 0.2s ease!important;animation:welcomeCtaGlow 2.8s ease-in-out infinite}
-.welcome-beta-cta:hover{transform:scale(1.03);filter:brightness(1.05)}
-@media (prefers-reduced-motion:reduce){.welcome-beta-logo,.welcome-beta-cta{animation:none!important}.welcome-beta-logo{box-shadow:0 0 0 2px rgba(201,160,76,0.4),0 0 36px rgba(201,160,76,0.32);filter:drop-shadow(0 0 20px rgba(201,160,76,0.38))}.welcome-beta-cta{box-shadow:0 0 28px rgba(169,70,29,0.42),0 0 56px rgba(201,160,76,0.2),0 0 0 1px rgba(255,200,120,0.45),inset 0 1px 0 rgba(255,255,255,0.15)!important}}
+@media (min-width:769px){.welcome-beta-logo-btn{width:136px;height:136px;margin-bottom:10px}}
+@media (prefers-reduced-motion:reduce){.welcome-beta-logo-btn{animation:none!important;box-shadow:0 0 0 2px rgba(201,160,76,0.4),0 0 36px rgba(201,160,76,0.32);filter:drop-shadow(0 0 20px rgba(201,160,76,0.38))}}
 @media(max-width:768px){.sg-suggestion-card{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;padding:16px!important;box-sizing:border-box!important}}
 
   .dream-root,.mc-root,.build-root{font-size:18px}
@@ -346,14 +346,20 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
         boxSizing: "border-box",
       }}
     >
-      <img
-        src="/1bn-logo.png"
-        alt=""
-        className="welcome-beta-logo"
-        onError={(e) => {
-          e.target.style.display = "none";
-        }}
-      />
+      <button
+        type="button"
+        onClick={onStartDreaming}
+        className="welcome-beta-logo-btn"
+        aria-label="Start dreaming"
+      >
+        <img
+          src="/1bn-logo.png"
+          alt=""
+          onError={(e) => {
+            e.target.style.display = "none";
+          }}
+        />
+      </button>
       <p className="welcome-beta-wordmark">
         <span className="welcome-beta-wordmark-one">1</span> Bag Nomad
       </p>
@@ -383,24 +389,6 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
           Every journey starts with a feeling.
         </div>
       </div>
-      <button
-        type="button"
-        onClick={onStartDreaming}
-        className="welcome-beta-cta"
-        style={{
-          background: "linear-gradient(135deg, #A9461D, #C4571E)",
-          borderRadius: 16,
-          padding: "18px 56px",
-          color: "#fff",
-          fontFamily: "'Playfair Display',Georgia,serif",
-          fontSize: 18,
-          fontWeight: 600,
-          letterSpacing: "0.08em",
-          cursor: "pointer",
-        }}
-      >
-        ✦ Start Dreaming
-      </button>
       <button
         type="button"
         onClick={onTryDemo}

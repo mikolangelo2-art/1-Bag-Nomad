@@ -1,6 +1,29 @@
 import { useMobile } from '../hooks/useMobile';
 import ConsoleHeader from './ConsoleHeader';
 import { PILL_COLORS } from '../constants/colors';
+import { CONSOLE_CONTENT_MAX } from '../constants/layout';
+
+/** Same horizontal column as Trip / Pack console upper dashboard */
+export function DreamConsoleColumn({ children }) {
+  const isMobile = useMobile();
+  return (
+    <div
+      style={
+        isMobile
+          ? undefined
+          : {
+              maxWidth: CONSOLE_CONTENT_MAX,
+              margin: "0 auto",
+              width: "100%",
+              padding: "0 24px",
+              boxSizing: "border-box",
+            }
+      }
+    >
+      {children}
+    </div>
+  );
+}
 
 function DreamHeader({step,screenLabel}) {
   const isMobile=useMobile();
@@ -23,7 +46,11 @@ function DreamHeader({step,screenLabel}) {
       ))}
     </div>
   );
-  return <ConsoleHeader console="dream" isMobile={isMobile} rightSlot={pills} screenLabel={screenLabel}/>;
+  return (
+    <DreamConsoleColumn>
+      <ConsoleHeader console="dream" isMobile={isMobile} rightSlot={pills} screenLabel={screenLabel}/>
+    </DreamConsoleColumn>
+  );
 }
 
 export default DreamHeader;

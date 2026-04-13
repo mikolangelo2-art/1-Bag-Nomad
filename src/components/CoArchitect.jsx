@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import posthog from "posthog-js";
 import { useMobile } from '../hooks/useMobile';
 import ConsoleHeader from './ConsoleHeader';
+import { DreamConsoleColumn } from './DreamHeader';
 import { askAI, parseJSON } from '../utils/aiHelpers';
 import { estCost } from '../utils/priceHelpers';
 import { fmt } from '../utils/dateHelpers';
@@ -194,6 +195,7 @@ RULES:
   }
   return(
     <div className="build-root" style={{opacity:mounted?1:0,transform:mounted?"translateY(0)":"translateY(32px)",transition:"opacity 0.55s ease,transform 0.55s cubic-bezier(0.22,1,0.36,1)",overflowX:"hidden"}}>
+      <DreamConsoleColumn>
       <ConsoleHeader console="dream" isMobile={isMobile} screenLabel="CO-ARCHITECT" rightSlot={(
         <div style={{display:"flex",gap:6,alignItems:"center",justifyContent:"center"}}>
           {[1,2,3,4].map(n=>(
@@ -212,6 +214,7 @@ RULES:
           ))}
         </div>
       )}/>
+      </DreamConsoleColumn>
       <div style={{display:"flex",border:"none",background:"#080D14",flexShrink:0}}>
         {(isMobile?[{label:"STOPS",val:items.length,c:"#FFFFFF"},{label:"COUNTRIES",val:countries.length,c:"#FFFFFF"},{label:"NIGHTS",val:totalNights,c:"#FFFFFF"},{label:"BUDGET",val:fmt(totalCost),c:"#D4AF37"}]:[{label:"STOPS",val:items.length,c:"#00E5FF"},{label:"COUNTRIES",val:countries.length,c:"#69F0AE"},{label:"NIGHTS",val:totalNights,c:"#A29BFE"},{label:"BUDGET",val:fmt(totalCost),c:"#c9a04c"}]).map((s,i)=>(
           <div key={s.label} style={{flex:1,minWidth:0,padding:isMobile?"6px 4px":"8px 6px",textAlign:"center",borderRight:i<3?"1px solid #111D2A":"none"}}>
