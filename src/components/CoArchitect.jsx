@@ -178,7 +178,10 @@ RULES:
         if(parsed.warnings?.length)parsed.warnings.forEach(w=>{try{const existing=JSON.parse(localStorage.getItem('1bn_warnings_v1')||'[]');existing.push(w);localStorage.setItem('1bn_warnings_v1',JSON.stringify(existing));}catch(e){}});
       }
       else setChat(p=>[...p,{role:"ai",text:"Got it — which stop would you like to change?"}]);
-    }catch(e){setChat(p=>[...p,{role:"ai",text:"What specifically would you like to change?"}]);}
+    }catch(e){
+      const isOverloaded=String(e?.message||e).toLowerCase().includes("overload")||String(e?.message||e).includes("529");
+      setChat(p=>[...p,{role:"ai",text:isOverloaded?"The service is a little busy right now — give it a moment and try again. Your itinerary is safe.":"Something went wrong on my end — try sending that again."}]);
+    }
     setLoading(false);
   }
   // Architecture #1: each item auto-wraps as 1 segment
