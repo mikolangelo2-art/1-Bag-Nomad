@@ -282,6 +282,8 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const stayInsight=useTabSuggestions({kind:"stay",segment,enabled:tab==="stay"&&(!showStayAccommodationCard||stayInsightSavedIdx!=null||stayInsightBrowseAll)});
   const foodInsight=useTabSuggestions({kind:"food",segment,enabled:tab==="food"&&(!hasFoodBudget||foodInsightSavedIdx!=null||foodInsightBrowseAll)});
   const actInsight=useTabSuggestions({kind:"activities",segment,enabled:tab==="activities"});
+  /** Session 53H: count CA suggestion cards still visible (slice 0–2); hide actInsight while any remain */
+  const visibleCASuggestions=useMemo(()=>(suggestion?.activities||[]).slice(0,3).filter((_,idx)=>!dismissed[`${dismissKey}_activity_${idx}`]&&!det.activities.some(x=>x.suggestionActivityIdx===idx)).length,[suggestion?.activities,det.activities,dismissed,dismissKey]);
   const prevStop=(prevCity||"").trim();
   const homeStop=(homeCity||"").trim();
   const thisStop=(segment.name||"").trim();
@@ -702,11 +704,11 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             </div>
           </div>}
           {det.activities.length===0&&!(suggestion?.activities?.slice(0, 3)?.some((_,i)=>!isDism(`activity_${i}`)&&!det.activities.some(x=>x.suggestionActivityIdx===i)))&&!suggestionsLoading&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Playfair Display',serif",fontSize:14,fontStyle:'italic',color:'rgba(201,160,76,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
-          {actInsight.loading&&<SuggestionShimmer message={`Curating experiences in ${dest||"this destination"}...`}/>}
-          {!actInsight.loading&&actInsight.items.length>0&&actInsight.items.map((it,idx)=>(
+          {visibleCASuggestions===0&&actInsight.loading&&<SuggestionShimmer message={`Curating experiences in ${dest||"this destination"}...`}/>}
+          {visibleCASuggestions===0&&!actInsight.loading&&actInsight.items.length>0&&actInsight.items.map((it,idx)=>(
             <GenericSuggestionCard key={`act-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`act-tab-${idx}`} accent="#c9a04c" variant="expand" isMobile={isMobile} warmLine={it.name?`Great choice. ${it.name} is one of the best ways to experience ${dest}.`:undefined} onAddToPlan={()=>acceptActivity({name:it.name,notes:it.description,estimatedCost:String(it.price),provider:it.category})}/>
           ))}
-          {!actInsight.loading&&actInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{actInsight.error}</div>}
+          {visibleCASuggestions===0&&!actInsight.loading&&actInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{actInsight.error}</div>}
           <button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("openCA",{detail:{message:`What are some hidden gems and local favorites in ${dest}?`}}))} style={{background:"none",border:"none",padding:"8px 0",marginBottom:8,cursor:"pointer",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"rgba(201,160,76,0.75)",textAlign:"left",width:"100%"}}>Your Co-Architect knows {dest} well — ask for hidden gems</button>
           {caFromArch.length>0&&<div style={{marginBottom:16}}>
             <div style={{...suggestionHeaderReadable,marginBottom:10}}>✦ FROM YOUR CO-ARCHITECT CONVERSATION</div>
