@@ -25,6 +25,10 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
   const askEnd=useRef(null);
   const tc=TC[segment.type]||"#c9a04c";
   const sc=STATUS_CFG[status]||STATUS_CFG.planning;
+  const countryLabel=(segment.country||"").trim();
+  const titleFs=isMobile?16:17;
+  const dateMonoFs=isMobile?13:14;
+  const revealBodyFs=isMobile?14:15;
   // Planning completion status
   const hasTransport=segData&&Object.values(segData.transport||{}).some(v=>v&&String(v).length>0);
   const hasStay=segData?.stay?.name?.length>0;
@@ -92,26 +96,30 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
       )}
       <div style={{display:"flex",alignItems:"stretch",minHeight:50,borderLeft:`3px solid ${tc}${open?"cc":"66"}`,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
         <div onClick={()=>{if(onSegmentTap){onSegmentTap(segment);}else{setOpen(o=>!o);}}} style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:isMobile?"10px 6px 10px 12px":"12px 10px 12px 20px",cursor:"pointer",background:open?`${tc}04`:"transparent",transition:"background 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",flex:1,minWidth:0}}>
-          {/* Row 1: dot + name + type badge + budget */}
-          <div style={{display:"flex",alignItems:"center",gap:6,minWidth:0}}>
-            <div style={{width:7,height:7,borderRadius:"50%",background:tc,flexShrink:0,boxShadow:open?`0 0 7px ${tc}`:"none"}}/>
-            <span style={{fontSize:isMobile?15:16,fontWeight:600,color:isCancelled?"rgba(255,255,255,0.4)":"rgba(255,255,255,0.95)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textDecoration:isCancelled?"line-through":"none"}}>{segment.name}</span>
-            <span style={{fontSize:11,color:`${tc}bb`,background:`${tc}0e`,border:`1px solid ${tc}1e`,borderRadius:6,padding:"1px 6px",letterSpacing:0.5,fontWeight:500,whiteSpace:"nowrap",flexShrink:0}}>{segment.type?.toUpperCase()}</span>
-            <span style={{fontSize:isMobile?12:14,fontWeight:600,color:"rgba(201,160,76,0.85)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",flexShrink:0,textDecoration:isCancelled?"line-through":"none"}}>{fmt(segment.budget)}</span>
+          {/* Row 1: dot + destination · country + dates (Space Mono) + type + budget */}
+          <div style={{display:"flex",alignItems:"flex-start",gap:8,minWidth:0,width:"100%"}}>
+            <div style={{width:7,height:7,borderRadius:"50%",background:tc,flexShrink:0,marginTop:6,boxShadow:open?`0 0 7px ${tc}`:"none"}}/>
+            <div style={{flex:1,minWidth:0,display:"flex",flexWrap:"wrap",alignItems:"baseline",gap:"4px 10px"}}>
+              <span style={{fontFamily:"'Fraunces',serif",fontSize:titleFs,fontWeight:600,color:isCancelled?"rgba(255,255,255,0.4)":"rgba(255,248,235,0.96)",letterSpacing:"0.02em",textDecoration:isCancelled?"line-through":"none"}}>{segment.name}</span>
+              {countryLabel&&<>
+                <span style={{fontFamily:"'Fraunces',serif",fontSize:titleFs,color:"rgba(255,255,255,0.28)",fontWeight:400,lineHeight:1}} aria-hidden>·</span>
+                <span style={{fontFamily:"'Fraunces',serif",fontSize:titleFs,fontWeight:600,color:isCancelled?"rgba(255,255,255,0.35)":"rgba(255,248,235,0.92)",letterSpacing:"0.02em",textDecoration:isCancelled?"line-through":"none"}}>{countryLabel}</span>
+              </>}
+              <span style={{fontFamily:"'Space Mono',ui-monospace,monospace",fontSize:dateMonoFs,color:"rgba(255,248,235,0.78)",whiteSpace:"nowrap",letterSpacing:"-0.02em",marginLeft:"auto"}}>{fD(segment.arrival)} → {fD(segment.departure)} <span style={{color:"rgba(255,255,255,0.45)"}}>·</span> {segment.nights}n{segment.diveCount>0?<><span style={{color:"rgba(255,255,255,0.45)"}}> · </span><span style={{color:`${tc}cc`}}>🤿{segment.diveCount}</span></>:""}</span>
+            </div>
+            <span style={{fontSize:11,color:`${tc}bb`,background:`${tc}0e`,border:`1px solid ${tc}1e`,borderRadius:6,padding:"2px 7px",letterSpacing:0.5,fontWeight:500,whiteSpace:"nowrap",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{segment.type?.toUpperCase()}</span>
+            <span style={{fontSize:isMobile?13:15,fontWeight:600,color:"rgba(201,160,76,0.9)",fontFamily:"'Space Mono',ui-monospace,monospace",whiteSpace:"nowrap",flexShrink:0,textDecoration:isCancelled?"line-through":"none",alignSelf:"flex-start",marginTop:1}}>{fmt(segment.budget)}</span>
           </div>
-          {/* Row 2: date + nights + dives */}
-          <div style={{display:"flex",alignItems:"center",gap:6,marginTop:4,paddingLeft:13,minWidth:0,flexWrap:"wrap"}}>
-            <span style={{color:"rgba(255,255,255,0.75)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:14,whiteSpace:"nowrap"}}>{fD(segment.arrival)}→{fD(segment.departure)}</span>
-            <span style={{color:"rgba(255,255,255,0.60)",fontSize:14,whiteSpace:"nowrap"}}>· {segment.nights}n</span>
-            {segment.diveCount>0&&<span style={{color:"rgba(0,229,255,0.7)",fontSize:14,whiteSpace:"nowrap"}}>· 🤿{segment.diveCount}</span>}
+          {/* Row 2: status + progress */}
+          <div style={{display:"flex",alignItems:"center",gap:6,marginTop:8,paddingLeft:15,minWidth:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
             <div style={{flex:1,minWidth:0}}/>
             <ProgDots phaseId={phaseId} segment={segment} intelSnippet={intelSnippet}/>
-            <button onClick={handleBadgeTap} style={{background:planStatus?planStatus.bg:`${sc.color}18`,border:planStatus?`1px solid ${planStatus.border}`:`1px solid ${sc.color}55`,borderRadius:12,padding:"3px 8px",fontSize:11,fontWeight:700,letterSpacing:0.5,color:(planStatus||sc).color,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:2,lineHeight:1.4,minHeight:22,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",flexShrink:0,maxWidth:120,overflow:"hidden",textOverflow:"ellipsis",animation:status==='planning'&&completedCount===0?'planningPulse 2.2s ease-in-out infinite':'none'}}>
+            <button onClick={handleBadgeTap} style={{background:planStatus?planStatus.bg:`${sc.color}18`,border:planStatus?`1px solid ${planStatus.border}`:`1px solid ${sc.color}55`,borderRadius:12,padding:"4px 9px",fontSize:11,fontWeight:700,letterSpacing:0.5,color:(planStatus||sc).color,cursor:"pointer",fontFamily:"'Space Mono',ui-monospace,monospace",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:2,lineHeight:1.4,minHeight:24,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",flexShrink:0,maxWidth:120,overflow:"hidden",textOverflow:"ellipsis",animation:status==='planning'&&completedCount===0?'planningPulse 2.2s ease-in-out infinite':'none'}}>
               <span style={{fontSize:11}}>{planStatus?completedCount>=3?"✓":sc.icon:sc.icon}</span>{planStatus?planStatus.label:sc.label}
             </button>
           </div>
-{segment.note&&<div style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.5,marginTop:3,paddingLeft:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"90%"}}>{segment.note}</div>}
-          {insight&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(245,158,11,0.55)",lineHeight:1.5,marginTop:4,paddingLeft:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"90%"}}>{insight}</div>}
+{segment.note&&<div style={{fontFamily:"'Fraunces',serif",fontSize:revealBodyFs,fontStyle:"italic",fontWeight:400,color:"rgba(255,248,235,0.78)",lineHeight:1.55,marginTop:8,paddingLeft:15,maxWidth:"100%",wordBreak:"break-word"}}>{segment.note}</div>}
+          {insight&&<div style={{fontFamily:"'Fraunces',serif",fontSize:revealBodyFs,fontStyle:"italic",fontWeight:400,color:"rgba(201,160,76,0.82)",lineHeight:1.55,marginTop:6,paddingLeft:15,maxWidth:"100%",wordBreak:"break-word"}}>{insight}</div>}
         </div>
         {onSegmentTap?<div onClick={e=>{e.stopPropagation();onSegmentTap(segment);}} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"0 10px",cursor:"pointer",flexShrink:0}}>
           <span style={{fontSize:18,color:"rgba(255,255,255,0.30)",fontWeight:300}}>›</span>
@@ -127,11 +135,11 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
         </button></>}
       </div>
       {!open&&segData&&(hasTransport||hasStay||hasActivities||segData.food?.dailyBudget)&&(
-        <div onClick={()=>setOpen(true)} style={{padding:"4px 14px 6px 20px",display:"flex",flexWrap:"wrap",gap:"4px 8px",cursor:"pointer",background:"rgba(0,4,14,0.4)"}}>
-          {hasTransport&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.75)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",lineHeight:1.5}}>✈️ {segData.transport.mode||"Transport"}{segData.transport.from&&segData.transport.to?` · ${segData.transport.from} → ${segData.transport.to}`:""}{segData.transport.cost?` · $${segData.transport.cost}`:""}</span>}
-          {hasStay&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.75)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",lineHeight:1.5}}>🏨 {segData.stay.name}{segData.stay.cost?` · $${segData.stay.cost}`:""}</span>}
-          {hasActivities&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.75)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",lineHeight:1.5}}>⚡ {segData.activities.length} activit{segData.activities.length===1?"y":"ies"}{segData.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0)>0?` · $${segData.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}`:""}</span>}
-          {segData.food?.dailyBudget&&<span style={{fontSize:13,fontWeight:500,color:"rgba(255,255,255,0.75)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap",lineHeight:1.5}}>🍜 ${segData.food.dailyBudget}/day</span>}
+        <div onClick={()=>setOpen(true)} style={{padding:"6px 14px 8px 20px",display:"flex",flexWrap:"wrap",gap:"6px 10px",cursor:"pointer",background:"rgba(0,4,14,0.4)"}}>
+          {hasTransport&&<span style={{fontSize:isMobile?13:14,fontWeight:500,color:"rgba(255,248,235,0.82)",fontFamily:"'Space Mono',ui-monospace,monospace",whiteSpace:"nowrap",lineHeight:1.55}}>✈️ {segData.transport.mode||"Transport"}{segData.transport.from&&segData.transport.to?` · ${segData.transport.from} → ${segData.transport.to}`:""}{segData.transport.cost?` · $${segData.transport.cost}`:""}</span>}
+          {hasStay&&<span style={{fontSize:isMobile?13:14,fontWeight:500,color:"rgba(255,248,235,0.82)",fontFamily:"'Space Mono',ui-monospace,monospace",whiteSpace:"nowrap",lineHeight:1.55}}>🏨 {segData.stay.name}{segData.stay.cost?` · $${segData.stay.cost}`:""}</span>}
+          {hasActivities&&<span style={{fontSize:isMobile?13:14,fontWeight:500,color:"rgba(255,248,235,0.82)",fontFamily:"'Space Mono',ui-monospace,monospace",whiteSpace:"nowrap",lineHeight:1.55}}>⚡ {segData.activities.length} activit{segData.activities.length===1?"y":"ies"}{segData.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0)>0?` · $${segData.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}`:""}</span>}
+          {segData.food?.dailyBudget&&<span style={{fontSize:isMobile?13:14,fontWeight:500,color:"rgba(255,248,235,0.82)",fontFamily:"'Space Mono',ui-monospace,monospace",whiteSpace:"nowrap",lineHeight:1.55}}>🍜 ${segData.food.dailyBudget}/day</span>}
         </div>
       )}
       {askOpen&&(
