@@ -138,6 +138,11 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 .welcome-beta-wordmark-one{font-size:1.22em;font-weight:600;letter-spacing:0.14em;display:inline-block;vertical-align:-0.02em}
 @media (min-width:769px){.welcome-beta-logo-btn{width:136px;height:136px;margin-bottom:10px}}
 @media (prefers-reduced-motion:reduce){.welcome-beta-logo-btn{animation:none!important;box-shadow:0 0 0 2px rgba(201,160,76,0.4),0 0 36px rgba(201,160,76,0.32);filter:drop-shadow(0 0 20px rgba(201,160,76,0.38))}}
+.welcome-click-hint{margin:0 0 4px;font-family:'Space Mono','Courier New',monospace;font-size:10px;font-weight:500;letter-spacing:0.28em;text-transform:uppercase;color:rgba(201,160,76,0.42)}
+.welcome-tagline{margin:0;font-family:'Fraunces',Georgia,serif;font-size:clamp(15px,3.2vw,18px);font-weight:400;font-style:italic;color:rgba(248,245,240,0.72);letter-spacing:0.04em;line-height:1.5}
+.welcome-footer{margin-top:auto;padding:28px 20px 32px;text-align:center;border-top:1px solid rgba(201,160,76,0.08);max-width:520px;align-self:center;width:100%;box-sizing:border-box}
+.welcome-creed{margin:0 0 10px;font-family:'Cinzel',Georgia,serif;font-size:clamp(9px,2vw,11px);font-weight:500;letter-spacing:0.22em;color:rgba(201,160,76,0.55);line-height:1.6}
+.welcome-patent{margin:0;font-family:'Space Mono','Courier New',monospace;font-size:9px;font-weight:400;letter-spacing:0.06em;color:rgba(248,245,240,0.28);line-height:1.5}
 @media(max-width:768px){.sg-suggestion-card{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;padding:16px!important;box-sizing:border-box!important}}
 
   .dream-root,.mc-root,.build-root{font-size:18px}
@@ -335,84 +340,90 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
           "radial-gradient(ellipse at 50% 0%, rgba(169,70,29,0.15) 0%, transparent 60%), #0A0705",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        paddingTop: "max(60px, 10vh)",
-        paddingBottom: "max(40px, 8vh)",
-        paddingLeft: 24,
-        paddingRight: 24,
-        textAlign: "center",
-        gap: 24,
+        alignItems: "stretch",
         boxSizing: "border-box",
       }}
     >
-      <button
-        type="button"
-        onClick={onStartDreaming}
-        className="welcome-beta-logo-btn"
-        aria-label="Start dreaming"
-      >
-        <img
-          src="/1bn-logo.png"
-          alt=""
-          onError={(e) => {
-            e.target.style.display = "none";
-          }}
-        />
-      </button>
-      <p className="welcome-beta-wordmark">
-        <span className="welcome-beta-wordmark-one">1</span> Bag Nomad
-      </p>
-      <div>
-        <div
-          style={{
-            fontFamily: "'Playfair Display',Georgia,serif",
-            fontSize: "clamp(28px, 6vw, 42px)",
-            fontWeight: 200,
-            color: "rgba(255,245,220,0.95)",
-            lineHeight: 1.3,
-            marginBottom: 10,
-          }}
-        >
-          Your first expedition
-          <br />
-          is waiting.
-        </div>
-        <div
-          style={{
-            fontFamily: "'Playfair Display',Georgia,serif",
-            fontSize: 18,
-            fontStyle: "italic",
-            color: "rgba(255,159,67,0.65)",
-          }}
-        >
-          Every journey starts with a feeling.
-        </div>
-      </div>
-      <button
-        type="button"
-        onClick={onTryDemo}
+      <div
         style={{
-          background: "transparent",
-          border: "none",
-          color: "rgba(255,245,220,0.48)",
-          fontFamily: "'Inter',system-ui,sans-serif",
-          fontSize: 16,
-          fontWeight: 500,
-          letterSpacing: "0.05em",
-          cursor: "pointer",
-          padding: "12px 20px",
-          transition: "color 0.2s ease",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.color = "rgba(255,200,120,0.85)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.color = "rgba(255,245,220,0.48)";
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          paddingTop: "max(48px, 8vh)",
+          paddingBottom: 24,
+          paddingLeft: 24,
+          paddingRight: 24,
+          textAlign: "center",
+          gap: 20,
         }}
       >
-        or explore a demo expedition →
-      </button>
+        <button
+          type="button"
+          onClick={onStartDreaming}
+          className="welcome-beta-logo-btn"
+          aria-label="Start dreaming"
+        >
+          <img
+            src="/1bn-logo.png"
+            alt=""
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
+          />
+        </button>
+        <p className="welcome-click-hint">Click to enter</p>
+        <p className="welcome-beta-wordmark" style={{ marginTop: 4 }}>
+          <span className="welcome-beta-wordmark-one">1</span> Bag Nomad
+        </p>
+        <div style={{ maxWidth: 420 }}>
+          <div
+            style={{
+              fontFamily: "'Playfair Display',Georgia,serif",
+              fontSize: "clamp(26px, 5.5vw, 40px)",
+              fontWeight: 200,
+              color: "rgba(255,245,220,0.94)",
+              lineHeight: 1.28,
+              marginBottom: 14,
+            }}
+          >
+            Your first expedition
+            <br />
+            is waiting.
+          </div>
+          <p className="welcome-tagline">dream big · travel light</p>
+        </div>
+        <button
+          type="button"
+          onClick={onTryDemo}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "rgba(255,245,220,0.42)",
+            fontFamily: "'Inter',system-ui,sans-serif",
+            fontSize: 15,
+            fontWeight: 500,
+            letterSpacing: "0.06em",
+            cursor: "pointer",
+            padding: "10px 18px",
+            marginTop: 4,
+            transition: "color 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "rgba(255,200,120,0.8)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "rgba(255,245,220,0.42)";
+          }}
+        >
+          or explore a demo expedition →
+        </button>
+      </div>
+      <footer className="welcome-footer" aria-label="Company">
+        <p className="welcome-creed">Freedom · Independence · Discovery</p>
+        <p className="welcome-patent">Patent pending · USPTO #64/014,106</p>
+      </footer>
     </div>
   );
 }
