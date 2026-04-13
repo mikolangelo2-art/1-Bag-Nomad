@@ -4,6 +4,7 @@ import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fmt, fD, daysBetween } from '../utils/dateHelpers';
 import { urgencyColor } from '../constants/colors';
+import { CONSOLE_CONTENT_MAX } from '../constants/layout';
 import { loadSeg, saveSeg, loadReturn, saveReturn, TI } from '../utils/storageHelpers';
 import { STATUS_CFG, STATUS_NEXT, formatTripNameDisplay } from '../utils/tripConsoleHelpers';
 import { toSegPhases, computePhasePlannedSpend } from '../utils/tripHelpers';
@@ -124,8 +125,8 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
           <button type="button" onClick={()=>onSaveAsFounderExpedition()} style={{background:"transparent",border:"1px solid rgba(201,160,76,0.20)",borderRadius:12,padding:"4px 10px",fontSize:10,color:"rgba(201,160,76,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",cursor:"pointer",minHeight:32}}>+ save as expedition</button>
         )}
       </div>}
-      {/* Upper trip dashboard — full viewport header above; column matches Pack Console (1200) */}
-      <div style={isMobile?undefined:{maxWidth:1200,margin:"0 auto",padding:"0 24px",width:"100%",boxSizing:"border-box"}}>
+      {/* Upper trip dashboard — full viewport header above; column matches Pack Console */}
+      <div style={isMobile?undefined:{maxWidth:CONSOLE_CONTENT_MAX,margin:"0 auto",padding:"0 24px",width:"100%",boxSizing:"border-box"}}>
       {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:isMobile?"8px 12px 6px":"10px 0 8px",background:isMobile?"rgba(0,8,16,0.10)":"linear-gradient(180deg,rgba(21,15,10,0.45),rgba(21,15,10,0.50))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden",zIndex:1}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(232,220,200,0.02) 0%,transparent 60%)",pointerEvents:"none"}}/>
         {tripData.tripName&&<div style={{marginBottom:isMobile?8:12,position:"relative"}}>
@@ -337,7 +338,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                 display: "flex",
                 flexDirection: "column",
                 gap: 14,
-                maxWidth: isMobile ? "100%" : 1200,
+                maxWidth: isMobile ? "100%" : CONSOLE_CONTENT_MAX,
                 margin: isMobile ? undefined : "0 auto",
                 width: "100%",
                 padding: isMobile ? "0 8px" : "0 24px",

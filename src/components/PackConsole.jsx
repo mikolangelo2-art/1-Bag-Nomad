@@ -9,6 +9,7 @@ import { useMobile } from '../hooks/useMobile';
 import { askAI, parseJSON } from '../utils/aiHelpers';
 import { TI } from '../utils/storageHelpers';
 import { BAG_COLORS, DIVE_CYAN, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS } from '../constants/colors';
+import { CONSOLE_CONTENT_MAX } from '../constants/layout';
 import { buildTripPack, getDefaultPack, mapPackItemsWithVolumes } from '../utils/packHelpers';
 import { formatTripNameDisplay } from '../utils/tripConsoleHelpers';
 
@@ -34,7 +35,6 @@ const PACK_GOLD = "#D4AF37";
 const PACK_CREAM = "#F5F0E8";
 /** Volume ring arc + center numeral — same hue as Trip console toggle (`rgba(0,229,255,0.6)` / DIVE_CYAN) */
 const PACK_VOLUME_RING = DIVE_CYAN;
-const PACK_CONTENT_MAX = 880;
 const RING_TRACK = "rgba(255,255,255,0.08)";
 const RING_STROKE_W = 7;
 
@@ -379,7 +379,7 @@ function CategoryDetailPage({ cat, onBack, catItems, isMobile, rowProps, addItem
   const catW = catItems.reduce((s, i) => s + (parseFloat(i.weight) || 0), 0) * wM;
   const catCost = catItems.reduce((s, i) => s + (parseFloat(i.cost) || 0), 0);
   return (
-    <div style={{ display: "flex", flexDirection: "column", flex: 1, overflowY: "auto", animation: "slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)", maxWidth: PACK_CONTENT_MAX, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, overflowY: "auto", animation: "slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)", maxWidth: CONSOLE_CONTENT_MAX, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
       <div
         style={{
           display: "flex",
@@ -604,7 +604,7 @@ Return ONLY a JSON array:
       {/* Header */}
       {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} onTripConsole={onExpedition} onPackConsole={()=>{}}/>}
       {/* Upper dashboard — desktop side inset matches card column / Trip Console */}
-      <div style={isMobile?{padding:'0 12px',width:'100%',boxSizing:'border-box'}:{maxWidth:PACK_CONTENT_MAX,margin:'0 auto',padding:'0 24px',width:'100%',boxSizing:'border-box'}}>
+      <div style={isMobile?{padding:'0 12px',width:'100%',boxSizing:'border-box'}:{maxWidth:CONSOLE_CONTENT_MAX,margin:'0 auto',padding:'0 24px',width:'100%',boxSizing:'border-box'}}>
       {/* Console switcher (inside maxWidth so it aligns with rings / tabs) */}
       {!isFullscreen&&!isMobile&&<div style={{display:"flex",border:"1px solid rgba(255,255,255,0.10)",borderTop:"1px solid rgba(255,255,255,0.18)",background:"rgba(10,7,5,0.45)",backdropFilter:"blur(14px)",WebkitBackdropFilter:"blur(14px)",flexShrink:0}}>
         <div onClick={onExpedition} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",borderRight:"1px solid rgba(196,87,30,0.2)",opacity:0.55}} onMouseOver={e=>{e.currentTarget.style.background="rgba(0,229,255,0.06)";e.currentTarget.style.opacity="1";}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.opacity="0.55";}}>
@@ -689,7 +689,7 @@ Return ONLY a JSON array:
           <span style={{fontSize:11,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.6)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:filterCat==="needtobuy"?700:400,letterSpacing:1}}>{filterCat==="needtobuy"?"ALL ITEMS":"NEED TO BUY"}</span>
         </button>
       </div>}
-      {/* Main content — same 880px column as hero / tabs (Session 53 width alignment) */}
+      {/* Main content — same column as Trip Console (CONSOLE_CONTENT_MAX) */}
       {packTab==="pack"&&packView==="category"&&activeCategory&&(
         <>
           <CategoryDetailPage cat={activeCategory} onBack={()=>{setPackView('dashboard');setActiveCategory(null);}} catItems={items.filter(i=>i.cat===activeCategory.id)} isMobile={isMobile} rowProps={rowProps} addItemToCat={addItemToCat}/>
