@@ -655,7 +655,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
-          {suggestion?.activities?.map((activity,idx)=>(
+          {suggestion?.activities?.slice(0, 3).map((activity,idx)=>(
             !isDism(`activity_${idx}`)&&!det.activities.some(x=>x.suggestionActivityIdx===idx)&&<ActivitySuggestionExperienceCard key={`act-sug-${idx}-${String(activity.name||'').slice(0,32)}`} segmentName={dest} segmentCountry={destCountry} photoInstanceId={`sug-act-${idx}`} activity={activity} isMobile={isMobile} onAdd={()=>acceptActivity(activity,idx)} onSkip={()=>dismiss(`activity_${idx}`)} acceptBtnStyle={acceptBtnStyle} dismissBtnStyle={dismissBtnStyle}/>
           ))}
           {det.activities.length>0&&<div style={{marginBottom:16}}>
@@ -701,7 +701,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <span style={{fontSize:14,fontWeight:600,color:'rgba(201,160,76,0.85)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0).toLocaleString()}</span>
             </div>
           </div>}
-          {det.activities.length===0&&!(suggestion?.activities?.some((_,i)=>!isDism(`activity_${i}`)&&!det.activities.some(x=>x.suggestionActivityIdx===i)))&&!suggestionsLoading&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Playfair Display',serif",fontSize:14,fontStyle:'italic',color:'rgba(201,160,76,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
+          {det.activities.length===0&&!(suggestion?.activities?.slice(0, 3)?.some((_,i)=>!isDism(`activity_${i}`)&&!det.activities.some(x=>x.suggestionActivityIdx===i)))&&!suggestionsLoading&&<div style={{textAlign:'center',padding:'24px 0 16px'}}><div style={{fontFamily:"'Playfair Display',serif",fontSize:14,fontStyle:'italic',color:'rgba(201,160,76,0.40)'}}>No activities planned yet — dives, tours, day trips</div></div>}
           {actInsight.loading&&<SuggestionShimmer message={`Curating experiences in ${dest||"this destination"}...`}/>}
           {!actInsight.loading&&actInsight.items.length>0&&actInsight.items.map((it,idx)=>(
             <GenericSuggestionCard key={`act-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`act-tab-${idx}`} accent="#c9a04c" variant="expand" isMobile={isMobile} warmLine={it.name?`Great choice. ${it.name} is one of the best ways to experience ${dest}.`:undefined} onAddToPlan={()=>acceptActivity({name:it.name,notes:it.description,estimatedCost:String(it.price),provider:it.category})}/>
