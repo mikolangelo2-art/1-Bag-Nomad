@@ -81,9 +81,16 @@ export function useTabSuggestions({ kind, segment, enabled }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
   const fetchedRef = useRef(null);
   const segmentRef = useRef(segment);
   segmentRef.current = segment;
+
+  function retry() {
+    fetchedRef.current = null;
+    setError(null);
+    setRetryCount((c) => c + 1);
+  }
 
   const cacheKey = useMemo(
     () =>
@@ -120,7 +127,7 @@ export function useTabSuggestions({ kind, segment, enabled }) {
     return () => {
       cancelled = true;
     };
-  }, [cacheKey, enabled, kind]);
+  }, [cacheKey, enabled, kind, retryCount]);
 
-  return { items, loading, error };
+  return { items, loading, error, retry };
 }

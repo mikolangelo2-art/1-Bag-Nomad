@@ -594,7 +594,32 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
                   </>
                 );
               })()}
-              {!stayInsight.loading&&stayInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{stayInsight.error}</div>}
+              {!stayInsight.loading&&stayInsight.error&&(
+                <div style={{textAlign:"center",padding:"24px 16px",display:"flex",flexDirection:"column",alignItems:"center",gap:12}}>
+                  <div style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",fontSize:15,color:"rgba(255,248,235,0.45)",lineHeight:1.6}}>
+                    Suggestions unavailable right now.
+                  </div>
+                  <button
+                    type="button"
+                    onClick={stayInsight.retry}
+                    style={{
+                      background:"none",
+                      border:"1px solid rgba(201,160,76,0.35)",
+                      borderRadius:8,
+                      color:"#c9a04c",
+                      fontSize:12,
+                      fontFamily:"'Inter',system-ui,sans-serif",
+                      fontWeight:700,
+                      letterSpacing:1,
+                      padding:"8px 18px",
+                      cursor:"pointer",
+                      minHeight:36,
+                    }}
+                  >
+                    ↺ Try again
+                  </button>
+                </div>
+              )}
               {stayInsightSavedIdx!=null&&<button type="button" onClick={()=>setStayManualOpen(o=>!o)} style={{width:'100%',textAlign:'left',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(201,160,76,0.35)',borderRadius:10,color:'#c9a04c',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,padding:'10px 14px',cursor:'pointer',marginTop:8,marginBottom:4,minHeight:44}}>+ Add another stay</button>}
             </>
             </SuggestionPhotoDedupProvider>
@@ -694,7 +719,32 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             );
           })()}
           </SuggestionPhotoDedupProvider>
-          {!actInsight.loading&&actInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{actInsight.error}</div>}
+          {!actInsight.loading&&actInsight.error&&(
+            <div style={{textAlign:"center",padding:"24px 16px",display:"flex",flexDirection:"column",alignItems:"center",gap:12}}>
+              <div style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",fontSize:15,color:"rgba(255,248,235,0.45)",lineHeight:1.6}}>
+                Suggestions unavailable right now.
+              </div>
+              <button
+                type="button"
+                onClick={actInsight.retry}
+                style={{
+                  background:"none",
+                  border:"1px solid rgba(201,160,76,0.35)",
+                  borderRadius:8,
+                  color:"#c9a04c",
+                  fontSize:12,
+                  fontFamily:"'Inter',system-ui,sans-serif",
+                  fontWeight:700,
+                  letterSpacing:1,
+                  padding:"8px 18px",
+                  cursor:"pointer",
+                  minHeight:36,
+                }}
+              >
+                ↺ Try again
+              </button>
+            </div>
+          )}
           {det.activities.filter(a=>!(a.actInsightIdx!=null&&actInsightSavedIdxs.includes(a.actInsightIdx))&&(a.suggestionActivityIdx==null||!suggestion?.activities?.[a.suggestionActivityIdx])).length>0&&<div style={{marginBottom:16}}>
             {det.activities.filter(a=>!(a.actInsightIdx!=null&&actInsightSavedIdxs.includes(a.actInsightIdx))&&(a.suggestionActivityIdx==null||!suggestion?.activities?.[a.suggestionActivityIdx])).map(a=>(
               <div key={a.id} style={{border:planCommitCardBorder,borderRadius:planCommitCardRadius,background:planCommitCardBg,padding:planCommitCardPad,marginBottom:14,display:'flex',flexDirection:'column'}}>
@@ -826,7 +876,32 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               </SuggestionPhotoDedupProvider>
             );
           })()}
-          {!showFoodSummary&&!foodInsight.loading&&foodInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{foodInsight.error}</div>}
+          {!showFoodSummary&&!foodInsight.loading&&foodInsight.error&&(
+            <div style={{textAlign:"center",padding:"24px 16px",display:"flex",flexDirection:"column",alignItems:"center",gap:12}}>
+              <div style={{fontFamily:"'Fraunces',serif",fontStyle:"italic",fontSize:15,color:"rgba(255,248,235,0.45)",lineHeight:1.6}}>
+                Suggestions unavailable right now.
+              </div>
+              <button
+                type="button"
+                onClick={foodInsight.retry}
+                style={{
+                  background:"none",
+                  border:"1px solid rgba(201,160,76,0.35)",
+                  borderRadius:8,
+                  color:"#c9a04c",
+                  fontSize:12,
+                  fontFamily:"'Inter',system-ui,sans-serif",
+                  fontWeight:700,
+                  letterSpacing:1,
+                  padding:"8px 18px",
+                  cursor:"pointer",
+                  minHeight:36,
+                }}
+              >
+                ↺ Try again
+              </button>
+            </div>
+          )}
           {showFoodManualBase&&<>
           <button type="button" onClick={()=>setFoodManualOpen(o=>!o)} style={{width:'100%',textAlign:'left',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(201,160,76,0.35)',borderRadius:10,color:'#c9a04c',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,padding:'10px 14px',cursor:'pointer',marginBottom:10,minHeight:44}}>{foodManualOpen||editingFood?'⌄ Hide manual food plan':'+ Plan your own food budget'}</button>
           {showFoodManualForm&&<>
