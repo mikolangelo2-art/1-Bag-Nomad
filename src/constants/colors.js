@@ -131,12 +131,12 @@ export const NOTEBOOK_CAT_COLORS = {
 // ── Pack Category Colors ─────────────────────────────────────
 export const PACK_CAT_COLORS = {
   docs:      LIGHT_GRAY,
-  tech:      TECH_BLUE,
+  tech:      CULTURE_GOLD,
   clothes:   CULTURE_GOLD,
   health:    SURF_GREEN,
   travel:    TREK_TEAL,
   creator:   EXPLORATION_ORANGE,
-  dive:      DIVE_CYAN,
+  dive:      "#B8A078",
   adventure: TREK_TEAL,
   safari:    CULTURE_GOLD,
   moto:      MOTO_RED,
