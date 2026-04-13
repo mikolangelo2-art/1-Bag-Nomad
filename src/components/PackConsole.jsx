@@ -8,7 +8,7 @@ import HelpTip from './HelpTip';
 import { useMobile } from '../hooks/useMobile';
 import { askAI, parseJSON } from '../utils/aiHelpers';
 import { TI } from '../utils/storageHelpers';
-import { BAG_COLORS, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS } from '../constants/colors';
+import { BAG_COLORS, DIVE_CYAN, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS } from '../constants/colors';
 import { buildTripPack, getDefaultPack, mapPackItemsWithVolumes } from '../utils/packHelpers';
 import { formatTripNameDisplay } from '../utils/tripConsoleHelpers';
 
@@ -32,8 +32,8 @@ function persistPackExpandedCats(obj) {
 
 const PACK_GOLD = "#D4AF37";
 const PACK_CREAM = "#F5F0E8";
-/** Volume ring stroke + center numeral — muted steel blue (quiet vs. gold weight ring; not Trip cyan) */
-const PACK_VOLUME_RING = "#7A8FA8";
+/** Volume ring arc + center numeral — same hue as Trip console toggle (`rgba(0,229,255,0.6)` / DIVE_CYAN) */
+const PACK_VOLUME_RING = DIVE_CYAN;
 const PACK_CONTENT_MAX = 880;
 const RING_TRACK = "rgba(255,255,255,0.08)";
 const RING_STROKE_W = 7;
@@ -604,7 +604,7 @@ Return ONLY a JSON array:
       {/* Header */}
       {!isFullscreen&&<ConsoleHeader console="pack" isMobile={isMobile} onTripConsole={onExpedition} onPackConsole={()=>{}}/>}
       {/* Upper dashboard — desktop side inset matches card column / Trip Console */}
-      <div style={isMobile?undefined:{maxWidth:1200,margin:'0 auto',padding:'0 24px',width:'100%',boxSizing:'border-box'}}>
+      <div style={isMobile?{padding:'0 12px',width:'100%',boxSizing:'border-box'}:{maxWidth:PACK_CONTENT_MAX,margin:'0 auto',padding:'0 24px',width:'100%',boxSizing:'border-box'}}>
       {/* Console switcher (inside maxWidth so it aligns with rings / tabs) */}
       {!isFullscreen&&!isMobile&&<div style={{display:"flex",border:"1px solid rgba(255,255,255,0.10)",borderTop:"1px solid rgba(255,255,255,0.18)",background:"rgba(10,7,5,0.45)",backdropFilter:"blur(14px)",WebkitBackdropFilter:"blur(14px)",flexShrink:0}}>
         <div onClick={onExpedition} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",borderRight:"1px solid rgba(196,87,30,0.2)",opacity:0.55}} onMouseOver={e=>{e.currentTarget.style.background="rgba(0,229,255,0.06)";e.currentTarget.style.opacity="1";}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.opacity="0.55";}}>
@@ -689,8 +689,7 @@ Return ONLY a JSON array:
           <span style={{fontSize:11,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.6)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:filterCat==="needtobuy"?700:400,letterSpacing:1}}>{filterCat==="needtobuy"?"ALL ITEMS":"NEED TO BUY"}</span>
         </button>
       </div>}
-      </div>
-      {/* Main content */}
+      {/* Main content — same 880px column as hero / tabs (Session 53 width alignment) */}
       {packTab==="pack"&&packView==="category"&&activeCategory&&(
         <>
           <CategoryDetailPage cat={activeCategory} onBack={()=>{setPackView('dashboard');setActiveCategory(null);}} catItems={items.filter(i=>i.cat===activeCategory.id)} isMobile={isMobile} rowProps={rowProps} addItemToCat={addItemToCat}/>
@@ -698,7 +697,7 @@ Return ONLY a JSON array:
         </>
       )}
       {packTab==="pack"&&packView==="dashboard"&&(
-        <div className="pack-scroll-dashboard" style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 24px 32px",boxSizing:"border-box",background:"transparent",backgroundImage:"none",maxWidth:PACK_CONTENT_MAX,margin:"0 auto",width:"100%"}}>
+        <div className="pack-scroll-dashboard" style={{overflowY:"auto",flex:1,padding:isMobile?`12px 0 ${packMobileScrollBottom}`:"12px 0 32px",boxSizing:"border-box",background:"transparent",backgroundImage:"none",width:"100%"}}>
           {filterCat==="needtobuy"?(()=>{
             const unowned=[...items].filter(i=>!i.owned).sort((a,b)=>(parseFloat(b.cost)||0)-(parseFloat(a.cost)||0));
             const total=unowned.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
@@ -739,7 +738,7 @@ Return ONLY a JSON array:
               )}
             </div>);
           })():<>
-            <div style={{maxWidth:isMobile?"100%":PACK_CONTENT_MAX,margin:isMobile?undefined:"0 auto",width:"100%",padding:isMobile?undefined:"0 24px",boxSizing:"border-box",background:"transparent"}}>
+            <div style={{width:"100%",boxSizing:"border-box",background:"transparent"}}>
               {CATS.map((cat,i)=><CatCard key={cat.id} cat={cat} idx={i} isMobile={isMobile} itemsForCat={itemsForCat} wM={wM} unit={unit} onSelectCategory={selectCategory}/>)}
             </div>
             {pp&&<>
@@ -763,7 +762,7 @@ Return ONLY a JSON array:
         </div>
       )}
       {packTab==="tailor"&&(
-        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 24px",boxSizing:"border-box",maxWidth:PACK_CONTENT_MAX,margin:"0 auto",width:"100%"}}>
+        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 0 ${packMobileScrollBottom}`:"12px 0 32px",boxSizing:"border-box",width:"100%"}}>
           <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.12),rgba(201,160,76,0.04))",border:"1px solid rgba(212,175,55,0.28)",borderRadius:12,marginBottom:16,overflow:"hidden"}}>
             <button onClick={()=>{const next=!packBriefCollapsed;setPackBriefCollapsed(next);if(next)try{localStorage.setItem(briefKey,"1");}catch(e){}}} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"none",border:"none",cursor:"pointer"}}>
               <div style={{fontFamily:"'Fraunces',serif",fontSize:18,color:PACK_GOLD,letterSpacing:"0.08em",fontWeight:600}}>✦ CO-ARCHITECT PACK BRIEF</div>
@@ -837,7 +836,7 @@ Return ONLY a JSON array:
         </div>
       )}
       {packTab==="weight"&&(
-        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 12px ${packMobileScrollBottom}`:"12px 24px",boxSizing:"border-box",maxWidth:PACK_CONTENT_MAX,margin:"0 auto",width:"100%",position:"relative"}}>
+        <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 0 ${packMobileScrollBottom}`:"12px 0 32px",boxSizing:"border-box",width:"100%",position:"relative"}}>
           <div style={{display:"flex",justifyContent:"flex-end",marginBottom:14}}>
             <button type="button" onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:11,color:"rgba(255,255,255,0.5)",background:"transparent",border:"1px solid rgba(255,255,255,0.25)",borderRadius:20,padding:"4px 12px",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,fontWeight:600}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
           </div>
@@ -869,6 +868,7 @@ Return ONLY a JSON array:
           })}
         </div>
       )}
+      </div>
       {isMobile&&!isFullscreen&&packView==="dashboard"&&<div style={{height:packMobileNavSpacer}}/>}
       {isMobile&&!isFullscreen&&<BottomNav activeTab="pack" onTab={t=>{if(t==="pack")return;if(onGoToTab)onGoToTab(t);else onExpedition();}}/>}
       </div>
