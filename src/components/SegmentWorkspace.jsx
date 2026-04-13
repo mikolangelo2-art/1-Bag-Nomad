@@ -172,7 +172,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const [stayManualOpen,setStayManualOpen]=useState(false);
   const [activitiesManualOpen,setActivitiesManualOpen]=useState(false);
   const [foodManualOpen,setFoodManualOpen]=useState(false);
-  const [foodAccordionOpen,setFoodAccordionOpen]=useState(null);
   const [stayCoarchInPlace,setStayCoarchInPlace]=useState(false);
   const [stayInsightSavedIdx,setStayInsightSavedIdx]=useState(null);
   const [stayInsightBrowseAll,setStayInsightBrowseAll]=useState(false);
@@ -300,8 +299,10 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const hasStaySecondaryField=(!isRowEmpty(det.stay?.checkin)&&!isRowEmpty(det.stay?.checkout))||stayCostNum>0||(det.stay?.link||"").trim().length>0||(det.stay?.notes||"").trim().length>0;
   const showStayAccommodationCard=hasS&&hasStaySecondaryField&&!stayFocused;
   const hasFoodBudget=!isRowEmpty(det.food?.dailyBudget);
-  const stayInsight=useTabSuggestions({kind:"stay",segment,enabled:tab==="stay"&&(!showStayAccommodationCard||stayInsightSavedIdx!=null||stayInsightBrowseAll)});
-  const foodInsight=useTabSuggestions({kind:"food",segment,enabled:tab==="food"&&(!hasFoodBudget||foodInsightSavedIdx!=null||foodInsightBrowseAll)});
+  const caStayBlocksInsight=!!(suggestion?.stay&&!isDism('stay'));
+  const caFoodBlocksInsight=!!(suggestion?.food&&!isDism('food'));
+  const stayInsight=useTabSuggestions({kind:"stay",segment,enabled:tab==="stay"&&!caStayBlocksInsight&&(!showStayAccommodationCard||stayInsightSavedIdx!=null||stayInsightBrowseAll)});
+  const foodInsight=useTabSuggestions({kind:"food",segment,enabled:tab==="food"&&!caFoodBlocksInsight&&(!hasFoodBudget||foodInsightSavedIdx!=null||foodInsightBrowseAll)});
   const actInsight=useTabSuggestions({kind:"activities",segment,enabled:tab==="activities"});
   /** Session 53H: count CA suggestion cards still visible (slice 0–2); hide actInsight while any remain */
   const visibleCASuggestions=useMemo(()=>(suggestion?.activities||[]).slice(0,3).filter((_,idx)=>!dismissed[`${dismissKey}_activity_${idx}`]&&!det.activities.some(x=>x.suggestionActivityIdx===idx)).length,[suggestion?.activities,det.activities,dismissed,dismissKey]);
@@ -328,6 +329,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const committedFooterWrapStyle={marginTop:14,paddingTop:12,borderTop:'1px solid rgba(255,255,255,0.06)'};
   const addedPlanLineStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(105,240,174,0.88)',letterSpacing:0.35,lineHeight:1.45};
   const returnToLogFooterStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.36)',letterSpacing:'0.14em',lineHeight:1.58,marginTop:8};
+  const caReminderStyle={fontFamily:"'Fraunces',serif",fontStyle:'italic',fontSize:14,color:'rgba(201,160,76,0.55)',textAlign:'center',padding:'12px 8px',width:'100%',background:'none',border:'none',cursor:'pointer',display:'block',lineHeight:1.5};
   const tripFieldLabel={fontSize:isMobile?12:14,color:"rgba(0,229,255,0.75)",letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,opacity:0.92};
   const cityInStyle={background:"rgba(0,0,0,0.55)",border:"1px solid rgba(255,255,255,0.22)",borderRadius:6,color:"#FFF",fontSize:isMobile?12:15,padding:isMobile?"4px 7px":"5px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",maxWidth:"100%",boxSizing:"border-box",lineHeight:1.6};
   const legChipStyle={padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.35)",background:"rgba(0,229,255,0.06)",color:"rgba(0,229,255,0.88)",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",minHeight:32,lineHeight:1.35};
@@ -558,28 +560,34 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Find your accommodation for this stop — use the Co-Architect's suggestion or search for your own property" />
           </div>
-          {stayInsightSavedIdx!=null&&stayInsight.items.length>0&&<div style={{marginBottom:12}}>
-            <button type="button" onClick={()=>{setStayInsightSavedIdx(null);setStayInsightBrowseAll(true);}} style={{width:'100%',textAlign:'left',background:'transparent',border:'1px solid rgba(0,229,255,0.35)',borderRadius:10,color:'rgba(0,229,255,0.85)',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,padding:'10px 14px',cursor:'pointer',minHeight:44}}>Browse all stay suggestions</button>
-          </div>}
           {(!showStayAccommodationCard||stayInsightSavedIdx!=null||stayInsightBrowseAll)&&(
             <>
               {stayInsight.loading&&<SuggestionShimmer message={`Finding the best stays in ${dest||"this destination"}...`}/>}
-              {!stayInsight.loading&&stayInsight.items.length>0&&stayInsight.items.map((it,idx)=>{
-                if(stayInsightSavedIdx!=null&&stayInsightSavedIdx!==idx)return null;
+              {!stayInsight.loading&&stayInsight.items.length>0&&(()=>{
+                const stayItems=stayInsight.items.slice(0,3);
                 const stayInsightToolbar=(
-                  <div style={{display:'flex',alignItems:'center',marginBottom:8}}>
-                    <span style={{...planCommitLabelStyle,flex:1}}>🏨 ACCOMMODATION</span>
+                  <div style={{display:'flex',alignItems:'center',marginBottom:0}}>
                     <button type="button" onClick={()=>setBookDropdown(bookDropdown==='stay'?null:'stay')} style={{background:'none',border:'1px solid rgba(0,229,255,0.25)',borderRadius:6,color:'rgba(0,229,255,0.60)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>🔗</button>
                     <button type="button" onClick={()=>setEditingStay(true)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>{editingStay?'DONE':'EDIT'}</button>
                     <button type="button" onClick={clearStayPlan} style={{background:'none',border:'1px solid rgba(255,255,255,0.15)',borderRadius:6,color:'rgba(255,255,255,0.35)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",padding:'4px 10px',cursor:'pointer',minHeight:28}}>✕</button>
                   </div>
                 );
                 return(
-                <GenericSuggestionCard key={`stay-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`stay-tab-${idx}`} accent="#69F0AE" variant="expand" isMobile={isMobile} warmLine={it.name?`Great choice. ${it.name} puts you right in the heart of ${dest}.`:undefined} savedCheckStyle={savedCheckStyle} savedSubStyle={savedSubStyle} savedCheckText="✓ Stay added to your plan." savedSubText="Locked in — dates, links, and notes live here whenever you want to refine them." footerSlot={stayInsightSavedIdx===idx?<div style={committedFooterWrapStyle}><div style={planCommitAddedLineStyle}>{addedToPlanLine('stay')}</div><div style={returnToLogFooterStyle}>{returnToLogCopy('Stay')}</div></div>:null} inPlaceSaved={stayInsightSavedIdx===idx} committedToolbar={stayInsightSavedIdx===idx?stayInsightToolbar:null} onAddToPlan={()=>{setStayInsightBrowseAll(false);const cost=parsePriceDigits(String(it.price));uS("name",it.name);if(cost)uS("cost",cost);if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",it.description||"");setStayInsightSavedIdx(idx);}}/>
+                  <>
+                    {stayInsightSavedIdx!=null&&stayItems[stayInsightSavedIdx]&&(
+                      <GenericSuggestionCard key="stay-pinned" item={{...stayItems[stayInsightSavedIdx],category:"🏨 ACCOMMODATION"}} destination={dest} country={destCountry} instanceId="stay-tab-pinned" accent="#69F0AE" variant="expand" isMobile={isMobile} warmLine={stayItems[stayInsightSavedIdx].name?`Great choice. ${stayItems[stayInsightSavedIdx].name} puts you right in the heart of ${dest}.`:undefined} savedCheckStyle={savedCheckStyle} savedSubStyle={savedSubStyle} savedCheckText="✓ Stay added to your plan." savedSubText="Locked in — dates, links, and notes live here whenever you want to refine them." footerSlot={null} inPlaceSaved={true} committedToolbar={stayInsightToolbar} onAddToPlan={()=>{}}/>
+                    )}
+                    {stayItems.map((it,idx)=>{
+                      if(stayInsightSavedIdx===idx)return null;
+                      return(
+                        <GenericSuggestionCard key={`stay-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`stay-tab-${idx}`} accent="#69F0AE" variant="expand" isMobile={isMobile} warmLine={it.name?`Great choice. ${it.name} puts you right in the heart of ${dest}.`:undefined} savedCheckStyle={savedCheckStyle} savedSubStyle={savedSubStyle} savedCheckText="✓ Stay added to your plan." savedSubText="Locked in — dates, links, and notes live here whenever you want to refine them." footerSlot={null} inPlaceSaved={false} committedToolbar={null} onAddToPlan={()=>{setStayInsightBrowseAll(false);const cost=parsePriceDigits(String(it.price));uS("name",it.name);if(cost)uS("cost",cost);if(segment.arrival&&!det.stay.checkin)uS("checkin",segment.arrival);if(segment.departure&&!det.stay.checkout)uS("checkout",segment.departure);uS("notes",it.description||"");setStayInsightSavedIdx(idx);}}/>
+                      );
+                    })}
+                  </>
                 );
-              })}
+              })()}
               {!stayInsight.loading&&stayInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{stayInsight.error}</div>}
-              <button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("openCA",{detail:{message:`I want more stay options in ${dest} — boutique, budget, or something specific.`}}))} style={{background:"none",border:"none",padding:"8px 0",marginBottom:8,cursor:"pointer",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"rgba(201,160,76,0.75)",textAlign:"left",width:"100%",letterSpacing:0.2}}>Want more options? Ask your Co-Architect</button>
+              {!caStayBlocksInsight&&!stayInsight.loading&&stayInsight.items.length>0&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("openCA",{detail:{message:`I want more stay options in ${dest} — boutique, budget, or something specific.`}}))} style={caReminderStyle}>Want different options? Your Co-Architect can find them</button>}
             </>
           )}
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
@@ -682,11 +690,42 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
+          {[0,1,2].map((idx)=>{
+            const act=suggestion?.activities?.[idx];
+            if(!act)return null;
+            const row=det.activities.find(a=>a.suggestionActivityIdx===idx);
+            if(!row)return null;
+            const costRaw=act.estimatedCost||act.cost||row.cost||"";
+            const priceDisp=costRaw&&String(costRaw).trim()?`Est. $${String(costRaw).replace(/^\$/,"").replace(/[^\d.]/g,"")||costRaw}`:"\u2014";
+            const actItem={name:act.name||"Activity",category:"⚡ ACTIVITY",description:(act.notes||act.brief||row.brief||"").trim(),price:priceDisp,rating:null,address:null};
+            const actPinToolbar=(
+              <div style={{display:'flex',alignItems:'center',gap:6}}>
+                <a href={`https://www.viator.com/search/${encodeURIComponent(segment.name+' '+act.name)}`} target="_blank" rel="noopener noreferrer" style={{background:'none',border:'1px solid rgba(0,229,255,0.25)',borderRadius:6,color:'rgba(0,229,255,0.60)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",padding:'4px 10px',textDecoration:'none',minHeight:28,display:'flex',alignItems:'center'}}>🔗</a>
+                <button type="button" onClick={()=>{
+                  const removed=row;
+                  setDet(d=>({...d,activities:d.activities.filter(x=>x.id!==removed.id)}));
+                  if(suggestion?.activities?.length){
+                    setDismissed(d0=>{
+                      const dd={...d0};
+                      const k=`${dismissKey}_activity_${idx}`;
+                      if(!dd[k])return d0;
+                      delete dd[k];
+                      saveDismissed(dd);
+                      return dd;
+                    });
+                  }
+                }} style={{background:'none',border:'1px solid rgba(255,255,255,0.15)',borderRadius:6,color:'rgba(255,255,255,0.35)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",padding:'4px 10px',cursor:'pointer',minHeight:28}}>✕</button>
+              </div>
+            );
+            return(
+              <GenericSuggestionCard key={`act-pinned-${idx}`} item={actItem} destination={dest} country={destCountry} instanceId={`act-pinned-${idx}`} accent="#c9a04c" variant="expand" isMobile={isMobile} subtitle={(act.provider||"").trim()||undefined} photoQueryOverride={(act.name||"Activity")==="Activity"?"sightseeing":act.name} warmLine={act.name?`Great choice. ${act.name} is one of the best ways to experience ${dest}.`:undefined} savedCheckStyle={savedCheckStyle} savedSubStyle={savedSubStyle} savedCheckText="\u2713 Activity added to your plan." savedSubText="Come back to this Activities tab anytime to add bookings or confirmed details." footerSlot={null} inPlaceSaved={true} committedToolbar={actPinToolbar} onAddToPlan={()=>{}}/>
+            );
+          })}
           {suggestion?.activities?.slice(0, 3).map((activity,idx)=>(
             !isDism(`activity_${idx}`)&&!det.activities.some(x=>x.suggestionActivityIdx===idx)&&<ActivitySuggestionExperienceCard key={`act-sug-${idx}-${String(activity.name||'').slice(0,32)}`} segmentName={dest} segmentCountry={destCountry} photoInstanceId={`sug-act-${idx}`} activity={activity} isMobile={isMobile} onAdd={()=>acceptActivity(activity,idx)} onSkip={()=>dismiss(`activity_${idx}`)} acceptBtnStyle={acceptBtnStyle} dismissBtnStyle={dismissBtnStyle}/>
           ))}
-          {det.activities.length>0&&<div style={{marginBottom:16}}>
-            {det.activities.map(a=>(
+          {det.activities.filter(a=>a.suggestionActivityIdx==null||suggestion?.activities?.[a.suggestionActivityIdx]==null).length>0&&<div style={{marginBottom:16}}>
+            {det.activities.filter(a=>a.suggestionActivityIdx==null||suggestion?.activities?.[a.suggestionActivityIdx]==null).map(a=>(
               <div key={a.id} style={{border:planCommitCardBorder,borderRadius:planCommitCardRadius,background:planCommitCardBg,padding:planCommitCardPad,marginBottom:14,display:'flex',flexDirection:'column'}}>
                 <div style={{flex:1,minHeight:0}}>
                 <div style={{display:'flex',alignItems:'center',marginBottom:8}}>
@@ -734,7 +773,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <GenericSuggestionCard key={`act-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`act-tab-${idx}`} accent="#c9a04c" variant="expand" isMobile={isMobile} warmLine={it.name?`Great choice. ${it.name} is one of the best ways to experience ${dest}.`:undefined} onAddToPlan={()=>acceptActivity({name:it.name,notes:it.description,estimatedCost:String(it.price),provider:it.category})}/>
           ))}
           {visibleCASuggestions===0&&!actInsight.loading&&actInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{actInsight.error}</div>}
-          <button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("openCA",{detail:{message:`What are some hidden gems and local favorites in ${dest}?`}}))} style={{background:"none",border:"none",padding:"8px 0",marginBottom:8,cursor:"pointer",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"rgba(201,160,76,0.75)",textAlign:"left",width:"100%"}}>Your Co-Architect knows {dest} well — ask for hidden gems</button>
+          {!suggestionsLoading&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("openCA",{detail:{message:`What are some hidden gems and local favorites in ${dest}?`}}))} style={caReminderStyle}>Your Co-Architect knows {dest} well — ask for hidden gems</button>}
           {caFromArch.length>0&&<div style={{marginBottom:16}}>
             <div style={{...suggestionHeaderReadable,marginBottom:10}}>✦ FROM YOUR CO-ARCHITECT CONVERSATION</div>
             {caFromArch.map((a,idx)=>{
@@ -763,9 +802,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Local dining recommendations and daily food budget estimates for this destination" />
           </div>
-          {foodInsightSavedIdx!=null&&foodInsight.items.length>0&&<div style={{marginBottom:12}}>
-            <button type="button" onClick={()=>{setFoodInsightSavedIdx(null);setFoodInsightBrowseAll(true);setFoodAccordionOpen(null);}} style={{width:'100%',textAlign:'left',background:'transparent',border:'1px solid rgba(201,160,76,0.35)',borderRadius:10,color:'#c9a04c',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,padding:'10px 14px',cursor:'pointer',minHeight:44}}>Browse all food suggestions</button>
-          </div>}
           {showFoodSummary&&<div style={{border:planCommitCardBorder,borderRadius:planCommitCardRadius,background:planCommitCardBg,padding:planCommitCardPad,marginBottom:14,display:'flex',flexDirection:'column'}}>
             <div style={{flex:1,minHeight:0}}>
             <div style={{display:'flex',alignItems:'center',marginBottom:8}}>
@@ -791,28 +827,38 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             {[{n:'Google Maps',u:`https://www.google.com/maps/search/restaurants+in+${encodeURIComponent(segment.name||'')}`},{n:'OpenTable',u:`https://www.opentable.com/s?location=${encodeURIComponent(segment.name||'')}`},{n:'Yelp',u:`https://www.yelp.com/search?find_desc=restaurants&find_loc=${encodeURIComponent(segment.name||'')}`}].map(l=><a key={l.n} href={l.u} target="_blank" rel="noopener noreferrer" onClick={()=>setBookDropdown(null)} style={{display:'block',padding:'10px 14px',fontSize:13,color:'rgba(255,255,255,0.75)',borderRadius:8,cursor:'pointer',textDecoration:'none'}} onMouseOver={e=>e.currentTarget.style.background='rgba(255,159,67,0.08)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>{l.n}</a>)}
           </div></div>}
           {foodInsight.loading&&<SuggestionShimmer message={`Discovering flavors in ${dest||"this destination"}...`}/>}
-          {!foodInsight.loading&&foodInsight.items.length>0&&foodInsight.items.map((it,idx)=>{
-            if(foodInsightSavedIdx!=null&&foodInsightSavedIdx!==idx)return null;
+          {!foodInsight.loading&&foodInsight.items.length>0&&(()=>{
+            const foodItems=foodInsight.items.slice(0,3);
             const foodInsightToolbar=(
-              <div style={{display:'flex',alignItems:'center',marginBottom:8}}>
-                <span style={{...planCommitLabelStyle,flex:1}}>🍜 FOOD</span>
+              <div style={{display:'flex',alignItems:'center',marginBottom:0}}>
                 <button type="button" onClick={()=>setBookDropdown(bookDropdown==='food'?null:'food')} style={{background:'none',border:'1px solid rgba(0,229,255,0.25)',borderRadius:6,color:'rgba(0,229,255,0.60)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>🔗</button>
                 <button type="button" onClick={()=>{setFoodManualOpen(true);setEditingFood(true);}} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>{editingFood?'DONE':'EDIT'}</button>
                 <button type="button" onClick={()=>{setDet(d=>({...d,food:{dailyBudget:"",notes:""}}));const nd={...dismissed};delete nd[`${dismissKey}_food`];setDismissed(nd);saveDismissed(nd);setShowFoodResuggest(false);setFoodInsightSavedIdx(null);setFoodInsightBrowseAll(false);setBookDropdown(b=>b==='food'?null:b);}} style={{background:'none',border:'1px solid rgba(255,255,255,0.15)',borderRadius:6,color:'rgba(255,255,255,0.35)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",padding:'4px 10px',cursor:'pointer',minHeight:28}}>✕</button>
               </div>
             );
             return(
-            <GenericSuggestionCard key={`food-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`food-tab-${idx}`} accent="#FF9F43" variant="accordion" isMobile={isMobile} expanded={foodAccordionOpen===idx||foodInsightSavedIdx===idx} onToggle={()=>setFoodAccordionOpen(prev=>prev===idx?null:idx)} savedCheckStyle={savedCheckStyle} savedSubStyle={savedSubStyle} savedCheckText="✓ Food spot added to your plan." savedSubText="Your Co-Architect has great taste — this one's locked in." footerSlot={foodInsightSavedIdx===idx?<div style={committedFooterWrapStyle}><div style={planCommitAddedLineStyle}>{addedToPlanLine('food')}</div><div style={returnToLogFooterStyle}>{returnToLogCopy('Food')}</div></div>:null} inPlaceSaved={foodInsightSavedIdx===idx} committedToolbar={foodInsightSavedIdx===idx?foodInsightToolbar:null} onAddToPlan={()=>{const bud=parseFoodInsightDailyBudget(it.price);setFoodAccordionOpen(null);setFoodInsightBrowseAll(false);setDet(d=>{const line=[it.name,it.description].filter(Boolean).join(" — ");const nextNotes=d.food.notes?`${d.food.notes}\n\n${line}`:line;const prev=parseFloat(d.food.dailyBudget)||0;const cur=parseFloat(bud)||0;const nextBud=bud?String(Math.round(Math.max(prev,cur))):d.food.dailyBudget;return{...d,food:{...d.food,dailyBudget:nextBud||d.food.dailyBudget,notes:nextNotes}};});setFoodInsightSavedIdx(idx);}}/>
+              <>
+                {foodInsightSavedIdx!=null&&foodItems[foodInsightSavedIdx]&&(
+                  <GenericSuggestionCard key="food-pinned" item={{...foodItems[foodInsightSavedIdx],category:"🍜 FOOD"}} destination={dest} country={destCountry} instanceId="food-tab-pinned" accent="#FF9F43" variant="expand" isMobile={isMobile} warmLine={foodItems[foodInsightSavedIdx].name?`Great choice. ${foodItems[foodInsightSavedIdx].name} is a standout in ${dest}.`:undefined} savedCheckStyle={savedCheckStyle} savedSubStyle={savedSubStyle} savedCheckText="✓ Food spot added to your plan." savedSubText="Your Co-Architect has great taste — this one's locked in." footerSlot={null} inPlaceSaved={true} committedToolbar={foodInsightToolbar} onAddToPlan={()=>{}}/>
+                )}
+                {foodItems.map((it,idx)=>{
+                  if(foodInsightSavedIdx===idx)return null;
+                  return(
+                    <GenericSuggestionCard key={`food-insight-${idx}-${String(it.name).slice(0,24)}`} item={it} destination={dest} country={destCountry} instanceId={`food-tab-${idx}`} accent="#FF9F43" variant="expand" isMobile={isMobile} warmLine={it.name?`Great choice. ${it.name} is a standout in ${dest}.`:undefined} savedCheckStyle={savedCheckStyle} savedSubStyle={savedSubStyle} savedCheckText="✓ Food spot added to your plan." savedSubText="Your Co-Architect has great taste — this one's locked in." footerSlot={null} inPlaceSaved={false} committedToolbar={null} onAddToPlan={()=>{const bud=parseFoodInsightDailyBudget(it.price);setFoodInsightBrowseAll(false);setDet(d=>{const line=[it.name,it.description].filter(Boolean).join(" — ");const nextNotes=d.food.notes?`${d.food.notes}\n\n${line}`:line;const prev=parseFloat(d.food.dailyBudget)||0;const cur=parseFloat(bud)||0;const nextBud=bud?String(Math.round(Math.max(prev,cur))):d.food.dailyBudget;return{...d,food:{...d.food,dailyBudget:nextBud||d.food.dailyBudget,notes:nextNotes}};});setFoodInsightSavedIdx(idx);}}/>
+                  );
+                })}
+              </>
             );
-          })}
+          })()}
           {!foodInsight.loading&&foodInsight.error&&<div style={{fontSize:12,color:"rgba(255,107,107,0.85)",marginBottom:10}}>{foodInsight.error}</div>}
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
           </div>}
           {showFoodSuggestionCard&&(()=>{const recs=dedupeFoodRecommendations(suggestion.food.recommendations);const first=recs[0]?parseFoodRecLine(recs[0]):{name:"",desc:""};const foodDescriptor=(first.desc||first.name)?String(first.desc||first.name).slice(0,120):`Tables, markets, and bites in ${segment.name||"town"}`;const foodTitle=`${String(segment.name||"This stop").trim()}\u2019s food scene`;const acceptFood=()=>{const nums=((suggestion.food.dailyBudget||"").match(/\d+/g)||[]).map(Number).filter(x=>x>0&&x<500);let bud="";if(nums.length===1)bud=String(nums[0]);else if(nums.length>=2)bud=String(Math.round((nums[0]+nums[1])/2));if(bud)setDet(d=>({...d,food:{...d.food,dailyBudget:bud,notes:suggestion.food.recommendations?.join("\n")||d.food.notes}}));dismiss("food");setEditingFood(false);setShowFoodResuggest(false);};const mid=recs.length>0?<div style={{marginBottom:12}}>{recs.map((rec,i)=>{const {name,desc}=parseFoodRecLine(rec);return(<div key={i} style={{padding:"8px 0",borderBottom:i<recs.length-1?"1px solid rgba(255,255,255,0.22)":undefined,wordBreak:isMobile?"break-word":"normal"}}><span style={{fontSize:14,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"#FFFFFF"}}>{name}</span>{desc?<><span style={{color:"rgba(255,255,255,0.35)",margin:"0 6px"}}>{'\u00B7'}</span><span style={{fontSize:14,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"rgba(255,255,255,0.70)"}}>{desc}</span></>:null}</div>);})}</div>:null;return(<SuggestionExperienceCard accent="#FF9F43" categoryLabel="FOOD & DINING" title={foodTitle} descriptor={foodDescriptor} middle={mid} priceLine={`Est. ${(suggestion.food.dailyBudget||"").replace(/\/day$/i,"")}/day${suggestion.food.totalEstimate?` \u00B7 ~${suggestion.food.totalEstimate} total`:""}`} priceSubline={null} whisper={sanitizeAiDisplayText(suggestion.food.notes||"")||null} disclaimer={"\u26A1 Suggestions based on current market knowledge \u2014 always verify locally"} heroUrl={foodPhoto.ready?foodPhoto.url:null} heroThumb={foodPhoto.ready?foodPhoto.thumb:null} heroLink={foodPhoto.htmlLink} isMobile={isMobile} flatMobile={isMobile}><button type="button" onClick={acceptFood} style={{...acceptBtnStyle,...ctaFlex}}>USE THESE ESTIMATES</button><button type="button" onClick={()=>{dismiss("food");setShowFoodResuggest(false);setFoodManualOpen(true);}} style={{...(foodPhoto.ready&&foodPhoto.url?dismissBtnStyleOnHero:dismissBtnStyle),...ctaFlex}}>PLAN MY OWN</button></SuggestionExperienceCard>);})()}
+          {!suggestionsLoading&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm craving something specific in ${dest} — help me find the right spot.`}}))} style={caReminderStyle}>Craving something specific? Your Co-Architect can find it</button>}
           {showFoodManualBase&&<>
-          <button type="button" onClick={()=>setFoodManualOpen(o=>!o)} style={{width:'100%',textAlign:'left',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(201,160,76,0.35)',borderRadius:10,color:'#c9a04c',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,padding:'10px 14px',cursor:'pointer',marginBottom:10,minHeight:44}}>{foodManualOpen||editingFood?'⌄ Hide food budget':'+ Set your own food budget'}</button>
+          <button type="button" onClick={()=>setFoodManualOpen(o=>!o)} style={{width:'100%',textAlign:'left',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(201,160,76,0.35)',borderRadius:10,color:'#c9a04c',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,padding:'10px 14px',cursor:'pointer',marginBottom:10,minHeight:44}}>{foodManualOpen||editingFood?'⌄ Hide manual food plan':'+ Plan your own'}</button>
           {showFoodManualForm&&<>
           <div style={{display:'flex',gap:10,alignItems:'flex-end',marginBottom:10,flexWrap:isMobile?'wrap':'nowrap'}}>
             <div style={{flex:1,minWidth:0}}><SDF label="DAILY FOOD BUDGET ($)" type="number" value={det.food.dailyBudget} onChange={v=>uF("dailyBudget",v)} placeholder="e.g. 45" accent="#FF9F43"/></div>
@@ -840,7 +886,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>}
           </>}
           </>}
-          <button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm craving something specific in ${dest} — help me find the right spot.`}}))} style={{background:'none',border:'none',padding:'8px 0',marginTop:4,cursor:'pointer',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(201,160,76,0.75)',textAlign:'left',width:'100%'}}>Craving something specific? Your Co-Architect can find it</button>
         </div>);})()}</div>}
         {/* BUDGET */}
         {visitedTabs.has("budget")&&<div style={{display:tab==="budget"?"block":"none"}}>{(()=>{const tCost=parseFloat(det.transport?.cost)||0;const sCost=parseFloat(det.stay?.cost)||0;const aCost=det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0);const fCost=(parseFloat(det.food?.dailyBudget)||0)*segment.nights;const mCost=det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0);const total=tCost+sCost+aCost+fCost+mCost;const budget=segment.budget||0;const pct=budget>0?Math.round((total/budget)*100):0;const barColor=pct>=100?'#FF6B6B':pct>=80?'#c9a04c':'#00E5FF';

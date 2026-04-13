@@ -68,10 +68,7 @@ export default function GenericSuggestionCard({
     ? true
     : variant === "accordion"
       ? !!expandedProp || inPlaceSaved
-      : innerOpen || inPlaceSaved;
-  useEffect(() => {
-    if (inPlaceSaved && variant === "expand") setInnerOpen(true);
-  }, [inPlaceSaved, variant]);
+      : innerOpen;
   function toggle() {
     if (isStacked) return;
     if (variant === "accordion") onToggle?.();
@@ -439,6 +436,79 @@ export default function GenericSuggestionCard({
       {photoCredit}
     </div>
   );
+
+  if (inPlaceSaved && variant === "expand" && !innerOpen) {
+    return (
+      <div style={{ marginBottom: 10 }}>
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => setInnerOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setInnerOpen(true);
+            }
+          }}
+          style={{
+            borderRadius: 8,
+            padding: "10px 14px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            cursor: "pointer",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderLeft: "2px solid #D4AF37",
+            background: "rgba(212,175,55,0.06)",
+            flexWrap: "wrap",
+          }}
+        >
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <span
+              style={{
+                fontSize: 11,
+                fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+                color: accent,
+                letterSpacing: 1,
+                fontWeight: 700,
+              }}
+            >
+              {item.category}
+            </span>{" "}
+            <span
+              style={{
+                fontSize: 14,
+                fontFamily: "'Fraunces',serif",
+                color: "#fff",
+                fontWeight: 500,
+              }}
+            >
+              {item.name}
+            </span>
+            <span
+              style={{
+                color: "#10B981",
+                fontSize: 12,
+                fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+                marginLeft: 10,
+                fontWeight: 600,
+              }}
+            >
+              ✓ Added to Plan
+            </span>
+          </div>
+          <div
+            style={{ flexShrink: 0 }}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            {committedToolbar}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
