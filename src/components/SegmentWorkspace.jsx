@@ -170,8 +170,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const [foodInsightSavedIdxs,setFoodInsightSavedIdxs]=useState([]);
   const [actInsightSavedIdxs,setActInsightSavedIdxs]=useState([]);
   const [travelManualOpen,setTravelManualOpen]=useState(false);
-  const [segInsight,setSegInsight]=useState("");
-  const [segInsightLoading,setSegInsightLoading]=useState(false);
   const [nAct,setNAct]=useState({name:"",date:"",cost:"",transit:"",link:""});
   const [aiLoad,setAiLoad]=useState(false);
   const [saveFlash,setSaveFlash]=useState(false);
@@ -212,25 +210,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   useEffect(()=>{setPlanningOwnStay(false);setStayInsightSavedIdx(null);setStayBookingExtrasOpen(false);setTransportRouteInPlace(false);setFoodInsightSavedIdxs([]);setActInsightSavedIdxs([]);},[key]);
   useEffect(()=>{if(planningOwnStay)setStayManualOpen(true);},[planningOwnStay]);
   useEffect(()=>{if(planningOwn)setTravelManualOpen(true);},[planningOwn]);
-  useEffect(()=>{
-    setSegInsight("");
-    const cacheKey=`1bn_seg_insight_v1_${key}`;
-    try{
-      const cached=localStorage.getItem(cacheKey);
-      if(cached){setSegInsight(cached);setSegInsightLoading(false);return;}
-    }catch(e){}
-    let cancelled=false;
-    setSegInsightLoading(true);
-    (async()=>{
-      try{
-        const raw=await askAI(`Travel writer. One sentence only (max 24 words). No quotation marks, no "Co-Architect" or labels. Destination: ${segment.name||"this stop"}${segment.country?`, ${segment.country}`:""}. Activity or trip style: ${segment.type||"exploration"}. Confident, specific, sensory.`,280,0.55);
-        const line=String(raw||"").replace(/^[\u201c\u201d"']|[\u201c\u201d"']$/g,"").trim().split(/\n/)[0];
-        if(!cancelled&&line){setSegInsight(line);try{localStorage.setItem(cacheKey,line);}catch(e){}}
-      }catch(e){}
-      if(!cancelled)setSegInsightLoading(false);
-    })();
-    return()=>{cancelled=true;};
-  },[key,segment.name,segment.country,segment.type]);
   useEffect(()=>{if(editingFood)setFoodManualOpen(true);},[editingFood]);
   useEffect(()=>{const a=loadSeg();const base=a[key]?{...blank,...a[key]}:blank;const stay={...base.stay};if(!(String(stay.checkin||"").trim())&&segment?.arrival)stay.checkin=segment.arrival;if(!(String(stay.checkout||"").trim())&&segment?.departure)stay.checkout=segment.departure;const transport=applyTransportDateDefaults({...blank.transport,...base.transport},segment);setDet({...base,stay,transport});},[key]);
   useEffect(()=>{if(isFirst.current){isFirst.current=false;return;}const a=loadSeg();const ex=a[key]||{};const merged={...ex,...det,status:ex.status||'planning',statusUpdatedAt:ex.statusUpdatedAt||null,changes:ex.changes||[]};if(isRowEmpty(merged.transport))delete merged.transport;if(isRowEmpty(merged.stay))delete merged.stay;if(isRowEmpty(merged.food))delete merged.food;a[key]=merged;saveSeg(a);setSaveFlash(true);if(saveFlashRef.current)clearTimeout(saveFlashRef.current);saveFlashRef.current=setTimeout(()=>setSaveFlash(false),2000);},[det]);
@@ -392,11 +371,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             </div>
           </div>
         )}
-      </div>
-      <div style={{padding:isMobile?'12px 14px 10px':'18px 24px 14px',textAlign:'center',maxWidth:720,margin:'0 auto'}}>
-        {segInsightLoading&&!segInsight&&<div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(245,158,11,0.35)',marginBottom:8}}>…</div>}
-        {!!segInsight&&<div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',fontWeight:400,color:'rgba(245,158,11,0.6)',lineHeight:1.55,marginBottom:10}}>{segInsight}</div>}
-        <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.4)',lineHeight:1.55}}>Your expedition unfolds one destination at a time. Where would you like to begin?</div>
       </div>
       {/* Tab bar */}
       <div style={{display:'flex',justifyContent:'center',background:'rgba(0,4,12,0.95)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:isMobile?68:56,zIndex:9}}>

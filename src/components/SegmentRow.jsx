@@ -32,7 +32,26 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
   const completedCount=[hasTransport,hasStay,hasActivities].filter(Boolean).length;
   const planStatus=status==="booked"||status==="confirmed"?null:completedCount===0?{label:"NOT STARTED",color:"rgba(255,255,255,0.85)",bg:"rgba(255,255,255,0.12)",border:"rgba(255,255,255,0.20)"}:completedCount===1?{label:"IN PROGRESS",color:"#FF9F43",bg:"rgba(255,159,67,0.10)",border:"rgba(255,159,67,0.30)"}:completedCount===2?{label:"MOSTLY DONE",color:"#c9a04c",bg:"rgba(201,160,76,0.10)",border:"rgba(201,160,76,0.30)"}:{label:"PLANNED",color:"#69F0AE",bg:"rgba(105,240,174,0.10)",border:"rgba(105,240,174,0.30)"};
   const isCancelled=status==='cancelled';
-  const borderColor=status==='planning'?tc:sc.color;
+  const [insight,setInsight]=useState("");
+  useEffect(()=>{
+    const insightKey=`1bn_seg_insight_v1_${(segment.name||"").replace(/\s+/g,"_")}`;
+    try{
+      const cached=localStorage.getItem(insightKey);
+      if(cached){setInsight(cached);return;}
+    }catch(e){}
+    let cancelled=false;
+    askAI(
+      `One-line evocative travel teaser for "${segment.name}" (${segment.type}, ${segment.nights} nights). Max 18 words. No quotes, no labels. Sensory, confident, specific.`,
+      120
+    ).then(r=>{
+      if(!cancelled&&r){
+        const clean=String(r).replace(/^["']|["']$/g,"").trim();
+        setInsight(clean);
+        try{localStorage.setItem(insightKey,clean);}catch(e){}
+      }
+    });
+    return()=>{cancelled=true;};
+  },[segment.name,segment.type,segment.nights]);
 
   function saveStatus(newStatus){
     const all=loadSeg();const ex=all[segKey]||{};const prev=ex.status||'planning';
@@ -56,7 +75,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
     setAskChat(p=>[...p,{role:"ai",text:res}]);setAskLoading(false);
   }
   return(
-    <div style={{border:'1px rgba(255,255,255,0.10)',borderTop:'1px solid rgba(255,255,255,0.18)',borderRadius:12,background:'rgba(0,8,20,0.85)',padding:'2px 0',marginBottom:8,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.3)',opacity:isCancelled?0.65:1,transition:"opacity 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
+    <div style={{border:'1px rgba(255,255,255,0.10)',borderTop:'1px solid rgba(255,255,255,0.18)',borderRadius:14,background:'rgba(0,8,20,0.85)',padding:'2px 0',marginBottom:8,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.3)',opacity:isCancelled?0.65:1,transition:"opacity 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
       {/* Change Flow Modal */}
       {showChangeModal&&(
         <div onClick={()=>setShowChangeModal(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,4,14,0.88)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
@@ -71,7 +90,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
           </div>
         </div>
       )}
-      <div style={{display:"flex",alignItems:"stretch",minHeight:50,borderLeft:`2px solid ${borderColor}${open?"88":"2a"}`,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
+      <div style={{display:"flex",alignItems:"stretch",minHeight:50,borderLeft:`3px solid ${tc}${open?"cc":"66"}`,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
         <div onClick={()=>{if(onSegmentTap){onSegmentTap(segment);}else{setOpen(o=>!o);}}} style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:isMobile?"10px 6px 10px 12px":"12px 10px 12px 20px",cursor:"pointer",background:open?`${tc}04`:"transparent",transition:"background 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",flex:1,minWidth:0}}>
           {/* Row 1: dot + name + type badge + budget */}
           <div style={{display:"flex",alignItems:"center",gap:6,minWidth:0}}>
@@ -92,6 +111,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
             </button>
           </div>
 {segment.note&&<div style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.65)",lineHeight:1.5,marginTop:3,paddingLeft:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"90%"}}>{segment.note}</div>}
+          {insight&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(245,158,11,0.55)",lineHeight:1.5,marginTop:4,paddingLeft:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"90%"}}>{insight}</div>}
         </div>
         {onSegmentTap?<div onClick={e=>{e.stopPropagation();onSegmentTap(segment);}} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"0 10px",cursor:"pointer",flexShrink:0}}>
           <span style={{fontSize:18,color:"rgba(255,255,255,0.30)",fontWeight:300}}>›</span>

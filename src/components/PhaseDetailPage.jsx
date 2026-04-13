@@ -29,13 +29,13 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       <WorldMapBackground phases={allPhases} activeCountry={phase.country} departureCity={homeCity||""}/>
       <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box',position:'relative',zIndex:1}}>
       {/* Header */}
-      <div style={{display:'flex',alignItems:'center',flexWrap:'nowrap',padding:'12px 0',gap:12,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(0,229,255,0.12)',position:'sticky',top:0,left:0,right:0,width:'100%',zIndex:10}}>
+      <div style={{display:'flex',alignItems:'center',flexWrap:'nowrap',padding:'12px 0',gap:12,background:'rgba(0,8,16,0.95)',borderBottom:'1px solid rgba(201,160,76,0.15)',position:'sticky',top:0,left:0,right:0,width:'100%',zIndex:10}}>
         {isMobile?<button type="button" onClick={onBack} style={{background:'none',border:'none',color:'#00E5FF',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6,flexShrink:0}}>‹ <span style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,opacity:0.60}}>EXPEDITION</span></button>
         :<div style={{display:'flex',alignItems:'center',gap:8,fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>
-          <span onClick={onBack} style={{color:'#FF9F43',cursor:'pointer'}}>←</span>
-          <span onClick={onBack} style={{color:'rgba(255,255,255,0.45)',cursor:'pointer',letterSpacing:1}}>EXPEDITION</span>
+          <span onClick={onBack} style={{color:'rgba(255,255,255,0.35)',cursor:'pointer'}}>‹</span>
+          <span onClick={onBack} style={{color:'rgba(255,255,255,0.45)',cursor:'pointer',letterSpacing:2}}>EXPEDITION</span>
           <span style={{color:'rgba(255,255,255,0.25)'}}>›</span>
-          <span style={{color:'rgba(255,255,255,0.85)',letterSpacing:1}}>{phase.name.toUpperCase()}</span>
+          <span style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:400,color:'rgba(255,255,255,0.90)'}}>{phase.name}</span>
         </div>}
         {isMobile&&<span style={{fontSize:20,flexShrink:0}}>{phase.flag}</span>}
         {isMobile&&<span style={{flex:1,minWidth:0,fontSize:18,fontWeight:500,color:'#FFFFFF',fontFamily:"'Playfair Display',serif",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{phase.name}</span>}
@@ -45,7 +45,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
           <HelpTip compact noLeadingMargin desktopOnly text="Manage your flights, stays, activities and notes for this destination" />
         </div>
       </div>
-      <div style={{padding:'8px 0 10px',borderBottom:'1px solid rgba(0,229,255,0.08)'}}>
+      <div style={{padding:'8px 0 10px',borderBottom:'1px solid rgba(201,160,76,0.12)'}}>
         <div style={{height:6,background:'rgba(255,255,255,0.06)',borderRadius:3,overflow:'hidden',marginBottom:8}}>
           <div style={{height:'100%',width:`${barFillPct}%`,background:barColor,borderRadius:3,transition:'width 0.5s ease'}}/>
         </div>
@@ -56,9 +56,9 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       </div>
       {/* Stats bar */}
       <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'10px 0',flexShrink:0}}>
-        <span style={{flex:1,fontSize:13,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{fD(phase.arrival)} – {fD(phase.departure)}</span>
-        <span style={{fontSize:13,color:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>🌙{isMobile?`${phase.totalNights}n`:`${phase.totalNights} Nights`}</span>
-        {phase.totalDives>0&&<span style={{fontSize:13,color:'#00E5FF',marginLeft:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>🤿{phase.totalDives}</span>}
+        <span style={{flex:1,fontSize:14,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{fD(phase.arrival)} – {fD(phase.departure)}</span>
+        <span style={{fontSize:14,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>🌙{isMobile?`${phase.totalNights}n`:`${phase.totalNights} Nights`}</span>
+        {phase.totalDives>0&&<span style={{fontSize:14,color:'#00E5FF',marginLeft:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>🤿{phase.totalDives}</span>}
       </div>
       {/* Warning flags */}
       {warningFlags.filter(w=>w.phaseIndex===phase.id-1).map((w,wi)=>(
@@ -73,10 +73,11 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       ))}
       {/* Segment list */}
       <div style={{padding:'6px 0 80px'}}>
-        <div style={{padding:'8px 0 4px',fontSize:12,color:'rgba(255,255,255,0.50)',letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''}</div>
+        <div style={{fontSize:11,color:'rgba(255,255,255,0.40)',letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,padding:'14px 0 8px'}}>YOUR EXPEDITION · {phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''}</div>
         {phase.segments.map((seg,i)=>(
           <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onSegmentTap={s=>setActiveSegment(s)} prevCity={prevSegmentNameForSeg(seg, segPhases)} homeCity={homeCity}/>
         ))}
+        <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.35)',lineHeight:1.7,textAlign:'center',padding:'20px 16px 0',maxWidth:440,margin:'0 auto'}}>Your expedition unfolds one destination at a time. Tap any segment to begin planning.</div>
       </div>
       </div>
     </div>
