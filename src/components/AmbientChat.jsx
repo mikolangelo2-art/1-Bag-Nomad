@@ -14,7 +14,6 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
   const [keyboardLikely,setKeyboardLikely]=useState(false);
   const [anyInputFocused,setAnyInputFocused]=useState(false);
   const endRef=useRef();
-  useEffect(()=>{const h=(e)=>{if(e.detail?.message){setOpen(true);setInput(e.detail.message);}};window.addEventListener('openCA',h);return()=>window.removeEventListener('openCA',h);},[]);
   useEffect(()=>{if(endRef.current)endRef.current.scrollIntoView({behavior:"smooth"});},[msgs,loading]);
 
   useEffect(()=>{
@@ -74,6 +73,36 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
     :"Your Co-Architect is here. What's pulling at you?";
   const subtitle=scr==="phase-detail"?currentPhase?.name?.toUpperCase():scr==="segment-workspace"?currentSegment?.name?.toUpperCase():scr==="pack-console"?"PACK CONSOLE":tripData?.tripName?.toUpperCase()||"";
   const send=async()=>{if(!input.trim()||loading)return;const userMsg=input;setInput("");const newMsgs=[...msgs,{role:"user",text:userMsg}];setMsgs(newMsgs);setLoading(true);try{const history=newMsgs.map(m=>`${m.role==="user"?"User":"Co-Architect"}: ${m.text}`).join("\n");const response=await askAI(`${ctx}\n\nConversation:\n${history}\n\nCo-Architect:`,800);setMsgs([...newMsgs,{role:"ai",text:response}]);}catch(e){setMsgs([...newMsgs,{role:"ai",text:"I'm having trouble connecting. Try again in a moment."}]);}setLoading(false);};
+  useEffect(()=>{
+    const h=(e)=>{
+      if(!e.detail?.message)return;
+      setOpen(true);
+      if(e.detail.submit){
+        const userMsg=String(e.detail.message).trim();
+        if(!userMsg)return;
+        setInput("");
+        setMsgs((prev)=>{
+          const newMsgs=[...prev,{role:"user",text:userMsg}];
+          setLoading(true);
+          (async()=>{
+            try{
+              const history=newMsgs.map(m=>`${m.role==="user"?"User":"Co-Architect"}: ${m.text}`).join("\n");
+              const response=await askAI(`${ctx}\n\nConversation:\n${history}\n\nCo-Architect:`,800);
+              setMsgs([...newMsgs,{role:"ai",text:response}]);
+            }catch(err){
+              setMsgs([...newMsgs,{role:"ai",text:"I'm having trouble connecting. Try again in a moment."}]);
+            }
+            setLoading(false);
+          })();
+          return newMsgs;
+        });
+      }else{
+        setInput(e.detail.message);
+      }
+    };
+    window.addEventListener("openCA",h);
+    return()=>window.removeEventListener("openCA",h);
+  },[ctx]);
   const parseMarkdown=(text)=>{if(!text)return null;const parts=text.split(/(\*\*[^*]+\*\*)/g);return parts.map((part,i)=>{if(part.startsWith('**')&&part.endsWith('**'))return <strong key={i} style={{fontWeight:600,color:'#c9a04c'}}>{part.slice(2,-2)}</strong>;return <span key={i}>{part}</span>;});};
   if(scr==="dream")return null;
   const isPackMobile=isMobile&&scr==="pack-console";
