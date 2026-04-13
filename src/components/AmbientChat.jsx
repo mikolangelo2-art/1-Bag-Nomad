@@ -53,6 +53,14 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
     document.addEventListener("focusout",onOut);
     return()=>{document.removeEventListener("focusin",onIn);document.removeEventListener("focusout",onOut);};
   },[isMobile,open]);
+  const [peekLine,setPeekLine]=useState(null);
+  useEffect(()=>{
+    if(!open||msgs.length>0){setPeekLine(null);return;}
+    try{
+      const raw=typeof sessionStorage!=="undefined"?sessionStorage.getItem("1bn_ca_peek_v1"):"";
+      if(raw){const o=JSON.parse(raw);if(o?.text)setPeekLine(String(o.text).slice(0,220));}else setPeekLine(null);
+    }catch(e){setPeekLine(null);}
+  },[open,msgs.length]);
   const phases=tripData?.phases||[];
   const ctx=scr==="trip-console"?`You are the Co-Architect for "${tripData?.tripName||"this expedition"}". Full expedition: ${phases.length} phases, ${tripData?.totalNights||0} nights total. Departure: ${tripData?.startDate||tripData?.departureDate||"TBD"}. Phases: ${phases.map(p=>`${p.name} (${p.arrival||""} to ${p.departure||""}, ${p.nights}n, $${p.budget||p.cost||0})`).join("; ")}. Help refine, expand, or think through their expedition. Be concise and warm.`
     :scr==="phase-detail"?`You are the Co-Architect. User is planning: Phase: ${currentPhase?.name||"unknown"}. Country: ${currentPhase?.country||""}. Dates: ${currentPhase?.arrival||""} to ${currentPhase?.departure||""}. Nights: ${currentPhase?.totalNights||currentPhase?.nights||0}. Budget: $${currentPhase?.budget||currentPhase?.totalBudget||0}. Help plan transport, stays, activities, and local tips for this specific phase. Be concise.`
@@ -81,14 +89,6 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
   const fabZ=isCoarchitect?120:1000;
   const hideFabMobile=isMobile&&(keyboardLikely||anyInputFocused);
   const showFab=!open&&!hideFabMobile;
-  const [peekLine,setPeekLine]=useState(null);
-  useEffect(()=>{
-    if(!open||msgs.length>0){setPeekLine(null);return;}
-    try{
-      const raw=typeof sessionStorage!=="undefined"?sessionStorage.getItem("1bn_ca_peek_v1"):"";
-      if(raw){const o=JSON.parse(raw);if(o?.text)setPeekLine(String(o.text).slice(0,220));}else setPeekLine(null);
-    }catch(e){setPeekLine(null);}
-  },[open,msgs.length]);
   return(<>
     {showFab&&<div style={{position:"fixed",bottom:fabBottomResolved,right:isMobile?12:"calc((100vw / 1.15 - 1382px) / 4)",display:"flex",flexDirection:"column",alignItems:"center",gap:4,zIndex:fabZ}}>
       <button type="button" className="ca-architect-fab ca-architect-fab--breathe" onClick={()=>setOpen(true)} style={{width:isMobile?48:128,height:isMobile?48:128,borderRadius:"50%",background:"linear-gradient(145deg,rgba(166,123,91,0.55),rgba(18,18,18,0.92))",border:"1px solid rgba(201,160,76,0.42)",boxShadow:"0 0 24px rgba(201,160,76,0.28), 0 0 56px rgba(201,160,76,0.12), 0 12px 32px rgba(0,0,0,0.45)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,opacity:0.92}}>
