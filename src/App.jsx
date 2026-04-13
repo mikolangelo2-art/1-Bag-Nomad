@@ -139,10 +139,10 @@ const CSS=`*{box-sizing:border-box;margin:0;padding:0}
 @media (min-width:769px){.welcome-beta-logo-btn{width:136px;height:136px;margin-bottom:10px}}
 @media (prefers-reduced-motion:reduce){.welcome-beta-logo-btn{animation:none!important;box-shadow:0 0 0 2px rgba(201,160,76,0.4),0 0 36px rgba(201,160,76,0.32);filter:drop-shadow(0 0 20px rgba(201,160,76,0.38))}}
 .welcome-click-hint{margin:0 0 4px;font-family:'Space Mono','Courier New',monospace;font-size:10px;font-weight:500;letter-spacing:0.28em;text-transform:uppercase;color:rgba(201,160,76,0.42)}
-.welcome-tagline{margin:0;font-family:'Fraunces',Georgia,serif;font-size:clamp(15px,3.2vw,18px);font-weight:400;font-style:italic;color:rgba(248,245,240,0.72);letter-spacing:0.04em;line-height:1.5}
-.welcome-footer{margin-top:auto;padding:28px 20px 32px;text-align:center;border-top:1px solid rgba(201,160,76,0.08);max-width:520px;align-self:center;width:100%;box-sizing:border-box}
-.welcome-creed{margin:0 0 10px;font-family:'Cinzel',Georgia,serif;font-size:clamp(9px,2vw,11px);font-weight:500;letter-spacing:0.22em;color:rgba(201,160,76,0.55);line-height:1.6}
-.welcome-patent{margin:0;font-family:'Space Mono','Courier New',monospace;font-size:9px;font-weight:400;letter-spacing:0.06em;color:rgba(248,245,240,0.28);line-height:1.5}
+.welcome-tagline{margin:0;font-family:'Fraunces',Georgia,serif;font-size:clamp(15px,3.2vw,18px);font-weight:400;font-style:italic;color:rgba(248,245,240,0.78);letter-spacing:0.05em;line-height:1.5}
+.welcome-footer{flex-shrink:0;padding:22px 20px calc(24px + env(safe-area-inset-bottom,0));text-align:center;border-top:1px solid rgba(201,160,76,0.12);max-width:min(520px,100%);align-self:center;width:100%;box-sizing:border-box}
+.welcome-creed{margin:0 0 8px;font-family:'Cinzel',Georgia,serif;font-size:clamp(10px,2.2vw,12px);font-weight:600;letter-spacing:0.26em;color:rgba(201,160,76,0.78);line-height:1.65}
+.welcome-patent{margin:0;font-family:'Space Mono','Courier New',monospace;font-size:10px;font-weight:400;letter-spacing:0.08em;color:rgba(248,245,240,0.38);line-height:1.5}
 @media(max-width:768px){.sg-suggestion-card{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;padding:16px!important;box-sizing:border-box!important}}
 
   .dream-root,.mc-root,.build-root{font-size:18px}
@@ -351,12 +351,14 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          paddingTop: "max(48px, 8vh)",
-          paddingBottom: 24,
+          minHeight: 0,
+          paddingTop: "max(40px, 6vh)",
+          paddingBottom: 16,
           paddingLeft: 24,
           paddingRight: 24,
           textAlign: "center",
-          gap: 20,
+          gap: 16,
+          overflowY: "auto",
         }}
       >
         <button
@@ -392,7 +394,7 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
             <br />
             is waiting.
           </div>
-          <p className="welcome-tagline">dream big · travel light</p>
+          <p className="welcome-tagline">Dream Big, Travel Light</p>
         </div>
         <button
           type="button"
@@ -421,7 +423,7 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
         </button>
       </div>
       <footer className="welcome-footer" aria-label="Company">
-        <p className="welcome-creed">Freedom · Independence · Discovery</p>
+        <p className="welcome-creed">FREEDOM • INDEPENDENCE • DISCOVERY</p>
         <p className="welcome-patent">Patent pending · USPTO #64/014,106</p>
       </footer>
     </div>
