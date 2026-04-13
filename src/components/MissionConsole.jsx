@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import posthog from "posthog-js";
 import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
-import { fmt, daysBetween } from '../utils/dateHelpers';
+import { fmt, fD, daysBetween } from '../utils/dateHelpers';
 import { urgencyColor } from '../constants/colors';
 import { loadSeg, saveSeg, loadReturn, saveReturn, TI } from '../utils/storageHelpers';
 import { STATUS_CFG, STATUS_NEXT, formatTripNameDisplay } from '../utils/tripConsoleHelpers';
@@ -93,6 +93,21 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
   const allSegD=loadSeg();
   const totalPlannedSpend=segPhases.reduce((s,p)=>s+computePhasePlannedSpend(p,allSegD).total,0);
   const {changedSegs,cancelledSegs}=(()=>{const cs=[],xs=[];segPhases.forEach(p=>p.segments.forEach(s=>{const d=allSegD[`${p.id}-${s.id}`]||{};const st=d.status||'planning';if(st==='changed')cs.push({phase:p,seg:s});if(st==='cancelled')xs.push({phase:p,seg:s});}));return{changedSegs:cs,cancelledSegs:xs};})();
+  const tripDateStart=destFlatPhases[0]?.arrival;
+  const tripDateEnd=destFlatPhases[destFlatPhases.length-1]?.departure;
+  const tripDateLabel=tripDateStart&&tripDateEnd?`${fD(tripDateStart)} – ${fD(tripDateEnd)}`:'';
+
+  /** Trip Console phase cards (PhaseCard.jsx desktop) — glass hero matches list */
+  const tripHeroGlass={
+    background:'rgba(23,27,32,0.62)',
+    backdropFilter:'blur(10px)',
+    WebkitBackdropFilter:'blur(10px)',
+    border:'1px solid rgba(0,229,255,0.18)',
+    borderTop:'1px solid rgba(0,229,255,0.36)',
+    borderRadius:18,
+    overflow:'hidden',
+    boxShadow:'inset 0 1px 0 rgba(248,245,240,0.06), 0 14px 44px rgba(0,0,0,0.42), 0 0 52px rgba(201,160,76,0.08)',
+  };
 
   return(
     <div className="mc-root mc-trip-bleed" style={{animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
@@ -187,7 +202,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
           segPhases.forEach(p=>p.segments.forEach(s=>{totalSegs++;const d=allSegD[`${p.id}-${s.id}`]||{};if(d.transport?.mode||d.transport?.cost||d.stay?.name||d.stay?.cost||(d.activities?.length||0)>0)filledSegs++;}));
           const readPct=totalSegs>0?Math.round((filledSegs/totalSegs)*100):0;
           return(
-            <div style={{background:'rgba(23,27,32,0.72)',backdropFilter:'blur(14px)',WebkitBackdropFilter:'blur(14px)',borderRadius:18,border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.55)',boxShadow:'inset 0 1px 0 rgba(0,229,255,0.22), 0 12px 40px rgba(0,0,0,0.45), 0 0 48px rgba(201,160,76,0.06)',overflow:'hidden'}}>
+            <div style={{...tripHeroGlass,background:'rgba(23,27,32,0.62)',border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.55)',boxShadow:'inset 0 1px 0 rgba(0,229,255,0.22), 0 12px 40px rgba(0,0,0,0.45), 0 0 48px rgba(201,160,76,0.06)'}}>
               <div style={{padding:'14px 14px 12px'}}>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:7}}>
                   <span style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(0,229,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>EXPEDITION READINESS</span>
@@ -217,11 +232,20 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                   </div>
                 ))}
               </div>
+              {tripDateLabel?(
+                <>
+                  <div style={{height:1,background:'rgba(0,229,255,0.12)'}}/>
+                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,padding:'10px 14px 12px',flexWrap:'wrap'}}>
+                    <span style={{fontSize:12,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500}}>{tripDateLabel}</span>
+                    <span style={{fontSize:12,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600}}>🌙 {totalNights} {totalNights===1?'Night':'Nights'}</span>
+                  </div>
+                </>
+              ):null}
             </div>
           );
         })():(
-          <div style={{background:'rgba(23,27,32,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.62)',borderRadius:18,padding:'4px 4px 5px',overflow:'visible',boxShadow:'0 14px 44px rgba(0,0,0,0.42), 0 0 56px rgba(201,160,76,0.08), inset 0 1px 0 rgba(0,229,255,0.12)'}}>
-            <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative",alignItems:"stretch"}}>
+          <div style={{...tripHeroGlass,padding:0,overflow:'visible'}}>
+            <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative",alignItems:"stretch",padding:"4px 4px 0"}}>
               {heroStats.map((s,i)=>(
                 <div key={s.label} style={{textAlign:"center",padding:"6px 10px 8px",borderLeft:i>0?"1px solid rgba(248,245,240,0.08)":"none",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start"}}>
                   {s.label==="BUDGET"?(
@@ -239,6 +263,15 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
                 </div>
               ))}
             </div>
+            {tripDateLabel?(
+              <>
+                <div style={{height:1,background:'rgba(255,255,255,0.08)',margin:'0 0 0 0'}}/>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,padding:'10px 18px 12px',flexWrap:'wrap'}}>
+                  <span style={{fontSize:14,color:'rgba(255,255,255,0.58)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500}}>{tripDateLabel}</span>
+                  <span style={{fontSize:14,color:'rgba(255,255,255,0.58)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600}}>🌙 {totalNights} Nights</span>
+                </div>
+              </>
+            ):null}
           </div>
         )}
       </div>}
