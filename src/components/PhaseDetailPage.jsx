@@ -31,6 +31,8 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
     borderBottom:'1px solid rgba(0,229,255,0.22)',
     borderTop:'1px solid rgba(0,229,255,0.36)',
     boxShadow:'inset 0 1px 0 rgba(248,245,240,0.06), 0 14px 44px rgba(0,0,0,0.42), 0 0 52px rgba(201,160,76,0.08)',
+    borderRadius:isMobile?12:16,
+    overflow:'hidden',
   };
   return(
     <>
