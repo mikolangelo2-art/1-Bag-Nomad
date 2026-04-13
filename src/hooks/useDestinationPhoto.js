@@ -283,6 +283,11 @@ function readCache(cacheKey) {
  */
 export function useDestinationPhoto(destination, category, country, options = {}) {
   const instanceId = options?.instanceId;
+  const pageOpt = options?.page;
+  const pageNum = useMemo(() => {
+    if (typeof pageOpt === "number" && pageOpt >= 1) return Math.min(3, Math.floor(pageOpt));
+    return 1;
+  }, [pageOpt]);
   const queryTiers = useMemo(
     () => buildUnsplashQueryTiers(destination, category, country),
     [destination, category, country]
@@ -318,7 +323,7 @@ export function useDestinationPhoto(destination, category, country, options = {}
         queryTiers.length > 0
           ? [...queryTiers.slice(cardIdx), ...queryTiers.slice(0, cardIdx)]
           : [];
-      const PAGE = 1;
+      const PAGE = pageNum;
       let fallback = null;
 
       function commitSuccess(imgUrl, htmlLink, thumb) {
@@ -539,7 +544,7 @@ export function useDestinationPhoto(destination, category, country, options = {}
     return () => {
       cancelled = true;
     };
-  }, [queryTiers, cacheKey, cached, destination, country, instanceId]);
+  }, [queryTiers, cacheKey, cached, destination, country, instanceId, pageNum]);
 
   const netMatches = net.forKey === cacheKey && net.done;
   const url = cached?.url ?? (netMatches ? net.url : null);

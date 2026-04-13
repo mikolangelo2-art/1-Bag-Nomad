@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDestinationPhoto } from "../hooks/useDestinationPhoto";
+import { useSuggestionPhotoDuplicate } from "./SuggestionPhotoDedupProvider";
 
 /** Split-card hero height — taller band shows more of each photo (Stay/Food/Activities) */
 const HERO_H = 200;
@@ -32,6 +33,7 @@ const HERO_H = 200;
  *   savedCheckStyle?: import("react").CSSProperties,
  *   savedSubStyle?: import("react").CSSProperties,
  *   footerSlot?: import("react").ReactNode,
+ *   photoPageIndex?: number,
  * }} props
  */
 export default function GenericSuggestionCard({
@@ -60,6 +62,7 @@ export default function GenericSuggestionCard({
   savedCheckStyle,
   savedSubStyle,
   footerSlot = null,
+  photoPageIndex = 0,
 }) {
   const [imgLoaded, setImgLoaded] = useState(false);
   const [innerOpen, setInnerOpen] = useState(false);
@@ -76,7 +79,19 @@ export default function GenericSuggestionCard({
   }
 
   const photoCat = photoQueryOverride ?? `${item.category} ${destination}`.trim();
-  const photo = useDestinationPhoto(destination, photoCat, country, { instanceId });
+  const photo = useDestinationPhoto(destination, photoCat, country, {
+    instanceId,
+    page: Math.min(3, Math.max(1, (Number(photoPageIndex) || 0) + 1)),
+  });
+  const isPhotoDuplicate = useSuggestionPhotoDuplicate(
+    photo.ready && photo.url ? photo.url : null,
+    instanceId
+  );
+  const showHeroImg = photo.ready && photo.url && !isPhotoDuplicate;
+  const descFallback = useMemo(
+    () => String(item.description || item.note || "").trim(),
+    [item.description, item.note]
+  );
 
   useEffect(() => {
     setImgLoaded(false);
@@ -116,7 +131,7 @@ export default function GenericSuggestionCard({
 
   const heroBlock = (
     <div style={{ position: "relative", height: HERO_H, background: "#111", overflow: "hidden" }}>
-      {photo.ready && photo.url ? (
+      {showHeroImg ? (
         <>
           {!imgLoaded && photo.thumb ? (
             <img
@@ -175,6 +190,30 @@ export default function GenericSuggestionCard({
             }}
           />
         </>
+      ) : photo.ready && (!photo.url || isPhotoDuplicate) && descFallback ? (
+        <div
+          style={{
+            padding: "20px 16px",
+            background: "rgba(0,8,20,0.6)",
+            borderRadius: "12px 12px 0 0",
+            minHeight: HERO_H,
+            boxSizing: "border-box",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontSize: 15,
+              fontStyle: "italic",
+              color: "rgba(255,255,255,0.70)",
+              lineHeight: 1.7,
+            }}
+          >
+            {descFallback}
+          </div>
+        </div>
       ) : (
         <div
           style={{
@@ -194,9 +233,9 @@ export default function GenericSuggestionCard({
       {subtitle ? (
         <div
           style={{
-            fontSize: 13,
+            fontSize: 14,
             fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-            color: "rgba(255,255,255,0.72)",
+            color: "rgba(255,245,220,0.80)",
             marginBottom: 6,
             lineHeight: 1.35,
           }}
@@ -207,9 +246,9 @@ export default function GenericSuggestionCard({
       <div
         style={{
           fontFamily: "'Fraunces',serif",
-          fontSize: 16,
-          fontWeight: 500,
-          color: "#FFF",
+          fontSize: 17,
+          fontWeight: 400,
+          color: "rgba(255,245,220,0.94)",
           lineHeight: 1.25,
           marginBottom: 6,
           wordBreak: "break-word",
@@ -219,15 +258,15 @@ export default function GenericSuggestionCard({
       </div>
       <div
         style={{
-          fontSize: 12,
+          fontSize: 14,
           fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-          color: "#c9a04c",
+          color: "rgba(245,158,11,0.90)",
           fontWeight: 600,
         }}
       >
         {priceStr}
         {item.rating != null ? (
-          <span style={{ color: "rgba(255,255,255,0.35)", fontWeight: 500, marginLeft: 8 }}>
+          <span style={{ color: "rgba(255,255,255,0.55)", fontWeight: 500, marginLeft: 8 }}>
             {"\u2605"} {item.rating}/10
           </span>
         ) : null}
@@ -272,7 +311,7 @@ export default function GenericSuggestionCard({
         <div
           style={{
             fontFamily: "'Playfair Display',serif",
-            fontSize: 14,
+            fontSize: 15,
             fontStyle: "italic",
             color: "rgba(255,248,235,0.82)",
             lineHeight: 1.5,
@@ -285,8 +324,8 @@ export default function GenericSuggestionCard({
       {item.description ? (
         <div
           style={{
-            fontSize: 13,
-            color: "rgba(255,255,255,0.72)",
+            fontSize: 14,
+            color: "rgba(255,245,220,0.78)",
             lineHeight: 1.5,
             marginBottom: 10,
             fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
