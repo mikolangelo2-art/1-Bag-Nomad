@@ -44,7 +44,7 @@ export function ActivitySuggestionExperienceCard({
 
   return (
     <GenericSuggestionCard
-      variant="stacked"
+      variant="expand"
       item={item}
       destination={segmentName}
       country={segmentCountry}
