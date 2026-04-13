@@ -69,15 +69,28 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
   const parseMarkdown=(text)=>{if(!text)return null;const parts=text.split(/(\*\*[^*]+\*\*)/g);return parts.map((part,i)=>{if(part.startsWith('**')&&part.endsWith('**'))return <strong key={i} style={{fontWeight:600,color:'#c9a04c'}}>{part.slice(2,-2)}</strong>;return <span key={i}>{part}</span>;});};
   if(scr==="dream")return null;
   const isPackMobile=isMobile&&scr==="pack-console";
+  const isCoarchitect=scr==="coarchitect";
   const fabBottom=isPackMobile
     ?"calc(88px + env(safe-area-inset-bottom, 0px))"
     :isMobile
       ?"calc(62px + env(safe-area-inset-bottom, 0px))"
       :24;
+  const fabBottomResolved=isCoarchitect
+    ?(isMobile?"calc(132px + env(safe-area-inset-bottom, 0px))":"calc(108px + env(safe-area-inset-bottom, 0px))")
+    :fabBottom;
+  const fabZ=isCoarchitect?120:1000;
   const hideFabMobile=isMobile&&(keyboardLikely||anyInputFocused);
   const showFab=!open&&!hideFabMobile;
+  const [peekLine,setPeekLine]=useState(null);
+  useEffect(()=>{
+    if(!open||msgs.length>0){setPeekLine(null);return;}
+    try{
+      const raw=typeof sessionStorage!=="undefined"?sessionStorage.getItem("1bn_ca_peek_v1"):"";
+      if(raw){const o=JSON.parse(raw);if(o?.text)setPeekLine(String(o.text).slice(0,220));}else setPeekLine(null);
+    }catch(e){setPeekLine(null);}
+  },[open,msgs.length]);
   return(<>
-    {showFab&&<div style={{position:"fixed",bottom:fabBottom,right:isMobile?12:"calc((100vw / 1.15 - 1382px) / 4)",display:"flex",flexDirection:"column",alignItems:"center",gap:4,zIndex:1000}}>
+    {showFab&&<div style={{position:"fixed",bottom:fabBottomResolved,right:isMobile?12:"calc((100vw / 1.15 - 1382px) / 4)",display:"flex",flexDirection:"column",alignItems:"center",gap:4,zIndex:fabZ}}>
       <button type="button" className="ca-architect-fab ca-architect-fab--breathe" onClick={()=>setOpen(true)} style={{width:isMobile?48:128,height:isMobile?48:128,borderRadius:"50%",background:"linear-gradient(145deg,rgba(166,123,91,0.55),rgba(18,18,18,0.92))",border:"1px solid rgba(201,160,76,0.42)",boxShadow:"0 0 24px rgba(201,160,76,0.28), 0 0 56px rgba(201,160,76,0.12), 0 12px 32px rgba(0,0,0,0.45)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,opacity:0.92}}>
         <span className="ca-architect-fab-inner--breathe" style={{ lineHeight: 0 }}>
           <SharegoodLogo size={isMobile?56:112} animationState={loading?"thinking":"idle"} opacity={1} glowColor="rgba(201,160,76,0.55)"/>
@@ -93,8 +106,9 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
           <button onClick={()=>setOpen(false)} style={{color:"rgba(255,255,255,0.4)",background:"none",border:"none",fontSize:20,cursor:"pointer",minWidth:44,minHeight:44,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
         </div>
         <div style={{flex:1,overflowY:"auto",padding:"16px 20px",display:"flex",flexDirection:"column",gap:12,minHeight:0,background:"rgba(255,255,255,0.06)"}}>
-          {msgs.length===0&&<div style={{position:"relative",flex:1,display:"flex",alignItems:"center",justifyContent:"center",minHeight:200}}>
-            <img src="/1bn-logo.png" style={{position:"absolute",width:"60%",maxWidth:200,opacity:0.06,pointerEvents:"none"}} alt=""/>
+          {msgs.length===0&&<div style={{position:"relative",flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start",minHeight:120,paddingTop:8}}>
+            <img src="/1bn-logo.png" style={{position:"absolute",top:"18%",left:"50%",transform:"translateX(-50%)",width:"60%",maxWidth:200,opacity:0.06,pointerEvents:"none"}} alt=""/>
+            {peekLine&&<div style={{position:"relative",zIndex:1,width:"100%",maxWidth:440,margin:"0 auto 10px",padding:"8px 14px",borderRadius:10,background:"rgba(201,160,76,0.06)",border:"1px solid rgba(201,160,76,0.2)",fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",fontWeight:400,color:"rgba(255,255,255,0.72)",lineHeight:1.55,textAlign:"center"}}>{peekLine}</div>}
             <div style={{position:"relative",zIndex:1,textAlign:"center",padding:"0 20px",maxWidth:420,margin:"0 auto",fontFamily:"'Playfair Display',serif",fontStyle:"italic",fontWeight:400,color:"rgba(232,220,200,0.95)",fontSize:isMobile?18:20,lineHeight:1.65,textShadow:"0 1px 2px rgba(0,0,0,0.35)"}}>{openLine}</div>
           </div>}
           {msgs.map((m,i)=><div key={i} style={{display:"flex",gap:8,flexDirection:m.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>
@@ -106,7 +120,7 @@ function AmbientChat({screen:scr,tripData,currentPhase,currentSegment,currentTab
         </div>
         <div style={{padding:"12px 16px",borderTop:"1px solid rgba(255,255,255,0.08)",display:"flex",gap:8,flexShrink:0,alignItems:"stretch",paddingBottom:`calc(12px + env(safe-area-inset-bottom))`}}>
           <div className="ca-chat-input-wrap" style={{flex:1,minWidth:0,display:"flex",alignItems:"stretch",borderRadius:10,overflow:"hidden",backgroundColor:"#0C1520",boxSizing:"border-box"}}>
-            <input className="ca-chat-input" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")send();}} placeholder="How can I help you?" style={{flex:1,width:"100%",minWidth:0,backgroundColor:"#0C1520",padding:"10px 14px",color:"white",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:16,outline:"none",boxSizing:"border-box",colorScheme:"dark"}}/>
+            <input className="ca-chat-input" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")send();}} placeholder="Refine, redirect, dream bigger..." style={{flex:1,width:"100%",minWidth:0,backgroundColor:"#0C1520",padding:"10px 14px",color:"white",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:16,outline:"none",boxSizing:"border-box",colorScheme:"dark"}}/>
           </div>
           <button onClick={send} disabled={loading} style={{background:"rgba(255,159,67,0.2)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:10,padding:"10px 16px",color:"rgba(255,159,67,0.9)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,fontWeight:700,letterSpacing:1,cursor:loading?"wait":"pointer",minWidth:44,minHeight:44,alignSelf:"stretch"}}>↑</button>
         </div>

@@ -146,7 +146,7 @@ Return ONLY valid JSON:
                 return(<div key={i} className="phase-row" style={{borderLeftColor:c,background:`linear-gradient(90deg,${c}08,#0C1520)`,animation:`phaseIn 0.4s ease ${i*.07}s both`}}>
                   <div style={{width:22,height:22,borderRadius:"50%",background:`${c}18`,border:`1px solid ${c}44`,color:c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,flexShrink:0,marginTop:1}}>{i+1}</div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?15:17,fontWeight:400,fontStyle:"italic",color:"rgba(255,245,220,0.94)",lineHeight:1.48,marginBottom:8,letterSpacing:"0.01em",textWrap:"balance",overflowWrap:"break-word",wordBreak:"break-word"}}>{p.why}</div>
+                    <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontWeight:400,fontStyle:"normal",color:"rgba(255,245,220,0.94)",lineHeight:1.48,marginBottom:8,letterSpacing:"0.01em",textWrap:"balance",overflowWrap:"break-word",wordBreak:"break-word"}}>{p.why}</div>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2,flexWrap:"wrap"}}>
                       <span style={{fontSize:isMobile?12:13,fontWeight:600,color:"rgba(255,255,255,0.92)",letterSpacing:0.3}}>{p.flag||"🌍"} {p.destination}</span>
                       <span style={{fontSize:11,color:c}}>{TI[p.type]||"✈️"} {p.type}</span>
@@ -200,7 +200,7 @@ Return ONLY valid JSON:
               {loading&&<div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",marginBottom:8}}>✨ refining...</div>}
               <div style={{display:"flex",gap:7,alignItems:"stretch"}}>
                 <div className="ca-chat-input-wrap" style={{flex:1,minWidth:0,display:"flex",alignItems:"stretch",borderRadius:8,overflow:"hidden",backgroundColor:"#0C1520",boxSizing:"border-box"}}>
-                  <input className="vision-refine-input" style={{flex:1,width:"100%",minWidth:0,backgroundColor:"#0C1520",color:"#FFF",fontSize:isMobile?14:15,padding:isMobile?"11px":"9px 11px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",colorScheme:"dark"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Reshape your vision — more culture, less beach, different vibe..."/>
+                  <input className="vision-refine-input" style={{flex:1,width:"100%",minWidth:0,backgroundColor:"#0C1520",color:"#FFF",fontSize:isMobile?14:15,padding:isMobile?"11px":"9px 11px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",colorScheme:"dark"}} value={refineInput} onChange={e=>setRefineInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")refine();}} placeholder="Refine, redirect, dream bigger..."/>
                 </div>
                 <button style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(201,160,76,0.4)",borderRadius:8,color:"rgba(201,160,76,0.95)",fontSize:15,padding:"8px 12px",cursor:"pointer",minWidth:44,minHeight:44}} onClick={refine}>↑</button>
               </div>

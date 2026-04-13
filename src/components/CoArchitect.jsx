@@ -11,6 +11,26 @@ import { PALETTE_8 } from '../constants/colors';
 import DatePickerInput from './DatePickerInput';
 import { formatTripNameDisplay } from '../utils/tripConsoleHelpers';
 
+function coerceNightsInit(v){
+  if(v===""||v==null)return 1;
+  if(typeof v==="number")return Math.max(1,v);
+  const n=parseInt(String(v),10);
+  return Number.isFinite(n)?Math.max(1,n):1;
+}
+function buildCoArchitectWelcomeMessage(items,countries,totalNights){
+  const cc=countries.length;
+  const first=(items[0]?.destination||"").trim();
+  const last=items.length>1?(items[items.length-1]?.destination||"").trim():"";
+  const route=first&&last&&first!==last?`${first} to ${last}`:first;
+  const dive=items.some(i=>String(i.type||"").toLowerCase().includes("dive"));
+  if(dive&&route)return `${totalNights} nights, ${cc} ${cc===1?"country":"countries"} — ${route}. Let's make every dive count.`;
+  if(items.length>=4||cc>=5)return `${cc} countries, ${totalNights} nights — this is an expedition. Let's build it right.`;
+  return `${totalNights} nights across ${cc} ${cc===1?"country":"countries"}${route?` — ${route}`:""}. Let's make every one count.`;
+}
+function initialItemsFromVision(visionData,colors){
+  return(visionData.phases||[]).filter(p=>p.type!=="Return").map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:p.budget||estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8],why:p.why||"",caActivities:Array.isArray(p.caActivities)?p.caActivities.slice():[]}));
+}
+
 function CoArchitect({data,visionData,onLaunch,onBack}) {
   const isMobile=useMobile();
   const [mobileTab,setMobileTab]=useState(data.isRevision?"chat":"chat");
@@ -22,9 +42,14 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   const colors=PALETTE_8;
   // Filter return phase — kept separately, re-attached in buildHandoff
   const [returnPhaseData]=useState(()=>(visionData.phases||[]).find(p=>p.type==="Return")||null);
-  const [items,setItems]=useState(()=>(visionData.phases||[]).filter(p=>p.type!=="Return").map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:p.budget||estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8],why:p.why||"",caActivities:Array.isArray(p.caActivities)?p.caActivities.slice():[]})));
+  const [items,setItems]=useState(()=>initialItemsFromVision(visionData,colors));
   const [startDate,setStartDate]=useState(data.date||"2026-09-16");
-  const [chat,setChat]=useState([{role:"ai",text:data.isRevision?"Welcome back — let's revise your expedition. ✏️\n\nYour itinerary is loaded. Tell me what you'd like to change.":"Welcome, I'm your 1 Bag Nomad trip Co-Architect. ✨\n\nYour vision is incredible and I'm genuinely excited to help you build it."}]);
+  const [chat,setChat]=useState(()=>{
+    const its=initialItemsFromVision(visionData,PALETTE_8);
+    const cc=[...new Set(its.map(i=>i.country))];
+    const tn=its.reduce((s,i)=>s+coerceNightsInit(i.nights),0);
+    return[{role:"ai",text:buildCoArchitectWelcomeMessage(its,cc,tn)}];
+  });
   const [input,setInput]=useState("");
   const [loading,setLoading]=useState(false);
   const [editingId,setEditingId]=useState(null);
@@ -44,6 +69,10 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
   const goalLabel=GOAL_PRESETS.find(g=>g.id===data.selectedGoal)?.label||"expedition";
   useEffect(()=>{window.scrollTo(0,0);},[]);
   useEffect(()=>{chatEnd.current?.scrollIntoView({behavior:"smooth"});},[chat]);
+  useEffect(()=>{
+    const last=[...chat].reverse().find(m=>m.role==="ai");
+    if(last?.text)try{sessionStorage.setItem("1bn_ca_peek_v1",JSON.stringify({text:last.text}));}catch(e){}
+  },[chat]);
   useEffect(()=>{const t=setTimeout(()=>genInsight(),2000);return()=>clearTimeout(t);},[]);
   const totalNights=items.reduce((s,i)=>s+coerceNightsVal(i.nights),0);
   const totalCost=items.reduce((s,i)=>s+coerceCostVal(i.cost),0);
@@ -241,7 +270,7 @@ RULES:
               <div><div style={{fontSize:15,color:"rgba(255,255,255,0.35)"}}>{items.length} stops · {countries.length} countries</div><div style={{fontSize:15,color:"rgba(105,240,174,0.85)"}}>~{fmt(Math.round(totalCost/Math.max(totalNights,1)))}/night</div></div>
               <div style={{fontSize:20,fontWeight:900,color:"#c9a04c"}}>{fmt(totalCost)}</div>
             </div>
-            {isMobile&&<button style={{margin:"12px 0 0 0",width:"100%",padding:12,borderRadius:10,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#060A0F",fontSize:15,fontWeight:900,cursor:"pointer",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animation:"consolePulse 2.8s ease-in-out infinite"}} onClick={()=>onLaunch(buildHandoff())}>{data.isRevision?"✅  UPDATE":"🚀  LAUNCH TRIP CONSOLE"}</button>}
+            <button style={{margin:"12px 0 0 0",width:"100%",padding:12,borderRadius:10,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#060A0F",fontSize:15,fontWeight:900,cursor:"pointer",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animation:"consolePulse 2.8s ease-in-out infinite"}} onClick={()=>onLaunch(buildHandoff())}>{data.isRevision?"✅  UPDATE":"🚀  LAUNCH TRIP CONSOLE"}</button>
           </div>
         )}
         {(!isMobile||mobileTab==="chat")&&(
@@ -262,20 +291,12 @@ RULES:
             <div style={{padding:isMobile?"10px 12px":"10px",paddingRight:isMobile?72:10,borderTop:"1px solid #111D2A",display:"flex",gap:5,flexWrap:isMobile?"nowrap":"wrap",overflowX:"auto",flexShrink:0}}>
               {QUICK_ACTIONS.map(a=><button type="button" key={a} onClick={()=>setInput(a)} onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.10)";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)";}} onTouchStart={e=>{e.currentTarget.style.background="rgba(255,255,255,0.10)";}} onTouchEnd={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)";}} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:20,padding:isMobile?"6px 12px":"7px 14px",fontSize:isMobile?11:15,fontWeight:700,color:"#c9a04c",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:isMobile?32:36,transition:"background 0.2s ease,border-color 0.2s ease",WebkitTapHighlightColor:"transparent"}}>{a}</button>)}
             </div>
-            <div style={{padding:isMobile?"8px 12px":"8px 10px",borderTop:"1px solid #111D2A",display:"flex",gap:7,flexShrink:0,alignItems:"stretch"}}>
+            <div style={{padding:isMobile?"8px 12px":"8px 10px",borderTop:"1px solid #111D2A",display:"flex",gap:7,flexShrink:0,alignItems:"stretch",position:"relative",zIndex:700}}>
               <div className="ca-chat-input-wrap" style={{flex:1,minWidth:0,display:"flex",alignItems:"stretch",borderRadius:8,overflow:"hidden",backgroundColor:"#0C1520",boxSizing:"border-box",border:"1px solid rgba(201,160,76,0.5)"}}>
-                <input className="ca-chat-input" style={{flex:1,width:"100%",minWidth:0,backgroundColor:"#0C1520",color:"#FFF",fontSize:isMobile?14:15,padding:"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",minHeight:44,colorScheme:"dark"}} value={input} onChange={e=>setInput(e.target.value)} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();sendMsg();}}} placeholder="Now let's dial it in — what are you thinking?"/>
+                <input className="ca-chat-input" style={{flex:1,width:"100%",minWidth:0,backgroundColor:"#0C1520",color:"#FFF",fontSize:isMobile?14:15,padding:"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",minHeight:44,colorScheme:"dark"}} value={input} onChange={e=>setInput(e.target.value)} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();sendMsg();}}} placeholder="Refine, redirect, dream bigger..."/>
               </div>
               <button type="button" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.16)",borderRadius:8,color:"rgba(201,160,76,0.95)",fontSize:15,padding:"8px 11px",cursor:"pointer",minWidth:44,minHeight:44,alignSelf:"stretch"}} onClick={sendMsg}>↑</button>
             </div>
-            {!isMobile&&<div style={{margin:"0 10px 10px",flexShrink:0}}>
-              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-                <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,transparent,rgba(255,255,255,0.10))"}}/>
-                <span style={{fontSize:10,color:"rgba(255,255,255,0.28)",fontFamily:"'Playfair Display',serif",fontStyle:"italic",letterSpacing:1,whiteSpace:"nowrap"}}>satisfied with your itinerary?</span>
-                <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,rgba(255,255,255,0.10),transparent)"}}/>
-              </div>
-              <button style={{width:"100%",padding:12,borderRadius:10,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#060A0F",fontSize:15,fontWeight:900,cursor:"pointer",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animation:"consolePulse 2.8s ease-in-out infinite"}} onClick={()=>onLaunch(buildHandoff())}>{data.isRevision?"✅  UPDATE MY EXPEDITION":"🚀  LAUNCH TRIP CONSOLE"}</button>
-            </div>}
           </div>
         )}
       </div>

@@ -97,9 +97,19 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
       {/* Tagline bar — Dream: full-bleed wash (no side fade); Trip/Pack: centered soft band */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:isMobile?10:28,padding:isMobile?"10px 14px":"14px 32px",borderTop:`1px solid ${bc}`,border:"1px solid rgba(201,160,76,0.32)",borderTopColor:"rgba(201,160,76,0.48)",borderRadius:0,margin:0,width:"100%",boxSizing:"border-box",background:isDream?"linear-gradient(180deg,rgba(26,16,6,0.92),rgba(14,9,4,0.96))":`linear-gradient(90deg,transparent,${isTrip?"rgba(0,20,45,0.65)":"rgba(40,16,0,0.65)"},transparent)`,boxShadow:"inset 0 1px 0 rgba(201,160,76,0.22),inset 0 -1px 0 rgba(0,0,0,0.35)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:isDream?"100%":"80%",height:isDream?100:80,background:`radial-gradient(ellipse,${radial} 0%,transparent 70%)`,pointerEvents:"none"}}/>
-        <div style={{fontFamily:"'Playfair Display',serif",fontSize:dbSize,fontWeight:isMobile?400:dbWeight,color:dbColor,letterSpacing:isMobile?0:7,lineHeight:1,whiteSpace:"nowrap",textShadow:isDream?"0 0 32px rgba(201,160,76,0.7),0 0 64px rgba(169,70,29,0.4)":"none",position:"relative",textTransform:"uppercase"}}>Dream Big</div>
-        <div style={{width:1,height:isMobile?22:30,background:`linear-gradient(180deg,transparent,${divLine},transparent)`,flexShrink:0}}/>
-        <div style={{fontFamily:"'Playfair Display',serif",fontSize:tlSize,fontWeight:isPack?300:100,fontStyle:"italic",color:tlColor,letterSpacing:isMobile?0:8,lineHeight:1,whiteSpace:"nowrap",position:"relative",textShadow:tlShadow}}>travel light</div>
+        {isDream?(
+          <>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:dbSize,fontWeight:isMobile?400:dbWeight,color:dbColor,letterSpacing:isMobile?0:7,lineHeight:1,whiteSpace:"nowrap",textShadow:"0 0 32px rgba(201,160,76,0.7),0 0 64px rgba(169,70,29,0.4)",position:"relative",textTransform:"uppercase"}}>Dream Big</div>
+            <div style={{width:1,height:isMobile?22:30,background:`linear-gradient(180deg,transparent,${divLine},transparent)`,flexShrink:0}}/>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:tlSize,fontWeight:isPack?300:100,fontStyle:"italic",color:tlColor,letterSpacing:isMobile?0:8,lineHeight:1,whiteSpace:"nowrap",position:"relative",textShadow:tlShadow}}>travel light</div>
+          </>
+        ):(
+          <>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?22:"clamp(2rem, 4.5vw, 3.25rem)",fontWeight:900,letterSpacing:4,textShadow:"0 0 40px rgba(201,160,76,0.45)",lineHeight:1.05,WebkitTextFillColor:"transparent",background:"linear-gradient(90deg,#c9a04c 18%,#f8f5f0 42%,#d4a017 58%,#c9a04c 82%)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",animation:"shimmerOnce 2s ease forwards",position:"relative",textTransform:"uppercase",whiteSpace:"nowrap"}}>Dream Big</div>
+            <div style={{width:1,height:isMobile?22:30,background:`linear-gradient(180deg,transparent,${divLine},transparent)`,flexShrink:0}}/>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?15:"clamp(1.15rem, 2.2vw, 1.75rem)",fontWeight:300,fontStyle:"italic",color:"rgba(201,160,76,0.75)",letterSpacing:3,lineHeight:1.25,marginTop:6,whiteSpace:"nowrap",position:"relative"}}>travel light</div>
+          </>
+        )}
       </div>
       {children}
     </div>
