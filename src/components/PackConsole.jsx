@@ -32,6 +32,8 @@ function persistPackExpandedCats(obj) {
 
 const PACK_GOLD = "#D4AF37";
 const PACK_CREAM = "#F5F0E8";
+/** Volume ring stroke + center numeral — muted steel blue (quiet vs. gold weight ring; not Trip cyan) */
+const PACK_VOLUME_RING = "#7A8FA8";
 const PACK_CONTENT_MAX = 880;
 const RING_TRACK = "rgba(255,255,255,0.08)";
 const RING_STROKE_W = 7;
@@ -634,7 +636,7 @@ Return ONLY a JSON array:
             <div style={{position:'absolute',top:8,right:10,zIndex:2,pointerEvents:'auto'}}>
               <HelpTip compact noLeadingMargin desktopOnly text="Track how much space your gear takes up — as you add items, this shows whether everything will actually fit in your bag" />
             </div>
-            <CircularRing value={parseFloat(bpV.toFixed(1))} max={VL} label="MAIN BAG" sublabel="volume limit" color={PACK_CREAM} unit="L" isMobile={isMobile}/>
+            <CircularRing value={parseFloat(bpV.toFixed(1))} max={VL} label="MAIN BAG" sublabel="volume limit" color={PACK_VOLUME_RING} unit="L" isMobile={isMobile}/>
           </div>
         </div>
         {/* 4 mini stats — gold values, glass depth aligned with ring row */}
