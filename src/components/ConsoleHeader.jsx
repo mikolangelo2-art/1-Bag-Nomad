@@ -58,7 +58,16 @@ function ConsoleHeader({console:which,isMobile,rightSlot,onTripConsole,onPackCon
 
   return (
     <>
-    <div style={{background:bg,borderBottom:`1px solid ${bc}`,backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",flexShrink:0}}>
+    <div style={{
+      background:bg,
+      borderBottom:`1px solid ${bc}`,
+      backdropFilter:"blur(10px)",
+      WebkitBackdropFilter:"blur(10px)",
+      flexShrink:0,
+      borderBottomLeftRadius:isMobile?12:16,
+      borderBottomRightRadius:isMobile?12:16,
+      overflow:"hidden",
+    }}>
       {/* Top row: [left slot] [center: logo+wordmark] [right slot] — on mobile Dream, screenLabel moves below logo to avoid overlap */}
       <div style={{display:"flex",alignItems:"center",padding:isMobile?"5px 8px":"7px 14px",gap:6}}>
         {/* Left slot */}
