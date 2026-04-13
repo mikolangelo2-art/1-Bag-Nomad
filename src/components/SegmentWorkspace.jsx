@@ -339,13 +339,15 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
     </div>
   </>;
   const TABS=[{id:"transport",label:"TRAVEL",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:isMobile?"ACTS":"ACTIVITIES",icon:"🎯",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"budget",label:"BUDGET",icon:"💰"},{id:"calendar",label:isMobile?"CAL":"CALENDAR",icon:"📅"},{id:"docs",label:"DOCS",icon:"📋"}];
+  /** Rounded shell for breadcrumb header, tab bar, and tab panel (matches PhaseDetailPage / ConsoleHeader) */
+  const segWorkspaceHdrR=isMobile?12:16;
   const segMobileLoose=isMobile&&(tab==="stay"||tab==="activities"||tab==="food");
   return(
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:300,background:BG_PAGE,overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
       <WorldMapBackground phases={allPhases} activeCountry={(() => { const match = (allPhases||[]).find(p => p.name === phaseLabelName); return match ? match.country : phaseLabelName; })()} departureCity={homeCity||""} animatedRouteLegIndex={animatedRouteLegIndex}/>
       <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box',position:'relative',zIndex:1}}>
       {/* Header — glass card (Trip Console / PhaseCard language) */}
-      <div style={{display:'flex',alignItems:'center',padding:isMobile?'14px 10px':'18px 16px',gap:12,background:'rgba(23,27,32,0.65)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',borderBottom:'1px solid rgba(201,160,76,0.18)',borderTop:'1px solid rgba(255,255,255,0.06)',position:'sticky',top:0,zIndex:10,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.3), 0 0 24px rgba(201,160,76,0.04)'}}>
+      <div style={{display:'flex',alignItems:'center',padding:isMobile?'14px 10px':'18px 16px',gap:12,background:'rgba(23,27,32,0.65)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',borderBottom:'1px solid rgba(201,160,76,0.18)',borderTop:'1px solid rgba(255,255,255,0.06)',position:'sticky',top:0,zIndex:10,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.3), 0 0 24px rgba(201,160,76,0.04)',borderTopLeftRadius:segWorkspaceHdrR,borderTopRightRadius:segWorkspaceHdrR,overflow:'hidden'}}>
         {isMobile?(
           <>
             <button type="button" onClick={onBack} style={{background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6}}>‹ <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1.5,color:'rgba(255,255,255,0.45)'}}>{phaseLabelName.toUpperCase()}</span></button>
@@ -382,7 +384,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         )}
       </div>
       {/* Tab bar */}
-      <div style={{display:'flex',justifyContent:'center',background:'rgba(0,4,12,0.92)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:isMobile?72:72,zIndex:9}}>
+      <div style={{display:'flex',justifyContent:'center',background:'rgba(0,4,12,0.92)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:isMobile?72:72,zIndex:9,borderBottomLeftRadius:segWorkspaceHdrR,borderBottomRightRadius:segWorkspaceHdrR,overflow:'hidden'}}>
         {TABS.map(t=>{const on=tab===t.id;return(
           <button type="button" key={t.id} onClick={()=>setTab(t.id)} style={{flex:isMobile?1:undefined,minWidth:isMobile?0:undefined,padding:isMobile?'10px 2px':'10px 16px',background:'none',border:'none',borderBottom:on?'2px solid #FF9F43':'2px solid transparent',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:3,transition:'all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)',overflow:'hidden',opacity:on?1:0.75,transform:on?'scale(1.05)':'scale(1)'}}>
             <span style={{fontSize:isMobile?20:20,lineHeight:1}}>{t.icon}</span>
@@ -393,7 +395,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
       </div>
       {/* Tab content — visited tabs stay mounted; visibility toggles (Session 51H) */}
-      <div style={{border:segMobileLoose?'none':'1.5px solid rgba(255,255,255,0.10)',borderRadius:16,background:'rgba(0,8,20,0.85)',padding:segMobileLoose?'10px 10px':'16px 14px',margin:segMobileLoose?'6px 0':'12px 0',minHeight:300,textAlign:'left',animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+      <div style={{border:segMobileLoose?'none':'1.5px solid rgba(255,255,255,0.10)',borderRadius:segWorkspaceHdrR,background:'rgba(0,8,20,0.85)',padding:segMobileLoose?'10px 10px':'16px 14px',margin:segMobileLoose?'6px 0':'12px 0',minHeight:300,textAlign:'left',animation:'tabFadeIn 400ms cubic-bezier(0.25,0.46,0.45,0.94)',overflow:'hidden'}}>
         {(tab==="transport"||tab==="stay"||tab==="activities"||tab==="food")&&!!segmentCardDateHeader&&<div style={{textAlign:'center',margin:segMobileLoose?'0 0 10px':'0 0 14px',padding:segMobileLoose?'0 0 10px':'0 8px 12px',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
           <div style={{fontSize:isMobile?13:14,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.52)',letterSpacing:0.35,lineHeight:1.52}}>{segmentCardDateHeader}</div>
         </div>}
