@@ -458,8 +458,8 @@ export default function GenericSuggestionCard({
             justifyContent: "space-between",
             gap: 12,
             cursor: "pointer",
-            border: "1px solid rgba(255,255,255,0.08)",
-            borderLeft: "2px solid #D4AF37",
+            border: "1px solid rgba(212,175,55,0.25)",
+            borderLeft: "3px solid #D4AF37",
             background: "rgba(212,175,55,0.06)",
             flexWrap: "wrap",
           }}
