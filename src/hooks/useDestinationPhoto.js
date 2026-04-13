@@ -139,7 +139,7 @@ function takeFirstTokens(phrase, maxTokens = 4) {
 
 /**
  * Country leads when available; max 4 tokens per query; Iberian/Caribbean/Andes food hints
- * sit under the country prefix.
+ * sit under the country prefix. Session 53F: every path yields at least 4 distinct tiers for rotation.
  */
 export function buildUnsplashQueryTiers(destination, category, country) {
   const d = String(destination || "").trim();
@@ -153,24 +153,33 @@ export function buildUnsplashQueryTiers(destination, category, country) {
         tiers.push(takeFirstTokens(`${co} ${d} tapas market`, 4));
         tiers.push(takeFirstTokens(`${co} ${d} old town`, 4));
         tiers.push(takeFirstTokens(`${co} culture street`, 4));
+        tiers.push(takeFirstTokens(`${co} ${d} restaurant dining`, 4));
       } else if (isCaribbeanOrAndes(d, co)) {
         tiers.push(takeFirstTokens(`${co} ${d} street food`, 4));
         tiers.push(takeFirstTokens(`${co} ${d} food market`, 4));
         tiers.push(takeFirstTokens(`${co} culture street`, 4));
+        tiers.push(takeFirstTokens(`${co} ${d} local dining`, 4));
       } else {
         tiers.push(takeFirstTokens(`${co} ${d} food market`, 4));
         tiers.push(takeFirstTokens(`${co} ${d} old town`, 4));
         tiers.push(takeFirstTokens(`${co} culture street`, 4));
+        tiers.push(takeFirstTokens(`${co} ${d} restaurant`, 4));
       }
     } else if (isIberian(d, co)) {
       tiers.push(takeFirstTokens(`${d} tapas market`, 4));
       tiers.push(takeFirstTokens(`${d} old town`, 4));
+      tiers.push(takeFirstTokens(`${d} culture street`, 4));
+      tiers.push(takeFirstTokens(`${d} restaurant dining`, 4));
     } else if (isCaribbeanOrAndes(d, co)) {
       tiers.push(takeFirstTokens(`${d} street food`, 4));
       tiers.push(takeFirstTokens(`${d} food market`, 4));
+      tiers.push(takeFirstTokens(`${d} local cuisine`, 4));
+      tiers.push(takeFirstTokens(`${d} restaurant`, 4));
     } else {
       tiers.push(takeFirstTokens(`${d} food market`, 4));
       tiers.push(takeFirstTokens(`${d} old town`, 4));
+      tiers.push(takeFirstTokens(`${d} local cuisine`, 4));
+      tiers.push(takeFirstTokens(`${d} restaurant dining`, 4));
     }
     return dedupeQueries(tiers);
   }
@@ -178,12 +187,14 @@ export function buildUnsplashQueryTiers(destination, category, country) {
   if (category === "stay") {
     if (co) {
       tiers.push(takeFirstTokens(`${co} ${d} hotel courtyard`, 4));
-      tiers.push(takeFirstTokens(`${co} ${d} azulejo exterior`, 4));
+      tiers.push(takeFirstTokens(`${co} ${d} guesthouse exterior`, 4));
       tiers.push(takeFirstTokens(`${co} historic architecture`, 4));
+      tiers.push(takeFirstTokens(`${co} ${d} accommodation`, 4));
     } else {
       tiers.push(takeFirstTokens(`${d} hotel courtyard`, 4));
-      tiers.push(takeFirstTokens(`${d} hotel rooftop`, 4));
+      tiers.push(takeFirstTokens(`${d} guesthouse exterior`, 4));
       tiers.push(takeFirstTokens(`${d} old town`, 4));
+      tiers.push(takeFirstTokens(`${d} travel accommodation`, 4));
     }
     return dedupeQueries(tiers);
   }
@@ -194,18 +205,23 @@ export function buildUnsplashQueryTiers(destination, category, country) {
       tiers.push(takeFirstTokens(`${co} ${activityClean} plantation`, 4));
       tiers.push(takeFirstTokens(`${co} ${activityClean} mountains`, 4));
       tiers.push(takeFirstTokens(`${co} ${activityClean} outdoor`, 4));
+      tiers.push(takeFirstTokens(`${co} ${d} travel adventure`, 4));
     } else {
       tiers.push(takeFirstTokens(`${co} ${d} mountains`, 4));
       tiers.push(takeFirstTokens(`${co} landscape travel`, 4));
       tiers.push(takeFirstTokens(`${co} ${d} culture`, 4));
+      tiers.push(takeFirstTokens(`${co} ${d} nature`, 4));
     }
   } else if (activityClean) {
     tiers.push(takeFirstTokens(`${d} ${activityClean} street`, 4));
     tiers.push(takeFirstTokens(`${d} ${activityClean} outdoor`, 4));
     tiers.push(takeFirstTokens(`${d} ${activityClean} plaza`, 4));
+    tiers.push(takeFirstTokens(`${d} travel adventure`, 4));
   } else {
     tiers.push(takeFirstTokens(`${d} old town`, 4));
     tiers.push(takeFirstTokens(`${d} plaza skyline`, 4));
+    tiers.push(takeFirstTokens(`${d} culture travel`, 4));
+    tiers.push(takeFirstTokens(`${d} landscape nature`, 4));
   }
   return dedupeQueries(tiers);
 }
