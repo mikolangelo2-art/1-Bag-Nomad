@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useMobile } from '../hooks/useMobile';
 import { fmt, fD } from '../utils/dateHelpers';
 import { findSuggestionForSegment, flatPhaseIndexForSegment, prevSegmentNameForSeg } from '../utils/tripConsoleHelpers';
@@ -19,7 +20,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
   const allocPct=phaseCap>0?Math.round((plannedSpend/phaseCap)*100):0;
   const barFillPct=Math.min(allocPct,100);
   const spendOverCap=phaseCap>0&&plannedSpend>phaseCap;
-  return(
+  return createPortal(
     <>
     <div style={{position:'fixed',top:0,left:isMobile?0:68,right:0,bottom:0,zIndex:1100,background:'#0A0705',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
       <WorldMapBackground phases={allPhases} activeCountry={phase.country} departureCity={homeCity||""}/>
@@ -148,8 +149,13 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       </div>
       </div>
     </div>
-    {activeSegment&&(()=>{const allSegs=segPhases.flatMap(p=>p.segments);const segIdx=allSegs.findIndex(s=>s.id===activeSegment.id);const prev=segIdx>0?allSegs[segIdx-1]:null;const segFlatIdx=flatPhaseIndexForSegment(activeSegment,allPhases);return <SegmentWorkspace segment={activeSegment} phaseId={phase.id} phaseName={phase.name} phaseFlag={phase.flag} intelSnippet={intelData?.[activeSegment.name]} onBack={()=>setActiveSegment(null)} onBackToExpedition={()=>{setActiveSegment(null);onBack();}} suggestion={findSuggestionForSegment(segmentSuggestions, activeSegment.name, segFlatIdx)} suggestionsLoading={suggestionsLoading} homeCity={homeCity} prevCity={prev?.name||""} allPhases={allPhases}/>;})()}
-    </>
+    {activeSegment&&(
+      <div style={{position:'relative',zIndex:1200}}>
+        {(()=>{const allSegs=segPhases.flatMap(p=>p.segments);const segIdx=allSegs.findIndex(s=>s.id===activeSegment.id);const prev=segIdx>0?allSegs[segIdx-1]:null;const segFlatIdx=flatPhaseIndexForSegment(activeSegment,allPhases);return <SegmentWorkspace segment={activeSegment} phaseId={phase.id} phaseName={phase.name} phaseFlag={phase.flag} intelSnippet={intelData?.[activeSegment.name]} onBack={()=>setActiveSegment(null)} onBackToExpedition={()=>{setActiveSegment(null);onBack();}} suggestion={findSuggestionForSegment(segmentSuggestions, activeSegment.name, segFlatIdx)} suggestionsLoading={suggestionsLoading} homeCity={homeCity} prevCity={prev?.name||""} allPhases={allPhases}/>;})()}
+      </div>
+    )}
+    </>,
+    document.body
   );
 }
 
