@@ -26,15 +26,26 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
   const tc=TC[segment.type]||"#c9a04c";
   const sc=STATUS_CFG[status]||STATUS_CFG.planning;
   const countryLabel=(segment.country||"").trim();
-  const titleFs=isMobile?16:17;
-  const dateMonoFs=isMobile?13:14;
+  const titleFs=17;
+  const dateMonoFs=13;
   const revealBodyFs=isMobile?14:15;
+  const segChipFromStatus=planStatus
+    ?{color:planStatus.color,border:`1px solid ${planStatus.border}`,background:planStatus.bg||"transparent"}
+    :status==="planning"
+      ?{color:"#C9A04C",border:"1px solid rgba(201,160,76,0.45)",background:"transparent"}
+      :status==="confirmed"
+        ?{color:"#5E8B8A",border:"1px solid rgba(94,139,138,0.5)",background:"transparent"}
+        :status==="booked"
+          ?{color:"#69F0AE",border:"1px solid rgba(105,240,174,0.45)",background:"transparent"}
+          :status==="changed"
+            ?{color:"#FF6B6B",border:"1px solid rgba(255,107,107,0.45)",background:"transparent"}
+            :{color:"rgba(232,220,200,0.45)",border:"1px solid rgba(122,111,93,0.5)",background:"transparent"};
   // Planning completion status
   const hasTransport=segData&&Object.values(segData.transport||{}).some(v=>v&&String(v).length>0);
   const hasStay=segData?.stay?.name?.length>0;
   const hasActivities=(segData?.activities?.length||0)>0;
   const completedCount=[hasTransport,hasStay,hasActivities].filter(Boolean).length;
-  const planStatus=status==="booked"||status==="confirmed"?null:completedCount===0?{label:"NOT STARTED",color:"rgba(255,255,255,0.85)",bg:"rgba(255,255,255,0.12)",border:"rgba(255,255,255,0.20)"}:completedCount===1?{label:"IN PROGRESS",color:"#FF9F43",bg:"rgba(255,159,67,0.10)",border:"rgba(255,159,67,0.30)"}:completedCount===2?{label:"MOSTLY DONE",color:"#c9a04c",bg:"rgba(201,160,76,0.10)",border:"rgba(201,160,76,0.30)"}:{label:"PLANNED",color:"#69F0AE",bg:"rgba(105,240,174,0.10)",border:"rgba(105,240,174,0.30)"};
+  const planStatus=status==="booked"||status==="confirmed"?null:completedCount===0?{label:"NOT STARTED",color:"rgba(232,220,200,0.45)",bg:"transparent",border:"rgba(122,111,93,0.5)"}:completedCount===1?{label:"IN PROGRESS",color:"#C9A04C",bg:"transparent",border:"rgba(201,160,76,0.5)"}:completedCount===2?{label:"MOSTLY DONE",color:"#C9A04C",bg:"transparent",border:"rgba(201,160,76,0.5)"}:{label:"COMPLETE",color:"#5E8B8A",bg:"transparent",border:"rgba(94,139,138,0.5)"};
   const isCancelled=status==='cancelled';
   const [insight,setInsight]=useState("");
   useEffect(()=>{
@@ -79,7 +90,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
     setAskChat(p=>[...p,{role:"ai",text:res}]);setAskLoading(false);
   }
   return(
-    <div style={{border:'1px rgba(255,255,255,0.10)',borderTop:'1px solid rgba(255,255,255,0.18)',borderRadius:14,background:'rgba(0,8,20,0.85)',padding:'2px 0',marginBottom:8,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.3)',opacity:isCancelled?0.65:1,transition:"opacity 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
+    <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(122,111,93,0.35)',borderRadius:16,borderLeft:`3px solid ${tc}`,marginBottom:12,overflow:'hidden',transition:'border-color 0.2s ease',opacity:isCancelled?0.65:1,boxSizing:'border-box'}}>
       {/* Change Flow Modal */}
       {showChangeModal&&(
         <div onClick={()=>setShowChangeModal(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,4,14,0.88)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
@@ -87,46 +98,46 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
             <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontStyle:"italic",color:"#FF9F43",marginBottom:6}}>What happened?</div>
             <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:20,lineHeight:1.7}}>{segment.name} is currently booked. What changed?</div>
             <div style={{display:"flex",gap:10,flexDirection:isMobile?"column":"row"}}>
-              <button onClick={()=>{saveStatus('changed');setShowChangeModal(false);setOpen(true);}} style={{flex:1,padding:"12px",borderRadius:10,border:"1px solid rgba(0,229,255,0.4)",background:"rgba(0,229,255,0.08)",color:"#00E5FF",fontSize:11,fontWeight:700,letterSpacing:1.5,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:44}}>UPDATE BOOKING</button>
+              <button onClick={()=>{saveStatus('changed');setShowChangeModal(false);setOpen(true);}} style={{flex:1,padding:"12px",borderRadius:10,border:"1px solid rgba(201,160,76,0.35)",background:"rgba(201,160,76,0.08)",color:"#C9A04C",fontSize:11,fontWeight:700,letterSpacing:1.5,cursor:"pointer",fontFamily:"Instrument Sans, sans-serif",minHeight:44}}>UPDATE BOOKING</button>
               <button onClick={()=>{saveStatus('cancelled');setShowChangeModal(false);}} style={{flex:1,padding:"12px",borderRadius:10,border:"1px solid rgba(255,107,107,0.4)",background:"rgba(255,107,107,0.08)",color:"#FF6B6B",fontSize:11,fontWeight:700,letterSpacing:1.5,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:44}}>MARK CANCELLED</button>
             </div>
             <button onClick={()=>setShowChangeModal(false)} style={{marginTop:12,width:"100%",background:"none",border:"none",color:"rgba(255,255,255,0.3)",fontSize:11,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:36}}>← Keep as BOOKED</button>
           </div>
         </div>
       )}
-      <div style={{display:"flex",alignItems:"stretch",minHeight:50,borderLeft:`3px solid ${tc}${open?"cc":"66"}`,transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
-        <div onClick={()=>{if(onSegmentTap){onSegmentTap(segment);}else{setOpen(o=>!o);}}} style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:isMobile?"10px 6px 10px 12px":"12px 10px 12px 20px",cursor:"pointer",background:open?`${tc}04`:"transparent",transition:"background 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",flex:1,minWidth:0}}>
+      <div style={{display:"flex",alignItems:"stretch",minHeight:50,borderLeft:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
+        <div onClick={()=>{if(onSegmentTap){onSegmentTap(segment);}else{setOpen(o=>!o);}}} style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:isMobile?"10px 6px 10px 12px":"12px 10px 12px 20px",cursor:"pointer",background:open?"rgba(201,160,76,0.06)":"transparent",transition:"background 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",flex:1,minWidth:0}}>
           {/* Row 1: dot + destination · country + dates (Space Mono) + type + budget */}
           <div style={{display:"flex",alignItems:"flex-start",gap:8,minWidth:0,width:"100%"}}>
-            <div style={{width:7,height:7,borderRadius:"50%",background:tc,flexShrink:0,marginTop:6,boxShadow:open?`0 0 7px ${tc}`:"none"}}/>
+            <div style={{width:7,height:7,borderRadius:"50%",background:"#5E8B8A",flexShrink:0,marginTop:6,boxShadow:open?"0 0 7px rgba(94,139,138,0.5)":"none"}}/>
             <div style={{flex:1,minWidth:0,display:"flex",flexWrap:"wrap",alignItems:"baseline",gap:"4px 10px"}}>
-              <span style={{fontFamily:"'Fraunces',serif",fontSize:titleFs,fontWeight:600,color:isCancelled?"rgba(255,255,255,0.4)":"rgba(255,248,235,0.96)",letterSpacing:"0.02em",textDecoration:isCancelled?"line-through":"none"}}>{segment.name}</span>
+              <span style={{fontFamily:"'Fraunces',serif",fontSize:titleFs,fontWeight:600,color:isCancelled?"rgba(232,220,200,0.35)":"#E8DCC8",lineHeight:1.2,letterSpacing:"0.02em",textDecoration:isCancelled?"line-through":"none"}}>{segment.name}</span>
               {countryLabel&&<>
-                <span style={{fontFamily:"'Fraunces',serif",fontSize:titleFs,color:"rgba(255,255,255,0.28)",fontWeight:400,lineHeight:1}} aria-hidden>·</span>
-                <span style={{fontFamily:"'Fraunces',serif",fontSize:titleFs,fontWeight:600,color:isCancelled?"rgba(255,255,255,0.35)":"rgba(255,248,235,0.92)",letterSpacing:"0.02em",textDecoration:isCancelled?"line-through":"none"}}>{countryLabel}</span>
+                <span style={{fontFamily:"'Fraunces',serif",fontSize:titleFs,color:"rgba(232,220,200,0.35)",fontWeight:400,lineHeight:1}} aria-hidden>·</span>
+                <span style={{fontFamily:"'Fraunces',serif",fontSize:titleFs,fontWeight:600,color:isCancelled?"rgba(232,220,200,0.35)":"#E8DCC8",lineHeight:1.2,letterSpacing:"0.02em",textDecoration:isCancelled?"line-through":"none"}}>{countryLabel}</span>
               </>}
-              <span style={{fontFamily:"'Space Mono',ui-monospace,monospace",fontSize:dateMonoFs,color:"rgba(255,248,235,0.78)",whiteSpace:"nowrap",letterSpacing:"-0.02em",marginLeft:"auto"}}>{fD(segment.arrival)} → {fD(segment.departure)} <span style={{color:"rgba(255,255,255,0.45)"}}>·</span> {segment.nights}n{segment.diveCount>0?<><span style={{color:"rgba(255,255,255,0.45)"}}> · </span><span style={{color:`${tc}cc`}}>🤿{segment.diveCount}</span></>:""}</span>
+              <span style={{fontFamily:"Instrument Sans, sans-serif",fontSize:dateMonoFs,fontWeight:400,color:"rgba(232,220,200,0.55)",whiteSpace:"nowrap",marginLeft:"auto"}}>{fD(segment.arrival)} → {fD(segment.departure)} <span style={{color:"rgba(232,220,200,0.35)"}}>·</span> {segment.nights}n{segment.diveCount>0?<><span style={{color:"rgba(232,220,200,0.35)"}}> · </span><span style={{color:"#5E8B8A"}}>🤿{segment.diveCount}</span></>:""}</span>
             </div>
-            <span style={{fontSize:11,color:`${tc}bb`,background:`${tc}0e`,border:`1px solid ${tc}1e`,borderRadius:6,padding:"2px 7px",letterSpacing:0.5,fontWeight:500,whiteSpace:"nowrap",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{segment.type?.toUpperCase()}</span>
-            <span style={{fontSize:isMobile?13:15,fontWeight:600,color:"rgba(201,160,76,0.9)",fontFamily:"'Space Mono',ui-monospace,monospace",whiteSpace:"nowrap",flexShrink:0,textDecoration:isCancelled?"line-through":"none",alignSelf:"flex-start",marginTop:1}}>{fmt(segment.budget)}</span>
+            <span style={{background:"rgba(94,139,138,0.15)",border:"1px solid rgba(94,139,138,0.4)",color:"#5E8B8A",fontFamily:"Instrument Sans, sans-serif",fontWeight:600,fontSize:11,letterSpacing:"1px",padding:"3px 10px",borderRadius:20,textTransform:"uppercase",whiteSpace:"nowrap",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{segment.type?.toUpperCase()}</span>
+            <span style={{fontSize:15,fontWeight:600,color:"#C9A04C",fontFamily:"Instrument Sans, sans-serif",whiteSpace:"nowrap",flexShrink:0,textDecoration:isCancelled?"line-through":"none",alignSelf:"flex-start",marginTop:1}}>{fmt(segment.budget)}</span>
           </div>
           {/* Row 2: status + progress */}
           <div style={{display:"flex",alignItems:"center",gap:6,marginTop:8,paddingLeft:15,minWidth:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
             <div style={{flex:1,minWidth:0}}/>
             <ProgDots phaseId={phaseId} segment={segment} intelSnippet={intelSnippet}/>
-            <button onClick={handleBadgeTap} style={{background:planStatus?planStatus.bg:`${sc.color}18`,border:planStatus?`1px solid ${planStatus.border}`:`1px solid ${sc.color}55`,borderRadius:12,padding:"4px 9px",fontSize:11,fontWeight:700,letterSpacing:0.5,color:(planStatus||sc).color,cursor:"pointer",fontFamily:"'Space Mono',ui-monospace,monospace",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:2,lineHeight:1.4,minHeight:24,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",flexShrink:0,maxWidth:120,overflow:"hidden",textOverflow:"ellipsis",animation:status==='planning'&&completedCount===0?'planningPulse 2.2s ease-in-out infinite':'none'}}>
+            <button onClick={handleBadgeTap} style={{...segChipFromStatus,borderRadius:20,padding:"3px 10px",fontSize:11,fontWeight:500,letterSpacing:"0.8px",textTransform:"uppercase",cursor:"pointer",fontFamily:"Instrument Sans, sans-serif",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:2,lineHeight:1.4,minHeight:24,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",flexShrink:0,maxWidth:120,overflow:"hidden",textOverflow:"ellipsis",animation:status==='planning'&&completedCount===0?'planningPulse 2.2s ease-in-out infinite':'none'}}>
               <span style={{fontSize:11}}>{planStatus?completedCount>=3?"✓":sc.icon:sc.icon}</span>{planStatus?planStatus.label:sc.label}
             </button>
           </div>
 {segment.note&&<div style={{fontFamily:"'Fraunces',serif",fontSize:revealBodyFs,fontStyle:"italic",fontWeight:400,color:"rgba(255,248,235,0.78)",lineHeight:1.55,marginTop:8,paddingLeft:15,maxWidth:"100%",wordBreak:"break-word"}}>{segment.note}</div>}
-          {insight&&<div style={{fontFamily:"'Fraunces',serif",fontSize:revealBodyFs,fontStyle:"italic",fontWeight:400,color:"rgba(201,160,76,0.82)",lineHeight:1.55,marginTop:6,paddingLeft:15,maxWidth:"100%",wordBreak:"break-word"}}>{insight}</div>}
+          {insight&&<div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",fontWeight:300,color:"rgba(201,160,76,0.75)",lineHeight:1.6,padding:"8px 16px 12px",maxWidth:"100%",wordBreak:"break-word"}}>{insight}</div>}
         </div>
         {onSegmentTap?<div onClick={e=>{e.stopPropagation();onSegmentTap(segment);}} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"0 10px",cursor:"pointer",flexShrink:0}}>
           <span style={{fontSize:18,color:"rgba(255,255,255,0.30)",fontWeight:300}}>›</span>
         </div>:<>
         <div onClick={e=>{e.stopPropagation();setOpen(o=>!o);}} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"0 8px",cursor:"pointer",flexShrink:0}}>
           <div style={{width:16,height:16,borderRadius:"50%",border:`1px solid rgba(255,255,255,${open?"0.15":"0.08"})`,display:"flex",alignItems:"center",justifyContent:"center"}}>
-            <span style={{fontSize:11,color:open?"#00E5FF":"rgba(255,255,255,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>▼</span>
+            <span style={{fontSize:11,color:open?"#C9A04C":"rgba(232,220,200,0.4)",display:"inline-block",transform:open?"rotate(180deg)":"none",transition:"transform 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>▼</span>
           </div>
         </div>
         <button onClick={e=>{e.stopPropagation();setAskOpen(o=>!o);}} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,padding:"8px 10px",background:askOpen?"rgba(201,160,76,0.1)":"rgba(201,160,76,0.03)",border:"none",borderLeft:`1px solid rgba(201,160,76,${askOpen?"0.45":"0.22"})`,cursor:"pointer",flexShrink:0,height:"100%",minWidth:38,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} title="Ask co-architect">
@@ -173,7 +184,7 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
       {isCancelled&&!open&&(
         <div style={{padding:"6px 16px 8px 20px",display:"flex",gap:10,alignItems:"center"}}>
           <span style={{fontSize:11,color:"rgba(136,136,136,0.7)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flex:1,letterSpacing:1}}>✕ CANCELLED</span>
-          <button onClick={e=>{e.stopPropagation();saveStatus('planning');}} style={{fontSize:11,padding:"3px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.3)",background:"rgba(0,229,255,0.06)",color:"#00E5FF",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,minHeight:28}}>+ REBOOK</button>
+          <button onClick={e=>{e.stopPropagation();saveStatus('planning');}} style={{fontSize:11,padding:"3px 10px",borderRadius:6,border:"1px solid rgba(201,160,76,0.35)",background:"rgba(201,160,76,0.08)",color:"#C9A04C",cursor:"pointer",fontFamily:"Instrument Sans, sans-serif",fontWeight:700,letterSpacing:1,minHeight:28}}>+ REBOOK</button>
         </div>
       )}
     </div>

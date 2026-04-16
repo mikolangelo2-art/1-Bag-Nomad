@@ -2,8 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { useDestinationPhoto } from "../hooks/useDestinationPhoto";
 import { useSuggestionPhotoDuplicate } from "./SuggestionPhotoDedupProvider";
 
-/** Split-card hero height — taller band shows more of each photo (Stay/Food/Activities) */
+/** Split-card hero height — stacked variant only */
 const HERO_H = 200;
+
+/** DS v2 — fixed tokens (accent prop kept for API compat, not used for chrome) */
+const DS_GOLD = "#C9A04C";
+const DS_TEAL = "#5E8B8A";
 
 /**
  * Unsplash-powered suggestion tile (generic shape).
@@ -41,7 +45,7 @@ export default function GenericSuggestionCard({
   destination,
   country = "",
   instanceId,
-  accent = "#69F0AE",
+  accent: _accent = "#69F0AE",
   variant = "expand",
   expanded: expandedProp,
   onToggle,
@@ -67,6 +71,7 @@ export default function GenericSuggestionCard({
   const [imgLoaded, setImgLoaded] = useState(false);
   const [innerOpen, setInnerOpen] = useState(false);
   const isStacked = variant === "stacked";
+  const isExpandVariant = variant === "expand";
   const expanded = isStacked
     ? true
     : variant === "accordion"
@@ -102,10 +107,12 @@ export default function GenericSuggestionCard({
       ? `$${item.price}`
       : String(item.price || "\u2014");
 
+  const collapseIconChar = String(item.category || "\u25C6").trim().slice(0, 2) || "\u25C6";
+
   const categoryStyle = {
     fontSize: 11,
-    fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-    color: isStacked ? accent : "rgba(255,255,255,0.45)",
+    fontFamily: "Instrument Sans, sans-serif",
+    color: isStacked ? DS_TEAL : "rgba(255,255,255,0.45)",
     marginBottom: 6,
     letterSpacing: isStacked ? 2 : 0.5,
     opacity: isStacked ? 0.95 : 1,
@@ -113,24 +120,26 @@ export default function GenericSuggestionCard({
 
   const defaultAddStyle = {
     width: "100%",
-    padding: "10px 14px",
-    borderRadius: 8,
+    height: 48,
+    background: DS_GOLD,
+    color: "#0A0705",
     border: "none",
-    background: "linear-gradient(135deg,rgba(0,229,255,0.25),rgba(105,240,174,0.2))",
-    color: "#060A0F",
-    fontSize: 12,
-    fontWeight: 800,
-    letterSpacing: 1.2,
+    borderRadius: 12,
+    fontFamily: "Instrument Sans, sans-serif",
+    fontWeight: 600,
+    fontSize: 14,
+    letterSpacing: "1px",
+    textTransform: "uppercase",
     cursor: "pointer",
-    fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-    minHeight: 44,
+    marginTop: 4,
+    transition: "filter 0.15s ease, transform 0.1s ease",
   };
 
   const addLabelDisplay =
     addButtonLabel.startsWith("+") ? addButtonLabel : `+ ${addButtonLabel}`;
 
-  const heroBlock = (
-    <div style={{ position: "relative", height: HERO_H, background: "#111", overflow: "hidden" }}>
+  const heroInner = (fillMode) => (
+    <>
       {showHeroImg ? (
         <>
           {!imgLoaded && photo.thumb ? (
@@ -173,6 +182,7 @@ export default function GenericSuggestionCard({
               width: "100%",
               height: "100%",
               objectFit: "cover",
+              display: "block",
               opacity: imgLoaded ? 1 : 0,
               transition: "opacity 0.4s ease",
               zIndex: 1,
@@ -195,8 +205,9 @@ export default function GenericSuggestionCard({
           style={{
             padding: "20px 16px",
             background: "rgba(0,8,20,0.6)",
-            borderRadius: "12px 12px 0 0",
-            minHeight: HERO_H,
+            borderRadius: fillMode === "expand" ? 0 : "12px 12px 0 0",
+            minHeight: fillMode === "expand" ? "100%" : HERO_H,
+            height: fillMode === "expand" ? "100%" : undefined,
             boxSizing: "border-box",
             display: "flex",
             alignItems: "center",
@@ -224,6 +235,26 @@ export default function GenericSuggestionCard({
           }}
         />
       )}
+    </>
+  );
+
+  const heroBlock = (
+    <div style={{ position: "relative", height: HERO_H, background: "#111", overflow: "hidden" }}>
+      {heroInner("stacked")}
+    </div>
+  );
+
+  const heroPhotoBlock = (
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        aspectRatio: "16 / 9",
+        background: "#111",
+        overflow: "hidden",
+      }}
+    >
+      {heroInner("expand")}
     </div>
   );
 
@@ -234,8 +265,8 @@ export default function GenericSuggestionCard({
         <div
           style={{
             fontSize: 14,
-            fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-            color: "rgba(255,245,220,0.80)",
+            fontFamily: "Instrument Sans, sans-serif",
+            color: "rgba(232,220,200,0.75)",
             marginBottom: 6,
             lineHeight: 1.35,
           }}
@@ -248,7 +279,7 @@ export default function GenericSuggestionCard({
           fontFamily: "'Fraunces',serif",
           fontSize: 17,
           fontWeight: 400,
-          color: "rgba(255,245,220,0.94)",
+          color: "#E8DCC8",
           lineHeight: 1.25,
           marginBottom: 6,
           wordBreak: "break-word",
@@ -259,15 +290,15 @@ export default function GenericSuggestionCard({
       <div
         style={{
           fontSize: 14,
-          fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-          color: "rgba(245,158,11,0.90)",
+          fontFamily: "Instrument Sans, sans-serif",
+          color: DS_GOLD,
           fontWeight: 600,
         }}
       >
         {priceStr}
         {item.rating != null ? (
-          <span style={{ color: "rgba(255,255,255,0.55)", fontWeight: 500, marginLeft: 8 }}>
-            {"\u2605"} {item.rating}/10
+          <span style={{ color: "rgba(232,220,200,0.6)", fontWeight: 500, marginLeft: 8 }}>
+            <span style={{ color: DS_GOLD }}>★</span> {item.rating}/10
           </span>
         ) : null}
       </div>
@@ -277,7 +308,7 @@ export default function GenericSuggestionCard({
             fontSize: 11,
             marginTop: 6,
             color: "rgba(255,255,255,0.35)",
-            fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+            fontFamily: "Instrument Sans, sans-serif",
           }}
         >
           Tap for details
@@ -297,7 +328,7 @@ export default function GenericSuggestionCard({
             fontSize: 10,
             color: "rgba(255,255,255,0.4)",
             textDecoration: "none",
-            fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+            fontFamily: "Instrument Sans, sans-serif",
           }}
         >
           Photo: Unsplash
@@ -310,11 +341,12 @@ export default function GenericSuggestionCard({
       {warmLine ? (
         <div
           style={{
-            fontFamily: "'Playfair Display',serif",
-            fontSize: 15,
+            fontFamily: "'Fraunces',serif",
+            fontWeight: 300,
             fontStyle: "italic",
-            color: "rgba(255,248,235,0.82)",
-            lineHeight: 1.5,
+            fontSize: 14,
+            color: "rgba(232,220,200,0.75)",
+            lineHeight: 1.6,
             marginBottom: 10,
           }}
         >
@@ -325,10 +357,10 @@ export default function GenericSuggestionCard({
         <div
           style={{
             fontSize: 14,
-            color: "rgba(255,245,220,0.78)",
+            color: "rgba(232,220,200,0.78)",
             lineHeight: 1.5,
             marginBottom: 10,
-            fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+            fontFamily: "Instrument Sans, sans-serif",
             whiteSpace: isStacked ? "pre-line" : undefined,
           }}
         >
@@ -341,7 +373,7 @@ export default function GenericSuggestionCard({
             fontSize: 11,
             color: "rgba(255,255,255,0.45)",
             marginBottom: 10,
-            fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+            fontFamily: "Instrument Sans, sans-serif",
           }}
         >
           {item.address}
@@ -350,14 +382,28 @@ export default function GenericSuggestionCard({
     </>
   );
 
-  const savedBlock =
+  const defaultSavedCheck = {
+    fontFamily: "Instrument Sans, sans-serif",
+    fontWeight: 500,
+    fontSize: 13,
+    color: "#69F0AE",
+  };
+  const defaultSavedSub = {
+    fontFamily: "Fraunces, serif",
+    fontWeight: 300,
+    fontStyle: "italic",
+    fontSize: 13,
+    color: "rgba(232,220,200,0.55)",
+  };
+
+  const savedBlockMerged =
     inPlaceSaved && (savedCheckText || savedSubText) ? (
       <div style={{ marginTop: 10 }}>
         {savedCheckText ? (
-          <span style={savedCheckStyle}>{savedCheckText}</span>
+          <span style={{ ...defaultSavedCheck, ...savedCheckStyle }}>{savedCheckText}</span>
         ) : null}
         {savedSubText ? (
-          <span style={{ display: "block", ...savedSubStyle }}>{savedSubText}</span>
+          <span style={{ display: "block", ...defaultSavedSub, ...savedSubStyle }}>{savedSubText}</span>
         ) : null}
       </div>
     ) : null;
@@ -366,7 +412,7 @@ export default function GenericSuggestionCard({
     <div
       style={{
         padding: "0 14px 14px",
-        borderTop: "1px solid rgba(255,255,255,0.06)",
+        borderTop: "1px solid rgba(122,111,93,0.3)",
       }}
     >
       {inPlaceSaved && committedToolbar ? (
@@ -389,7 +435,7 @@ export default function GenericSuggestionCard({
         </button>
       ) : (
         <>
-          {savedBlock}
+          {savedBlockMerged}
           {inPlaceSaved && footerSlot ? <div style={{ marginTop: 10 }}>{footerSlot}</div> : null}
         </>
       )}
@@ -401,7 +447,7 @@ export default function GenericSuggestionCard({
     <div
       style={{
         padding: "0 14px 14px",
-        borderTop: "1px solid rgba(255,255,255,0.06)",
+        borderTop: "1px solid rgba(122,111,93,0.3)",
       }}
     >
       {sharedDetails}
@@ -409,7 +455,7 @@ export default function GenericSuggestionCard({
         <div
           style={{
             fontSize: 11,
-            fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+            fontFamily: "Instrument Sans, sans-serif",
             color: "rgba(255,255,255,0.52)",
             lineHeight: 1.45,
             marginBottom: 10,
@@ -468,7 +514,97 @@ export default function GenericSuggestionCard({
         </div>
       ) : (
         <>
-          {savedBlock}
+          {savedBlockMerged}
+          {inPlaceSaved && footerSlot ? <div style={{ marginTop: 10 }}>{footerSlot}</div> : null}
+        </>
+      )}
+      {photoCredit}
+    </div>
+  );
+
+  const expandBodyBelowPhoto = (
+    <div
+      style={{
+        padding: "14px 16px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+        <span
+          style={{
+            fontFamily: "Instrument Sans, sans-serif",
+            fontWeight: 500,
+            fontSize: 15,
+            color: "#E8DCC8",
+            flex: 1,
+            minWidth: 0,
+            paddingRight: 8,
+          }}
+        >
+          {item.name}
+        </span>
+        <span
+          style={{
+            fontFamily: "Instrument Sans, sans-serif",
+            fontWeight: 500,
+            fontSize: 13,
+            color: DS_GOLD,
+            flexShrink: 0,
+          }}
+        >
+          {priceStr}
+        </span>
+      </div>
+      {item.rating != null ? (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            fontFamily: "Instrument Sans, sans-serif",
+            fontSize: 13,
+            color: "rgba(232,220,200,0.6)",
+          }}
+        >
+          <span style={{ color: DS_GOLD }}>★</span>
+          <span>
+            {item.rating}/10
+          </span>
+        </div>
+      ) : null}
+      {subtitle ? (
+        <div
+          style={{
+            fontSize: 13,
+            fontFamily: "Instrument Sans, sans-serif",
+            color: "rgba(232,220,200,0.55)",
+            lineHeight: 1.35,
+          }}
+        >
+          {subtitle}
+        </div>
+      ) : null}
+      {inPlaceSaved && committedToolbar ? <div style={{ marginBottom: 4 }}>{committedToolbar}</div> : null}
+      {sharedDetails}
+      {!inPlaceSaved ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddToPlan();
+          }}
+          style={{
+            ...defaultAddStyle,
+            ...acceptButtonStyle,
+          }}
+        >
+          {addLabelDisplay}
+        </button>
+      ) : (
+        <>
+          {savedBlockMerged}
           {inPlaceSaved && footerSlot ? <div style={{ marginTop: 10 }}>{footerSlot}</div> : null}
         </>
       )}
@@ -478,7 +614,7 @@ export default function GenericSuggestionCard({
 
   if (inPlaceSaved && variant === "expand" && !innerOpen) {
     return (
-      <div style={{ marginBottom: 10 }}>
+      <div style={{ marginBottom: 8 }}>
         <div
           role="button"
           tabIndex={0}
@@ -490,51 +626,86 @@ export default function GenericSuggestionCard({
             }
           }}
           style={{
-            borderRadius: 8,
-            padding: "10px 14px",
+            borderRadius: 14,
+            padding: "0 16px",
+            height: 56,
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
             gap: 12,
             cursor: "pointer",
-            border: "1px solid rgba(212,175,55,0.25)",
-            borderLeft: "3px solid #D4AF37",
-            background: "rgba(212,175,55,0.06)",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(122,111,93,0.4)",
+            borderLeft: `3px solid ${DS_GOLD}`,
             flexWrap: "wrap",
+            transition: "border-color 0.2s ease",
           }}
         >
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <span
+          <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 12 }}>
+            <div
               style={{
-                fontSize: 11,
-                fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-                color: accent,
-                letterSpacing: 1,
-                fontWeight: 700,
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                background: "rgba(201,160,76,0.08)",
+                border: "1px solid rgba(201,160,76,0.18)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                color: DS_GOLD,
+                fontSize: 16,
               }}
             >
-              {item.category}
-            </span>{" "}
+              {collapseIconChar}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontFamily: "Instrument Sans, sans-serif",
+                  color: DS_TEAL,
+                  letterSpacing: 1,
+                  fontWeight: 700,
+                }}
+              >
+                {item.category}
+              </span>{" "}
+              <span
+                style={{
+                  fontSize: 15,
+                  fontFamily: "Instrument Sans, sans-serif",
+                  fontWeight: 500,
+                  color: "#E8DCC8",
+                  display: "block",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {item.name}
+              </span>
+            </div>
             <span
               style={{
-                fontSize: 14,
-                fontFamily: "'Fraunces',serif",
-                color: "#fff",
+                fontFamily: "Instrument Sans, sans-serif",
                 fontWeight: 500,
+                fontSize: 13,
+                color: DS_GOLD,
+                flexShrink: 0,
               }}
             >
-              {item.name}
+              {priceStr}
             </span>
             <span
               style={{
-                color: "#10B981",
+                color: "#69F0AE",
                 fontSize: 12,
-                fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
-                marginLeft: 10,
+                fontFamily: "Instrument Sans, sans-serif",
                 fontWeight: 600,
+                flexShrink: 0,
               }}
             >
-              ✓ Added to Plan
+              {savedCheckText || "\u2713 Added"}
             </span>
           </div>
           <div
@@ -552,13 +723,13 @@ export default function GenericSuggestionCard({
               aria-hidden
               style={{
                 fontSize: 12,
-                color: "rgba(255,255,255,0.35)",
+                color: "rgba(232,220,200,0.4)",
                 transition: "transform 0.3s ease",
                 transform: "rotate(0deg)",
                 lineHeight: 1,
               }}
             >
-              ▼
+              &#9662;
             </span>
           </div>
         </div>
@@ -566,23 +737,152 @@ export default function GenericSuggestionCard({
     );
   }
 
+  const outerShell = {
+    borderRadius: 14,
+    overflow: "hidden",
+    border: `1px solid rgba(122,111,93,0.4)`,
+    borderLeft: `3px solid ${DS_GOLD}`,
+    marginBottom: 8,
+    background: "rgba(255,255,255,0.04)",
+    WebkitTapHighlightColor: "transparent",
+  };
+
   return (
-    <div
-      style={{
-        borderRadius: 12,
-        overflow: "hidden",
-        border: "1px solid rgba(255,255,255,0.12)",
-        borderLeft: `3px solid ${accent}`,
-        marginBottom: 10,
-        background: "rgba(0,8,20,0.6)",
-        WebkitTapHighlightColor: "transparent",
-      }}
-    >
+    <div style={isExpandVariant ? { marginBottom: 8 } : outerShell}>
       {isStacked ? (
         <>
           {heroBlock}
           {summaryBlock}
           {stackedDetailBody}
+        </>
+      ) : isExpandVariant ? (
+        <>
+          {!innerOpen ? (
+            <button
+              type="button"
+              onClick={toggle}
+              style={{
+                width: "100%",
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(122,111,93,0.4)",
+                borderLeft: `3px solid ${DS_GOLD}`,
+                borderRadius: 14,
+                padding: "0 16px",
+                height: 56,
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                cursor: "pointer",
+                transition: "border-color 0.2s ease",
+                marginBottom: 0,
+                textAlign: "left",
+                boxSizing: "border-box",
+              }}
+            >
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  background: "rgba(201,160,76,0.08)",
+                  border: "1px solid rgba(201,160,76,0.18)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  color: DS_GOLD,
+                  fontSize: 16,
+                }}
+              >
+                {collapseIconChar}
+              </div>
+              <span
+                style={{
+                  fontFamily: "Instrument Sans, sans-serif",
+                  fontWeight: 500,
+                  fontSize: 15,
+                  color: "#E8DCC8",
+                  flex: 1,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {item.name}
+              </span>
+              <span
+                style={{
+                  fontFamily: "Instrument Sans, sans-serif",
+                  fontWeight: 500,
+                  fontSize: 13,
+                  color: DS_GOLD,
+                  flexShrink: 0,
+                }}
+              >
+                {priceStr}
+              </span>
+              <span
+                style={{
+                  color: "rgba(232,220,200,0.4)",
+                  fontSize: 12,
+                  transition: "transform 0.3s ease",
+                  transform: innerOpen ? "rotate(180deg)" : "rotate(0deg)",
+                  flexShrink: 0,
+                }}
+              >
+                &#9662;
+              </span>
+            </button>
+          ) : (
+            <div
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(201,160,76,0.22)",
+                borderLeft: `3px solid ${DS_GOLD}`,
+                borderRadius: 14,
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ position: "relative" }}>
+                {inPlaceSaved ? (
+                  <span
+                    aria-hidden
+                    style={{
+                      position: "absolute",
+                      top: 10,
+                      right: 12,
+                      zIndex: 15,
+                      fontSize: 12,
+                      color: "rgba(232,220,200,0.4)",
+                      transition: "transform 0.3s ease",
+                      transform: "rotate(180deg)",
+                      lineHeight: 1,
+                      pointerEvents: "none",
+                      textShadow: "0 1px 8px rgba(0,0,0,0.75)",
+                    }}
+                  >
+                    &#9662;
+                  </span>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={toggle}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    padding: 0,
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                    lineHeight: 0,
+                  }}
+                >
+                  {heroPhotoBlock}
+                </button>
+              </div>
+              {expandBodyBelowPhoto}
+            </div>
+          )}
         </>
       ) : (
         <>
@@ -599,31 +899,7 @@ export default function GenericSuggestionCard({
               textAlign: "left",
             }}
           >
-            {inPlaceSaved && variant === "expand" ? (
-              <div style={{ position: "relative" }}>
-                <span
-                  aria-hidden
-                  style={{
-                    position: "absolute",
-                    top: 10,
-                    right: 12,
-                    zIndex: 15,
-                    fontSize: 12,
-                    color: "rgba(255,255,255,0.45)",
-                    transition: "transform 0.3s ease",
-                    transform: "rotate(180deg)",
-                    lineHeight: 1,
-                    pointerEvents: "none",
-                    textShadow: "0 1px 8px rgba(0,0,0,0.75)",
-                  }}
-                >
-                  ▼
-                </span>
-                {heroBlock}
-              </div>
-            ) : (
-              heroBlock
-            )}
+            {heroBlock}
             {summaryBlock}
           </button>
           {expanded ? expandableDetailBody : null}
