@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from "react";
 import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fmt, fD, formatSegmentCardDateHeader, formatTravelLegDates } from '../utils/dateHelpers';
@@ -116,6 +116,253 @@ function CollapsibleSuggestion({summaryCard=false,onSwitchToSuggestion,confirmMe
             <button type="button" onClick={()=>{if(typeof window!=="undefined"&&window.confirm(confirmMessage||'Replace your saved plan with this Co-Architect suggestion?'))onSwitchToSuggestion();}} style={{...dismissBtnStyle,width:'100%'}}>SWITCH TO THIS</button>
           </div>}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** Itinerary roll-up — spend math matches Budget tab (same `det` line items). */
+function ItineraryTab({ segment, det, fmt }) {
+  const tCost = parseFloat(det.transport?.cost) || 0;
+  const sCost = parseFloat(det.stay?.cost) || 0;
+  const aCost = (det.activities || []).reduce((s, a) => s + (parseFloat(a.cost) || 0), 0);
+  const fCost = (parseFloat(det.food?.dailyBudget) || 0) * (segment.nights || 0);
+  const mCost = (det.misc || []).reduce((s, m) => s + (parseFloat(m.cost) || 0), 0);
+  const plannedSpend = tCost + sCost + aCost + fCost + mCost;
+  const phaseCap = segment.budget || 0;
+  const spendOverCap = phaseCap > 0 && plannedSpend > phaseCap;
+  const budgetPct = phaseCap > 0 ? Math.min((plannedSpend / phaseCap) * 100, 100) : 0;
+
+  const savedItems = [];
+  const tf = (det.transport?.from || "").trim();
+  const tt = (det.transport?.to || "").trim();
+  const tMode = (det.transport?.mode || "").trim();
+  if (tf || tt || tMode) {
+    const nm = tf && tt ? `${tf} \u2192 ${tt}` : tMode || "Transport";
+    const hasCost = tCost > 0;
+    savedItems.push({ category: "travel", chipType: hasCost ? "confirmed" : "added", name: nm });
+  }
+  const stayName = (det.stay?.name || "").trim();
+  if (stayName) {
+    const booked = !!(det.stay?.link || "").trim();
+    savedItems.push({ category: "stay", chipType: booked ? "booked" : "added", name: stayName });
+  }
+  (det.activities || []).forEach((a) => {
+    const n = (a.name || "").trim() || "Activity";
+    savedItems.push({ category: "activity", chipType: "added", name: n });
+  });
+  if (!isRowEmpty(det.food?.dailyBudget)) {
+    savedItems.push({
+      category: "food",
+      chipType: "added",
+      name: `Daily dining \xb7 $${det.food.dailyBudget}/day`,
+    });
+  }
+  (det.misc || []).forEach((m) => {
+    const n = (m.name || "").trim();
+    if (n) savedItems.push({ category: "booked", chipType: "booked", name: n });
+  });
+
+  const totalItems = savedItems.length;
+
+  return (
+    <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 20 }}>
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+          <span
+            style={{
+              fontFamily: "Instrument Sans, sans-serif",
+              fontWeight: 600,
+              fontSize: 11,
+              color: "rgba(232,220,200,0.5)",
+              letterSpacing: "1.5px",
+              textTransform: "uppercase",
+            }}
+          >
+            Budget
+          </span>
+          <span
+            style={{
+              fontFamily: "Instrument Sans, sans-serif",
+              fontWeight: 600,
+              fontSize: 13,
+              color: spendOverCap ? "#FF6B6B" : "#C9A04C",
+            }}
+          >
+            {fmt(plannedSpend)} / {fmt(phaseCap || 0)}
+          </span>
+        </div>
+        <div style={{ height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2 }}>
+          <div
+            style={{
+              height: "100%",
+              width: `${budgetPct}%`,
+              background: spendOverCap ? "#FF6B6B" : "#C9A04C",
+              borderRadius: 2,
+              transition: "width 0.4s ease",
+            }}
+          />
+        </div>
+      </div>
+
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+          <span
+            style={{
+              fontFamily: "Instrument Sans, sans-serif",
+              fontWeight: 600,
+              fontSize: 11,
+              color: "rgba(232,220,200,0.5)",
+              letterSpacing: "1.5px",
+              textTransform: "uppercase",
+            }}
+          >
+            Planned
+          </span>
+          <span
+            style={{
+              fontFamily: "Instrument Sans, sans-serif",
+              fontWeight: 600,
+              fontSize: 13,
+              color: "#5E8B8A",
+            }}
+          >
+            {totalItems} {totalItems === 1 ? "ITEM" : "ITEMS"}
+          </span>
+        </div>
+        <div style={{ height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2 }}>
+          <div
+            style={{
+              height: "100%",
+              width: totalItems > 0 ? "100%" : "0%",
+              background: "#5E8B8A",
+              borderRadius: 2,
+              transition: "width 0.4s ease",
+            }}
+          />
+        </div>
+      </div>
+
+      <div style={{ height: 1, background: "rgba(122,111,93,0.3)" }} />
+
+      {savedItems.length === 0 ? (
+        <div
+          style={{
+            textAlign: "center",
+            paddingTop: 40,
+            fontFamily: "Fraunces, serif",
+            fontWeight: 300,
+            fontStyle: "italic",
+            fontSize: 16,
+            color: "rgba(232,220,200,0.3)",
+          }}
+        >
+          Nothing planned yet.
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {savedItems.map((item, i) => {
+            const chipColor =
+              item.chipType === "confirmed" ? "#5E8B8A" : item.chipType === "booked" ? "#C9A04C" : "#5E8B8A";
+            const chipBg =
+              item.chipType === "booked"
+                ? "rgba(201,160,76,0.15)"
+                : item.chipType === "confirmed"
+                  ? "rgba(94,139,138,0.2)"
+                  : "transparent";
+            const chipBorder =
+              item.chipType === "booked"
+                ? "1px solid rgba(201,160,76,0.6)"
+                : "1px solid rgba(94,139,138,0.5)";
+            const chipLabel = item.chipType === "confirmed" ? "Confirmed" : item.chipType === "booked" ? "Booked" : "Added";
+
+            return (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "12px 16px",
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(122,111,93,0.3)",
+                  borderRadius: 12,
+                }}
+              >
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 8,
+                    background: "rgba(201,160,76,0.08)",
+                    border: "1px solid rgba(201,160,76,0.15)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 14,
+                    color: "#C9A04C",
+                    flexShrink: 0,
+                  }}
+                >
+                  {item.category === "travel"
+                    ? "\u2708"
+                    : item.category === "stay"
+                      ? "\u25A1"
+                      : item.category === "food"
+                        ? "\u25C6"
+                        : "\u25CE"}
+                </div>
+
+                <div
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    fontFamily: "Instrument Sans, sans-serif",
+                    fontWeight: 500,
+                    fontSize: 14,
+                    color: "#E8DCC8",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {item.name}
+                </div>
+
+                <div
+                  style={{
+                    padding: "3px 10px",
+                    borderRadius: 20,
+                    background: chipBg,
+                    border: chipBorder,
+                    fontFamily: "Instrument Sans, sans-serif",
+                    fontWeight: 500,
+                    fontSize: 11,
+                    color: chipColor,
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                  }}
+                >
+                  {chipLabel}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div
+        style={{
+          textAlign: "center",
+          marginTop: 8,
+          fontFamily: "Fraunces, serif",
+          fontWeight: 300,
+          fontStyle: "italic",
+          fontSize: 14,
+          color: "#C9A04C",
+        }}
+      >
+        Want different options? Ask your Co-Architect
       </div>
     </div>
   );
@@ -338,16 +585,90 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
       </div>
     </div>
   </>;
-  const TABS=[{id:"transport",label:"TRAVEL",icon:"✈️"},{id:"stay",label:"STAY",icon:"🏨"},{id:"activities",label:isMobile?"ACTS":"ACTIVITIES",icon:"🎯",count:det.activities.length},{id:"food",label:"FOOD",icon:"🍜"},{id:"budget",label:"BUDGET",icon:"💰"},{id:"calendar",label:isMobile?"CAL":"CALENDAR",icon:"📅"},{id:"docs",label:"DOCS",icon:"📋"}];
+  const actCount=det.activities.length;
+  const TABS=[
+    {id:"transport",label:"Travel"},
+    {id:"stay",label:"Stay"},
+    {id:"activities",label:actCount?`Activities (${actCount})`:"Activities"},
+    {id:"food",label:"Food"},
+    {id:"itinerary",label:"Itinerary"},
+    {id:"budget",label:"Budget"},
+    {id:"calendar",label:isMobile?"Cal":"Calendar"},
+    {id:"docs",label:"Docs"},
+  ];
+  const activePillStyle={
+    height:36,
+    padding:"0 16px",
+    borderRadius:20,
+    background:"#C9A04C",
+    color:"#0A0705",
+    border:"none",
+    fontFamily:"Instrument Sans, sans-serif",
+    fontWeight:500,
+    fontSize:13,
+    cursor:"pointer",
+    whiteSpace:"nowrap",
+    flexShrink:0,
+    transition:"all 0.2s ease",
+  };
+  const inactivePillStyle={
+    height:36,
+    padding:"0 16px",
+    borderRadius:20,
+    background:"transparent",
+    color:"rgba(232,220,200,0.6)",
+    border:"1px solid #7A6F5D",
+    fontFamily:"Instrument Sans, sans-serif",
+    fontWeight:500,
+    fontSize:13,
+    cursor:"pointer",
+    whiteSpace:"nowrap",
+    flexShrink:0,
+    transition:"all 0.2s ease",
+  };
   /** Rounded shell for breadcrumb header, tab bar, and tab panel (matches PhaseDetailPage / ConsoleHeader) */
   const segWorkspaceHdrR=isMobile?12:16;
-  const segMobileLoose=isMobile&&(tab==="stay"||tab==="activities"||tab==="food");
+  const segMobileLoose=isMobile&&(tab==="stay"||tab==="activities"||tab==="food"||tab==="itinerary");
+  const segmentWsHeaderRef=useRef(null);
+  const [stickyTabTop,setStickyTabTop]=useState(72);
+  useLayoutEffect(()=>{
+    const el=segmentWsHeaderRef.current;
+    if(!el||typeof ResizeObserver==="undefined"){
+      setStickyTabTop(72);
+      return;
+    }
+    const ro=new ResizeObserver(()=>{
+      setStickyTabTop(Math.round(el.getBoundingClientRect().height));
+    });
+    ro.observe(el);
+    setStickyTabTop(Math.round(el.getBoundingClientRect().height));
+    return()=>ro.disconnect();
+  },[key,isMobile]);
+  const tabBarStyle={
+    display:"flex",
+    alignItems:"center",
+    gap:8,
+    overflowX:"auto",
+    scrollbarWidth:"none",
+    msOverflowStyle:"none",
+    padding:"12px 16px",
+    background:"rgba(10,7,5,0.95)",
+    backdropFilter:"blur(12px)",
+    WebkitBackdropFilter:"blur(12px)",
+    borderBottom:"1px solid rgba(255,255,255,0.06)",
+    position:"sticky",
+    top:stickyTabTop,
+    zIndex:9,
+    borderBottomLeftRadius:segWorkspaceHdrR,
+    borderBottomRightRadius:segWorkspaceHdrR,
+  };
   return(
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:300,background:BG_PAGE,overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
       <WorldMapBackground phases={allPhases} activeCountry={(() => { const match = (allPhases||[]).find(p => p.name === phaseLabelName); return match ? match.country : phaseLabelName; })()} departureCity={homeCity||""} animatedRouteLegIndex={animatedRouteLegIndex}/>
+      <style>{`.sw-pill-tab-row::-webkit-scrollbar{display:none}.sw-pill-tab-row{scrollbar-width:none;-ms-overflow-style:none}`}</style>
       <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box',position:'relative',zIndex:1}}>
       {/* Header — glass card (Trip Console / PhaseCard language) */}
-      <div style={{display:'flex',alignItems:'center',padding:isMobile?'14px 10px':'18px 16px',gap:12,background:'rgba(23,27,32,0.65)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',borderBottom:'1px solid rgba(201,160,76,0.18)',borderTop:'1px solid rgba(255,255,255,0.06)',position:'sticky',top:0,zIndex:10,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.3), 0 0 24px rgba(201,160,76,0.04)',borderTopLeftRadius:segWorkspaceHdrR,borderTopRightRadius:segWorkspaceHdrR,overflow:'hidden'}}>
+      <div ref={segmentWsHeaderRef} style={{display:'flex',alignItems:'center',padding:isMobile?'14px 10px':'18px 16px',gap:12,background:'rgba(23,27,32,0.65)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',borderBottom:'1px solid rgba(201,160,76,0.18)',borderTop:'1px solid rgba(255,255,255,0.06)',position:'sticky',top:0,zIndex:10,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.3), 0 0 24px rgba(201,160,76,0.04)',borderTopLeftRadius:segWorkspaceHdrR,borderTopRightRadius:segWorkspaceHdrR,overflow:'hidden'}}>
         {isMobile?(
           <>
             <button type="button" onClick={onBack} style={{background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6}}>‹ <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1.5,color:'rgba(255,255,255,0.45)'}}>{phaseLabelName.toUpperCase()}</span></button>
@@ -383,13 +704,11 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           </div>
         )}
       </div>
-      {/* Tab bar */}
-      <div style={{display:'flex',justifyContent:'center',background:'rgba(0,4,12,0.92)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:isMobile?72:72,zIndex:9,borderBottomLeftRadius:segWorkspaceHdrR,borderBottomRightRadius:segWorkspaceHdrR,overflow:'hidden'}}>
-        {TABS.map(t=>{const on=tab===t.id;return(
-          <button type="button" key={t.id} onClick={()=>setTab(t.id)} style={{flex:isMobile?1:undefined,minWidth:isMobile?0:undefined,padding:isMobile?'10px 2px':'10px 16px',background:'none',border:'none',borderBottom:on?'2px solid #FF9F43':'2px solid transparent',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:3,transition:'all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)',overflow:'hidden',opacity:on?1:0.75,transform:on?'scale(1.05)':'scale(1)'}}>
-            <span style={{fontSize:isMobile?20:20,lineHeight:1}}>{t.icon}</span>
-            {!isMobile&&<span style={{fontSize:13,fontWeight:600,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:on?'#FF9F43':'rgba(255,255,255,0.45)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'100%'}}>{t.label}{t.count>0?` (${t.count})`:""}</span>}
-            {isMobile&&t.count>0&&<span style={{fontSize:9,fontWeight:600,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:on?'#FF9F43':'rgba(255,255,255,0.45)'}}>{t.count}</span>}
+      {/* Tab bar — DS v2 pills; `top` tracks measured segment header height */}
+      <div className="sw-pill-tab-row" style={tabBarStyle}>
+        {TABS.map((t)=>{const on=tab===t.id;return(
+          <button type="button" key={t.id} onClick={()=>setTab(t.id)} style={on?activePillStyle:inactivePillStyle} aria-pressed={on}>
+            {t.label}
           </button>
         );})}
         {saveFlash&&<div style={{position:'absolute',right:8,top:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:'#69F0AE',opacity:0.80,letterSpacing:1,pointerEvents:'none'}}>✓ saved</div>}
@@ -931,6 +1250,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
             <button type="button" onClick={()=>{if(!ownRestaurant.name.trim())return;const t=(ownRestaurant.priceTier||"").trim();const est=t.includes("$$$")?"85":t.includes("$$")?"48":t.includes("$")?"28":"";const block=[`🍽 ${ownRestaurant.name.trim()}`,[ownRestaurant.cuisine,t].filter(Boolean).join(" · "),ownRestaurant.link?`Link: ${ownRestaurant.link}`:"",ownRestaurant.notes||""].filter(Boolean).join("\n");setDet(d=>{const prev=parseFloat(d.food.dailyBudget)||0;const nextBud=est?String(Math.max(prev,parseInt(est,10)||0)):d.food.dailyBudget;return{...d,food:{...d.food,dailyBudget:nextBud,notes:d.food.notes?`${d.food.notes}\n\n${block}`:block}};});setOwnRestaurant({name:"",cuisine:"",priceTier:"",link:"",notes:""});setOwnRestaurantOpen(false);}} style={{marginTop:12,padding:'12px 20px',borderRadius:10,border:'none',background:ownRestaurant.name.trim()?'linear-gradient(135deg,rgba(255,159,67,0.25),rgba(201,160,76,0.15))':'rgba(255,255,255,0.04)',color:ownRestaurant.name.trim()?'#c9a04c':'rgba(255,255,255,0.20)',fontSize:12,cursor:ownRestaurant.name.trim()?'pointer':'default',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1.5,fontWeight:700,width:'100%',minHeight:44}}>SAVE</button>
           </div>}
         </div>);})()}</div>}
+        {visitedTabs.has("itinerary")&&<div style={{display:tab==="itinerary"?"block":"none"}}><ItineraryTab segment={segment} det={det} fmt={fmt}/></div>}
         {/* BUDGET */}
         {visitedTabs.has("budget")&&<div style={{display:tab==="budget"?"block":"none"}}>{(()=>{const tCost=parseFloat(det.transport?.cost)||0;const sCost=parseFloat(det.stay?.cost)||0;const aCost=det.activities.reduce((s,a)=>s+(parseFloat(a.cost)||0),0);const fCost=(parseFloat(det.food?.dailyBudget)||0)*segment.nights;const mCost=det.misc.reduce((s,m)=>s+(parseFloat(m.cost)||0),0);const total=tCost+sCost+aCost+fCost+mCost;const budget=segment.budget||0;const pct=budget>0?Math.round((total/budget)*100):0;const barColor=pct>=100?'#FF6B6B':pct>=80?'#c9a04c':'#00E5FF';
           const tf=(det.transport?.from||'').trim();const tt=(det.transport?.to||'').trim();const tMode=(det.transport?.mode||'').trim();
