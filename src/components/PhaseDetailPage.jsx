@@ -4,7 +4,6 @@ import { fmt, fD } from '../utils/dateHelpers';
 import { findSuggestionForSegment, flatPhaseIndexForSegment, prevSegmentNameForSeg } from '../utils/tripConsoleHelpers';
 import { computePhasePlannedSpend } from '../utils/tripHelpers';
 import { loadSeg } from '../utils/storageHelpers';
-import { BG_PAGE } from '../constants/colors';
 import SegmentRow from './SegmentRow';
 import SegmentWorkspace from './SegmentWorkspace';
 import WorldMapBackground from './WorldMapBackground';
@@ -22,9 +21,9 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
   const spendOverCap=phaseCap>0&&plannedSpend>phaseCap;
   return(
     <>
-    <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:200,background:BG_PAGE,overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+    <div style={{position:'fixed',top:0,left:isMobile?0:68,right:0,bottom:0,zIndex:1100,background:'#0A0705',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
       <WorldMapBackground phases={allPhases} activeCountry={phase.country} departureCity={homeCity||""}/>
-      <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box',position:'relative',zIndex:1}}>
+      <div style={{width:'100%',maxWidth:880,margin:'0 auto',padding:'0 20px',boxSizing:'border-box',position:'relative',zIndex:1,minHeight:'100%'}}>
       {/* DS v2 utility header — Segment Detail (phase) */}
       <div style={{
         background:'rgba(10,7,5,0.95)',
@@ -131,19 +130,19 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
       {/* Warning flags */}
       {warningFlags.filter(w=>w.phaseIndex===phase.id-1).map((w,wi)=>(
         <div key={wi} style={{border:'1.5px solid rgba(201,160,76,0.40)',borderRadius:12,background:'rgba(201,160,76,0.06)',padding:'14px 16px',margin:'8px 0',animation:'fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) both'}}>
-          <div style={{fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(201,160,76,0.70)',letterSpacing:2,marginBottom:6}}>⚠️ {w.type==='date_conflict'?'DATE CONFLICT':'SEASONAL NOTICE'}</div>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontStyle:'italic',color:'rgba(255,255,255,0.85)',lineHeight:1.6,marginBottom:4}}>{w.message}</div>
-          {w.suggestion&&<div style={{fontSize:12,color:'rgba(201,160,76,0.60)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:10}}>{w.suggestion}</div>}
+          <div style={{fontSize:11,fontFamily:"'Instrument Sans',sans-serif",color:'rgba(201,160,76,0.70)',letterSpacing:2,marginBottom:6}}>⚠️ {w.type==='date_conflict'?'DATE CONFLICT':'SEASONAL NOTICE'}</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:'italic',color:'rgba(255,255,255,0.85)',lineHeight:1.6,marginBottom:4}}>{w.message}</div>
+          {w.suggestion&&<div style={{fontSize:12,color:'rgba(201,160,76,0.60)',fontFamily:"'Instrument Sans',sans-serif",marginBottom:10}}>{w.suggestion}</div>}
           <div style={{display:'flex',gap:8}}>
-            {w.dismissible&&<button onClick={()=>onDismissWarning?.(warningFlags.indexOf(w))} style={{padding:'8px 14px',borderRadius:8,border:'1px solid rgba(201,160,76,0.30)',background:'transparent',color:'rgba(201,160,76,0.60)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",cursor:'pointer',fontWeight:600,letterSpacing:1}}>DISMISS</button>}
+            {w.dismissible&&<button onClick={()=>onDismissWarning?.(warningFlags.indexOf(w))} style={{padding:'8px 14px',borderRadius:8,border:'1px solid rgba(201,160,76,0.30)',background:'transparent',color:'rgba(201,160,76,0.60)',fontSize:11,fontFamily:"'Instrument Sans',sans-serif",cursor:'pointer',fontWeight:600,letterSpacing:1}}>DISMISS</button>}
           </div>
         </div>
       ))}
       {/* Segment list */}
       <div style={{padding:'6px 0 80px'}}>
-        <div style={{fontSize:11,color:'rgba(255,255,255,0.40)',letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,padding:'14px 0 8px'}}>YOUR EXPEDITION · {phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''}</div>
+        <div style={{fontSize:11,color:'rgba(255,255,255,0.40)',letterSpacing:3,fontFamily:"'Instrument Sans',sans-serif",fontWeight:600,padding:'14px 0 8px'}}>YOUR EXPEDITION · {phase.segments.length} SEGMENT{phase.segments.length!==1?'S':''}</div>
         {phase.segments.map((seg,i)=>(
-          <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onSegmentTap={s=>setActiveSegment(s)} prevCity={prevSegmentNameForSeg(seg, segPhases)} homeCity={homeCity}/>
+          <SegmentRow key={seg.id} segment={seg} phaseId={phase.id} phaseColor={phase.color||'#C9A04C'} intelSnippet={intelData?.[seg.name]} isLast={i===phase.segments.length-1} onSegmentTap={s=>setActiveSegment(s)} prevCity={prevSegmentNameForSeg(seg, segPhases)} homeCity={homeCity}/>
         ))}
         <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:'italic',color:'rgba(255,255,255,0.35)',lineHeight:1.7,textAlign:'center',padding:'20px 16px 0',maxWidth:440,margin:'0 auto'}}>Your expedition unfolds one destination at a time. Tap any segment to begin planning.</div>
       </div>
