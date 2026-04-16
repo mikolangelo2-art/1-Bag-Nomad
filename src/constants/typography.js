@@ -1,6 +1,6 @@
 // ── Font Families ────────────────────────────────────────────
-export const FONT_BODY     = "'Inter',system-ui,-apple-system,sans-serif";
-export const FONT_DISPLAY  = "'Playfair Display',serif";
+export const FONT_BODY     = "'Instrument Sans',system-ui,-apple-system,sans-serif";
+export const FONT_DISPLAY  = "'Fraunces',serif";
 export const FONT_MONO     = "monospace";
 
 // ── Letter Spacing Presets ───────────────────────────────────
