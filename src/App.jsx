@@ -34,6 +34,12 @@ import SegmentWorkspace from './components/SegmentWorkspace';
 import PhaseDetailPage from './components/PhaseDetailPage';
 import PhaseCard from './components/PhaseCard';
 import MissionConsole from './components/MissionConsole';
+import Sidebar from './components/Sidebar';
+import WelcomeScreen from './screens/WelcomeScreen';
+import LandingPage from './screens/LandingPage';
+import MapsScreen from './screens/MapsScreen';
+import CalendarScreen from './screens/CalendarScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 // PostHog: initialized in src/posthogInit.js (imported from main.jsx)
 // ╔══════════════════════════════════════════════════════════════╗
@@ -92,7 +98,8 @@ const TC = TRIP_CATEGORY_COLORS;
 // Segment suggestions, detectMode, styles, buildSegmentSuggestionsPrompt — imported from utils/tripConsoleHelpers.js
 
 // ─── CSS ─────────────────────────────────────────────────────────
-const CSS=`*{box-sizing:border-box;margin:0;padding:0}
+const CSS=`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Instrument+Sans:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -481,8 +488,15 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
 // ─── Root App ─────────────────────────────────────────────────────
 export default function App() {
   const isMobile=useMobile();
-  const isNewFromLanding=(()=>{try{return new URLSearchParams(window.location.search).get("new")==="true";}catch(e){return false;}})();
-  const [screen,setScreen]=useState(isNewFromLanding?"dream":"console");
+  const [screen,setScreen]=useState(()=>{
+    try{
+      const params=new URLSearchParams(window.location.search);
+      if(params.get("new")==="true")return"dream";
+      const t=localStorage.getItem("1bn_tripData_v5");
+      if(t){const p=JSON.parse(t);if(p?.phases?.length>0)return"landing";}
+    }catch(e){}
+    return"welcome";
+  });
   const [appData,setAppData]=useState(null);
   const [fullscreen,setFullscreen]=useState(false);
   const [prefilledVision,setPrefilledVision]=useState("");
@@ -492,6 +506,13 @@ export default function App() {
   const [slideDir,setSlideDir]=useState(null);
   const [prevScreen,setPrevScreen]=useState(null);
   const slideTimerRef=useRef(null);
+  const [isDesktop,setIsDesktop]=useState(()=>typeof window!=="undefined"&&window.matchMedia("(min-width: 1024px)").matches);
+  useEffect(()=>{
+    const mq=window.matchMedia("(min-width: 1024px)");
+    const fn=()=>setIsDesktop(mq.matches);
+    mq.addEventListener("change",fn);
+    return()=>mq.removeEventListener("change",fn);
+  },[]);
   const slideScreen=useCallback((to)=>{
     setScreen(prev=>{
       if((prev==="console"&&to==="pack")||(prev==="pack"&&to==="console")){
@@ -520,6 +541,15 @@ export default function App() {
     try{const sd=localStorage.getItem("1bn_seg_v2");if(sd){const p=JSON.parse(sd);if(typeof p!=="object"||Array.isArray(p))console.warn("[1BN] Segment data structure invalid — expected object");}}catch(e){console.warn("[1BN] Segment data parse error:",e);}
     try{const pk=localStorage.getItem("1bn_pack_v5");if(pk){const p=JSON.parse(pk);if(!Array.isArray(p))console.warn("[1BN] Pack data structure invalid — expected array");}}catch(e){console.warn("[1BN] Pack data parse error:",e);}
   },[]);
+
+  const OPERATIONAL_SCREENS=["landing","console","pack","maps","calendar","profile"];
+  const isOperational=OPERATIONAL_SCREENS.includes(screen);
+  function handleNavigate(dest){
+    if(dest==="landing")setScreen("landing");
+    else if(dest==="pack"){if(screen==="console")slideScreen("pack");else setScreen("pack");}
+    else if(dest==="console"){if(screen==="pack")slideScreen("console");else setScreen("console");}
+    else setScreen(dest);
+  }
 
   const [tripAmbientCtx,setTripAmbientCtx]=useState({screen:"trip-console",phase:null,segment:null,tab:null});
   const [packUiCtx,setPackUiCtx]=useState({tab:"pack",view:"dashboard"});
@@ -553,6 +583,10 @@ export default function App() {
 
   const hasTrip=useMemo(()=>Boolean(tripData?.phases?.length>0),[tripData?.phases?.length]);
   const suggestionsTripId=useMemo(()=>getSuggestionsTripId(tripData),[tripData]);
+
+  useEffect(()=>{
+    if(screen==="landing"&&!hasTrip)setScreen("welcome");
+  },[screen,hasTrip]);
 
   // Load or generate segment suggestions when trip identity / phase count changes
   useEffect(()=>{
@@ -626,12 +660,12 @@ export default function App() {
     }
   }
 
-  function handleLoadDemo(){try{const preserve=["1bn_coach_v1","1bn_onboard_v1","1bn_pack_explainer_v1","1bn_phase_hint_shown","1bn_hide_all_tips",FOUNDER_KEY];const saved={};preserve.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)saved[k]=v;});localStorage.clear();Object.entries(saved).forEach(([k,v])=>localStorage.setItem(k,v));localStorage.removeItem(SEG_KEY);}catch(e){}setFounderMode(false);setTripData(MICHAEL_EXPEDITION);setScreen("console");}
+  function handleLoadDemo(){try{const preserve=["1bn_coach_v1","1bn_onboard_v1","1bn_pack_explainer_v1","1bn_phase_hint_shown","1bn_hide_all_tips",FOUNDER_KEY];const saved={};preserve.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)saved[k]=v;});localStorage.clear();Object.entries(saved).forEach(([k,v])=>localStorage.setItem(k,v));localStorage.removeItem(SEG_KEY);}catch(e){}setFounderMode(false);setTripData(MICHAEL_EXPEDITION);setScreen("landing");}
   function handleGoGen(data,vd){setAppData({...data,visionData:vd});setScreen("gen");}
   function handleGenComplete(){setScreen("coarchitect");}
   function handleLaunch(hd){posthog.capture("trip_console_launched",{total_budget:hd?.totalBudget,nights:hd?.totalNights,phases:hd?.phases?.length});try{localStorage.removeItem("1bn_pack_v5");localStorage.removeItem("1bn_pack_cats_v1");localStorage.removeItem(SUGGEST_KEY);}catch(e){}console.log('[1BN] handleLaunch tripName:',hd?.tripName,'phases:',hd?.phases?.length);setFounderMode(false);setTripData(hd);setScreen("handoff");}
   function handleReviseLaunch(hd){setTripData(hd);setScreen("handoff");}
-  function handleHandoffComplete(){setScreen("console");}
+  function handleHandoffComplete(){setScreen("landing");}
   function handleRevise(){
     const revData={vision:tripData.visionNarrative||"My expedition",tripName:tripData.tripName||"My Expedition",city:tripData.departureCity||"",date:tripData.startDate||"",budgetMode:"dream",budgetAmount:"",selectedGoal:tripData.goalLabel||"custom",
       visionData:{phases:(tripData.phases||[]).map(p=>({destination:p.name||p.destination||"",country:p.country||"",type:p.type||"Exploration",nights:p.nights||7,flag:p.flag||"🌍",why:p.why||"",...(Array.isArray(p.caActivities)&&p.caActivities.length?{caActivities:[...p.caActivities]}:{})})),narrative:tripData.visionNarrative||"",vibe:tripData.visionVibe||"",highlight:tripData.visionHighlight||"",totalNights:(tripData.phases||[]).reduce((s,p)=>s+p.nights,0),totalBudget:(tripData.phases||[]).reduce((s,p)=>s+(p.budget||p.cost||0),0),countries:[...new Set((tripData.phases||[]).map(p=>p.country))].length}};
@@ -645,7 +679,7 @@ export default function App() {
   function handleExitDemo() {
     setFounderMode(false);
     setTripData(null);
-    setScreen("console");
+    setScreen("welcome");
   }
   function handleHomecoming(){setScreen("homecoming");}
   function handlePlanNext(){
@@ -667,7 +701,7 @@ export default function App() {
     }else if(founderExpedition?.phases?.length){
       setFounderMode(true);
       setTripData(founderExpedition);
-      setScreen("console");
+      setScreen("landing");
     }
   }
 
@@ -678,27 +712,57 @@ export default function App() {
     setFounderMode(true);
   }
 
+  const showShellBottomNav=isOperational&&!isDesktop&&!["console","pack"].includes(screen);
+  const feedbackBottomPad=(tripData?.isDemo?82:72)+(showShellBottomNav?64:0);
+
   return(
     <>
       <style>{CSS}</style>
-      {screen==="dream"       && <DreamScreen onGoGen={handleGoGen} onLoadDemo={handleLoadDemo} prefilledVision={prefilledVision} onBackToWelcome={() => setScreen("console")}/>}
-      {screen==="gen"         && <GenerationScreen onComplete={handleGenComplete}/>}
-      {screen==="coarchitect" && appData && <CoArchitect data={appData} visionData={appData.visionData} onLaunch={appData.isRevision?handleReviseLaunch:handleLaunch} onBack={()=>setScreen(appData.isRevision?"console":"dream")}/>}
-      {screen==="handoff"     && tripData && <HandoffScreen tripData={tripData} onComplete={handleHandoffComplete}/>}
-      {screen==="homecoming"  && tripData && <HomecomingScreen tripData={tripData} onPlanNext={handlePlanNext}/>}
-      {(screen==="console"||prevScreen==="console") && !hasTrip && (
-        <BetaEmptyTripState
-          onStartDreaming={() => setScreen("dream")}
-          onTryDemo={() => {
-            setFounderMode(false);
-            setTripData(BETA_DEMO_EXPEDITION);
-            setScreen("console");
-          }}
-        />
+
+      {screen==="welcome"&&(
+        <WelcomeScreen onBuild={()=>setScreen("dream")} onDemo={handleLoadDemo}/>
       )}
-      {(screen==="console"||prevScreen==="console") && hasTrip && tripData && <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onExitDemo={handleExitDemo} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} onUpdateTripData={(updates)=>setTripData(d=>({...d,...updates}))} onTripAmbientContextChange={setTripAmbientCtx} founderExpedition={founderExpedition} founderMode={founderMode} onToggleFounderExpedition={handleToggleFounderExpedition} onSaveAsFounderExpedition={handleSaveAsFounderExpedition}/></div>}
-      {(screen==="pack"||prevScreen==="pack") && tripData && hasTrip && <div style={{position:prevScreen==="pack"||slideDir?"fixed":"relative",inset:prevScreen==="pack"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="pack"?0:1,animation:prevScreen==="pack"?(slideDir==="right"?"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="pack"&&slideDir?(slideDir==="left"?"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}><PackConsole tripData={tripData} onExpedition={()=>slideScreen("console")} onGoToTab={t=>{setPendingTab(t||"next");slideScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen} onPackUiContextChange={setPackUiCtx}/></div>}
-      <AmbientChat screen={screen==="pack"?"pack-console":screen==="console"&&!hasTrip?"dream":screen==="console"?tripAmbientCtx.screen:screen} tripData={tripData} currentPhase={screen==="console"?tripAmbientCtx.phase:null} currentSegment={screen==="console"?tripAmbientCtx.segment:null} currentTab={screen==="console"?tripAmbientCtx.tab:null}/>
+      {screen==="dream"&&<DreamScreen onGoGen={handleGoGen} onLoadDemo={handleLoadDemo} prefilledVision={prefilledVision} onBackToWelcome={()=>setScreen("welcome")}/>}
+      {screen==="gen"&&<GenerationScreen onComplete={handleGenComplete}/>}
+      {screen==="coarchitect"&&appData&&(
+        <CoArchitect data={appData} visionData={appData.visionData} onLaunch={appData.isRevision?handleReviseLaunch:handleLaunch} onBack={()=>setScreen(appData.isRevision?"landing":"dream")}/>
+      )}
+      {screen==="handoff"&&tripData&&<HandoffScreen tripData={tripData} onComplete={handleHandoffComplete}/>}
+      {screen==="homecoming"&&tripData&&<HomecomingScreen tripData={tripData} onPlanNext={handlePlanNext}/>}
+
+      {isOperational&&(
+        <div style={{display:"flex",minHeight:"100vh",background:"#0A0705"}}>
+          {isDesktop&&<Sidebar activeScreen={screen} onNavigate={handleNavigate}/>}
+          <div style={{flex:1,marginLeft:isDesktop?68:0,marginBottom:isDesktop?0:(["console","pack"].includes(screen)?0:64),minHeight:"100vh",overflowY:"auto"}}>
+            {screen==="landing"&&tripData&&<LandingPage tripData={tripData} onNavigate={handleNavigate}/>}
+            {(screen==="console"||prevScreen==="console")&&hasTrip&&tripData&&(
+              <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}>
+                <MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onExitDemo={handleExitDemo} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} onUpdateTripData={(updates)=>setTripData(d=>({...d,...updates}))} onTripAmbientContextChange={setTripAmbientCtx} founderExpedition={founderExpedition} founderMode={founderMode} onToggleFounderExpedition={handleToggleFounderExpedition} onSaveAsFounderExpedition={handleSaveAsFounderExpedition}/>
+              </div>
+            )}
+            {(screen==="pack"||prevScreen==="pack")&&tripData&&hasTrip&&(
+              <div style={{position:prevScreen==="pack"||slideDir?"fixed":"relative",inset:prevScreen==="pack"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="pack"?0:1,animation:prevScreen==="pack"?(slideDir==="right"?"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="pack"&&slideDir?(slideDir==="left"?"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}>
+                <PackConsole tripData={tripData} onExpedition={()=>setScreen("landing")} onGoToTab={t=>{setPendingTab(t||"next");slideScreen("console");}} isFullscreen={fullscreen} setFullscreen={setFullscreen} onPackUiContextChange={setPackUiCtx}/>
+              </div>
+            )}
+            {screen==="maps"&&<MapsScreen onBack={()=>{setScreen("landing");}}/>}
+            {screen==="calendar"&&<CalendarScreen onBack={()=>{setScreen("landing");}}/>}
+            {screen==="profile"&&(
+              <ProfileScreen
+                onBack={()=>{setScreen("landing");}}
+                onNewTrip={handleNewTrip}
+                onSignOut={()=>{
+                  try{localStorage.clear();}catch(e){}
+                  setTripData(null);setScreen("welcome");
+                }}
+              />
+            )}
+          </div>
+          {showShellBottomNav&&<BottomNav activeScreen={screen} onNavigate={handleNavigate}/>}
+        </div>
+      )}
+
+      <AmbientChat screen={screen==="pack"?"pack-console":screen==="landing"?"trip-console":screen==="console"&&!hasTrip?"dream":screen==="console"?tripAmbientCtx.screen:screen} tripData={tripData} currentPhase={screen==="console"?tripAmbientCtx.phase:null} currentSegment={screen==="console"?tripAmbientCtx.segment:null} currentTab={screen==="console"?tripAmbientCtx.tab:null}/>
       {hasTrip &&
         ((screen === "console" && tripAmbientCtx.screen === "trip-console") ||
           (screen === "pack" && packUiCtx.tab === "pack" && packUiCtx.view === "dashboard")) && (
@@ -708,7 +772,7 @@ export default function App() {
           onClick={() => window.open("https://tally.so/r/QKJrdX", "_blank", "noopener,noreferrer")}
           style={{
             position: "fixed",
-            bottom: "calc(env(safe-area-inset-bottom, 0px) + " + (tripData?.isDemo ? "82" : "72") + "px)",
+            bottom: "calc(env(safe-area-inset-bottom, 0px) + " + feedbackBottomPad + "px)",
             left: 16,
             background: !isMobile
               ? tripData?.isDemo

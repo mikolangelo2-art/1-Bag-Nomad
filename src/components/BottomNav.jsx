@@ -1,38 +1,91 @@
-function BottomNav({activeTab,onTab}) {
-  const NAV=[
-    {id:"next",  icon:"🧭",lbl:"TRIP",   glowColor:"rgba(0,229,255,0.6)",   glowFaint:"rgba(0,229,255,0.2)"},
-    {id:"budget",icon:"💰",lbl:"BUDGET", glowColor:"rgba(255,255,255,0.4)", glowFaint:"rgba(255,255,255,0.15)"},
-    {id:"book",  icon:"🗓", lbl:"TIMELINE",glowColor:"rgba(255,255,255,0.4)", glowFaint:"rgba(255,255,255,0.15)"},
-    {id:"intel", icon:"🔭",lbl:"INTEL",  glowColor:"rgba(255,255,255,0.4)", glowFaint:"rgba(255,255,255,0.15)"},
-    {id:"pack",  icon:"🎒",lbl:"PACK",   glowColor:"rgba(255,159,67,0.6)",   glowFaint:"rgba(255,159,67,0.2)"},
-  ];
-  return(
-    <div className="bnav">
-      {NAV.map(n=>{
-        const active=activeTab===n.id;
-        const isPack=n.id==="pack";
-        const pipColor=isPack?"#FF9F43":"#c9a04c";
-        const borderColor=n.id==="next"?"rgba(0,229,255,0.90)":n.id==="pack"?"rgba(255,159,67,0.90)":"rgba(255,255,255,0.60)";
-        const activeGlow=n.id==="next"
-          ?'0 -3px 12px rgba(0,229,255,0.45),0 -1px 6px rgba(0,229,255,0.25)'
-          :n.id==="pack"
-          ?'0 -3px 12px rgba(255,159,67,0.45),0 -1px 6px rgba(255,159,67,0.25)'
-          :'0 -3px 10px rgba(255,255,255,0.20)';
-        return(
-          <button key={n.id} className={`bnav-btn${isPack?" bnav-pack":""}${active?" active":""}`} onClick={()=>onTab(n.id)}
-            style={active?{
-              borderTop:`2px solid ${borderColor}`,
-              marginTop:'-2px',
-              boxShadow:activeGlow,
-            }:undefined}>
-            <div className="bnav-pip" style={{background:pipColor,boxShadow:active?`0 0 8px ${pipColor}`:undefined}}/>
-            <span className="bnav-icon">{n.icon}</span>
-            <span className="bnav-lbl">{n.lbl}</span>
+// src/components/BottomNav.jsx
+// 1 Bag Nomad — App shell bottom navigation (mobile)
+// Design System v2 — LOCKED April 15 2026
+
+import { NAV_ITEMS } from "./Sidebar";
+
+export default function BottomNav({ activeScreen, onNavigate }) {
+  return (
+    <nav
+      style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 64,
+        background: "rgba(10,7,5,0.95)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderTop: "1px solid rgba(255,255,255,0.06)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-around",
+        zIndex: 1000,
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
+    >
+      {NAV_ITEMS.map((item) => {
+        const isActive =
+          activeScreen === item.screen || (item.screen === "landing" && activeScreen === "console");
+        return (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onNavigate(item.screen)}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 4,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: "8px 12px",
+              position: "relative",
+              minWidth: 44,
+              minHeight: 44,
+            }}
+          >
+            {isActive && (
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 2,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: 20,
+                  height: 3,
+                  borderRadius: 2,
+                  background: "#C9A04C",
+                }}
+              />
+            )}
+            <div
+              style={{
+                fontSize: 22,
+                lineHeight: 1,
+                color: isActive ? "#C9A04C" : "rgba(232,220,200,0.4)",
+                transition: "color 0.2s ease",
+              }}
+            >
+              {item.icon}
+            </div>
+            <span
+              style={{
+                fontFamily: "Instrument Sans, sans-serif",
+                fontSize: 10,
+                fontWeight: 500,
+                color: isActive ? "#C9A04C" : "rgba(232,220,200,0.4)",
+                letterSpacing: "0.5px",
+                transition: "color 0.2s ease",
+                lineHeight: 1,
+              }}
+            >
+              {item.label}
+            </span>
           </button>
         );
       })}
-    </div>
+    </nav>
   );
 }
-
-export default BottomNav;

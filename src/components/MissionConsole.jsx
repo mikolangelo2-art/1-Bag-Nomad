@@ -9,7 +9,7 @@ import { loadSeg, saveSeg, loadReturn, saveReturn, TI } from '../utils/storageHe
 import { STATUS_CFG, STATUS_NEXT, formatTripNameDisplay } from '../utils/tripConsoleHelpers';
 import { toSegPhases, computePhasePlannedSpend } from '../utils/tripHelpers';
 import ConsoleHeader from './ConsoleHeader';
-import BottomNav from './BottomNav';
+import MissionBottomNav from './MissionBottomNav';
 import HelpTip from './HelpTip';
 import WorldMapBackground from './WorldMapBackground';
 import SDF from './SDF';
@@ -511,7 +511,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
         )}
       </div>
       {isMobile&&!isFullscreen&&!phaseDetailView&&<div style={{height:"calc(64px + env(safe-area-inset-bottom))"}}/>}
-      {isMobile&&!isFullscreen&&<div style={{opacity:phaseDetailView?0:1,pointerEvents:phaseDetailView?"none":"auto",transition:"opacity 0.35s cubic-bezier(0.25,0.46,0.45,0.94)"}}><BottomNav activeTab={tab} onTab={t=>{if(t==="pack")onPackConsole();else{setTab(t);if(t!=="intel")setExplorerDest(null);}}}/></div>}
+      {isMobile&&!isFullscreen&&<div style={{opacity:phaseDetailView?0:1,pointerEvents:phaseDetailView?"none":"auto",transition:"opacity 0.35s cubic-bezier(0.25,0.46,0.45,0.94)"}}><MissionBottomNav activeTab={tab} onTab={t=>{if(t==="pack")onPackConsole();else{setTab(t);if(t!=="intel")setExplorerDest(null);}}}/></div>}
     </div>
   );
 }

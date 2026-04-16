@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import posthog from "posthog-js";
 import WorldMapBackground from './WorldMapBackground';
 import ConsoleHeader from './ConsoleHeader';
-import BottomNav from './BottomNav';
+import MissionBottomNav from './MissionBottomNav';
 import BottomSheet from './BottomSheet';
 import HelpTip from './HelpTip';
 import { useMobile } from '../hooks/useMobile';
@@ -870,7 +870,7 @@ Return ONLY a JSON array:
       )}
       </div>
       {isMobile&&!isFullscreen&&packView==="dashboard"&&<div style={{height:packMobileNavSpacer}}/>}
-      {isMobile&&!isFullscreen&&<BottomNav activeTab="pack" onTab={t=>{if(t==="pack")return;if(onGoToTab)onGoToTab(t);else onExpedition();}}/>}
+      {isMobile&&!isFullscreen&&<MissionBottomNav activeTab="pack" onTab={t=>{if(t==="pack")return;if(onGoToTab)onGoToTab(t);else onExpedition();}}/>}
       </div>
     </div>
   );
