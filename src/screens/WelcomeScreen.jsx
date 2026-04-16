@@ -168,6 +168,7 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
             fontSize: 14,
             cursor: "pointer",
             letterSpacing: "0.2px",
+            marginBottom: 72,
           }}
         >
           {"or explore a demo expedition \u2192"}
@@ -177,7 +178,7 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
       <div
         style={{
           position: "absolute",
-          bottom: 28,
+          bottom: 20,
           left: 0,
           right: 0,
           display: "flex",

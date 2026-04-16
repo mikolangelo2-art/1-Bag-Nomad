@@ -4,6 +4,7 @@
 // Phase 2 - Full implementation
 
 import { useEffect, useState } from "react";
+import VisionReveal from "../components/VisionReveal";
 import { runDreamExpeditionBuild } from "../utils/dreamVisionBuild";
 
 const TRAVEL_STYLES = [
@@ -41,8 +42,16 @@ const INTEREST_GROUPS = [
 function addDaysToIso(iso, days) {
   if (!iso || !Number.isFinite(days)) return "";
   const d = new Date(iso + "T12:00:00");
+  if (Number.isNaN(d.getTime())) return "";
   d.setDate(d.getDate() + days);
   return d.toISOString().slice(0, 10);
+}
+
+/** Only derive return date when departure looks like YYYY-MM-DD (avoids breaking free-text dates). */
+function computeReturnDate(departureStr, nights) {
+  const t = (departureStr || "").trim();
+  if (!t || !/^\d{4}-\d{2}-\d{2}/.test(t)) return "";
+  return addDaysToIso(t.slice(0, 10), nights);
 }
 
 function parseBudget(s) {
@@ -65,6 +74,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
   const [budget, setBudget] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState("");
+  const [revealPayload, setRevealPayload] = useState(null);
 
   useEffect(() => {
     if (prefilledVision) setVision(prefilledVision);
@@ -87,7 +97,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
     const { mode, amount } = parseBudget(budget);
     const travelStyleLabel = TRAVEL_STYLES.find((s) => s.id === selectedStyle)?.label || "";
     const nights = parseInt(duration, 10) || 14;
-    const returnDate = departureDate ? addDaysToIso(departureDate, nights) : "";
+    const returnDate = computeReturnDate(departureDate, nights);
     try {
       const result = await runDreamExpeditionBuild({
         vision: vision.trim(),
@@ -104,7 +114,18 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
         selectedGoal: selectedStyle || "custom",
       });
       if (result.ok) {
-        await onGoGen(result.appPayload, result.parsed);
+        setRevealPayload({
+          visionData: result.parsed,
+          selectedGoal: selectedStyle || "custom",
+          vision: vision.trim(),
+          tripName: result.appPayload.tripName,
+          city: result.appPayload.city || "",
+          date: result.appPayload.date || "",
+          returnDate: result.appPayload.returnDate || "",
+          budgetMode: result.appPayload.budgetMode,
+          budgetAmount: result.appPayload.budgetAmount,
+          travelerProfile: result.appPayload.travelerProfile,
+        });
       } else {
         setLoadError(result.error || "Could not build expedition.");
       }
@@ -143,6 +164,22 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
     transform: openPill === id ? "rotate(180deg)" : "rotate(0deg)",
     transition: "transform 0.3s ease",
   });
+
+  if (revealPayload) {
+    return (
+      <VisionReveal
+        data={revealPayload}
+        freshMount={true}
+        onBuild={(vd) => {
+          onGoGen(revealPayload, vd);
+          setRevealPayload(null);
+        }}
+        onBack={() => {
+          setRevealPayload(null);
+        }}
+      />
+    );
+  }
 
   return (
     <div
@@ -463,7 +500,9 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           <div>
             <button type="button" onClick={() => togglePill("dates")} style={triggerPillStyle("dates")}>
               <span style={triggerLabelStyle}>
-                {departureDate ? `Departs ${departureDate}` : "Dates & Budget"}
+                {departureDate || duration
+                  ? [departureDate, duration ? `${duration} nights` : null].filter(Boolean).join(" \u00B7 ")
+                  : "Dates & Budget"}
               </span>
               <span style={chevronStyle("dates")}>{"\u25BE"}</span>
             </button>
@@ -482,9 +521,27 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
                 }}
               >
                 {[
-                  { label: "DEPARTURE DATE", value: departureDate, setter: setDepartureDate, type: "date", placeholder: "" },
-                  { label: "DURATION (NIGHTS)", value: duration, setter: setDuration, type: "number", placeholder: "e.g. 21" },
-                  { label: "BUDGET", value: budget, setter: setBudget, type: "text", placeholder: "e.g. $5,000 or No limit" },
+                  {
+                    label: "WHEN ARE YOU THINKING?",
+                    value: departureDate,
+                    setter: setDepartureDate,
+                    type: "text",
+                    placeholder: "e.g. September 2026 or Sep 16, 2026",
+                  },
+                  {
+                    label: "HOW LONG? (NIGHTS)",
+                    value: duration,
+                    setter: setDuration,
+                    type: "number",
+                    placeholder: "e.g. 21",
+                  },
+                  {
+                    label: "BUDGET",
+                    value: budget,
+                    setter: setBudget,
+                    type: "text",
+                    placeholder: "e.g. $5,000 \u00B7 No limit \u00B7 Dream big",
+                  },
                 ].map((field) => (
                   <div key={field.label} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     <div
