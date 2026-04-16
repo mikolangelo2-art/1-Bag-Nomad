@@ -20,7 +20,7 @@ import GenerationScreen from './components/GenerationScreen';
 import CityInput from './components/CityInput';
 import DreamHeader from './components/DreamHeader';
 import VisionReveal from './components/VisionReveal';
-import DreamScreen from './components/DreamScreen';
+import DreamScreen from './screens/DreamScreen';
 import HandoffScreen from './components/HandoffScreen';
 import HomecomingScreen from './components/HomecomingScreen';
 import CoArchitect from './components/CoArchitect';
@@ -459,7 +459,7 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
 // GenerationScreen — imported from components/GenerationScreen.jsx
 
 // DreamHeader — imported from components/DreamHeader.jsx
-// DreamScreen — imported from components/DreamScreen.jsx
+// DreamScreen — imported from screens/DreamScreen.jsx
 
 // VisionReveal — imported from components/VisionReveal.jsx
 
@@ -762,7 +762,7 @@ export default function App() {
         </div>
       )}
 
-      <AmbientChat screen={screen==="pack"?"pack-console":screen==="landing"?"trip-console":screen==="console"&&!hasTrip?"dream":screen==="console"?tripAmbientCtx.screen:screen} tripData={tripData} currentPhase={screen==="console"?tripAmbientCtx.phase:null} currentSegment={screen==="console"?tripAmbientCtx.segment:null} currentTab={screen==="console"?tripAmbientCtx.tab:null}/>
+      {isOperational&&<AmbientChat screen={screen==="pack"?"pack-console":screen==="landing"?"trip-console":screen==="console"&&!hasTrip?"dream":screen==="console"?tripAmbientCtx.screen:screen} tripData={tripData} currentPhase={screen==="console"?tripAmbientCtx.phase:null} currentSegment={screen==="console"?tripAmbientCtx.segment:null} currentTab={screen==="console"?tripAmbientCtx.tab:null}/>}
       {hasTrip &&
         ((screen === "console" && tripAmbientCtx.screen === "trip-console") ||
           (screen === "pack" && packUiCtx.tab === "pack" && packUiCtx.view === "dashboard")) && (
