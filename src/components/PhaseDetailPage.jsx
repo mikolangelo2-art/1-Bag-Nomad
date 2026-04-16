@@ -9,9 +9,9 @@ import SegmentRow from './SegmentRow';
 import SegmentWorkspace from './SegmentWorkspace';
 import WorldMapBackground from './WorldMapBackground';
 
-/** Must sit above `body::after` film grain (`z-index: 2147483000` in luxury-app.css) or the overlay reads as a blank/black screen. */
-const PHASE_DETAIL_STACK = 2147483001;
-const SEGMENT_WORKSPACE_STACK = 2147483002;
+/** Above Trip sidebar (1000) and body grain (5); below HelpTip-style layers. */
+const PHASE_DETAIL_STACK = 1100;
+const SEGMENT_WORKSPACE_STACK = 1200;
 
 function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsLoading,homeCity="",segPhases=[],warningFlags=[],onDismissWarning,allPhases=[],onAmbientSegmentChange}) {
   const isMobile=useMobile();
@@ -27,7 +27,7 @@ function PhaseDetailPage({phase,intelData,onBack,segmentSuggestions,suggestionsL
   const spendOverCap=phaseCap>0&&plannedSpend>phaseCap;
   return createPortal(
     <>
-    <div style={{position:'fixed',top:0,left:isMobile?0:68,right:0,bottom:0,zIndex:PHASE_DETAIL_STACK,background:'#0A0705',overflowY:'auto',animation:'slideInRight 0.45s cubic-bezier(0.25,0.46,0.45,0.94)'}}>
+    <div style={{position:'fixed',top:0,left:isMobile?0:68,right:0,bottom:0,zIndex:PHASE_DETAIL_STACK,background:'#0A0705',opacity:1,overflowY:'auto',animation:'phaseDetailSlideIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) forwards'}}>
       <WorldMapBackground phases={allPhases} activeCountry={phase.country} departureCity={homeCity||""}/>
       <div style={{width:'100%',maxWidth:880,margin:'0 auto',padding:'0 20px',boxSizing:'border-box',position:'relative',zIndex:1,minHeight:'100%'}}>
       {/* DS v2 utility header — Segment Detail (phase) */}

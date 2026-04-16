@@ -18,13 +18,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle film grain - low contrast, full viewport */
+/* Subtle film grain — above page content, below nav/overlays (sidebar ~1000, modals higher).
+   Do NOT use max z-index: it traps portaled views (PhaseDetailPage) under an overlay blend. */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 2147483000;
+  z-index: 5;
   opacity: var(--lux-grain-opacity);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
