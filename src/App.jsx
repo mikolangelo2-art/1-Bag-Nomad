@@ -31,7 +31,6 @@ import AmbientChat from './components/AmbientChat';
 import SegmentDetails from './components/SegmentDetails';
 import SegmentRow from './components/SegmentRow';
 import SegmentWorkspace from './components/SegmentWorkspace';
-import PhaseDetailPage from './components/PhaseDetailPage';
 import PhaseCard from './components/PhaseCard';
 import MissionConsole from './components/MissionConsole';
 import Sidebar from './components/Sidebar';
@@ -477,10 +476,8 @@ function BetaEmptyTripState({ onStartDreaming, onTryDemo }) {
 // ─── PhaseCard ────────────────────────────────────────────────────
 // ACTIVITY_ICONS, SEG_TYPE_TO_ACT, getPhaseActivityIcon — imported from utils/tripConsoleHelpers.js
 
-// ─── PhaseDetailPage ──────────────────────────────────────────────
 // SegmentWorkspace — imported from components/SegmentWorkspace.jsx
-
-// PhaseDetailPage — imported from components/PhaseDetailPage.jsx
+// PhaseDetailPage — only loaded via MissionConsole (not App import)
 
 // PhaseCard — imported from components/PhaseCard.jsx
 

@@ -29,6 +29,12 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
   const titleFs=17;
   const dateMonoFs=13;
   const revealBodyFs=isMobile?14:15;
+  // Planning completion status (must be before segChipFromStatus — TDZ if referenced earlier)
+  const hasTransport=segData&&Object.values(segData.transport||{}).some(v=>v&&String(v).length>0);
+  const hasStay=segData?.stay?.name?.length>0;
+  const hasActivities=(segData?.activities?.length||0)>0;
+  const completedCount=[hasTransport,hasStay,hasActivities].filter(Boolean).length;
+  const planStatus=status==="booked"||status==="confirmed"?null:completedCount===0?{label:"NOT STARTED",color:"rgba(232,220,200,0.45)",bg:"transparent",border:"rgba(122,111,93,0.5)"}:completedCount===1?{label:"IN PROGRESS",color:"#C9A04C",bg:"transparent",border:"rgba(201,160,76,0.5)"}:completedCount===2?{label:"MOSTLY DONE",color:"#C9A04C",bg:"transparent",border:"rgba(201,160,76,0.5)"}:{label:"COMPLETE",color:"#5E8B8A",bg:"transparent",border:"rgba(94,139,138,0.5)"};
   const segChipFromStatus=planStatus
     ?{color:planStatus.color,border:`1px solid ${planStatus.border}`,background:planStatus.bg||"transparent"}
     :status==="planning"
@@ -40,12 +46,6 @@ function SegmentRow({segment,phaseId,phaseColor,intelSnippet,isLast,onAskOpenCha
           :status==="changed"
             ?{color:"#FF6B6B",border:"1px solid rgba(255,107,107,0.45)",background:"transparent"}
             :{color:"rgba(232,220,200,0.45)",border:"1px solid rgba(122,111,93,0.5)",background:"transparent"};
-  // Planning completion status
-  const hasTransport=segData&&Object.values(segData.transport||{}).some(v=>v&&String(v).length>0);
-  const hasStay=segData?.stay?.name?.length>0;
-  const hasActivities=(segData?.activities?.length||0)>0;
-  const completedCount=[hasTransport,hasStay,hasActivities].filter(Boolean).length;
-  const planStatus=status==="booked"||status==="confirmed"?null:completedCount===0?{label:"NOT STARTED",color:"rgba(232,220,200,0.45)",bg:"transparent",border:"rgba(122,111,93,0.5)"}:completedCount===1?{label:"IN PROGRESS",color:"#C9A04C",bg:"transparent",border:"rgba(201,160,76,0.5)"}:completedCount===2?{label:"MOSTLY DONE",color:"#C9A04C",bg:"transparent",border:"rgba(201,160,76,0.5)"}:{label:"COMPLETE",color:"#5E8B8A",bg:"transparent",border:"rgba(94,139,138,0.5)"};
   const isCancelled=status==='cancelled';
   const [insight,setInsight]=useState("");
   useEffect(()=>{
