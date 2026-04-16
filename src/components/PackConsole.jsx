@@ -8,7 +8,7 @@ import HelpTip from './HelpTip';
 import { useMobile } from '../hooks/useMobile';
 import { askAI, parseJSON } from '../utils/aiHelpers';
 import { TI } from '../utils/storageHelpers';
-import { BAG_COLORS, DIVE_CYAN, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS } from '../constants/colors';
+import { BAG_COLORS, CULTURE_GOLD, DIVE_CYAN, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS } from '../constants/colors';
 import { CONSOLE_CONTENT_MAX } from '../constants/layout';
 import { buildTripPack, getDefaultPack, mapPackItemsWithVolumes } from '../utils/packHelpers';
 import { formatTripNameDisplay } from '../utils/tripConsoleHelpers';
@@ -31,9 +31,8 @@ function persistPackExpandedCats(obj) {
   } catch (e) {}
 }
 
-const PACK_GOLD = "#D4AF37";
 const PACK_CREAM = "#F5F0E8";
-/** Volume ring arc + center numeral — same hue as Trip console toggle (`rgba(0,229,255,0.6)` / DIVE_CYAN) */
+/** Volume ring arc + center numeral — same hue as Trip console toggle (`rgba(94,139,138,0.6)` / DIVE_CYAN) */
 const PACK_VOLUME_RING = DIVE_CYAN;
 const RING_TRACK = "rgba(255,255,255,0.08)";
 const RING_STROKE_W = 7;
@@ -61,8 +60,8 @@ function CircularRing({ value, max, label, sublabel, color, unit, isMobile }) {
   }, [targetDash]);
   const over = rawRatio > 1;
   const near = rawRatio >= 0.82 && !over;
-  const stroke = over ? "#FF6B6B" : near ? PACK_GOLD : color;
-  const centerFill = over ? "#FF6B6B" : near ? PACK_GOLD : color;
+  const stroke = over ? "#FF6B6B" : near ? CULTURE_GOLD : color;
+  const centerFill = over ? "#FF6B6B" : near ? CULTURE_GOLD : color;
   const filterId = `glow-${String(color).replace("#", "")}`;
   const ticks = [];
   for (let deg = 0; deg < 360; deg += 15) {
@@ -113,13 +112,13 @@ function CircularRing({ value, max, label, sublabel, color, unit, isMobile }) {
             filter: `url(#${filterId})`,
           }}
         />
-        <text x="65" y="58" textAnchor="middle" fill={centerFill} fontSize="22" fontWeight="700" fontFamily="Inter,system-ui,sans-serif">
+        <text x="65" y="58" textAnchor="middle" fill={centerFill} fontSize="22" fontWeight="700" fontFamily="Instrument Sans,system-ui,sans-serif">
           {value}
         </text>
-        <text x="65" y="74" textAnchor="middle" fill="rgba(255,255,255,0.65)" fontSize="11" fontFamily="Inter,system-ui,sans-serif">
+        <text x="65" y="74" textAnchor="middle" fill="rgba(255,255,255,0.65)" fontSize="11" fontFamily="Instrument Sans,system-ui,sans-serif">
           {unit}
         </text>
-        <text x="65" y="90" textAnchor="middle" fill="rgba(255,255,255,0.50)" fontSize="10" fontFamily="Inter,system-ui,sans-serif">
+        <text x="65" y="90" textAnchor="middle" fill="rgba(255,255,255,0.50)" fontSize="10" fontFamily="Instrument Sans,system-ui,sans-serif">
           / {max} {unit}
         </text>
       </svg>
@@ -168,44 +167,44 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
     <>
       <div className="tap-scale" onClick={()=>setEditOpen(true)}
         style={{display:'flex',alignItems:'center',minHeight:56,padding:'0 12px',borderBottom:isLast?'none':'1px solid rgba(248,245,240,0.08)',gap:12,background:'transparent'}}>
-        <button type="button" className="pack-owned-hit" onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:34,height:34,borderRadius:8,border:`1px solid ${PACK_GOLD}`,background:item.owned?'rgba(212,175,55,0.18)':'rgba(212,175,55,0.08)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flexShrink:0}}>
-          {item.owned?<span className="pack-check-mark" style={{fontSize:15,color:PACK_GOLD}} aria-hidden>✓</span>:null}
+        <button type="button" className="pack-owned-hit" onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:34,height:34,borderRadius:8,border:`1px solid ${CULTURE_GOLD}`,background:item.owned?'rgba(201,160,76,0.18)':'rgba(201,160,76,0.08)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flexShrink:0}}>
+          {item.owned?<span className="pack-check-mark" style={{fontSize:15,color:CULTURE_GOLD}} aria-hidden>✓</span>:null}
         </button>
         <div style={{flex:1,minWidth:0,textAlign:'left'}}>
-          <div className={`pack-item-name${item.owned?" pack-item-name--owned":""}`} style={{fontSize:13,fontWeight:500,color:PACK_CREAM,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:'normal',overflow:'visible',textOverflow:'clip',lineHeight:1.3}}>{item.essential&&<span style={{fontSize:9,color:'#c9a04c',marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:'rgba(255,255,255,0.3)',marginRight:2}}>~</span>}{item.name||'Unnamed'}</div>
+          <div className={`pack-item-name${item.owned?" pack-item-name--owned":""}`} style={{fontSize:13,fontWeight:500,color:PACK_CREAM,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",whiteSpace:'normal',overflow:'visible',textOverflow:'clip',lineHeight:1.3}}>{item.essential&&<span style={{fontSize:9,color:'#c9a04c',marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:'rgba(255,255,255,0.3)',marginRight:2}}>~</span>}{item.name||'Unnamed'}</div>
           <div style={{display:'flex',gap:8,marginTop:2}}>
-            {parseFloat(item.weight)>0&&<span style={{fontSize:11,color:'rgba(255,255,255,0.38)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
-            {parseFloat(item.cost)>0&&<span style={{fontSize:11,color:'rgba(201,160,76,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
+            {parseFloat(item.weight)>0&&<span style={{fontSize:11,color:'rgba(255,255,255,0.38)',fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
+            {parseFloat(item.cost)>0&&<span style={{fontSize:11,color:'rgba(201,160,76,0.5)',fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
           </div>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
-          <span style={{fontSize:10,padding:'2px 9px',borderRadius:20,border:`1px solid ${item.owned?PACK_GOLD:'rgba(255,255,255,0.3)'}`,background:item.owned?'rgba(212,175,55,0.18)':'transparent',color:item.owned?PACK_GOLD:'rgba(255,255,255,0.6)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,whiteSpace:'nowrap'}}>{item.owned?'OWNED':'NEED'}</span>
+          <span style={{fontSize:10,padding:'2px 9px',borderRadius:20,border:`1px solid ${item.owned?CULTURE_GOLD:'rgba(255,255,255,0.3)'}`,background:item.owned?'rgba(201,160,76,0.18)':'transparent',color:item.owned?CULTURE_GOLD:'rgba(255,255,255,0.6)',fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:600,whiteSpace:'nowrap'}}>{item.owned?'OWNED':'NEED'}</span>
           <span style={{fontSize:18,color:'rgba(255,255,255,0.18)'}}>›</span>
         </div>
       </div>
       <BottomSheet open={editOpen} onClose={closeEditSheet} zIndex={600}>
         <div style={{padding:'16px 16px 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-          <div style={{fontSize:10,color:`${catColor}99`,letterSpacing:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:8}}>EDIT ITEM</div>
-          <input value={draftName} onChange={e=>setDraftName(e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:9,color:'#FFF',fontSize:14,padding:'10px 13px',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:'none',transition:'border-color 0.2s,box-shadow 0.2s'}} placeholder="Item name" onFocus={e=>{e.target.style.borderColor='rgba(255,159,67,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(255,159,67,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';if(String(item.name??"")!==String(draftName))updateItem(item.id,"name",draftName);}}/>
+          <div style={{fontSize:10,color:`${catColor}99`,letterSpacing:3,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:8}}>EDIT ITEM</div>
+          <input value={draftName} onChange={e=>setDraftName(e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:9,color:'#FFF',fontSize:14,padding:'10px 13px',fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",outline:'none',transition:'border-color 0.2s,box-shadow 0.2s'}} placeholder="Item name" onFocus={e=>{e.target.style.borderColor='rgba(201,160,76,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(201,160,76,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';if(String(item.name??"")!==String(draftName))updateItem(item.id,"name",draftName);}}/>
         </div>
         <div style={{padding:'14px 16px',display:'flex',flexDirection:'column',gap:12,textAlign:'left'}}>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
             {[{label:'WT (lbs)',draft:draftWeight,setDraft:setDraftWeight,field:'weight'},{label:'COST ($)',draft:draftCost,setDraft:setDraftCost,field:'cost'},{label:'VOL (L)',draft:draftVolume,setDraft:setDraftVolume,field:'volume'}].map(({label,draft,setDraft,field})=>(
               <div key={field}>
-                <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{label}</div>
-                <input value={draft} onChange={e=>setDraft(e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:7,color:'#c9a04c',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",transition:'border-color 0.2s,box-shadow 0.2s'}} onFocus={e=>{e.target.style.borderColor='rgba(255,159,67,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(255,159,67,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';if(String(item[field]??"")!==String(draft))updateItem(item.id,field,draft);}}/>
+                <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:5,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:700}}>{label}</div>
+                <input value={draft} onChange={e=>setDraft(e.target.value)} style={{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.30)',borderRadius:7,color:'#c9a04c',fontSize:13,padding:'8px 9px',outline:'none',fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",transition:'border-color 0.2s,box-shadow 0.2s'}} onFocus={e=>{e.target.style.borderColor='rgba(201,160,76,0.65)';e.target.style.boxShadow='0 0 0 2px rgba(201,160,76,0.15)';}} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,0.30)';e.target.style.boxShadow='none';if(String(item[field]??"")!==String(draft))updateItem(item.id,field,draft);}}/>
               </div>
             ))}
           </div>
           <div>
-            <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>BAG</div>
+            <div style={{fontSize:9,color:`${catColor}88`,letterSpacing:2,marginBottom:8,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:700}}>BAG</div>
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-              {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,'bag',b)} style={{padding:'5px 10px',borderRadius:20,border:`1px solid ${item.bag===b?BAG_C[b]||'#FF9F43':'rgba(255,255,255,0.35)'}`,background:item.bag===b?'rgba(255,255,255,0.06)':'transparent',color:item.bag===b?BAG_C[b]||'#FF9F43':'rgba(255,255,255,0.4)',fontSize:11,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:item.bag===b?700:400}}>{b}</button>)}
+              {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,'bag',b)} style={{padding:'5px 10px',borderRadius:20,border:`1px solid ${item.bag===b?BAG_C[b]||'#C9A04C':'rgba(255,255,255,0.35)'}`,background:item.bag===b?'rgba(255,255,255,0.06)':'transparent',color:item.bag===b?BAG_C[b]||'#C9A04C':'rgba(255,255,255,0.4)',fontSize:11,cursor:'pointer',fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:item.bag===b?700:400}}>{b}</button>)}
             </div>
           </div>
           <div style={{display:'flex',gap:8,paddingTop:4}}>
-            <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:'12px',borderRadius:12,border:`1px solid ${item.owned?'rgba(105,240,174,0.4)':'rgba(196,87,30,0.4)'}`,background:item.owned?'rgba(105,240,174,0.08)':'rgba(169,70,29,0.1)',color:item.owned?'#69F0AE':'#FF9F43',fontSize:13,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>{item.owned?'✓ OWNED':'MARK OWNED'}</button>
-            <button onClick={()=>{removeItem(item.id);setEditOpen(false);}} style={{padding:'12px 16px',borderRadius:12,border:'1px solid rgba(255,107,107,0.3)',background:'rgba(255,107,107,0.06)',color:'rgba(255,107,107,0.7)',fontSize:11,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1}}>REMOVE</button>
+            <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:'12px',borderRadius:12,border:`1px solid ${item.owned?'rgba(105,240,174,0.4)':'rgba(196,87,30,0.4)'}`,background:item.owned?'rgba(105,240,174,0.08)':'rgba(169,70,29,0.1)',color:item.owned?'#69F0AE':'#C9A04C',fontSize:13,cursor:'pointer',fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:700}}>{item.owned?'✓ OWNED':'MARK OWNED'}</button>
+            <button onClick={()=>{removeItem(item.id);setEditOpen(false);}} style={{padding:'12px 16px',borderRadius:12,border:'1px solid rgba(255,107,107,0.3)',background:'rgba(255,107,107,0.06)',color:'rgba(255,107,107,0.7)',fontSize:11,cursor:'pointer',fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1}}>REMOVE</button>
           </div>
         </div>
       </BottomSheet>
@@ -216,21 +215,21 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
     <div style={{borderBottom:isLast?"none":"1px solid rgba(255,255,255,0.2)"}}>
       <div style={{display:"flex",alignItems:"center",minHeight:44,borderLeft:`2px solid ${catColor}${open?"88":"33"}`}}>
         <button type="button" className="pack-owned-hit" onClick={e=>{e.stopPropagation();toggleOwned(item.id);}} style={{width:44,height:"100%",minHeight:52,display:"flex",alignItems:"center",justifyContent:"center",background:"none",border:"none",cursor:"pointer",flexShrink:0}}>
-          <div style={{width:20,height:20,borderRadius:4,border:`1px solid ${PACK_GOLD}`,background:item.owned?"rgba(212,175,55,0.18)":"rgba(212,175,55,0.08)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-            {item.owned?<span className="pack-check-mark" style={{fontSize:14,color:PACK_GOLD}} aria-hidden>✓</span>:null}
+          <div style={{width:20,height:20,borderRadius:4,border:`1px solid ${CULTURE_GOLD}`,background:item.owned?"rgba(201,160,76,0.18)":"rgba(201,160,76,0.08)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            {item.owned?<span className="pack-check-mark" style={{fontSize:14,color:CULTURE_GOLD}} aria-hidden>✓</span>:null}
           </div>
         </button>
         <div onClick={()=>setOpen(o=>!o)} style={{flex:1,display:"flex",alignItems:"center",gap:10,padding:"10px 8px 10px 4px",cursor:"pointer",minWidth:0}}>
           <div style={{flex:1,minWidth:0}}>
-            <div className={`pack-item-name${item.owned?" pack-item-name--owned":""}`} style={{fontSize:13,fontWeight:500,color:PACK_CREAM,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2}}>{item.essential&&<span style={{fontSize:9,color:"#c9a04c",marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginRight:2}}>~</span>}{item.name||"Unnamed"}</div>
+            <div className={`pack-item-name${item.owned?" pack-item-name--owned":""}`} style={{fontSize:13,fontWeight:500,color:PACK_CREAM,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2}}>{item.essential&&<span style={{fontSize:9,color:"#c9a04c",marginRight:3}}>★</span>}{item.optional&&<span style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginRight:2}}>~</span>}{item.name||"Unnamed"}</div>
             <div style={{display:"flex",gap:8,alignItems:"center"}}>
-              {parseFloat(item.weight)>0&&<span style={{fontSize:13,color:"rgba(255,255,255,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
-              {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(201,160,76,0.55)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
-              <span style={{fontSize:13,color:(BAG_C[item.bag]||"rgba(255,159,67,0.6)")+"aa",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{item.bag}</span>
+              {parseFloat(item.weight)>0&&<span style={{fontSize:13,color:"rgba(255,255,255,0.45)",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{(parseFloat(item.weight)*wM).toFixed(1)}{unit}</span>}
+              {parseFloat(item.cost)>0&&<span style={{fontSize:13,color:"rgba(201,160,76,0.55)",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>${item.cost}</span>}
+              <span style={{fontSize:13,color:(BAG_C[item.bag]||"rgba(201,160,76,0.6)")+"aa",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{item.bag}</span>
             </div>
           </div>
           <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
-            <div style={{padding:"2px 8px",borderRadius:20,border:`1px solid ${item.owned?PACK_GOLD:"rgba(255,255,255,0.3)"}`,background:item.owned?"rgba(212,175,55,0.18)":"transparent",fontSize:11,fontWeight:600,color:item.owned?PACK_GOLD:"rgba(255,255,255,0.6)",letterSpacing:1,whiteSpace:"nowrap"}}>{item.owned?"OWNED":"NEED"}</div>
+            <div style={{padding:"2px 8px",borderRadius:20,border:`1px solid ${item.owned?CULTURE_GOLD:"rgba(255,255,255,0.3)"}`,background:item.owned?"rgba(201,160,76,0.18)":"transparent",fontSize:11,fontWeight:600,color:item.owned?CULTURE_GOLD:"rgba(255,255,255,0.6)",letterSpacing:1,whiteSpace:"nowrap"}}>{item.owned?"OWNED":"NEED"}</div>
             <div style={{width:16,height:16,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center"}}>
               <span style={{fontSize:10,color:"rgba(255,255,255,0.35)",transform:open?"rotate(180deg)":"none",display:"inline-block",transition:"transform 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>▼</span>
             </div>
@@ -239,18 +238,18 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
       </div>
       {open&&(
         <div style={{padding:"12px 16px 16px 44px",background:"rgba(0,0,0,0.25)",borderTop:`1px solid ${catColor}15`,animation:"slideOpen 0.40s cubic-bezier(0.25,0.46,0.45,0.94)",display:"flex",flexDirection:"column",gap:10}}>
-          <input value={draftName} onChange={e=>setDraftName(e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:7,color:"#FFF",fontSize:12,padding:"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} placeholder="Item name" onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";if(String(item.name??"")!==String(draftName))updateItem(item.id,"name",draftName);}}/>
+          <input value={draftName} onChange={e=>setDraftName(e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:7,color:"#FFF",fontSize:12,padding:"8px 10px",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} placeholder="Item name" onFocus={e=>{e.target.style.borderColor="rgba(201,160,76,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(201,160,76,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";if(String(item.name??"")!==String(draftName))updateItem(item.id,"name",draftName);}}/>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
             {[{label:"WT (lbs)",draft:draftWeight,setDraft:setDraftWeight,field:"weight"},{label:"COST ($)",draft:draftCost,setDraft:setDraftCost,field:"cost"},{label:"VOL (L)",draft:draftVolume,setDraft:setDraftVolume,field:"volume"}].map(({label,draft,setDraft,field})=>(
-              <div key={field}><div style={{fontSize:9,color:"rgba(255,159,67,0.65)",letterSpacing:1,marginBottom:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{label}</div><input value={draft} onChange={e=>setDraft(e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:5,color:"#c9a04c",fontSize:12,padding:"6px 8px",outline:"none",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onFocus={e=>{e.target.style.borderColor="rgba(255,159,67,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(255,159,67,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";if(String(item[field]??"")!==String(draft))updateItem(item.id,field,draft);}}/></div>
+              <div key={field}><div style={{fontSize:9,color:"rgba(201,160,76,0.65)",letterSpacing:1,marginBottom:3,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{label}</div><input value={draft} onChange={e=>setDraft(e.target.value)} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.30)",borderRadius:5,color:"#c9a04c",fontSize:12,padding:"6px 8px",outline:"none",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",width:"100%",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}} onFocus={e=>{e.target.style.borderColor="rgba(201,160,76,0.65)";e.target.style.boxShadow="0 0 0 2px rgba(201,160,76,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.30)";e.target.style.boxShadow="none";if(String(item[field]??"")!==String(draft))updateItem(item.id,field,draft);}}/></div>
             ))}
           </div>
           <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-            {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:"4px 8px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.35)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#FF9F43":"rgba(255,255,255,0.45)",fontSize:10,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:item.bag===b?700:400}}>{b}</button>)}
+            {BAGS.map(b=><button key={b} onClick={()=>updateItem(item.id,"bag",b)} style={{padding:"4px 8px",borderRadius:8,border:`1px solid ${item.bag===b?BAG_C[b]||"#C9A04C":"rgba(255,255,255,0.35)"}`,background:item.bag===b?"rgba(255,255,255,0.07)":"transparent",color:item.bag===b?BAG_C[b]||"#C9A04C":"rgba(255,255,255,0.45)",fontSize:10,cursor:"pointer",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:item.bag===b?700:400}}>{b}</button>)}
           </div>
           <div style={{display:"flex",gap:8}}>
-            <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"9px 8px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#FF9F43",fontSize:13,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap"}}>{item.owned?"✓ OWNED":"MARK OWNED"}</button>
-            <button onClick={()=>removeItem(item.id)} style={{padding:"8px 12px",borderRadius:7,border:"1px solid rgba(255,107,107,0.3)",background:"rgba(255,107,107,0.06)",color:"rgba(255,107,107,0.7)",fontSize:13,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>✕</button>
+            <button onClick={()=>toggleOwned(item.id)} style={{flex:1,padding:"9px 8px",borderRadius:7,border:`1px solid ${item.owned?"rgba(105,240,174,0.4)":"rgba(196,87,30,0.4)"}`,background:item.owned?"rgba(105,240,174,0.08)":"rgba(169,70,29,0.1)",color:item.owned?"#69F0AE":"#C9A04C",fontSize:13,cursor:"pointer",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap"}}>{item.owned?"✓ OWNED":"MARK OWNED"}</button>
+            <button onClick={()=>removeItem(item.id)} style={{padding:"8px 12px",borderRadius:7,border:"1px solid rgba(255,107,107,0.3)",background:"rgba(255,107,107,0.06)",color:"rgba(255,107,107,0.7)",fontSize:13,cursor:"pointer",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:700}}>✕</button>
           </div>
         </div>
       )}
@@ -336,7 +335,7 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
             fontWeight: 600,
             color: "#F8F5F0",
             letterSpacing: "0.06em",
-            fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+            fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif",
           }}
         >
           {cat.label.toUpperCase()}
@@ -344,7 +343,7 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
         <span style={{ fontSize: 14, fontWeight: 700, color: cat.color }}>{pct}%</span>
         <span style={{ fontSize: 14, color: "rgba(255,255,255,0.30)", marginLeft: 6 }}>›</span>
       </div>
-      <div style={{ display: "flex", gap: 12, fontSize: 14, color: "rgba(255,255,255,0.45)", fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>
+      <div style={{ display: "flex", gap: 12, fontSize: 14, color: "rgba(255,255,255,0.45)", fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif" }}>
         <span>{catItems.length} items</span>
         <span>·</span>
         <span style={{ color: cat.color }}>
@@ -399,7 +398,7 @@ function CategoryDetailPage({ cat, onBack, catItems, isMobile, rowProps, addItem
           style={{
             background: "none",
             border: "none",
-            color: "#FF9F43",
+            color: "#C9A04C",
             fontSize: 22,
             cursor: "pointer",
             padding: "0 8px 0 0",
@@ -413,16 +412,16 @@ function CategoryDetailPage({ cat, onBack, catItems, isMobile, rowProps, addItem
           }}
         >
           ‹{" "}
-          <span style={{ fontSize: 13, fontFamily: "'Inter',system-ui,-apple-system,sans-serif", letterSpacing: 2, fontWeight: 700, opacity: 0.9 }}>PACK LIST</span>
+          <span style={{ fontSize: 13, fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif", letterSpacing: 2, fontWeight: 700, opacity: 0.9 }}>PACK LIST</span>
         </button>
         <span style={{ fontSize: 18 }}>{cat.icon}</span>
-        <span style={{ flex: 1, fontSize: 16, fontWeight: 600, color: "#FFFFFF", fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>{cat.label}</span>
-        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>
+        <span style={{ flex: 1, fontSize: 16, fontWeight: 600, color: "#FFFFFF", fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif" }}>{cat.label}</span>
+        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif" }}>
           {ownedInCat}/{catItems.length}
         </span>
       </div>
       <div style={{ display: "flex", gap: 16, padding: isMobile ? "10px 12px" : "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", flexShrink: 0 }}>
-        <span style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>
+        <span style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif" }}>
           <span style={{ color: cat.color, fontWeight: 700 }}>
             {catW.toFixed(1)}
             {unit}
@@ -430,7 +429,7 @@ function CategoryDetailPage({ cat, onBack, catItems, isMobile, rowProps, addItem
           total weight
         </span>
         {catCost > 0 && (
-          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", fontFamily: "'Inter',system-ui,-apple-system,sans-serif" }}>
+          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif" }}>
             <span style={{ color: "#c9a04c", fontWeight: 700 }}>${catCost.toLocaleString()}</span> total cost
           </span>
         )}
@@ -441,7 +440,7 @@ function CategoryDetailPage({ cat, onBack, catItems, isMobile, rowProps, addItem
         ))}
         {catItems.length === 0 && (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
-            <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 14, fontStyle: "italic", color: "rgba(255,159,67,0.45)" }}>No items yet. Add one below.</div>
+            <div style={{ fontFamily: "'Fraunces',serif", fontSize: 14, fontStyle: "italic", color: "rgba(201,160,76,0.45)" }}>No items yet. Add one below.</div>
           </div>
         )}
         <div style={{ marginTop: 12, display: "flex", justifyContent: "center" }}>
@@ -455,7 +454,7 @@ function CategoryDetailPage({ cat, onBack, catItems, isMobile, rowProps, addItem
               color: `${cat.color}88`,
               fontSize: 12,
               cursor: "pointer",
-              fontFamily: "'Inter',system-ui,-apple-system,sans-serif",
+              fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif",
               letterSpacing: 1.5,
               fontWeight: 700,
             }}
@@ -483,7 +482,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const ALL_CATS=[
     {id:"clothes",label:"Clothes",icon:"👕",color:"#c9a04c"},
     {id:"tech",label:"Tech",icon:"💻",color:"#C9A04C"},
-    {id:"creator",label:"Creator",icon:"🎥",color:"#FF9F43"},
+    {id:"creator",label:"Creator",icon:"🎥",color:"#C9A04C"},
     {id:"dive",label:"Dive",icon:"🤿",color:"#B8A078"},
     {id:"health",label:"Health",icon:"🏥",color:"#69F0AE"},
     {id:"travel",label:"Travel",icon:"🧳",color:"#55EFC4"},
@@ -491,7 +490,7 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
     {id:"adventure",label:"Adventure",icon:"🥾",color:"#55EFC4"},
     {id:"moto",label:"Moto",icon:"🏍️",color:"#FF6B6B"},
     {id:"safari",label:"Safari",icon:"🦁",color:"#c9a04c"},
-    {id:"work",label:"Work",icon:"💼",color:"#A29BFE"},
+    {id:"work",label:"Work",icon:"💼",color:"#7A6F5D"},
   ];
   const pp=tripData.packProfile||null;
   const [enabledCats,setEnabledCats]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_cats_v1");if(s)return JSON.parse(s);}catch(e){}return null;});
@@ -598,7 +597,7 @@ Return ONLY a JSON array:
   const packMobileNavSpacer=isMobile?"calc(88px + env(safe-area-inset-bottom))":"0px";
 
   return(
-    <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",background:"transparent",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
+    <div style={{fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",background:"transparent",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
       <WorldMapBackground phases={tripData?.phases||[]} console="pack" departureCity={tripData?.departureCity||tripData?.city||""}/>
       <div style={{position:'relative',zIndex:1,display:'flex',flexDirection:'column',flex:1,minHeight:'100vh',background:'transparent'}}>
       {/* Header */}
@@ -607,29 +606,29 @@ Return ONLY a JSON array:
       <div style={isMobile?{padding:'0 12px',width:'100%',boxSizing:'border-box'}:{maxWidth:CONSOLE_CONTENT_MAX,margin:'0 auto',padding:'0 24px',width:'100%',boxSizing:'border-box'}}>
       {/* Console switcher (inside maxWidth so it aligns with rings / tabs) */}
       {!isFullscreen&&!isMobile&&<div style={{display:"flex",border:"1px solid rgba(255,255,255,0.10)",borderTop:"1px solid rgba(255,255,255,0.18)",background:"rgba(10,7,5,0.45)",backdropFilter:"blur(14px)",WebkitBackdropFilter:"blur(14px)",flexShrink:0}}>
-        <div onClick={onExpedition} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",borderRight:"1px solid rgba(196,87,30,0.2)",opacity:0.55}} onMouseOver={e=>{e.currentTarget.style.background="rgba(0,229,255,0.06)";e.currentTarget.style.opacity="1";}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.opacity="0.55";}}>
-          <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(0,229,255,0.4)"}}/>
-          <span style={{fontSize:isMobile?11:13,fontWeight:700,color:"rgba(0,229,255,0.6)",letterSpacing:isMobile?0:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
+        <div onClick={onExpedition} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",borderRight:"1px solid rgba(196,87,30,0.2)",opacity:0.55}} onMouseOver={e=>{e.currentTarget.style.background="rgba(94,139,138,0.06)";e.currentTarget.style.opacity="1";}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.opacity="0.55";}}>
+          <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(94,139,138,0.4)"}}/>
+          <span style={{fontSize:isMobile?11:13,fontWeight:700,color:"rgba(94,139,138,0.6)",letterSpacing:isMobile?0:1,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
         </div>
-        <div style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,background:"rgba(196,87,30,0.06)",borderBottom:"2px solid #FF9F43"}}>
-          <div style={{width:5,height:5,borderRadius:"50%",background:"#FF9F43",boxShadow:"0 0 6px rgba(196,87,30,0.8)",animation:"launchPulse 2.5s ease-in-out infinite"}}/>
-          <span style={{fontSize:isMobile?11:13,fontWeight:700,color:"#FF9F43",letterSpacing:isMobile?0:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>PACK CONSOLE</span>
+        <div style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,background:"rgba(196,87,30,0.06)",borderBottom:"2px solid #C9A04C"}}>
+          <div style={{width:5,height:5,borderRadius:"50%",background:"#C9A04C",boxShadow:"0 0 6px rgba(196,87,30,0.8)",animation:"launchPulse 2.5s ease-in-out infinite"}}/>
+          <span style={{fontSize:isMobile?11:13,fontWeight:700,color:"#C9A04C",letterSpacing:isMobile?0:1,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>PACK CONSOLE</span>
         </div>
       </div>}
       {/* Hero rings */}
       {!isFullscreen&&<div style={{background:'rgba(10,7,5,0.55)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)'}}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'center',padding:isMobile?'10px 12px 8px':'10px 0 8px',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-          <span style={{fontSize:10,letterSpacing:2,fontWeight:700,color:'rgba(255,159,67,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>WEIGHT & VOLUME</span>
+          <span style={{fontSize:10,letterSpacing:2,fontWeight:700,color:'rgba(201,160,76,0.5)',fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>WEIGHT & VOLUME</span>
         </div>
-        <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',position:'relative',boxShadow:'inset 0 1px 0 rgba(212,175,55,0.12),inset 1px 0 0 rgba(212,175,55,0.08),inset -1px 0 0 rgba(212,175,55,0.08),inset 0 -1px 0 rgba(212,175,55,0.05)'}}>
+        <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.08)',position:'relative',boxShadow:'inset 0 1px 0 rgba(201,160,76,0.12),inset 1px 0 0 rgba(201,160,76,0.08),inset -1px 0 0 rgba(201,160,76,0.08),inset 0 -1px 0 rgba(201,160,76,0.05)'}}>
           <div style={{position:'relative',flex:1,minHeight:0}}>
             <div onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{position:'absolute',top:8,left:8,zIndex:3,display:'flex',borderRadius:20,border:'1px solid rgba(255,255,255,0.25)',overflow:'hidden',cursor:'pointer',background:'rgba(10,8,6,0.75)'}}>
-              {["lbs","kg"].map(u=><div key={u} style={{padding:'3px 10px',fontSize:9,fontWeight:700,background:unit===u?'rgba(212,175,55,0.12)':'transparent',color:unit===u?PACK_GOLD:'rgba(255,255,255,0.45)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1,borderLeft:u==="kg"?'1px solid rgba(255,255,255,0.12)':'none'}}>{u.toUpperCase()}</div>)}
+              {["lbs","kg"].map(u=><div key={u} style={{padding:'3px 10px',fontSize:9,fontWeight:700,background:unit===u?'rgba(201,160,76,0.12)':'transparent',color:unit===u?CULTURE_GOLD:'rgba(255,255,255,0.45)',fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",letterSpacing:1,borderLeft:u==="kg"?'1px solid rgba(255,255,255,0.12)':'none'}}>{u.toUpperCase()}</div>)}
             </div>
             <div style={{position:'absolute',top:8,right:10,zIndex:2,pointerEvents:'auto'}}>
               <HelpTip compact noLeadingMargin desktopOnly text="Your primary bag target — 15 lbs keeps you carry-on compliant on most airlines worldwide" />
             </div>
-            <CircularRing value={parseFloat((bpW*wM).toFixed(1))} max={wLim} label="MAIN BAG" sublabel="carry-on limit" color={PACK_GOLD} unit={unit} isMobile={isMobile}/>
+            <CircularRing value={parseFloat((bpW*wM).toFixed(1))} max={wLim} label="MAIN BAG" sublabel="carry-on limit" color={CULTURE_GOLD} unit={unit} isMobile={isMobile}/>
           </div>
           <div style={{width:'1px',background:'rgba(255,255,255,0.06)',flexShrink:0}}/>
           <div style={{position:'relative',flex:1,minHeight:0}}>
@@ -642,14 +641,14 @@ Return ONLY a JSON array:
         {/* 4 mini stats — gold values, glass depth aligned with ring row */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,width:"100%",padding:isMobile?'10px 12px':'10px 0',background:'rgba(10,7,5,0.45)',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)'}}>
           {[{label:"PERSONAL BAG",value:(gbW*wM).toFixed(1)+unit},{label:"GEAR READY",value:gearPct+"%"},{label:"STILL NEED",value:"$"+Math.round(neededCost).toLocaleString()},{label:"TOTAL ITEMS",value:items.length}].map(s=>(
-            <div key={s.label} className={s.label==="GEAR READY"&&gearPct>=100?"pack-gear-ready-seal--full":undefined} style={{background:"rgba(0,0,0,0.22)",border:"1px solid rgba(212,175,55,0.22)",borderTop:"1px solid rgba(212,175,55,0.35)",borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:"inset 0 1px 0 rgba(255,255,255,0.04)"}}>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:3,marginBottom:2,flexWrap:"wrap",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.2}}>
+            <div key={s.label} className={s.label==="GEAR READY"&&gearPct>=100?"pack-gear-ready-seal--full":undefined} style={{background:"rgba(0,0,0,0.22)",border:"1px solid rgba(201,160,76,0.22)",borderTop:"1px solid rgba(201,160,76,0.35)",borderRadius:7,padding:"7px 8px",textAlign:"center",boxShadow:"inset 0 1px 0 rgba(255,255,255,0.04)"}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:3,marginBottom:2,flexWrap:"wrap",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",lineHeight:1.2}}>
                 <span style={{fontSize:9,fontWeight:700,color:"rgba(255,255,255,0.55)",letterSpacing:'0.06em'}}>{s.label}</span>
                 {s.label==="PERSONAL BAG"&&<HelpTip compact noLeadingMargin desktopOnly text="Your personal item — the under-seat bag that travels separately from your main carry-on" />}
                 {s.label==="GEAR READY"&&<HelpTip compact noLeadingMargin desktopOnly text="How much of your kit you already own — everything else becomes your pre-departure shopping list" />}
                 {s.label==="STILL NEED"&&<HelpTip compact noLeadingMargin desktopOnly text="Estimated spend to complete your pack — built from your gear list and what's still unpurchased" />}
               </div>
-              <div style={{fontSize:isMobile?13:18,fontWeight:700,color:PACK_GOLD,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.value}</div>
+              <div style={{fontSize:isMobile?13:18,fontWeight:700,color:CULTURE_GOLD,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{s.value}</div>
             </div>
           ))}
         </div>
@@ -659,26 +658,26 @@ Return ONLY a JSON array:
         const getClimateAdvisory=(climate,season)=>{const map={'tropical-hot':{dry:{label:'Tropical',advice:'Pack light — reef-safe sunscreen essential'},wet:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'},default:{label:'Tropical',advice:'Pack light, breathable fabrics only'}},'tropical-wet':{default:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'}},'temperate-cool':{default:{label:'Temperate',advice:'Layer up — mornings cold, afternoons warm'}},'cold-alpine':{default:{label:'Alpine Cold',advice:'Warm layers essential — windproof shell critical'}},'mediterranean':{default:{label:'Mediterranean',advice:'Light clothing + one smart dinner outfit'}},'desert-hot':{default:{label:'Desert',advice:'UV protection critical — cover up at midday'}},'varied':{default:{label:'Mixed Climate',advice:'Pack for range — layers are your friend'}}};return map[climate]?.[season]||map[climate]?.default||{label:'Varied',advice:'Check conditions per destination'};};
         const ca=pp.climate?getClimateAdvisory(pp.climate,pp.season):null;
         const builtForPrimary=`✦ Built for: ${formatTripNameDisplay(tripData.tripName||"Your Trip")} · ${totalNights}n · ${pp.tripType}${coupleMode?" · for 2":""}${ca?` · 🌡 ${ca.label}${pp.tempRange?" · "+pp.tempRange:""}`:""}`;
-        return <div style={{padding:isMobile?"6px 12px":"6px 0",background:"rgba(255,159,67,0.04)",borderBottom:"1px solid rgba(255,159,67,0.12)",overflow:"hidden"}}>
+        return <div style={{padding:isMobile?"6px 12px":"6px 0",background:"rgba(201,160,76,0.04)",borderBottom:"1px solid rgba(201,160,76,0.12)",overflow:"hidden"}}>
           <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",fontWeight:400,color:"rgba(248,245,240,0.70)",lineHeight:1.55,letterSpacing:"0.02em"}}>{builtForPrimary}</div>
           {ca?.advice&&<div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",fontWeight:400,color:"rgba(248,245,240,0.45)",lineHeight:1.5,marginTop:6}}>{ca.advice}</div>}
         </div>;
       })()}
       {/* Tab bar — glass strip to match dashboard layers (was near-opaque solid) */}
       <div style={{display:"flex",alignItems:"stretch",background:"rgba(10,7,5,0.45)",backdropFilter:"blur(14px)",WebkitBackdropFilter:"blur(14px)",borderBottom:"1px solid rgba(196,87,30,0.14)",position:"relative"}}>
-        {packSaveFlash&&<div style={{position:"absolute",right:12,top:4,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"#69F0AE",opacity:0.80,letterSpacing:1,zIndex:2,pointerEvents:"none",transition:"opacity 0.40s cubic-bezier(0.25,0.46,0.45,0.94)"}}>&#10003; saved</div>}
-        <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(255,159,67,0.15)":"rgba(255,159,67,0.06)",border:"none",borderRight:"1px solid rgba(196,87,30,0.3)",cursor:"pointer",flexShrink:0,color:"#c9a04c"}}>
+        {packSaveFlash&&<div style={{position:"absolute",right:12,top:4,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontSize:13,color:"#69F0AE",opacity:0.80,letterSpacing:1,zIndex:2,pointerEvents:"none",transition:"opacity 0.40s cubic-bezier(0.25,0.46,0.45,0.94)"}}>&#10003; saved</div>}
+        <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(201,160,76,0.15)":"rgba(201,160,76,0.06)",border:"none",borderRight:"1px solid rgba(196,87,30,0.3)",cursor:"pointer",flexShrink:0,color:"#c9a04c"}}>
           <span style={{fontSize:isMobile?12:15,lineHeight:1}}>{isFullscreen?"⊡":"⛶"}</span>
           <span style={{fontSize:isMobile?9:13,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
         </button>
         {[{id:"pack",label:isMobile?"PACK":"PACK LIST",emoji:"🎒"},{id:"tailor",label:"TAILOR",emoji:"✦"},{id:"weight",label:"PACK INDEX",emoji:"⚖️"}].map(t=>(
-          <button key={t.id} onClick={()=>setPackTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #FF9F43":"2px solid transparent",color:packTab===t.id?"#FF9F43":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",position:"relative"}}>
+          <button key={t.id} onClick={()=>setPackTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,padding:"10px 4px",background:"none",border:"none",borderBottom:packTab===t.id?"2px solid #C9A04C":"2px solid transparent",color:packTab===t.id?"#C9A04C":"rgba(255,255,255,0.55)",cursor:"pointer",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",position:"relative"}}>
             {t.emoji&&<span style={{fontSize:isMobile?12:15,lineHeight:1}}>{t.emoji}</span>}
             <span style={{fontSize:isMobile?9:13,letterSpacing:isMobile?1:1,fontWeight:700,whiteSpace:"nowrap",display:"inline-flex",alignItems:"center",justifyContent:"center",gap:3}}>
               {t.label}
               {t.id==="tailor"&&<HelpTip compact noLeadingMargin text="Tell your Co-Architect about your trip and get a personalized gear list built around your exact destinations and activities" />}
             </span>
-            {t.id==="tailor"&&suggestions.length>0&&<div style={{position:"absolute",top:6,right:"20%",width:7,height:7,borderRadius:"50%",background:PACK_GOLD,boxShadow:`0 0 8px ${PACK_GOLD}`}}/>}
+            {t.id==="tailor"&&suggestions.length>0&&<div style={{position:"absolute",top:6,right:"20%",width:7,height:7,borderRadius:"50%",background:CULTURE_GOLD,boxShadow:`0 0 8px ${CULTURE_GOLD}`}}/>}
           </button>
         ))}
       </div>
@@ -686,7 +685,7 @@ Return ONLY a JSON array:
       {packTab==="pack"&&packView==="dashboard"&&<div style={{display:"flex",padding:isMobile?"8px 12px":"8px 0",borderBottom:"1px solid rgba(169,70,29,0.2)",background:"transparent",flexShrink:0}}>
         <button onClick={()=>setFilterCat(f=>f==="needtobuy"?"all":"needtobuy")} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 16px",borderRadius:20,border:"1px solid "+(filterCat==="needtobuy"?"rgba(255,107,107,0.85)":"rgba(255,107,107,0.25)"),background:filterCat==="needtobuy"?"rgba(255,107,107,0.18)":"transparent",cursor:"pointer",whiteSpace:"nowrap",minHeight:34,boxShadow:filterCat==="needtobuy"?"0 0 10px rgba(255,107,107,0.30)":"none",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
           <span style={{fontSize:13}}>{filterCat==="needtobuy"?"←":"🛒"}</span>
-          <span style={{fontSize:11,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.6)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:filterCat==="needtobuy"?700:400,letterSpacing:1}}>{filterCat==="needtobuy"?"ALL ITEMS":"NEED TO BUY"}</span>
+          <span style={{fontSize:11,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.6)",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:filterCat==="needtobuy"?700:400,letterSpacing:1}}>{filterCat==="needtobuy"?"ALL ITEMS":"NEED TO BUY"}</span>
         </button>
       </div>}
       {/* Main content — same column as Trip Console (CONSOLE_CONTENT_MAX) */}
@@ -705,34 +704,34 @@ Return ONLY a JSON array:
             return(<div>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,padding:"10px 14px",background:"rgba(255,107,107,0.06)",border:"1px solid rgba(255,107,107,0.22)",borderRadius:10}}>
                 <div style={{minWidth:0}}>
-                  <div style={{fontSize:13,color:"rgba(255,107,107,0.85)",letterSpacing:2,fontWeight:700,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>🛒 NEED TO BUY</div>
+                  <div style={{fontSize:13,color:"rgba(255,107,107,0.85)",letterSpacing:2,fontWeight:700,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>🛒 NEED TO BUY</div>
                   <div style={{fontSize:12,color:"rgba(255,255,255,0.45)",marginTop:2}}>{unowned.length} item{unowned.length!==1?"s":""} · sorted by cost</div>
                 </div>
                 <div style={{textAlign:"right",flexShrink:0}}>
-                  <div style={{fontSize:20,fontWeight:900,color:"#FF6B6B",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${total.toLocaleString()}</div>
+                  <div style={{fontSize:20,fontWeight:900,color:"#FF6B6B",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>${total.toLocaleString()}</div>
                   <div style={{fontSize:10,color:"rgba(255,107,107,0.55)",letterSpacing:1,whiteSpace:"nowrap"}}>TOTAL TO SPEND</div>
                 </div>
               </div>
-              {unowned.length===0?(<div style={{textAlign:"center",padding:"40px 20px"}}><div style={{fontSize:28,marginBottom:12}}>✅</div><div style={{fontFamily:"'Playfair Display',serif",fontSize:16,fontStyle:"italic",color:"rgba(105,240,174,0.75)"}}>You own everything!</div></div>):(
+              {unowned.length===0?(<div style={{textAlign:"center",padding:"40px 20px"}}><div style={{fontSize:28,marginBottom:12}}>✅</div><div style={{fontFamily:"'Fraunces',serif",fontSize:16,fontStyle:"italic",color:"rgba(105,240,174,0.75)"}}>You own everything!</div></div>):(
                 <div style={{display:"flex",flexDirection:"column",gap:0,borderRadius:12,overflow:"hidden",border:"1px solid rgba(255,255,255,0.07)"}}>
                   {unowned.map((item,i)=>{
-                    const c=CAT_COLORS_NTB[item.cat]||"#FF9F43";
+                    const c=CAT_COLORS_NTB[item.cat]||"#C9A04C";
                     const running=unowned.slice(0,i+1).reduce((s,x)=>s+(parseFloat(x.cost)||0),0);
                     return(<div key={item.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:i%2===0?"rgba(18,5,0,0.9)":"rgba(10,3,0,0.9)",borderBottom:i<unowned.length-1?"1px solid rgba(255,255,255,0.06)":"none",borderLeft:`3px solid ${c}`}}>
                       <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontSize:13,fontWeight:600,color:"#FFF",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>{item.name}</div>
-                        <div style={{fontSize:10,color:`${c}99`,letterSpacing:1,marginTop:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{item.cat?.toUpperCase()} · {item.bag}</div>
+                        <div style={{fontSize:13,fontWeight:600,color:"#FFF",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>{item.name}</div>
+                        <div style={{fontSize:10,color:`${c}99`,letterSpacing:1,marginTop:2,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{item.cat?.toUpperCase()} · {item.bag}</div>
                       </div>
                       <div style={{textAlign:"right",flexShrink:0}}>
-                        <div style={{fontSize:14,fontWeight:700,color:"#c9a04c",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${parseFloat(item.cost||0).toLocaleString()}</div>
-                        <div style={{fontSize:10,color:"rgba(255,255,255,0.28)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>running: ${running.toLocaleString()}</div>
+                        <div style={{fontSize:14,fontWeight:700,color:"#c9a04c",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>${parseFloat(item.cost||0).toLocaleString()}</div>
+                        <div style={{fontSize:10,color:"rgba(255,255,255,0.28)",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>running: ${running.toLocaleString()}</div>
                       </div>
-                      <button onClick={()=>toggleOwned(item.id)} style={{padding:"5px 10px",borderRadius:6,border:"1px solid rgba(105,240,174,0.3)",background:"rgba(105,240,174,0.06)",color:"#69F0AE",fontSize:11,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>GOT IT</button>
+                      <button onClick={()=>toggleOwned(item.id)} style={{padding:"5px 10px",borderRadius:6,border:"1px solid rgba(105,240,174,0.3)",background:"rgba(105,240,174,0.06)",color:"#69F0AE",fontSize:11,cursor:"pointer",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>GOT IT</button>
                     </div>);
                   })}
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 14px",background:"rgba(255,107,107,0.08)",borderTop:"1px solid rgba(255,107,107,0.2)"}}>
-                    <div style={{fontSize:11,color:"rgba(255,107,107,0.75)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>TOTAL TO BUY</div>
-                    <div style={{fontSize:20,fontWeight:900,color:"#FF6B6B",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>${total.toLocaleString()}</div>
+                    <div style={{fontSize:11,color:"rgba(255,107,107,0.75)",letterSpacing:2,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:700}}>TOTAL TO BUY</div>
+                    <div style={{fontSize:20,fontWeight:900,color:"#FF6B6B",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>${total.toLocaleString()}</div>
                   </div>
                 </div>
               )}
@@ -742,12 +741,12 @@ Return ONLY a JSON array:
               {CATS.map((cat,i)=><CatCard key={cat.id} cat={cat} idx={i} isMobile={isMobile} itemsForCat={itemsForCat} wM={wM} unit={unit} onSelectCategory={selectCategory}/>)}
             </div>
             {pp&&<>
-              <button onClick={()=>setShowAddCats(o=>!o)} style={{width:"100%",padding:"10px 14px",marginTop:4,borderRadius:10,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.02)",color:"rgba(255,255,255,0.4)",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",cursor:"pointer",letterSpacing:1,textAlign:"center",minHeight:40}}>＋ Add gear categories</button>
-              {showAddCats&&<div style={{marginTop:8,padding:"10px 14px",background:"rgba(0,8,20,0.6)",border:"1px solid rgba(255,159,67,0.2)",borderRadius:10}}>
-                <div style={{fontSize:10,color:"rgba(255,159,67,0.7)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:8}}>HIDDEN CATEGORIES</div>
+              <button onClick={()=>setShowAddCats(o=>!o)} style={{width:"100%",padding:"10px 14px",marginTop:4,borderRadius:10,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.02)",color:"rgba(255,255,255,0.4)",fontSize:12,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",cursor:"pointer",letterSpacing:1,textAlign:"center",minHeight:40}}>＋ Add gear categories</button>
+              {showAddCats&&<div style={{marginTop:8,padding:"10px 14px",background:"rgba(10,7,5,0.6)",border:"1px solid rgba(201,160,76,0.2)",borderRadius:10}}>
+                <div style={{fontSize:10,color:"rgba(201,160,76,0.7)",letterSpacing:2,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:8}}>HIDDEN CATEGORIES</div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
                   {ALL_CATS.filter(c=>!CATS.find(v=>v.id===c.id)).map(c=>(
-                    <button key={c.id} onClick={()=>{const next=[...CATS.map(x=>x.id),c.id];setEnabledCats(next);}} style={{padding:"6px 12px",borderRadius:16,border:"1px solid rgba(255,255,255,0.15)",background:"transparent",color:"rgba(255,255,255,0.5)",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",cursor:"pointer",display:"flex",alignItems:"center",gap:5,minHeight:32}}>
+                    <button key={c.id} onClick={()=>{const next=[...CATS.map(x=>x.id),c.id];setEnabledCats(next);}} style={{padding:"6px 12px",borderRadius:16,border:"1px solid rgba(255,255,255,0.15)",background:"transparent",color:"rgba(255,255,255,0.5)",fontSize:12,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",cursor:"pointer",display:"flex",alignItems:"center",gap:5,minHeight:32}}>
                       <span>{c.icon}</span>{c.label}
                     </button>
                   ))}
@@ -757,37 +756,37 @@ Return ONLY a JSON array:
             </>}
           </>}
           <div style={{textAlign:"center",marginTop:8,padding:"8px 0",borderTop:"1px solid rgba(169,70,29,0.12)"}}>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(201,160,76,0.35)",letterSpacing:2}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontWeight:100,fontStyle:"italic",color:"rgba(201,160,76,0.35)",letterSpacing:2}}>1 bag. travel light. · {(bpW*wM).toFixed(1)}{unit}</div>
           </div>
         </div>
       )}
       {packTab==="tailor"&&(
         <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 0 ${packMobileScrollBottom}`:"12px 0 32px",boxSizing:"border-box",width:"100%"}}>
-          <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.12),rgba(201,160,76,0.04))",border:"1px solid rgba(212,175,55,0.28)",borderRadius:12,marginBottom:16,overflow:"hidden"}}>
+          <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.12),rgba(201,160,76,0.04))",border:"1px solid rgba(201,160,76,0.28)",borderRadius:12,marginBottom:16,overflow:"hidden"}}>
             <button onClick={()=>{const next=!packBriefCollapsed;setPackBriefCollapsed(next);if(next)try{localStorage.setItem(briefKey,"1");}catch(e){}}} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"none",border:"none",cursor:"pointer"}}>
-              <div style={{fontFamily:"'Fraunces',serif",fontSize:18,color:PACK_GOLD,letterSpacing:"0.08em",fontWeight:600}}>✦ CO-ARCHITECT PACK BRIEF</div>
-              <div style={{fontSize:10,color:"rgba(255,255,255,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{packBriefCollapsed?"▼":"▲"}</div>
+              <div style={{fontFamily:"'Fraunces',serif",fontSize:18,color:CULTURE_GOLD,letterSpacing:"0.08em",fontWeight:600}}>✦ CO-ARCHITECT PACK BRIEF</div>
+              <div style={{fontSize:10,color:"rgba(255,255,255,0.45)",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{packBriefCollapsed?"▼":"▲"}</div>
             </button>
             <div style={{maxHeight:packBriefCollapsed?0:400,overflow:"hidden",transition:"max-height 0.28s ease-out"}}>
               <div style={{padding:"0 12px 12px"}}>
-                <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:400,color:"rgba(255,248,235,0.85)",lineHeight:1.6,marginBottom:10}}>{getPackBrief(pp,tripData)||`Reviewing your pack for a ${goalLabel} trip across ${countries.slice(0,3).join(", ")}${countries.length>3?" +"+(countries.length-3)+" more":""} — ${totalNights} nights.`}</div>
-                <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:13,color:"rgba(255,255,255,0.5)",marginBottom:8}}>Built for: {formatTripNameDisplay(tripData?.tripName||"your expedition")} · {totalNights} nights · {pp?.tripType||goalLabel} · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
-                <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{tripTypes.map(t=><span key={t} style={{fontSize:11,color:"rgba(255,159,67,0.85)",background:"rgba(169,70,29,0.18)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:10,padding:"3px 9px",letterSpacing:1,fontWeight:700}}>{TI[t]||"🗺️"} {t}</span>)}</div>
+                <div style={{fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:400,color:"rgba(255,248,235,0.85)",lineHeight:1.6,marginBottom:10}}>{getPackBrief(pp,tripData)||`Reviewing your pack for a ${goalLabel} trip across ${countries.slice(0,3).join(", ")}${countries.length>3?" +"+(countries.length-3)+" more":""} — ${totalNights} nights.`}</div>
+                <div style={{fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontSize:13,color:"rgba(255,255,255,0.5)",marginBottom:8}}>Built for: {formatTripNameDisplay(tripData?.tripName||"your expedition")} · {totalNights} nights · {pp?.tripType||goalLabel} · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
+                <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{tripTypes.map(t=><span key={t} style={{fontSize:11,color:"rgba(201,160,76,0.85)",background:"rgba(169,70,29,0.18)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:10,padding:"3px 9px",letterSpacing:1,fontWeight:700}}>{TI[t]||"🗺️"} {t}</span>)}</div>
               </div>
             </div>
           </div>
           {suggestLoading&&<div>
             <div style={{textAlign:"center",padding:"20px 20px 16px"}}>
               <div style={{position:"relative",width:52,height:52,margin:"0 auto 14px"}}>
-                <div style={{position:"absolute",inset:-6,borderRadius:"50%",border:"1.5px solid rgba(255,159,67,0.5)",animation:"amberPulse 1.8s ease-in-out infinite"}}/>
-                <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(255,159,67,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,animation:"logoPulse 2s ease-in-out infinite"}}>✦</div>
+                <div style={{position:"absolute",inset:-6,borderRadius:"50%",border:"1.5px solid rgba(201,160,76,0.5)",animation:"amberPulse 1.8s ease-in-out infinite"}}/>
+                <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(169,70,29,0.12)",border:"1px solid rgba(201,160,76,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,animation:"logoPulse 2s ease-in-out infinite"}}>✦</div>
               </div>
-              <div style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:4}}>Analyzing your trip and current pack...</div>
-              <div style={{fontSize:10,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{formatTripNameDisplay(tripData.tripName||"your expedition")} · {totalNights}N · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
+              <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:4}}>Analyzing your trip and current pack...</div>
+              <div style={{fontSize:10,color:"rgba(201,160,76,0.6)",letterSpacing:2,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{formatTripNameDisplay(tripData.tripName||"your expedition")} · {totalNights}N · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
             </div>
             {[0,1,2].map(i=><div key={i} style={{borderRadius:12,marginBottom:9,background:"rgba(18,8,0,0.85)",border:"1px solid rgba(255,255,255,0.06)",padding:"14px 12px",animation:`shimmer 1.5s ease-in-out infinite ${i*0.2}s`}}>
               <div style={{display:"flex",gap:8,marginBottom:10}}>
-                <div style={{width:70,height:14,borderRadius:6,background:"rgba(255,159,67,0.12)"}}/>
+                <div style={{width:70,height:14,borderRadius:6,background:"rgba(201,160,76,0.12)"}}/>
                 <div style={{width:50,height:14,borderRadius:6,background:"rgba(255,255,255,0.06)"}}/>
               </div>
               <div style={{width:"80%",height:13,borderRadius:6,background:"rgba(255,255,255,0.06)",marginBottom:8}}/>
@@ -795,41 +794,41 @@ Return ONLY a JSON array:
             </div>)}
           </div>}
           {!suggestLoading&&suggestions.length>0&&<div>
-            <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,color:"rgba(255,159,67,0.9)",letterSpacing:3,marginBottom:12,fontWeight:700}}>SUGGESTED FOR YOUR TRIP</div>
+            <div style={{fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontSize:12,color:"rgba(201,160,76,0.9)",letterSpacing:3,marginBottom:12,fontWeight:700}}>SUGGESTED FOR YOUR TRIP</div>
             {suggestions.map(s=>{
               const CAT_COLORS_P=PACK_CAT_COLORS;
-              const c=CAT_COLORS_P[s.cat]||"#FF9F43";
+              const c=CAT_COLORS_P[s.cat]||"#C9A04C";
               const isEssential=s.priority==="essential"||s.essential;
-              return(<div key={s.id} style={{borderRadius:12,marginBottom:9,background:"rgba(18,8,0,0.85)",border:"1px solid "+(isEssential?"rgba(255,159,67,0.4)":"rgba(255,255,255,0.08)"),animation:"fadeUp 0.4s ease"}}>
+              return(<div key={s.id} style={{borderRadius:12,marginBottom:9,background:"rgba(18,8,0,0.85)",border:"1px solid "+(isEssential?"rgba(201,160,76,0.4)":"rgba(255,255,255,0.08)"),animation:"fadeUp 0.4s ease"}}>
                 <div style={{padding:"10px 12px"}}>
                   <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
                     <div style={{flex:1}}>
                       <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}>
-                        {isEssential?<span style={{fontSize:11,color:"#FF9F43",background:"rgba(255,159,67,0.18)",border:"1px solid rgba(255,159,67,0.4)",borderRadius:6,padding:"2px 8px",letterSpacing:1.5,fontWeight:700,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>ESSENTIAL</span>:<span style={{fontSize:11,color:PACK_GOLD,background:"rgba(212,175,55,0.1)",border:`1px solid ${PACK_GOLD}44`,borderRadius:6,padding:"2px 8px",letterSpacing:1.5,fontWeight:700,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>RECOMMENDED</span>}
-                        <span style={{fontSize:11,color:c,background:c+"14",border:`1px solid ${c}44`,borderRadius:6,padding:"2px 8px",letterSpacing:1,fontWeight:700,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.cat}</span>
+                        {isEssential?<span style={{fontSize:11,color:"#C9A04C",background:"rgba(201,160,76,0.18)",border:"1px solid rgba(201,160,76,0.4)",borderRadius:6,padding:"2px 8px",letterSpacing:1.5,fontWeight:700,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>ESSENTIAL</span>:<span style={{fontSize:11,color:CULTURE_GOLD,background:"rgba(201,160,76,0.1)",border:`1px solid ${CULTURE_GOLD}44`,borderRadius:6,padding:"2px 8px",letterSpacing:1.5,fontWeight:700,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>RECOMMENDED</span>}
+                        <span style={{fontSize:11,color:c,background:c+"14",border:`1px solid ${c}44`,borderRadius:6,padding:"2px 8px",letterSpacing:1,fontWeight:700,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{s.cat}</span>
                       </div>
                       <div style={{fontSize:15,fontWeight:600,color:"#FFF",marginBottom:5}}>{s.name}</div>
                       <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(255,248,235,0.65)",lineHeight:1.65}}>{s.reason}</div>
                     </div>
-                    <div style={{textAlign:"right",flexShrink:0,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.cost>0&&<div style={{fontSize:12,fontWeight:700,color:"#c9a04c",marginBottom:3}}>~${s.cost}</div>}{s.weight>0&&<div style={{fontSize:12,color:"rgba(255,255,255,0.45)"}}>~{s.weight}lb</div>}</div>
+                    <div style={{textAlign:"right",flexShrink:0,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{s.cost>0&&<div style={{fontSize:12,fontWeight:700,color:"#c9a04c",marginBottom:3}}>~${s.cost}</div>}{s.weight>0&&<div style={{fontSize:12,color:"rgba(255,255,255,0.45)"}}>~{s.weight}lb</div>}</div>
                   </div>
-                  <button type="button" onClick={()=>acceptSuggestion(s)} style={{width:"100%",padding:"10px",borderRadius:8,border:`1px solid ${PACK_GOLD}`,background:"rgba(212,175,55,0.08)",color:PACK_GOLD,fontSize:13,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",fontWeight:700,minHeight:40}}>+ ADD TO PACK</button>
+                  <button type="button" onClick={()=>acceptSuggestion(s)} style={{width:"100%",padding:"10px",borderRadius:8,border:`1px solid ${CULTURE_GOLD}`,background:"rgba(201,160,76,0.08)",color:CULTURE_GOLD,fontSize:13,cursor:"pointer",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",fontWeight:700,minHeight:40}}>+ ADD TO PACK</button>
                 </div>
               </div>);
             })}
           </div>}
           {!suggestLoading&&suggestions.length===0&&suggestDone&&<div style={{marginBottom:16}}>
             <div style={{textAlign:"center",padding:"24px 0 18px"}}>
-              <div style={{fontSize:22,marginBottom:10,color:PACK_GOLD}}>✦</div>
+              <div style={{fontSize:22,marginBottom:10,color:CULTURE_GOLD}}>✦</div>
               <div style={{fontFamily:"'Fraunces',serif",fontSize:13,fontStyle:"italic",color:"rgba(255,255,255,0.85)",marginBottom:5}}>{accepted.length>0?`${accepted.length} item${accepted.length>1?"s":""} added to your pack.`:"Your pack looks solid for this trip."}</div>
-              <div style={{fontSize:10,color:"rgba(255,159,67,0.65)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Anything else? Open the Co-Architect.</div>
+              <div style={{fontSize:10,color:"rgba(201,160,76,0.65)",letterSpacing:2,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>Anything else? Open the Co-Architect.</div>
             </div>
           </div>}
           {suggestDone&&!suggestLoading&&<div style={{borderTop:"1px solid rgba(196,87,30,0.2)",paddingTop:18,marginTop:8}}>
-            <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(212,175,55,0.7)",textAlign:"center",marginBottom:12,lineHeight:1.45}}>✦ Ask Co-Architect for more</div>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(201,160,76,0.7)",textAlign:"center",marginBottom:12,lineHeight:1.45}}>✦ Ask Co-Architect for more</div>
             <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:4}}>
               {["Stay under 15 lbs","I do laundry weekly","Add rain gear","Pack for heat"].map((p)=>(
-                <button key={p} type="button" onClick={()=>firePackCaChip(p)} style={{background:"rgba(212,175,55,0.08)",border:"1px solid rgba(212,175,55,0.4)",color:PACK_GOLD,borderRadius:20,fontSize:13,padding:"6px 14px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",cursor:"pointer",margin:4}}>{p}</button>
+                <button key={p} type="button" onClick={()=>firePackCaChip(p)} style={{background:"rgba(201,160,76,0.08)",border:"1px solid rgba(201,160,76,0.4)",color:CULTURE_GOLD,borderRadius:20,fontSize:13,padding:"6px 14px",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",cursor:"pointer",margin:4}}>{p}</button>
               ))}
             </div>
           </div>}
@@ -838,14 +837,14 @@ Return ONLY a JSON array:
       {packTab==="weight"&&(
         <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 0 ${packMobileScrollBottom}`:"12px 0 32px",boxSizing:"border-box",width:"100%",position:"relative"}}>
           <div style={{display:"flex",justifyContent:"flex-end",marginBottom:14}}>
-            <button type="button" onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:11,color:"rgba(255,255,255,0.5)",background:"transparent",border:"1px solid rgba(255,255,255,0.25)",borderRadius:20,padding:"4px 12px",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:0.5,fontWeight:600}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
+            <button type="button" onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:11,color:"rgba(255,255,255,0.5)",background:"transparent",border:"1px solid rgba(255,255,255,0.25)",borderRadius:20,padding:"4px 12px",cursor:"pointer",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",letterSpacing:0.5,fontWeight:600}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
           </div>
           {["Backpack","Global Briefcase","Worn","Digital"].map(bagName=>{
             const bagItems=items.filter(i=>i.bag===bagName);
             const bagW=bagItems.reduce((s,i)=>s+(parseFloat(i.weight)||0),0)*wM;
             const bagV=bagName==="Backpack"?bpV:0;
             const isOver=bagName==="Backpack"&&bagW>wLim;
-            const bagColor=bagName==="Backpack"?PACK_GOLD:bagName==="Global Briefcase"?"#A29BFE":bagName==="Worn"?"#c9a04c":PACK_GOLD;
+            const bagColor=bagName==="Backpack"?CULTURE_GOLD:bagName==="Global Briefcase"?"#7A6F5D":bagName==="Worn"?"#c9a04c":CULTURE_GOLD;
             return(
               <div key={bagName} style={{background:"rgba(18,8,0,0.85)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:16,marginBottom:12}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
@@ -855,11 +854,11 @@ Return ONLY a JSON array:
                     {bagName==="Backpack"&&<div style={{fontSize:15,color:"#c9a04c",marginTop:1,fontWeight:700}}>{bagV.toFixed(1)}L / {VL}L</div>}
                   </div>
                 </div>
-                {bagName==="Backpack"&&<div style={{height:4,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden",marginBottom:11}}><div style={{height:"100%",background:isOver?"linear-gradient(90deg,rgba(212,175,55,0.5),#FF6B6B)":`linear-gradient(90deg,rgba(212,175,55,0.35),${PACK_GOLD})`,borderRadius:2,width:Math.min(bagW/wLim*100,100)+"%",transition:"width 0.5s ease"}}/></div>}
+                {bagName==="Backpack"&&<div style={{height:4,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden",marginBottom:11}}><div style={{height:"100%",background:isOver?"linear-gradient(90deg,rgba(201,160,76,0.5),#FF6B6B)":`linear-gradient(90deg,rgba(201,160,76,0.35),${CULTURE_GOLD})`,borderRadius:2,width:Math.min(bagW/wLim*100,100)+"%",transition:"width 0.5s ease"}}/></div>}
                 {bagItems.length===0?<div style={{fontSize:15,color:"rgba(255,255,255,0.35)",textAlign:"center",padding:"10px 0"}}>No items</div>
                 :bagItems.sort((a,b)=>(parseFloat(b.weight)||0)-(parseFloat(a.weight)||0)).map(item=>(
                   <div key={item.id} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
-                    <div style={{fontSize:13,color:PACK_CREAM,flex:1,minWidth:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.owned?<span style={{color:PACK_GOLD,marginRight:4}}>✓</span>:null}{item.name}</div>
+                    <div style={{fontSize:13,color:PACK_CREAM,flex:1,minWidth:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.owned?<span style={{color:CULTURE_GOLD,marginRight:4}}>✓</span>:null}{item.name}</div>
                     <div style={{fontSize:14,color:"rgba(255,255,255,0.65)",flexShrink:0,marginLeft:8,fontWeight:700}}>{parseFloat(item.weight)>0?(parseFloat(item.weight)*wM).toFixed(2)+unit:"—"}</div>
                   </div>
                 ))}
