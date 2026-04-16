@@ -3,33 +3,17 @@ import posthog from "posthog-js";
 import { useMobile } from '../hooks/useMobile';
 import { askAI } from '../utils/aiHelpers';
 import { fmt, fD, daysBetween } from '../utils/dateHelpers';
-import { urgencyColor } from '../constants/colors';
-import { CONSOLE_CONTENT_MAX } from '../constants/layout';
 import { loadSeg, saveSeg, loadReturn, saveReturn, TI } from '../utils/storageHelpers';
 import { STATUS_CFG, STATUS_NEXT, formatTripNameDisplay } from '../utils/tripConsoleHelpers';
 import { toSegPhases, computePhasePlannedSpend } from '../utils/tripHelpers';
-import ConsoleHeader from './ConsoleHeader';
-import MissionBottomNav from './MissionBottomNav';
-import HelpTip from './HelpTip';
-import WorldMapBackground from './WorldMapBackground';
-import SDF from './SDF';
 import PhaseCard from './PhaseCard';
 import PhaseDetailPage from './PhaseDetailPage';
-import Timeline from './Timeline';
-import IntelMap from './IntelMap';
-import TripBudgetRing from './TripBudgetRing';
+import WorldMapBackground from './WorldMapBackground';
 
 function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading,onUpdateTripData,onTripAmbientContextChange,founderExpedition=null,founderMode=false,onToggleFounderExpedition,onSaveAsFounderExpedition,hideBottomNav=false}) {
   const isMobile=useMobile();
-  const [tab,setTab]=useState(initialTab);
-  const [intelMapActive,setIntelMapActive]=useState(false);
-  useEffect(()=>{const h=(e)=>setIntelMapActive(e.detail?.active||false);window.addEventListener('intelMapActive',h);return()=>window.removeEventListener('intelMapActive',h);},[]);
   useEffect(()=>{requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:"instant"});});posthog.capture("$pageview",{$current_url:"/trip-console"});},[]);
-  const [confirmNewTrip,setConfirmNewTrip]=useState(false);
-  const [showMobileMenu,setShowMobileMenu]=useState(false);
-  const [explorerDest,setExplorerDest]=useState(null);
   const [explorerData,setExplorerData]=useState(()=>{try{const s=localStorage.getItem("1bn_intel");return s?JSON.parse(s):{}}catch(e){return{};}});
-  const [loadingIntel,setLoadingIntel]=useState(false);
   const [phaseDetailView,setPhaseDetailView]=useState(null);
   const [caWorkspaceSegment,setCaWorkspaceSegment]=useState(null);
   useEffect(()=>{if(!phaseDetailView)setCaWorkspaceSegment(null);},[phaseDetailView]);
@@ -44,481 +28,55 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
   const dismissWarning=(idx)=>setWarningFlags(f=>f.filter((_,i)=>i!==idx));
   useEffect(()=>{try{localStorage.setItem("1bn_intel",JSON.stringify(explorerData));}catch(e){};},[explorerData]);
 
-  function handleNewTripClick(){if(confirmNewTrip){onNewTrip();}else{setConfirmNewTrip(true);setTimeout(()=>setConfirmNewTrip(false),4000);}}
-
-  const TODAY=new Date();
-  const daysToDepart=daysBetween(TODAY,new Date(tripData.startDate||"2026-09-16"));
-  const uc=urgencyColor(daysToDepart);
   const flatPhases=tripData.phases||[];
   const returnPhase=flatPhases.find(p=>p.type==="Return")||null;
   const destFlatPhases=flatPhases.filter(p=>p.type!=="Return");
   const segPhases=tripData.segmentedPhases||toSegPhases(destFlatPhases);
-  const totalNights=segPhases.reduce((s,p)=>s+p.totalNights,0);
-  const totalBudget=(tripData.budgetCap>0)?tripData.budgetCap:segPhases.reduce((s,p)=>s+p.totalBudget,0);
-  const totalDives=segPhases.reduce((s,p)=>s+p.totalDives,0);
-  const lastSeg=segPhases[segPhases.length-1];
-  const isComplete=lastSeg&&new Date()>new Date((lastSeg.departure||"2099-01-01")+"T12:00:00");
-  const [returnData,setReturnData]=useState(()=>loadReturn());
-  useEffect(()=>saveReturn(returnData),[returnData]);
-  const uR=(f,v)=>setReturnData(d=>({...d,flight:{...d.flight,[f]:v}}));
-
-  const [blueprintOpen,setBlueprintOpen]=useState(false);
-
-  // Departure city — inline editable
-  const [editingDep,setEditingDep]=useState(false);
-  const [depInput,setDepInput]=useState(tripData.departureCity||tripData.city||"");
-  useEffect(()=>{if(!editingDep)setDepInput(tripData.departureCity||tripData.city||"");},[tripData.departureCity,tripData.city,editingDep]);
-  const depRef=useRef(null);
-  useEffect(()=>{if(editingDep)depRef.current?.focus();},[editingDep]);
-  function saveDep(){
-    const val=depInput.trim();
-    if(onUpdateTripData)onUpdateTripData({departureCity:val,city:val});
-    setEditingDep(false);
-  }
-
-  async function openIntel(dest,phaseName,type){
-    setExplorerDest({destination:dest,phaseName,type});setTab("intel");
-    if(explorerData[dest]&&!explorerData[dest].error)return;
-    setLoadingIntel(true);
-    try{
-      const raw=await askAI(`Elite travel intel. Destination:"${dest}"(${phaseName},${type}). Return ONLY raw JSON:{tagline,mustDo:[4],hiddenGems:[3],food:[3],culture,climate,warnings:[2],diveHighlight,vibe,streetIntel:[{type,alert}×4]}`,1400);
-      const m=raw.match(/{[\s\S]*}/);if(!m)throw 0;
-      setExplorerData(p=>({...p,[dest]:JSON.parse(m[0])}));
-    }catch(e){setExplorerData(p=>({...p,[dest]:{error:true,errorMsg:"Could not load intel. Check connection and retry."}}));}
-    setLoadingIntel(false);
-  }
-
-  const heroStats=[{label:"DEPARTS IN",value:daysToDepart,unit:"DAYS",color:"#c9a04c",glow:"rgba(201,160,76,0.32)"},{label:"NIGHTS",value:totalNights,unit:"NIGHTS",color:"#F8F5F0",glow:"rgba(248,245,240,0.22)"},...(totalDives>0?[{label:"DIVES",value:totalDives,unit:"DIVES",color:"#00E5FF",glow:"rgba(0,229,255,0.4)"}]:[]),{label:"BUDGET",value:fmt(totalBudget),unit:"TOTAL",color:"#c9a04c",glow:"rgba(201,160,76,0.32)"}];
-  const mobileHeroCells=[{label:"DEPARTS IN",value:daysToDepart,sub:"DAYS",color:"#c9a04c",kind:"stat"},{label:"NIGHTS",value:totalNights,sub:"NIGHTS",color:"#FFFFFF",kind:"stat"},...(totalDives>0?[{label:"DIVES",value:totalDives,sub:"DIVES",color:"#FFFFFF",kind:"stat"}]:[]),{kind:"budget"}];
-  const TABS=[{id:"next",label:"🗺️ EXPEDITION"},{id:"budget",label:"💰 BUDGET"},{id:"book",label:"🗓 TIMELINE"},{id:"intel",label:"🔭 INTEL"},{id:"blueprint",label:isMobile?"✦":"✦ BLUEPRINT"}];
   const allSegD=loadSeg();
-  const totalPlannedSpend=segPhases.reduce((s,p)=>s+computePhasePlannedSpend(p,allSegD).total,0);
-  const {changedSegs,cancelledSegs}=(()=>{const cs=[],xs=[];segPhases.forEach(p=>p.segments.forEach(s=>{const d=allSegD[`${p.id}-${s.id}`]||{};const st=d.status||'planning';if(st==='changed')cs.push({phase:p,seg:s});if(st==='cancelled')xs.push({phase:p,seg:s});}));return{changedSegs:cs,cancelledSegs:xs};})();
-  const tripDateStart=destFlatPhases[0]?.arrival;
-  const tripDateEnd=destFlatPhases[destFlatPhases.length-1]?.departure;
-  const tripDateLabel=tripDateStart&&tripDateEnd?`${fD(tripDateStart)} – ${fD(tripDateEnd)}`:'';
-
-  /** Trip Console phase cards (PhaseCard.jsx desktop) — glass hero matches list */
-  const tripHeroGlass={
-    background:'rgba(23,27,32,0.62)',
-    backdropFilter:'blur(10px)',
-    WebkitBackdropFilter:'blur(10px)',
-    border:'1px solid rgba(0,229,255,0.18)',
-    borderTop:'1px solid rgba(0,229,255,0.36)',
-    borderRadius:18,
-    overflow:'hidden',
-    boxShadow:'inset 0 1px 0 rgba(248,245,240,0.06), 0 14px 44px rgba(0,0,0,0.42), 0 0 52px rgba(201,160,76,0.08)',
-  };
+  const depInput=tripData.departureCity||tripData.city||"";
+  const isComplete=segPhases.length>0&&new Date()>new Date((segPhases[segPhases.length-1].departure||"2099-01-01")+"T12:00:00");
 
   return(
-    <div className="mc-root mc-trip-bleed" style={{animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
+    <div style={{minHeight:'100vh',background:'#0A0705',paddingBottom:hideBottomNav?0:80,animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
+
+      {/* DS v2 Section 4: dot world map texture + whisper gold atmospheric wash */}
       <WorldMapBackground phases={tripData.phases||[]} activeCountry={phaseDetailView?.country} departureCity={depInput}/>
-      {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} homeCity={tripData.departureCity||tripData.city||""} segPhases={segPhases} warningFlags={warningFlags} onDismissWarning={dismissWarning} allPhases={tripData.phases||[]} onAmbientSegmentChange={setCaWorkspaceSegment}/>}
-      {!isFullscreen&&!hideBottomNav&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto'}}><ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/></div>}
-      {isMobile&&!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:"5px 12px",borderBottom:"1px solid rgba(0,229,255,0.08)",display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:8,background:"rgba(0,8,20,0.98)",flexShrink:0,position:"relative",zIndex:1}}>
-        <button type="button" onClick={onRevise} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 14px",borderRadius:7,border:"1.5px solid rgba(0,229,255,0.55)",background:"rgba(0,229,255,0.12)",color:"#00E5FF",fontSize:14,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,minHeight:32}}><span>✏️ REVISE</span><HelpTip noLeadingMargin desktopOnly text="Take your expedition back to the Co-Architect — tweak destinations, timing, budget, anything" /></button>
-        <button onClick={handleNewTripClick} style={{padding:"6px 14px",borderRadius:7,border:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(255,255,255,0.18)",background:confirmNewTrip?"rgba(255,107,107,0.12)":"transparent",color:confirmNewTrip?"#FF6B6B":"rgba(255,255,255,0.45)",fontSize:13,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:confirmNewTrip?700:400,letterSpacing:1,minHeight:32}}>{confirmNewTrip?"⚠️ CONFIRM?":"+ NEW TRIP"}</button>
-        {founderExpedition?.phases?.length>0&&typeof onToggleFounderExpedition==="function"&&(
-          <button type="button" onClick={()=>onToggleFounderExpedition()} style={{background:founderMode?"rgba(201,160,76,0.15)":"rgba(255,255,255,0.05)",border:`1px solid ${founderMode?"rgba(201,160,76,0.4)":"rgba(255,255,255,0.10)"}`,borderRadius:12,padding:"4px 10px",fontSize:10,color:founderMode?"rgba(201,160,76,0.9)":"rgba(255,255,255,0.35)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",cursor:"pointer",minHeight:32}}>{founderMode?"★ expedition":"☆ expedition"}</button>
-        )}
-        {!founderMode&&tripData&&!tripData.isDemo&&typeof onSaveAsFounderExpedition==="function"&&(
-          <button type="button" onClick={()=>onSaveAsFounderExpedition()} style={{background:"transparent",border:"1px solid rgba(201,160,76,0.20)",borderRadius:12,padding:"4px 10px",fontSize:10,color:"rgba(201,160,76,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",cursor:"pointer",minHeight:32}}>+ save as expedition</button>
-        )}
-      </div>}
-      {/* Upper trip dashboard — full viewport header above; column matches Pack Console */}
-      <div style={isMobile?undefined:{maxWidth:CONSOLE_CONTENT_MAX,margin:"0 auto",padding:"0 24px",width:"100%",boxSizing:"border-box"}}>
-      {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:isMobile?"8px 12px 6px":"10px 0 8px",background:isMobile?"rgba(0,8,16,0.10)":"linear-gradient(180deg,rgba(21,15,10,0.45),rgba(21,15,10,0.50))",borderBottom:"1px solid rgba(232,220,200,0.06)",position:"relative",overflow:"hidden",zIndex:1}}>
-        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 30% 50%,rgba(232,220,200,0.02) 0%,transparent 60%)",pointerEvents:"none"}}/>
-        {tripData.tripName&&<div style={{marginBottom:isMobile?8:12,position:"relative"}}>
-          <div
-            style={{
-              display:isMobile?"flex":"grid",
-              flexDirection:isMobile?"column":undefined,
-              gridTemplateColumns:!isMobile?(tripData.isDemo&&typeof onExitDemo==="function"?"1fr auto 1fr":"1fr"):undefined,
-              alignItems:"center",
-              justifyContent:isMobile?"center":undefined,
-              gap:isMobile&&tripData.isDemo&&typeof onExitDemo==="function"?10:0,
-              width:"100%",
-            }}
-          >
-            {!isMobile&&tripData.isDemo&&typeof onExitDemo==="function"&&<div aria-hidden />}
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?16:24,fontWeight:400,fontStyle:"italic",color:"#F8F5F0",lineHeight:1.12,letterSpacing:"0.02em",textAlign:"center"}}>{formatTripNameDisplay(tripData.tripName)}</div>
-            {tripData.isDemo&&typeof onExitDemo==="function"&&(
-              <div style={{display:"flex",justifyContent:isMobile?"center":"flex-end",width:isMobile?"100%":"auto"}}>
-              <button
-                type="button"
-                onClick={()=>onExitDemo()}
-                style={{
-                  background:"rgba(201,160,76,0.1)",
-                  border:"1px solid rgba(201,160,76,0.45)",
-                  borderRadius:16,
-                  padding:isMobile?"10px 16px":"10px 20px",
-                  fontSize:isMobile?13:14,
-                  fontWeight:600,
-                  color:"rgba(252,248,235,0.92)",
-                  fontFamily:"'Inter',system-ui,-apple-system,sans-serif",
-                  letterSpacing:"0.09em",
-                  cursor:"pointer",
-                  flexShrink:0,
-                  minHeight:isMobile?44:46,
-                  boxShadow:"0 0 28px rgba(201,160,76,0.18)",
-                  transition:"border-color 0.2s ease, background 0.2s ease, color 0.2s ease",
-                }}
-                onMouseEnter={(e)=>{e.currentTarget.style.borderColor="rgba(201,160,76,0.55)";e.currentTarget.style.background="rgba(201,160,76,0.14)";}}
-                onMouseLeave={(e)=>{e.currentTarget.style.borderColor="rgba(201,160,76,0.38)";e.currentTarget.style.background="rgba(201,160,76,0.08)";}}
-              >
-                ← exit demo
-              </button>
-              </div>
-            )}
-          </div>
-          <div style={{fontSize:isMobile?13:15,color:"rgba(232,220,200,0.72)",letterSpacing:isMobile?1.5:2,marginTop:6,textAlign:"center",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.45}}>{[...new Set(destFlatPhases.map(p=>p.country))].join(" · ")}</div>
-          <div style={{marginTop:8,display:"flex",alignItems:"center",justifyContent:"center",gap:6,width:"100%"}}>
-            {editingDep?(
-              <input
-                ref={depRef}
-                value={depInput}
-                onChange={e=>setDepInput(e.target.value)}
-                onClick={e=>e.stopPropagation()}
-                onBlur={saveDep}
-                onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();saveDep();}if(e.key==="Escape"){e.preventDefault();setDepInput(tripData.departureCity||tripData.city||"");setEditingDep(false);}}}
-                placeholder="Departure city..."
-                style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:12,fontWeight:700,letterSpacing:2,color:"#c9a04c",background:"rgba(201,160,76,0.12)",border:"1px solid rgba(201,160,76,0.45)",borderRadius:6,padding:"5px 10px",outline:"none",width:isMobile?140:180,boxShadow:"0 0 20px rgba(201,160,76,0.08)"}}
-              />
-            ):(
-              <button
-                onClick={()=>setEditingDep(true)}
-                style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",padding:"4px 2px",cursor:"pointer"}}
-              >
-                <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:isMobile?11:12,letterSpacing:2,color:depInput?"rgba(245,230,200,0.96)":"rgba(201,160,76,0.55)",fontWeight:700,textShadow:depInput?"0 1px 10px rgba(0,0,0,0.45)":undefined}}>
-                  {depInput?`FROM · ${depInput.replace(/\s+International\s+Airport.*$/i,'').replace(/\s+Intl\s+Airport.*$/i,'').replace(/\s+Airport.*$/i,'').replace(/,\s*[A-Z]{2,3}$/,'').replace(/,.*$/,'').trim().toUpperCase()}`:"＋ SET DEPARTURE CITY"}
-                </span>
-                <span style={{fontSize:11,color:"rgba(201,160,76,0.55)"}}>✎</span>
-              </button>
-            )}
-          </div>
-        </div>}
-        {isMobile?(()=>{
-          let totalSegs=0,filledSegs=0;
-          segPhases.forEach(p=>p.segments.forEach(s=>{totalSegs++;const d=allSegD[`${p.id}-${s.id}`]||{};if(d.transport?.mode||d.transport?.cost||d.stay?.name||d.stay?.cost||(d.activities?.length||0)>0)filledSegs++;}));
-          const readPct=totalSegs>0?Math.round((filledSegs/totalSegs)*100):0;
-          return(
-            <div style={{...tripHeroGlass,background:'rgba(23,27,32,0.62)',border:'1px solid rgba(0,229,255,0.28)',borderTop:'1px solid rgba(0,229,255,0.55)',boxShadow:'inset 0 1px 0 rgba(0,229,255,0.22), 0 12px 40px rgba(0,0,0,0.45), 0 0 48px rgba(201,160,76,0.06)'}}>
-              <div style={{padding:'14px 14px 12px'}}>
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:7}}>
-                  <span style={{fontSize:9,letterSpacing:'0.12em',color:'rgba(0,229,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700}}>EXPEDITION READINESS</span>
-                  <span style={{fontSize:20,fontWeight:700,color:'#00E5FF',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{readPct}%</span>
-                </div>
-                <div style={{width:'100%',height:6,background:'rgba(255,255,255,0.08)',borderRadius:3,overflow:'hidden'}}>
-                  <div className="trip-readiness-bar-fill" style={{height:'100%',width:`${readPct}%`,background:'linear-gradient(90deg,#00E5FF88,#00E5FF)',borderRadius:3}}/>
-                </div>
-                <div style={{fontSize:11,color:'rgba(255,255,255,0.55)',marginTop:5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{filledSegs} of {totalSegs} planning tasks complete</div>
-              </div>
-              <div style={{height:1,background:'rgba(0,229,255,0.12)'}}/>
-              <div style={{display:'grid',gridTemplateColumns:`repeat(${mobileHeroCells.length},1fr)`,overflow:'hidden'}}>
-                {mobileHeroCells.map((s)=>(
-                  <div key={s.kind==="budget"?"budget":s.label} style={{textAlign:'center',padding:'5px 4px 6px'}}>
-                    {s.kind==="budget"?(
-                      <TripBudgetRing compact mobileStatBar planned={totalPlannedSpend} cap={totalBudget} labelText="BUDGET" displayAmount={fmt(totalBudget)} helpTip="Your estimated expedition total — tap phases to adjust individual costs" />
-                    ):(
-                      <>
-                        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:2,marginBottom:3}}>
-                          <div style={{fontSize:8,letterSpacing:'0.12em',color:'rgba(255,255,255,0.5)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,textTransform:'uppercase'}}>{s.label}</div>
-                          {s.label==='DIVES'&&<HelpTip noLeadingMargin compact desktopOnly text="Planned dives logged across your dive destinations" />}
-                        </div>
-                        <div style={{fontSize:21,fontWeight:700,color:s.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",lineHeight:1.05,textShadow:s.color==='#c9a04c'?'0 0 24px rgba(201,160,76,0.28)':'none'}}>{s.value}</div>
-                        <div style={{fontSize:9,color:'rgba(255,255,255,0.35)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:2,letterSpacing:'0.06em',textTransform:'uppercase'}}>{s.sub}</div>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-              {tripDateLabel?(
-                <>
-                  <div style={{height:1,background:'rgba(0,229,255,0.12)'}}/>
-                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,padding:'10px 14px 12px',flexWrap:'wrap'}}>
-                    <span style={{fontSize:12,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500}}>{tripDateLabel}</span>
-                    <span style={{fontSize:12,color:'rgba(255,255,255,0.55)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600}}>🌙 {totalNights} {totalNights===1?'Night':'Nights'}</span>
-                  </div>
-                </>
-              ):null}
+      <div style={{position:'fixed',inset:0,background:'radial-gradient(ellipse at 50% 30%, rgba(201,160,76,0.04) 0%, transparent 70%)',pointerEvents:'none',zIndex:0}}/>
+
+      {/* Phase detail page (full overlay) */}
+      {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} homeCity={depInput} segPhases={segPhases} warningFlags={warningFlags} onDismissWarning={dismissWarning} allPhases={tripData.phases||[]} onAmbientSegmentChange={setCaWorkspaceSegment}/>}
+
+      {/* Phase card list */}
+      {!phaseDetailView&&(
+        <div style={{
+          maxWidth:880,
+          margin:'0 auto',
+          padding:isMobile?'16px 12px':'16px 24px',
+          display:'flex',
+          flexDirection:'column',
+          gap:12,
+        }}>
+          {isComplete&&typeof onHomecoming==='function'&&(
+            <div onClick={onHomecoming} style={{padding:'14px 16px',background:'rgba(201,160,76,0.06)',border:'1px solid rgba(201,160,76,0.25)',borderRadius:14,cursor:'pointer',display:'flex',alignItems:'center',gap:10}} onMouseOver={e=>e.currentTarget.style.borderColor='rgba(201,160,76,0.45)'} onMouseOut={e=>e.currentTarget.style.borderColor='rgba(201,160,76,0.25)'}>
+              <span style={{fontSize:18}}>&#x1F3C6;</span>
+              <span style={{fontSize:11,fontWeight:600,color:'#C9A04C',letterSpacing:2,fontFamily:"'Instrument Sans',sans-serif",flex:1}}>EXPEDITION COMPLETE</span>
+              <span style={{fontSize:13,color:'rgba(201,160,76,0.5)'}}>&#x2192;</span>
             </div>
-          );
-        })():(
-          <div style={{...tripHeroGlass,padding:0,overflow:'visible'}}>
-            <div style={{display:"grid",gridTemplateColumns:`repeat(${heroStats.length},1fr)`,position:"relative",alignItems:"stretch",padding:"4px 4px 0"}}>
-              {heroStats.map((s,i)=>(
-                <div key={s.label} style={{textAlign:"center",padding:"6px 10px 8px",borderLeft:i>0?"1px solid rgba(248,245,240,0.08)":"none",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start"}}>
-                  {s.label==="BUDGET"?(
-                    <TripBudgetRing planned={totalPlannedSpend} cap={totalBudget} labelText={s.label} displayAmount={fmt(totalBudget)} helpTip="Your estimated expedition total — tap phases to adjust individual costs" />
-                  ):(
-                    <>
-                      <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:2,marginBottom:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>
-                        <span style={{fontSize:10,fontWeight:700,color:"rgba(248,245,240,0.48)",letterSpacing:2.5}}>{s.label}</span>
-                        {s.label==="DIVES"&&<HelpTip noLeadingMargin desktopOnly text="Planned dives logged across your dive destinations" />}
-                      </div>
-                      <div className="stat-val" style={{fontSize:28,fontWeight:700,lineHeight:1.05,color:s.label==="DEPARTS IN"?"#c9a04c":s.label==="DIVES"?"#00E5FF":"#F8F5F0",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animationDelay:`${i*0.1}s`,textShadow:s.label==="DEPARTS IN"?"0 0 32px rgba(201,160,76,0.28)":s.label==="DIVES"?"0 0 24px rgba(0,229,255,0.22)":"none"}}>{s.value}</div>
-                      <div style={{fontSize:11,fontWeight:600,color:"rgba(248,245,240,0.42)",letterSpacing:1.8,marginTop:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{s.unit}</div>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-            {tripDateLabel?(
-              <>
-                <div style={{height:1,background:'rgba(255,255,255,0.08)',margin:'0 0 0 0'}}/>
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,padding:'10px 18px 12px',flexWrap:'wrap'}}>
-                  <span style={{fontSize:14,color:'rgba(255,255,255,0.58)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500}}>{tripDateLabel}</span>
-                  <span style={{fontSize:14,color:'rgba(255,255,255,0.58)',fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600}}>🌙 {totalNights} Nights</span>
-                </div>
-              </>
-            ):null}
-          </div>
-        )}
-      </div>}
-      {!isFullscreen&&!isMobile&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',display:"flex",borderBottom:"1px solid rgba(0,229,255,0.1)",border:"1px solid rgba(255,255,255,0.10)",borderTop:"1px solid rgba(255,255,255,0.18)",background:"rgba(0,15,30,0.50)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",flexShrink:0,position:"relative",zIndex:1}}>
-        <div style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,borderRight:"1px solid rgba(0,229,255,0.1)",borderBottom:"2px solid #00E5FF",background:"rgba(0,229,255,0.04)"}}>
-          <div style={{width:5,height:5,borderRadius:"50%",background:"#00E5FF",boxShadow:"0 0 6px #00E5FF",animation:"consolePulse 2.5s ease-in-out infinite"}}/>
-          <span style={{fontSize:13,fontWeight:700,color:"#00E5FF",letterSpacing:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>TRIP CONSOLE</span>
-        </div>
-        <div onClick={onPackConsole} style={{flex:1,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",background:"transparent",opacity:0.55}} onMouseOver={e=>{e.currentTarget.style.background="rgba(196,87,30,0.08)";e.currentTarget.style.opacity="1";}} onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.opacity="0.55";}}>
-          <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(196,87,30,0.4)"}}/>
-          <span style={{fontSize:13,fontWeight:700,color:"rgba(255,159,67,0.65)",letterSpacing:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:"nowrap"}}>PACK CONSOLE</span>
-        </div>
-      </div>}
-      {/* Tab bar */}
-      {!isMobile&&(
-        <div style={{display:"flex",boxSizing:"border-box",borderTop:"1px solid rgba(0,229,255,0.14)",borderBottom:"1px solid rgba(0,229,255,0.38)",background:"rgba(0,15,35,0.95)",overflow:"hidden",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",alignItems:"stretch",position:intelMapActive?"fixed":"relative",top:intelMapActive?0:"auto",left:intelMapActive?0:"auto",right:intelMapActive?0:"auto",width:"100%",zIndex:100}}>
-          <button onClick={()=>setFullscreen(f=>!f)} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"10px 14px",background:isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)",border:"none",borderRight:"1px solid rgba(0,229,255,0.2)",cursor:"pointer",flexShrink:0,color:"#00E5FF"}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.22)"} onMouseOut={e=>e.currentTarget.style.background=isFullscreen?"rgba(0,229,255,0.15)":"rgba(0,229,255,0.06)"}>
-            <span style={{fontSize:15,lineHeight:1,textShadow:"0 0 10px rgba(0,229,255,0.9)"}}>{isFullscreen?"⊡":"⛶"}</span>
-            <span style={{fontSize:15,letterSpacing:1,fontWeight:700,whiteSpace:"nowrap"}}>{isFullscreen?"EXIT":"EXPAND"}</span>
-          </button>
-          <div style={{display:"flex",flex:1,overflowX:"auto",minWidth:0}}>
-            {TABS.map(t=>(
-              <button key={t.id} className={"mc-tab "+(tab===t.id?"active":"")} onClick={()=>{setTab(t.id);if(t.id!=="intel")setExplorerDest(null);}} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1,padding:"9px 12px",minWidth:44}}>
-                <span style={{fontSize:15}}>{t.label.split(" ")[0]}</span>
-                <span style={{fontSize:15,letterSpacing:1.5}}>{t.label.split(" ").slice(1).join(" ")}</span>
-              </button>
-            ))}
-          </div>
-          <button type="button" onClick={onRevise} style={{display:"inline-flex",flexDirection:"row",alignItems:"center",justifyContent:"center",gap:6,padding:"8px 12px",background:"rgba(0,229,255,0.06)",border:"none",borderLeft:"1px solid rgba(0,229,255,0.15)",cursor:"pointer",flexShrink:0}} onMouseOver={e=>e.currentTarget.style.background="rgba(0,229,255,0.14)"} onMouseOut={e=>e.currentTarget.style.background="rgba(0,229,255,0.06)"}>
-            <span style={{fontSize:15,lineHeight:1}}>✏️</span><span style={{fontSize:15,letterSpacing:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:"#00E5FF",whiteSpace:"nowrap",fontWeight:700}}>REVISE</span><HelpTip noLeadingMargin desktopOnly text="Take your expedition back to the Co-Architect — tweak destinations, timing, budget, anything" />
-          </button>
-          <button onClick={handleNewTripClick} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:"8px 14px",borderLeft:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(169,70,29,0.4)",background:confirmNewTrip?"rgba(255,107,107,0.15)":"rgba(169,70,29,0.08)",border:"none",cursor:"pointer",flexShrink:0,transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",minWidth:confirmNewTrip?72:50}} onMouseOver={e=>e.currentTarget.style.background=confirmNewTrip?"rgba(255,107,107,0.22)":"rgba(169,70,29,0.18)"} onMouseOut={e=>e.currentTarget.style.background=confirmNewTrip?"rgba(255,107,107,0.15)":"rgba(169,70,29,0.08)"}>
-            <span style={{fontSize:15,color:confirmNewTrip?"#FF6B6B":"#c9a04c",lineHeight:1}}>{confirmNewTrip?"⚠️":"+"}</span>
-            <span style={{fontSize:15,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:confirmNewTrip?"#FF6B6B":"#c9a04c",whiteSpace:"nowrap",fontWeight:700,textAlign:"center"}}>{confirmNewTrip?"CONFIRM?":"NEW TRIP"}</span>
-          </button>
-          {founderExpedition?.phases?.length>0&&typeof onToggleFounderExpedition==="function"&&(
-            <button type="button" onClick={()=>onToggleFounderExpedition()} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"8px 12px",borderLeft:"1px solid rgba(201,160,76,0.2)",background:founderMode?"rgba(201,160,76,0.15)":"rgba(255,255,255,0.05)",border:"none",borderRight:"none",cursor:"pointer",flexShrink:0}} onMouseOver={e=>{e.currentTarget.style.background=founderMode?"rgba(201,160,76,0.22)":"rgba(255,255,255,0.08)";}} onMouseOut={e=>{e.currentTarget.style.background=founderMode?"rgba(201,160,76,0.15)":"rgba(255,255,255,0.05)";}}>
-              <span style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",color:founderMode?"rgba(201,160,76,0.9)":"rgba(255,255,255,0.35)",fontWeight:600,whiteSpace:"nowrap"}}>{founderMode?"★ expedition":"☆ expedition"}</span>
-            </button>
           )}
-          {!founderMode&&tripData&&!tripData.isDemo&&typeof onSaveAsFounderExpedition==="function"&&(
-            <button type="button" onClick={()=>onSaveAsFounderExpedition()} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"8px 12px",borderLeft:"1px solid rgba(201,160,76,0.15)",background:"transparent",border:"none",cursor:"pointer",flexShrink:0}} onMouseOver={e=>{e.currentTarget.style.background="rgba(201,160,76,0.08)";}} onMouseOut={e=>{e.currentTarget.style.background="transparent";}}>
-              <span style={{fontSize:10,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:"0.06em",color:"rgba(201,160,76,0.45)",fontWeight:600,whiteSpace:"nowrap"}}>+ save as expedition</span>
-            </button>
-          )}
+
+          {segPhases.map((phase,i)=>{
+            const plannedOverBudget=computePhasePlannedSpend(phase,allSegD).total>(Number(phase.totalBudget)||0);
+            return <PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} allPhases={tripData.phases||[]} segPhases={segPhases} homeCity={depInput} plannedOverBudget={plannedOverBudget}/>;
+          })}
+
+          {returnPhase&&<PhaseCard key="return" phase={returnPhase} intelData={explorerData} idx={segPhases.length} onTap={null} allSuggestions={null} suggestionsLoading={false}/>}
         </div>
       )}
-      </div>
-      {confirmNewTrip&&<div style={{padding:"7px 14px",background:"rgba(255,107,107,0.1)",borderBottom:"1px solid rgba(255,107,107,0.3)",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,position:"relative",zIndex:1}}>
-        <span style={{fontSize:15,color:"rgba(255,107,107,0.9)",letterSpacing:1}}>⚠️ This will clear your expedition. Tap CONFIRM? again to proceed.</span>
-        <button onClick={()=>setConfirmNewTrip(false)} style={{fontSize:15,color:"rgba(255,255,255,0.4)",background:"none",border:"none",cursor:"pointer",padding:"2px 6px"}}>✕</button>
-      </div>}
-      <div className="mc-trip-scroll">
-        {tab==="next"&&(
-          <div style={{display:"flex",flexDirection:"column",gap:14,background:"transparent"}}>
-            {isComplete&&<div onClick={onHomecoming} style={{marginBottom:4,padding:"11px 14px",background:"linear-gradient(135deg,rgba(201,160,76,0.1),rgba(255,159,67,0.06))",border:"1px solid rgba(201,160,76,0.35)",borderRadius:10,cursor:"pointer",display:"flex",alignItems:"center",gap:8,animation:"consolePulse 2.8s ease-in-out infinite"}} onMouseOver={e=>e.currentTarget.style.background="linear-gradient(135deg,rgba(201,160,76,0.18),rgba(255,159,67,0.12))"} onMouseOut={e=>e.currentTarget.style.background="linear-gradient(135deg,rgba(201,160,76,0.1),rgba(255,159,67,0.06))"}>
-              <span style={{fontSize:16}}>🏆</span>
-              <span style={{fontSize:11,fontWeight:700,color:"#c9a04c",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flex:1}}>✦ EXPEDITION COMPLETE · TAP TO CELEBRATE</span>
-              <span style={{fontSize:12,color:"rgba(201,160,76,0.5)"}}>→</span>
-            </div>}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 14,
-                maxWidth: isMobile ? "100%" : CONSOLE_CONTENT_MAX,
-                margin: isMobile ? undefined : "0 auto",
-                width: "100%",
-                padding: isMobile ? "0 8px" : "0 24px",
-                boxSizing: "border-box",
-                background: "transparent",
-                boxShadow: "none",
-              }}
-            >
-            <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:6,marginBottom:8,marginTop:4,position:"relative",zIndex:5}}>
-              <span style={{fontSize:isMobile?12:14,color:"#F8F5F0",letterSpacing:isMobile?1.5:2.8,fontWeight:500,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",whiteSpace:isMobile?"normal":"nowrap"}}>YOUR EXPEDITION · {destFlatPhases.length} {destFlatPhases.length===1?"DESTINATION":"DESTINATIONS"}</span>
-              <HelpTip noLeadingMargin compact desktopOnly text="Tap any destination to plan your transport, stays, activities, and budget for that stop" />
-            </div>
-            {isMobile&&(
-              <div style={{borderRadius:11,overflow:"hidden",border:"1px solid rgba(255,159,67,0.22)",background:"rgba(169,70,29,0.06)",marginBottom:2}}>
-                <button onClick={()=>setBlueprintOpen(o=>!o)} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",background:"none",border:"none",cursor:"pointer",gap:8}}>
-                  <span style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontSize:10,fontWeight:700,letterSpacing:3,color:"rgba(255,159,67,0.75)"}}>✦ BLUEPRINT</span>
-                  <span style={{fontSize:10,color:"rgba(255,159,67,0.45)",transition:"transform 0.3s ease",display:"inline-block",transform:blueprintOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
-                </button>
-                {blueprintOpen&&<div style={{padding:"0 12px 12px",borderTop:"1px solid rgba(255,159,67,0.10)"}}>
-                  {(tripData.vision||tripData.visionNarrative)&&<div style={{borderLeft:"2px solid rgba(255,159,67,0.4)",paddingLeft:12,marginBottom:14,marginTop:12}}><div style={{fontSize:10,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:4}}>✦ {tripData.vision?"ORIGINAL VISION":"CO-ARCHITECT SUMMARY"}</div><div style={{fontFamily:"'Playfair Display',serif",fontSize:14,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.7}}>"{tripData.vision||tripData.visionNarrative}"</div></div>}
-                  {tripData.budgetBreakdown?(()=>{const bd=tripData.budgetBreakdown;const cats=[{key:"flights",icon:"✈️",label:"Flights"},{key:"accommodation",icon:"🏨",label:"Stay"},{key:"food",icon:"🍜",label:"Food"},{key:"transport",icon:"🚌",label:"Transport"},{key:"activities",icon:"🎯",label:"Activities"},{key:"buffer",icon:"🎒",label:"Buffer"}].filter(c=>bd[c.key]>0);const total=cats.reduce((s,c)=>s+(bd[c.key]||0),0);return(
-                    <div style={{background:"rgba(169,70,29,0.06)",borderRadius:9,padding:"10px 12px"}}>
-                      <div style={{fontSize:10,color:"rgba(255,159,67,0.75)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:8}}>✦ BUDGET BREAKDOWN</div>
-                      {cats.map(c=><div key={c.key} style={{display:"flex",alignItems:"center",padding:"5px 0",gap:8,borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
-                        <span style={{fontSize:13,width:20,textAlign:"center",flexShrink:0}}>{c.icon}</span>
-                        <span style={{fontSize:12,color:"rgba(255,255,255,0.7)",flex:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{c.label}</span>
-                        <span style={{fontSize:13,fontWeight:700,color:"#c9a04c",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>~{fmt(bd[c.key]||0)}</span>
-                      </div>)}
-                      <div style={{display:"flex",alignItems:"center",paddingTop:8,gap:8}}>
-                        <span style={{fontSize:12,color:"rgba(255,255,255,0.9)",fontWeight:700,flex:1,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>TOTAL</span>
-                        <span style={{fontSize:15,fontWeight:900,color:"#c9a04c",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>~{fmt((tripData.budgetCap>0)?tripData.budgetCap:total)}</span>
-                      </div>
-                      {bd.routingNote&&<div style={{marginTop:10,borderLeft:"2px solid rgba(255,159,67,0.35)",paddingLeft:10}}><div style={{fontSize:9,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:3}}>✦ WHY THIS ROUTE</div><div style={{fontFamily:"'Playfair Display',serif",fontSize:13,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.7)",lineHeight:1.6}}>{bd.routingNote}</div></div>}
-                    </div>
-                  );})():<div style={{padding:"8px 0"}}><div style={{fontSize:13,fontWeight:700,color:"#c9a04c",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Total: {fmt(tripData.budgetCap||tripData.totalBudget||0)}</div><div style={{fontSize:12,color:"rgba(255,255,255,0.45)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:3}}>{tripData.phases?.length||0} phases · {segPhases.reduce((s,p)=>s+p.totalNights,0)} nights</div></div>}
-                </div>}
-              </div>
-            )}
-            {segPhases.map((phase,i)=>{const plannedOverBudget=computePhasePlannedSpend(phase,allSegD).total>(Number(phase.totalBudget)||0);return <PhaseCard key={phase.id} phase={phase} intelData={explorerData} idx={i} onTap={p=>setPhaseDetailView(p)} allSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} allPhases={tripData.phases||[]} segPhases={segPhases} homeCity={tripData.departureCity||tripData.city||""} plannedOverBudget={plannedOverBudget}/>;})}
-            {returnPhase&&<PhaseCard key="return" phase={returnPhase} intelData={explorerData} idx={segPhases.length} onTap={null} allSuggestions={null} suggestionsLoading={false}/>}
-            </div>
-          </div>
-        )}
-        {tab==="budget"&&(
-          <div>
-            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr 1fr":"1fr 1fr 1fr",gap:8,marginBottom:16}}>
-              {[{label:"EXPEDITION TOTAL",value:fmt(totalBudget),color:"#c9a04c",sub:`across ${flatPhases.length} phases`},{label:"AVG / NIGHT",value:fmt(totalBudget/Math.max(totalNights,1)),color:"#A29BFE",sub:`${totalNights} nights`},{label:"AVG / PHASE",value:fmt(totalBudget/Math.max(flatPhases.length,1)),color:"#00E5FF",sub:"per destination"}].map((s,si)=>(
-                <div key={s.label} className="lux-card-interactive" style={{background:"linear-gradient(135deg,rgba(0,8,20,0.8),rgba(0,20,40,0.6))",border:"1px solid rgba(0,229,255,0.12)",borderRadius:10,padding:isMobile?"8px 10px":"12px 14px",textAlign:"center",gridColumn:isMobile&&si===2?"1 / -1":"auto"}}>
-                  <div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.6)",letterSpacing:isMobile?0:1,marginBottom:3,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600}}>{s.label}</div>
-                  <div style={{fontSize:isMobile?16:22,fontWeight:900,color:s.color}}>{s.value}</div>
-                  <div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.45)",marginTop:2}}>{s.sub}</div>
-                </div>
-              ))}
-            </div>
-            {(()=>{const bd=tripData.budgetBreakdown;if(!bd)return null;const cats=[{key:"flights",icon:"✈️",label:"FLIGHTS",color:"#00E5FF",note:bd.flightsNote},{key:"accommodation",icon:"🏨",label:"ACCOMMODATION",color:"#A29BFE",note:bd.accommodationNote},{key:"food",icon:"🍽️",label:"FOOD & DRINK",color:"#c9a04c",note:bd.foodNote},{key:"transport",icon:"🚌",label:"TRANSPORT",color:"#69F0AE",note:null},{key:"activities",icon:"🎯",label:"ACTIVITIES",color:"#FF9F43",note:null},{key:"buffer",icon:"🛡️",label:"BUFFER",color:"rgba(255,255,255,0.5)",note:null}];const maxCat=Math.max(...cats.map(c=>bd[c.key]||0),1);return(
-              <div style={{marginBottom:16,background:"linear-gradient(135deg,rgba(0,8,20,0.7),rgba(0,20,40,0.4))",border:"1px solid rgba(201,160,76,0.12)",borderRadius:10,padding:isMobile?"10px 12px":"14px 16px"}}>
-                <div style={{fontSize:11,color:"rgba(201,160,76,0.7)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:10}}>BUDGET BREAKDOWN</div>
-                {cats.map(c=>{const val=bd[c.key]||0;const pct=(val/maxCat)*100;return(
-                  <div key={c.key} style={{marginBottom:8}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}>
-                      <div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:13}}>{c.icon}</span><span style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.7)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1}}>{c.label}</span></div>
-                      <span style={{fontSize:isMobile?13:15,fontWeight:900,color:c.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{fmt(val)}</span>
-                    </div>
-                    <div style={{height:5,background:"rgba(255,255,255,0.05)",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${c.color}66,${c.color})`,borderRadius:3,transition:"width 0.6s ease"}}/></div>
-                    {c.note&&<div style={{fontSize:isMobile?10:12,color:"rgba(255,255,255,0.4)",fontStyle:"italic",marginTop:2}}>{c.note}</div>}
-                  </div>
-                );})}
-                {bd.routingNote&&<div style={{marginTop:8,padding:"8px 10px",background:"rgba(0,229,255,0.04)",border:"1px solid rgba(0,229,255,0.1)",borderRadius:6,fontSize:isMobile?11:13,color:"rgba(255,255,255,0.55)",fontStyle:"italic",lineHeight:1.5}}>🗺️ {bd.routingNote}</div>}
-              </div>
-            );})()}
-            {flatPhases.map(phase=>{
-              const budget=phase.budget||phase.cost||0;
-              let rowPhaseSpend=null;
-              for(const sp of segPhases){const seg=sp.segments.find(s=>s.id===`${phase.id}a`);if(seg){rowPhaseSpend={id:sp.id,segments:[seg]};break;}}
-              const plannedSpend=rowPhaseSpend?computePhasePlannedSpend(rowPhaseSpend,allSegD).total:0;
-              const pct=budget>0?(plannedSpend/budget)*100:0;
-              const barW=Math.min(pct,100);
-              const barGrad=pct>100?`linear-gradient(90deg,#FF6B6B88,#FF6B6B)`: `linear-gradient(90deg,${phase.color}88,${phase.color})`;
-              return(
-                <div key={phase.id} style={{background:"rgba(0,8,20,0.5)",border:"1px solid rgba(0,229,255,0.08)",borderRadius:8,padding:"9px 13px",borderLeft:"3px solid "+phase.color,marginBottom:6}}>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-                    <div style={{display:"flex",alignItems:"center",gap:8,flex:1,minWidth:0}}>
-                      <span style={{fontSize:15}}>{phase.flag}</span>
-                      <div><div style={{fontSize:isMobile?13:15,fontWeight:700,color:"#FF9F43"}}>{phase.name}</div><div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.55)"}}>{phase.nights}n · <span style={{color:"#FF9F43",fontWeight:600}}>{phase.country}</span></div></div>
-                    </div>
-                    <span style={{fontSize:15,fontWeight:900,color:phase.color,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0,marginLeft:8}}>{fmt(budget)}</span>
-                  </div>
-                  <div style={{height:6,background:"rgba(255,255,255,0.05)",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",width:barW+"%",background:barGrad,borderRadius:3,transition:"width 0.6s ease"}}/></div>
-                  <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}><div style={{fontSize:isMobile?11:13,color:"rgba(255,255,255,0.5)"}}>{fmt(Math.round(budget/Math.max(phase.nights,1)))}/night</div><div style={{fontSize:isMobile?11:13,color:pct>100?"#FF6B6B":"rgba(255,255,255,0.4)"}}>{Math.round(pct)}% allocated</div></div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-        {tab==="book"&&(
-          <Timeline tripData={tripData}/>
-        )}
-        {/* arch #2: full INTEL tab preserved */}
-        {tab==="intel"&&(
-          <div>
-            {!explorerDest?(
-              <div>
-                <IntelMap tripData={{...tripData,departureCity:depInput}} isMobile={isMobile} onSelectPhase={(phase)=>openIntel(phase.name,phase.name,phase.type)}/>
-              </div>
-            ):(
-              <div>
-                <div style={{display:"flex",alignItems:"center",gap:9,marginBottom:14}}>
-                  <button onClick={()=>setExplorerDest(null)} style={{background:"none",border:"1px solid #111D2A",borderRadius:4,color:"#FFF",fontSize:15,padding:"4px 9px",cursor:"pointer",minHeight:36,marginRight:10}}>← BACK</button>
-                  <div><div style={{fontSize:15,fontWeight:700,color:"#FFF"}}>{explorerDest.destination}</div><div style={{fontSize:15,color:"rgba(255,255,255,0.5)",letterSpacing:2}}>{TI[explorerDest.type]} {explorerDest.type?.toUpperCase()}</div></div>
-                </div>
-                {loadingIntel?<div>{[80,65,72,55,68].map((w,i)=><div key={i} className="loading-skeleton" style={{width:w+"%"}}/>)}<div style={{color:"rgba(255,255,255,0.4)",fontSize:15,letterSpacing:2,marginTop:6}}>LOADING INTEL...</div></div>
-                :explorerData[explorerDest.destination]?(()=>{
-                  const d=explorerData[explorerDest.destination];
-                  if(d.error)return(<div style={{textAlign:"center",padding:"30px 20px"}}><div style={{fontSize:32,marginBottom:16}}>📡</div><div style={{fontSize:15,color:"#FF6B6B",marginBottom:8,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Intel unavailable</div><div style={{fontSize:15,color:"rgba(255,255,255,0.4)",marginBottom:20,lineHeight:1.6}}>{d.errorMsg}</div><button style={{background:"rgba(255,107,107,0.15)",border:"1px solid #FF6B6B44",borderRadius:8,color:"#FF6B6B",fontSize:15,padding:"10px 20px",cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:44}} onClick={()=>{setExplorerData(p=>({...p,[explorerDest.destination]:undefined}));openIntel(explorerDest.destination,explorerDest.phaseName,explorerDest.type);}}>↺ RETRY</button></div>);
-                  return(<div style={{display:"flex",flexDirection:"column",gap:12}}>
-                    {d.tagline&&<div style={{fontSize:15,color:"#A29BFE",fontStyle:"italic",borderLeft:"3px solid #A29BFE",paddingLeft:11}}>{d.tagline}</div>}
-                    <div style={{display:"flex",flexDirection:"column",gap:9}}>
-                      {d.mustDo&&<div className="intel-section"><div className="intel-section-label" style={{color:"#00E5FF"}}>⚡ MUST DO</div>{d.mustDo.map((item,i)=><div key={i} style={{fontSize:isMobile?13:15,color:"#FFF",marginBottom:4,lineHeight:1.5}}>• {item}</div>)}</div>}
-                      {d.hiddenGems&&<div className="intel-section"><div className="intel-section-label" style={{color:"#69F0AE"}}>💎 HIDDEN GEMS</div>{d.hiddenGems.map((item,i)=><div key={i} style={{fontSize:isMobile?13:15,color:"#FFF",marginBottom:4,lineHeight:1.5}}>• {item}</div>)}</div>}
-                      {d.food&&<div className="intel-section"><div className="intel-section-label" style={{color:"#c9a04c"}}>🍽️ FOOD</div>{d.food.map((item,i)=><div key={i} style={{fontSize:isMobile?13:15,color:"#FFF",marginBottom:4,lineHeight:1.5}}>• {item}</div>)}</div>}
-                      {d.warnings?.length>0&&<div className="intel-section"><div className="intel-section-label" style={{color:"#FF6B6B"}}>⚠️ HEADS UP</div>{d.warnings.map((item,i)=><div key={i} style={{fontSize:isMobile?13:15,color:"#FFF",marginBottom:4,lineHeight:1.5}}>• {item}</div>)}</div>}
-                    </div>
-                    {d.streetIntel?.length>0&&<div style={{background:"linear-gradient(135deg,rgba(255,107,107,0.07),rgba(255,159,67,0.05))",border:"1px solid rgba(255,107,107,0.4)",borderRadius:10,padding:13}}>
-                      <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:10}}><div style={{width:7,height:7,borderRadius:"50%",background:"#FF6B6B",boxShadow:"0 0 8px #FF6B6B"}}/><div style={{fontSize:15,color:"#FF6B6B",letterSpacing:3,fontWeight:700}}>STREET INTEL</div></div>
-                      {d.streetIntel.map((intel,i)=>{const tc2={SCAM:"#FF6B6B",LEGAL:"#c9a04c",HEALTH:"#69F0AE",MONEY:"#FF9F43"};const ti2={SCAM:"🎭",LEGAL:"⚖️",HEALTH:"🏥",MONEY:"💸"};const c=tc2[intel.type]||"#FF6B6B";return(<div key={i} className="street-card" style={{borderLeft:`3px solid ${c}`}}><span style={{fontSize:15,flexShrink:0}}>{ti2[intel.type]||"⚠️"}</span><div><div style={{fontSize:15,letterSpacing:2,fontWeight:700,marginBottom:3,color:c}}>{intel.type}</div><div style={{fontSize:15,color:"#FFF",lineHeight:1.6}}>{intel.alert}</div></div></div>);})}
-                    </div>}
-                    {d.culture&&<div className="intel-section"><div className="intel-section-label" style={{color:"#A29BFE"}}>🏛️ CULTURE & VIBE</div><div style={{fontSize:isMobile?13:15,color:"#FFF",lineHeight:1.6}}>{d.culture}</div></div>}
-                    {d.climate&&<div className="intel-section"><div className="intel-section-label" style={{color:"#FF9F43"}}>🌤️ CLIMATE</div><div style={{fontSize:isMobile?13:15,color:"#FFF"}}>{d.climate}</div></div>}
-                    {d.diveHighlight&&<div className="intel-section" style={{borderColor:"rgba(0,229,255,0.2)"}}><div className="intel-section-label" style={{color:"#00E5FF"}}>🤿 DIVE INTEL</div><div style={{fontSize:isMobile?13:15,color:"#FFF"}}>{d.diveHighlight}</div></div>}
-                  </div>);
-                })():null}
-              </div>
-            )}
-          </div>
-        )}
-        {tab==="blueprint"&&(
-          <div>
-            {(tripData.budgetBreakdown||tripData.phases?.length>0)?(
-              <div>
-                {(tripData.vision||tripData.visionNarrative)&&<div style={{borderLeft:"2px solid rgba(255,159,67,0.4)",paddingLeft:12,marginBottom:18}}><div style={{fontSize:14,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:4}}>✦ {tripData.vision?"ORIGINAL VISION":"CO-ARCHITECT SUMMARY"}</div><div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?14:16,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.7}}>"{tripData.vision||tripData.visionNarrative}"</div></div>}
-                {(()=>{const bd=tripData.budgetBreakdown;if(!bd)return <div style={{padding:"12px 14px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:11,marginBottom:16}}><div style={{fontSize:14,color:"rgba(255,159,67,0.65)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:6}}>✦ BUDGET OVERVIEW</div><div style={{fontSize:14,fontWeight:700,color:"#c9a04c",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Total: {fmt(tripData.budgetCap||tripData.totalBudget||0)}</div><div style={{fontSize:14,color:"rgba(255,255,255,0.50)",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginTop:4}}>{tripData.phases?.length||0} phases · {segPhases.reduce((s,p)=>s+p.totalNights,0)} nights</div></div>;const cats=[{key:"flights",icon:"✈️",label:"Flights",note:bd.flightsNote},{key:"accommodation",icon:"🏨",label:"Accommodation",note:bd.accommodationNote},{key:"food",icon:"🍜",label:"Food",note:bd.foodNote},{key:"transport",icon:"🚌",label:"Transport",note:null},{key:"activities",icon:"🎯",label:"Activities",note:null},{key:"buffer",icon:"🎒",label:"Buffer",note:null}].filter(c=>bd[c.key]>0);const total=cats.reduce((s,c)=>s+(bd[c.key]||0),0);return(
-                  <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.08),rgba(0,8,20,0.6))",border:"1px solid rgba(169,70,29,0.3)",borderRadius:11,padding:"12px 14px",marginBottom:16}}>
-                    <div style={{fontSize:14,color:"rgba(255,159,67,0.85)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,marginBottom:10}}>✦ BUDGET BLUEPRINT</div>
-                    {cats.map(c=>{const val=bd[c.key]||0;return(
-                      <div key={c.key} style={{display:"flex",alignItems:"center",padding:"7px 0",gap:8}}>
-                        <span style={{fontSize:14,width:22,textAlign:"center",flexShrink:0}}>{c.icon}</span>
-                        <span style={{fontSize:isMobile?12:14,color:"rgba(255,255,255,0.75)",fontWeight:600,width:isMobile?90:110,flexShrink:0}}>{c.label}</span>
-                        <span style={{flex:1,fontSize:isMobile?11:13,fontFamily:"'Playfair Display',serif",fontStyle:"italic",color:"rgba(255,255,255,0.45)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.note||""}</span>
-                        <span style={{fontSize:isMobile?13:15,fontWeight:700,color:"#c9a04c",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0,marginLeft:8}}>~{fmt(val)}</span>
-                      </div>
-                    );})}
-                    <div style={{height:1,background:"rgba(255,255,255,0.12)",margin:"8px 0"}}/>
-                    <div style={{display:"flex",alignItems:"center",padding:"4px 0",gap:8}}>
-                      <span style={{fontSize:14,width:22,flexShrink:0}}> </span>
-                      <span style={{fontSize:isMobile?12:14,color:"rgba(255,255,255,0.9)",fontWeight:700,width:isMobile?90:110,flexShrink:0}}>TOTAL</span>
-                      <span style={{flex:1}}/>
-                      <span style={{fontSize:isMobile?14:16,fontWeight:900,color:"#c9a04c",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0,marginLeft:8}}>~{fmt((tripData.budgetCap>0)?tripData.budgetCap:total)}</span>
-                    </div>
-                    {bd.routingNote&&<div style={{marginTop:10,borderLeft:"2px solid rgba(255,159,67,0.4)",paddingLeft:10}}><div style={{fontSize:14,color:"rgba(255,159,67,0.6)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",marginBottom:3}}>✦ WHY THIS ROUTE</div><div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?14:15,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.75)",lineHeight:1.6}}>{bd.routingNote}</div></div>}
-                  </div>
-                );})()}
-              </div>
-            ):(
-              <div style={{textAlign:"center",padding:"40px 20px"}}>
-                <div style={{fontSize:32,marginBottom:12}}>✦</div>
-                <div style={{fontFamily:"'Playfair Display',serif",fontSize:isMobile?14:16,fontWeight:300,fontStyle:"italic",color:"rgba(255,255,255,0.55)",lineHeight:1.7}}>Complete your first expedition to unlock your Blueprint.</div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      {isMobile&&!isFullscreen&&!phaseDetailView&&<div style={{height:hideBottomNav?"calc(80px + env(safe-area-inset-bottom))":"calc(64px + env(safe-area-inset-bottom))"}}/>}
-      {isMobile&&!isFullscreen&&!hideBottomNav&&<div style={{opacity:phaseDetailView?0:1,pointerEvents:phaseDetailView?"none":"auto",transition:"opacity 0.35s cubic-bezier(0.25,0.46,0.45,0.94)"}}><MissionBottomNav activeTab={tab} onTab={t=>{if(t==="pack")onPackConsole();else{setTab(t);if(t!=="intel")setExplorerDest(null);}}}/></div>}
+
+      {/* Bottom spacer for mobile nav */}
+      {isMobile&&!phaseDetailView&&<div style={{height:hideBottomNav?'calc(80px + env(safe-area-inset-bottom))':'calc(64px + env(safe-area-inset-bottom))'}}/>}
     </div>
   );
 }
-
-// CircularRing, getPackBrief, PackConsole — imported from components/PackConsole.jsx
-
-// AmbientChat — imported from components/AmbientChat.jsx
-
 
 export default MissionConsole;
