@@ -4,6 +4,7 @@
 // Phase 2 - Full implementation
 
 import { useEffect, useState } from "react";
+import DatePickerInput from "../components/DatePickerInput";
 import VisionReveal from "../components/VisionReveal";
 import { runDreamExpeditionBuild } from "../utils/dreamVisionBuild";
 
@@ -70,6 +71,8 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [departureDate, setDepartureDate] = useState("");
+  /** YYYY-MM-DD from calendar; free-text window stays in `departureDate`. */
+  const [departureIso, setDepartureIso] = useState("");
   const [duration, setDuration] = useState("");
   const [budget, setBudget] = useState("");
   const [loading, setLoading] = useState(false);
@@ -97,13 +100,14 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
     const { mode, amount } = parseBudget(budget);
     const travelStyleLabel = TRAVEL_STYLES.find((s) => s.id === selectedStyle)?.label || "";
     const nights = parseInt(duration, 10) || 14;
-    const returnDate = computeReturnDate(departureDate, nights);
+    const effectiveDeparture = departureIso || departureDate || "";
+    const returnDate = computeReturnDate(departureIso || departureDate, nights);
     try {
       const result = await runDreamExpeditionBuild({
         vision: vision.trim(),
         tripName: journeyName || "My Expedition",
         city: "",
-        date: departureDate || "",
+        date: effectiveDeparture,
         returnDate,
         budgetMode: mode,
         budgetAmount: amount,
@@ -289,21 +293,21 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 12 }}>
-          <div
-            style={{
-              width: 2,
-              background: "rgba(201,160,76,0.6)",
-              borderRadius: 2,
-              flexShrink: 0,
-            }}
-          />
+        {/* Vision textarea */}
+        <div
+          style={{
+            border: "1px solid rgba(201,160,76,0.35)",
+            borderLeft: "2px solid rgba(201,160,76,0.6)",
+            borderRadius: 14,
+            padding: "14px 16px",
+            background: "rgba(255,255,255,0.02)",
+          }}
+        >
           <textarea
             value={vision}
             onChange={(e) => setVision(e.target.value)}
             placeholder="Describe your journey..."
             style={{
-              flex: 1,
               minHeight: 140,
               background: "transparent",
               border: "none",
@@ -500,8 +504,13 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           <div>
             <button type="button" onClick={() => togglePill("dates")} style={triggerPillStyle("dates")}>
               <span style={triggerLabelStyle}>
-                {departureDate || duration
-                  ? [departureDate, duration ? `${duration} nights` : null].filter(Boolean).join(" \u00B7 ")
+                {departureIso || departureDate || duration
+                  ? [
+                      departureIso || departureDate,
+                      duration ? `${duration} nights` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" \u00B7 ")
                   : "Dates & Budget"}
               </span>
               <span style={chevronStyle("dates")}>{"\u25BE"}</span>
@@ -520,14 +529,77 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
                   animation: "fadeUp 0.25s ease",
                 }}
               >
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <div
+                    style={{
+                      fontFamily: "Instrument Sans, sans-serif",
+                      fontWeight: 600,
+                      fontSize: 11,
+                      color: "rgba(232,220,200,0.45)",
+                      letterSpacing: "1.5px",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    WHEN ARE YOU THINKING?
+                  </div>
+                  <input
+                    type="text"
+                    value={departureDate}
+                    onChange={(e) => setDepartureDate(e.target.value)}
+                    placeholder="e.g. September 2026 or Sep 16, 2026"
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      borderBottom: "1px solid rgba(122,111,93,0.4)",
+                      outline: "none",
+                      fontFamily: "Instrument Sans, sans-serif",
+                      fontWeight: 400,
+                      fontSize: 14,
+                      color: "#E8DCC8",
+                      padding: "6px 0",
+                      caretColor: "#C9A04C",
+                      colorScheme: "dark",
+                    }}
+                  />
+                  <div style={{ marginTop: 4, width: "100%" }}>
+                    <div
+                      style={{
+                        fontFamily: "Instrument Sans, sans-serif",
+                        fontSize: 11,
+                        fontWeight: 500,
+                        color: "rgba(232,220,200,0.35)",
+                        marginBottom: 6,
+                        letterSpacing: "0.3px",
+                      }}
+                    >
+                      Or pick a date
+                    </div>
+                    <DatePickerInput
+                      value={departureIso}
+                      onChange={setDepartureIso}
+                      aria-label="Departure date"
+                      style={{
+                        width: "100%",
+                        minHeight: 44,
+                        background: "rgba(255,255,255,0.03)",
+                        border: "1px solid rgba(122,111,93,0.45)",
+                        borderRadius: 10,
+                        fontFamily: "Instrument Sans, sans-serif",
+                        fontWeight: 400,
+                        fontSize: 14,
+                        color: "#E8DCC8",
+                        padding: "10px 42px 10px 12px",
+                        caretColor: "#C9A04C",
+                      }}
+                      buttonStyle={{
+                        border: "1px solid rgba(201,160,76,0.4)",
+                        background: "rgba(201,160,76,0.12)",
+                        borderRadius: 8,
+                      }}
+                    />
+                  </div>
+                </div>
                 {[
-                  {
-                    label: "WHEN ARE YOU THINKING?",
-                    value: departureDate,
-                    setter: setDepartureDate,
-                    type: "text",
-                    placeholder: "e.g. September 2026 or Sep 16, 2026",
-                  },
                   {
                     label: "HOW LONG? (NIGHTS)",
                     value: duration,
