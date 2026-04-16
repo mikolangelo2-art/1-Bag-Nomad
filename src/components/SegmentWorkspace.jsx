@@ -592,9 +592,6 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
     {id:"activities",label:actCount?`Activities (${actCount})`:"Activities"},
     {id:"food",label:"Food"},
     {id:"itinerary",label:"Itinerary"},
-    {id:"budget",label:"Budget"},
-    {id:"calendar",label:isMobile?"Cal":"Calendar"},
-    {id:"docs",label:"Docs"},
   ];
   const activePillStyle={
     height:36,
