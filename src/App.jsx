@@ -712,8 +712,8 @@ export default function App() {
     setFounderMode(true);
   }
 
-  const showShellBottomNav=isOperational&&!isDesktop&&!["console","pack"].includes(screen);
-  const feedbackBottomPad=(tripData?.isDemo?82:72)+(showShellBottomNav?64:0);
+  const showShellBottomNav=isOperational&&!isDesktop&&screen!=="pack";
+  const feedbackBottomPad=(tripData?.isDemo?82:72)+(isOperational&&!isDesktop?64:0);
 
   return(
     <>
@@ -733,11 +733,11 @@ export default function App() {
       {isOperational&&(
         <div style={{display:"flex",minHeight:"100vh",background:"#0A0705"}}>
           {isDesktop&&<Sidebar activeScreen={screen} onNavigate={handleNavigate}/>}
-          <div style={{flex:1,marginLeft:isDesktop?68:0,marginBottom:isDesktop?0:(["console","pack"].includes(screen)?0:64),minHeight:"100vh",overflowY:"auto"}}>
+          <div style={{flex:1,marginLeft:isDesktop?68:0,marginBottom:isDesktop?0:screen==="pack"?0:64,minHeight:"100vh",overflowY:"auto"}}>
             {screen==="landing"&&tripData&&<LandingPage tripData={tripData} onNavigate={handleNavigate}/>}
             {(screen==="console"||prevScreen==="console")&&hasTrip&&tripData&&(
               <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}>
-                <MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onExitDemo={handleExitDemo} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} onUpdateTripData={(updates)=>setTripData(d=>({...d,...updates}))} onTripAmbientContextChange={setTripAmbientCtx} founderExpedition={founderExpedition} founderMode={founderMode} onToggleFounderExpedition={handleToggleFounderExpedition} onSaveAsFounderExpedition={handleSaveAsFounderExpedition}/>
+                <MissionConsole tripData={tripData} onNewTrip={handleNewTrip} onExitDemo={handleExitDemo} onRevise={handleRevise} onPackConsole={()=>{setPendingTab("next");slideScreen("pack");}} onHomecoming={handleHomecoming} isFullscreen={fullscreen} setFullscreen={setFullscreen} initialTab={pendingTab} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} onUpdateTripData={(updates)=>setTripData(d=>({...d,...updates}))} onTripAmbientContextChange={setTripAmbientCtx} founderExpedition={founderExpedition} founderMode={founderMode} onToggleFounderExpedition={handleToggleFounderExpedition} onSaveAsFounderExpedition={handleSaveAsFounderExpedition} hideBottomNav={true}/>
               </div>
             )}
             {(screen==="pack"||prevScreen==="pack")&&tripData&&hasTrip&&(

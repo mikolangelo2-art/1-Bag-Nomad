@@ -19,7 +19,7 @@ import Timeline from './Timeline';
 import IntelMap from './IntelMap';
 import TripBudgetRing from './TripBudgetRing';
 
-function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading,onUpdateTripData,onTripAmbientContextChange,founderExpedition=null,founderMode=false,onToggleFounderExpedition,onSaveAsFounderExpedition}) {
+function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,onHomecoming,isFullscreen,setFullscreen,initialTab="next",segmentSuggestions,suggestionsLoading,onUpdateTripData,onTripAmbientContextChange,founderExpedition=null,founderMode=false,onToggleFounderExpedition,onSaveAsFounderExpedition,hideBottomNav=false}) {
   const isMobile=useMobile();
   const [tab,setTab]=useState(initialTab);
   const [intelMapActive,setIntelMapActive]=useState(false);
@@ -114,7 +114,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
     <div className="mc-root mc-trip-bleed" style={{animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
       <WorldMapBackground phases={tripData.phases||[]} activeCountry={phaseDetailView?.country} departureCity={depInput}/>
       {phaseDetailView&&<PhaseDetailPage phase={phaseDetailView} intelData={explorerData} onBack={()=>setPhaseDetailView(null)} segmentSuggestions={segmentSuggestions} suggestionsLoading={suggestionsLoading} homeCity={tripData.departureCity||tripData.city||""} segPhases={segPhases} warningFlags={warningFlags} onDismissWarning={dismissWarning} allPhases={tripData.phases||[]} onAmbientSegmentChange={setCaWorkspaceSegment}/>}
-      {!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto'}}><ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/></div>}
+      {!isFullscreen&&!hideBottomNav&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto'}}><ConsoleHeader console="trip" isMobile={isMobile} onTripConsole={()=>{}} onPackConsole={onPackConsole}/></div>}
       {isMobile&&!isFullscreen&&<div style={{transform:intelMapActive?'translateY(-100%)':'translateY(0)',opacity:intelMapActive?0:1,transition:'transform 400ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 400ms cubic-bezier(0.25,0.46,0.45,0.94)',pointerEvents:intelMapActive?'none':'auto',padding:"5px 12px",borderBottom:"1px solid rgba(0,229,255,0.08)",display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:8,background:"rgba(0,8,20,0.98)",flexShrink:0,position:"relative",zIndex:1}}>
         <button type="button" onClick={onRevise} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 14px",borderRadius:7,border:"1.5px solid rgba(0,229,255,0.55)",background:"rgba(0,229,255,0.12)",color:"#00E5FF",fontSize:14,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,minHeight:32}}><span>✏️ REVISE</span><HelpTip noLeadingMargin desktopOnly text="Take your expedition back to the Co-Architect — tweak destinations, timing, budget, anything" /></button>
         <button onClick={handleNewTripClick} style={{padding:"6px 14px",borderRadius:7,border:confirmNewTrip?"1px solid rgba(255,107,107,0.5)":"1px solid rgba(255,255,255,0.18)",background:confirmNewTrip?"rgba(255,107,107,0.12)":"transparent",color:confirmNewTrip?"#FF6B6B":"rgba(255,255,255,0.45)",fontSize:13,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:confirmNewTrip?700:400,letterSpacing:1,minHeight:32}}>{confirmNewTrip?"⚠️ CONFIRM?":"+ NEW TRIP"}</button>
@@ -510,8 +510,8 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
           </div>
         )}
       </div>
-      {isMobile&&!isFullscreen&&!phaseDetailView&&<div style={{height:"calc(64px + env(safe-area-inset-bottom))"}}/>}
-      {isMobile&&!isFullscreen&&<div style={{opacity:phaseDetailView?0:1,pointerEvents:phaseDetailView?"none":"auto",transition:"opacity 0.35s cubic-bezier(0.25,0.46,0.45,0.94)"}}><MissionBottomNav activeTab={tab} onTab={t=>{if(t==="pack")onPackConsole();else{setTab(t);if(t!=="intel")setExplorerDest(null);}}}/></div>}
+      {isMobile&&!isFullscreen&&!phaseDetailView&&<div style={{height:hideBottomNav?"calc(80px + env(safe-area-inset-bottom))":"calc(64px + env(safe-area-inset-bottom))"}}/>}
+      {isMobile&&!isFullscreen&&!hideBottomNav&&<div style={{opacity:phaseDetailView?0:1,pointerEvents:phaseDetailView?"none":"auto",transition:"opacity 0.35s cubic-bezier(0.25,0.46,0.45,0.94)"}}><MissionBottomNav activeTab={tab} onTab={t=>{if(t==="pack")onPackConsole();else{setTab(t);if(t!=="intel")setExplorerDest(null);}}}/></div>}
     </div>
   );
 }
