@@ -266,7 +266,7 @@ export default function GenericSuggestionCard({
           style={{
             fontSize: 14,
             fontFamily: "Instrument Sans, sans-serif",
-            color: "rgba(232,220,200,0.75)",
+            color: "rgba(255,245,220,0.80)",
             marginBottom: 6,
             lineHeight: 1.35,
           }}
@@ -279,7 +279,7 @@ export default function GenericSuggestionCard({
           fontFamily: "'Fraunces',serif",
           fontSize: 17,
           fontWeight: 400,
-          color: "#E8DCC8",
+          color: "rgba(255,245,220,0.94)",
           lineHeight: 1.25,
           marginBottom: 6,
           wordBreak: "break-word",
@@ -291,14 +291,14 @@ export default function GenericSuggestionCard({
         style={{
           fontSize: 14,
           fontFamily: "Instrument Sans, sans-serif",
-          color: DS_GOLD,
+          color: "rgba(245,158,11,0.90)",
           fontWeight: 600,
         }}
       >
         {priceStr}
         {item.rating != null ? (
-          <span style={{ color: "rgba(232,220,200,0.6)", fontWeight: 500, marginLeft: 8 }}>
-            <span style={{ color: DS_GOLD }}>★</span> {item.rating}/10
+          <span style={{ color: "rgba(255,255,255,0.55)", fontWeight: 500, marginLeft: 8 }}>
+            <span style={{ color: "rgba(245,158,11,0.90)" }}>★</span> {item.rating}/10
           </span>
         ) : null}
       </div>
@@ -344,7 +344,7 @@ export default function GenericSuggestionCard({
             fontFamily: "'Fraunces',serif",
             fontWeight: 300,
             fontStyle: "italic",
-            fontSize: 14,
+            fontSize: 15,
             color: "rgba(232,220,200,0.75)",
             lineHeight: 1.6,
             marginBottom: 10,
@@ -357,7 +357,7 @@ export default function GenericSuggestionCard({
         <div
           style={{
             fontSize: 14,
-            color: "rgba(232,220,200,0.78)",
+            color: "rgba(255,245,220,0.78)",
             lineHeight: 1.5,
             marginBottom: 10,
             fontFamily: "Instrument Sans, sans-serif",

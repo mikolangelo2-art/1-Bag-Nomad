@@ -552,7 +552,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
   const committedFooterWrapStyle={marginTop:14,paddingTop:12,borderTop:'1px solid rgba(255,255,255,0.06)'};
   const addedPlanLineStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(105,240,174,0.88)',letterSpacing:0.35,lineHeight:1.45};
   const returnToLogFooterStyle={fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.36)',letterSpacing:'0.14em',lineHeight:1.58,marginTop:8};
-  const caReminderStyle={fontFamily:"'Fraunces',serif",fontStyle:'italic',fontSize:16,color:'rgba(248,245,240,0.65)',textAlign:'center',padding:'14px 16px 10px',width:'100%',background:'none',border:'none',cursor:'pointer',display:'block',lineHeight:1.6};
+  const caReminderStyle={fontFamily:"'Fraunces',serif",fontStyle:'italic',fontSize:16,color:'rgba(248,245,240,0.55)',textAlign:'center',padding:'14px 16px 10px',width:'100%',background:'none',border:'none',cursor:'pointer',display:'block',lineHeight:1.6};
   const tripFieldLabel={fontSize:isMobile?12:14,color:"rgba(0,229,255,0.75)",letterSpacing:1.5,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:500,opacity:0.92};
   const cityInStyle={background:"rgba(0,0,0,0.55)",border:"1px solid rgba(255,255,255,0.22)",borderRadius:6,color:"#FFF",fontSize:isMobile?12:15,padding:isMobile?"4px 7px":"5px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",width:"100%",maxWidth:"100%",boxSizing:"border-box",lineHeight:1.6};
   const legChipStyle={padding:"5px 10px",borderRadius:6,border:"1px solid rgba(0,229,255,0.35)",background:"rgba(0,229,255,0.06)",color:"rgba(0,229,255,0.88)",fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",minHeight:32,lineHeight:1.35};
@@ -665,7 +665,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
       <style>{`.sw-pill-tab-row::-webkit-scrollbar{display:none}.sw-pill-tab-row{scrollbar-width:none;-ms-overflow-style:none}`}</style>
       <div className="mc-content" style={{width:1126,maxWidth:'100%',margin:'0 auto',borderInline:'1px solid var(--border, #2e303a)',overflow:'visible',flex:'none',minHeight:'100%',boxSizing:'border-box',position:'relative',zIndex:1}}>
       {/* Header — glass card (Trip Console / PhaseCard language) */}
-      <div ref={segmentWsHeaderRef} style={{display:'flex',alignItems:'center',padding:isMobile?'14px 10px':'18px 16px',gap:12,background:'rgba(23,27,32,0.65)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',borderBottom:'1px solid rgba(201,160,76,0.18)',borderTop:'1px solid rgba(255,255,255,0.06)',position:'sticky',top:0,zIndex:10,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.3), 0 0 24px rgba(201,160,76,0.04)',borderTopLeftRadius:segWorkspaceHdrR,borderTopRightRadius:segWorkspaceHdrR,overflow:'hidden'}}>
+      <div ref={segmentWsHeaderRef} style={{display:'flex',alignItems:'center',padding:isMobile?'16px 10px':'16px 16px',gap:12,background:'rgba(21,15,10,0.95)',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',borderBottom:'1px solid rgba(201,160,76,0.15)',borderTop:'1px solid rgba(201,160,76,0.08)',position:'sticky',top:0,zIndex:10,boxShadow:'inset 0 1px 0 rgba(201,160,76,0.06), 0 4px 20px rgba(0,0,0,0.35)',borderTopLeftRadius:segWorkspaceHdrR,borderTopRightRadius:segWorkspaceHdrR,overflow:'hidden'}}>
         {isMobile?(
           <>
             <button type="button" onClick={onBack} style={{background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:24,cursor:'pointer',padding:'0 8px 0 0',fontWeight:300,lineHeight:1,minWidth:32,minHeight:44,display:'flex',alignItems:'center',gap:6}}>‹ <span style={{fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:1.5,color:'rgba(255,255,255,0.45)'}}>{phaseLabelName.toUpperCase()}</span></button>
@@ -682,7 +682,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               <span style={{color:'rgba(255,255,255,0.25)',flexShrink:0}}>›</span>
               <span onClick={onBack} style={{color:'rgba(255,255,255,0.45)',cursor:'pointer',letterSpacing:1.5,fontSize:12,whiteSpace:'nowrap'}}>{phaseLabelName.toUpperCase()}</span>
               <span style={{color:'rgba(255,255,255,0.25)',flexShrink:0}}>›</span>
-              <span style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:400,color:'rgba(255,255,255,0.90)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',minWidth:0}}>{segment.name}</span>
+              <span style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:400,color:'rgba(255,245,220,0.94)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',minWidth:0}}>{segment.name}</span>
             </div>
             <div style={{display:'flex',alignItems:'stretch',gap:2,border:'1px solid rgba(255,255,255,0.10)',borderRadius:12,overflow:'hidden',background:'rgba(0,8,24,0.45)',flexShrink:0,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.04)'}}>
               <div style={{padding:'8px 14px',textAlign:'center',minWidth:76}}>
@@ -844,6 +844,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         </div>}
         {/* STAY — Session 53M: useTabSuggestions / GenericSuggestionCard only (no StaySuggestionExperienceCard) */}
         {visitedTabs.has("stay")&&<div style={{display:tab==="stay"?"block":"none",padding:0}}>
+          {!suggestionsLoading&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("openCA",{detail:{message:`I want more stay options in ${dest} — boutique, budget, or something specific.`}}))} style={caReminderStyle}>Want different options? Your Co-Architect can find them</button>}
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Find your accommodation for this stop — use the Co-Architect's suggestion or search for your own property" />
           </div>
@@ -870,14 +871,13 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
           {(!showStayAccommodationCard||stayInsightSavedIdx!=null)&&(
             <SuggestionPhotoDedupProvider>
             <>
-              {!suggestionsLoading&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("openCA",{detail:{message:`I want more stay options in ${dest} — boutique, budget, or something specific.`}}))} style={caReminderStyle}>Want different options? Your Co-Architect can find them</button>}
               {stayInsight.loading&&<SuggestionShimmer message={`Finding the best stays in ${dest||"this destination"}...`}/>}
               {!stayInsight.loading&&stayInsight.items.length>0&&(()=>{
                 const stayItems=stayInsight.items.slice(0,3);
                 const stayInsightToolbar=(
                   <div style={{display:'flex',alignItems:'center',marginBottom:0}}>
                     <button type="button" title="Open booking link" onClick={()=>setBookDropdown(bookDropdown==='stay'?null:'stay')} style={{background:'none',border:'1px solid rgba(0,229,255,0.25)',borderRadius:6,color:'rgba(0,229,255,0.60)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>🔗</button>
-                    <button type="button" title={showStayBookingForm?"Close booking form":"Book or edit stay details"} onClick={()=>setShowStayBookingForm(o=>!o)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>{showStayBookingForm?"CLOSE":"BOOK"}</button>
+                    <button type="button" title={showStayBookingForm?"Close booking form":"Book or edit stay details"} onClick={()=>setShowStayBookingForm(o=>!o)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>BOOK</button>
                     <button type="button" title="Remove from plan" onClick={clearStayPlan} style={{background:'none',border:'1px solid rgba(255,255,255,0.15)',borderRadius:6,color:'rgba(255,255,255,0.35)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",padding:'4px 10px',cursor:'pointer',minHeight:28}}>✕</button>
                   </div>
                 );
@@ -936,7 +936,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
                   </button>
                 </div>
               )}
-              {stayInsightSavedIdx!=null&&<button type="button" onClick={()=>setStayManualOpen(o=>!o)} style={{width:'100%',textAlign:'left',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(201,160,76,0.35)',borderRadius:10,color:'#c9a04c',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,padding:'10px 14px',cursor:'pointer',marginTop:8,marginBottom:4,minHeight:44}}>+ Add another stay</button>}
+              {stayInsightSavedIdx!=null&&<button type="button" onClick={()=>setStayManualOpen(o=>!o)} style={{width:'100%',textAlign:'left',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(201,160,76,0.35)',borderRadius:10,color:'#c9a04c',fontSize:12,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:700,letterSpacing:1,padding:'10px 14px',cursor:'pointer',marginTop:8,marginBottom:4,minHeight:44}}>{stayManualOpen?'⌄ Hide manual booking':'+ Add another stay'}</button>}
             </>
             </SuggestionPhotoDedupProvider>
           )}
@@ -975,10 +975,10 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         </div>}
         {/* ACTIVITIES */}
         {visitedTabs.has("activities")&&<div style={{display:tab==="activities"?"block":"none",padding:0}}>
+          {!suggestionsLoading&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("openCA",{detail:{message:`What are some hidden gems and local favorites in ${dest}?`}}))} style={caReminderStyle}>Your Co-Architect knows {dest} well — ask for hidden gems</button>}
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Curated activities and experiences for this destination — add them to your plan or skip to move on" />
           </div>
-          {!suggestionsLoading&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("openCA",{detail:{message:`What are some hidden gems and local favorites in ${dest}?`}}))} style={caReminderStyle}>Your Co-Architect knows {dest} well — ask for hidden gems</button>}
           {suggestionsLoading&&!suggestion&&<div style={{padding:'12px 16px',marginBottom:16,border:'1px solid rgba(255,159,67,0.15)',borderRadius:12,background:'rgba(255,159,67,0.03)',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:8,height:8,borderRadius:'50%',background:'rgba(255,159,67,0.6)',animation:'pulse 1.5s ease-in-out infinite'}}/>
             <span style={{fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:'rgba(255,255,255,0.60)',letterSpacing:1,lineHeight:1.45}}>CO-ARCHITECT IS PREPARING YOUR SUGGESTIONS...</span>
@@ -993,7 +993,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
               return(
                 <div style={{display:'flex',alignItems:'center',gap:6}}>
                   <a href={`https://www.viator.com/search/${encodeURIComponent(segment.name+' '+nm)}`} target="_blank" rel="noopener noreferrer" title="Open booking link" style={{background:'none',border:'1px solid rgba(0,229,255,0.25)',borderRadius:6,color:'rgba(0,229,255,0.60)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",padding:'4px 10px',textDecoration:'none',minHeight:28,display:'flex',alignItems:'center'}}>🔗</a>
-                  <button type="button" title={editingActIdx===savedIdx?"Close":"Book or edit activity"} onClick={()=>setEditingActIdx(prev=>prev===savedIdx?null:savedIdx)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28}}>{editingActIdx===savedIdx?"CLOSE":"BOOK"}</button>
+                  <button type="button" title={editingActIdx===savedIdx?"Close booking form":"Book or edit activity"} onClick={()=>setEditingActIdx(prev=>prev===savedIdx?null:savedIdx)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28}}>BOOK</button>
                   <button type="button" title="Remove from plan" onClick={()=>{setActInsightSavedIdxs(prev=>prev.filter(i=>i!==savedIdx));if(editingActIdx===savedIdx)setEditingActIdx(null);if(row)setDet(d=>({...d,activities:d.activities.filter(x=>x.id!==row.id)}));}} style={{background:'none',border:'1px solid rgba(255,255,255,0.15)',borderRadius:6,color:'rgba(255,255,255,0.35)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",padding:'4px 10px',cursor:'pointer',minHeight:28}}>✕</button>
                 </div>
               );
@@ -1068,7 +1068,7 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
                 <div style={{display:'flex',alignItems:'center',marginBottom:8}}>
                   <span style={{...planCommitLabelStyle,flex:1}}>⚡ ACTIVITY</span>
                   <a href={`https://www.viator.com/search/${encodeURIComponent(segment.name+' '+a.name)}`} target="_blank" rel="noopener noreferrer" title="Open booking link" style={{background:'none',border:'1px solid rgba(0,229,255,0.25)',borderRadius:6,color:'rgba(0,229,255,0.60)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",padding:'4px 10px',textDecoration:'none',minHeight:28,display:'flex',alignItems:'center',marginRight:6}}>🔗</a>
-                  <button type="button" title="Edit details" onClick={()=>setActivitiesManualOpen(true)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>EDIT</button>
+                  <button type="button" title="Book or edit in manual form" onClick={()=>setActivitiesManualOpen(true)} style={{background:'none',border:'1px solid rgba(255,159,67,0.30)',borderRadius:6,color:'rgba(255,159,67,0.70)',fontSize:11,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontWeight:600,letterSpacing:1,padding:'4px 10px',cursor:'pointer',minHeight:28,marginRight:6}}>BOOK</button>
                   <button type="button" title="Remove from plan" onClick={()=>{
                     const removed=a;
                     setDet(d=>({...d,activities:d.activities.filter(x=>x.id!==removed.id)}));
@@ -1132,10 +1132,10 @@ function SegmentWorkspace({segment,phaseId,phaseName:phaseLabelName,phaseFlag,in
         </div>}
         {/* FOOD */}
         {visitedTabs.has("food")&&<div style={{display:tab==="food"?"block":"none"}}>{(()=>{const hasFood=!isRowEmpty(det.food?.dailyBudget);const showFoodSummary=hasFood&&!editingFood&&!foodFocused&&foodInsightSavedIdxs.length===0;const showFoodManualBase=!showFoodSummary&&foodInsightSavedIdxs.length===0&&!(suggestionsLoading&&!suggestion);const showFoodManualForm=(showFoodManualBase&&(foodManualOpen||editingFood))||(foodInsightSavedIdxs.length>0&&editingFood);return(<div style={{padding:0}} onFocus={()=>setFoodFocused(true)} onBlur={(e)=>{if(!e.currentTarget.contains(e.relatedTarget))setFoodFocused(false);}}>
+          {!suggestionsLoading&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm craving something specific in ${dest} — help me find the right spot.`}}))} style={caReminderStyle}>Craving something specific? Your Co-Architect can find it</button>}
           <div style={{display:'flex',justifyContent:'flex-end',marginBottom:10,paddingRight:2}}>
             <HelpTip compact noLeadingMargin text="Local dining recommendations and daily food budget estimates for this destination" />
           </div>
-          {!suggestionsLoading&&<button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('openCA',{detail:{message:`I'm craving something specific in ${dest} — help me find the right spot.`}}))} style={caReminderStyle}>Craving something specific? Your Co-Architect can find it</button>}
           {showFoodSummary&&<div style={{border:planCommitCardBorder,borderRadius:planCommitCardRadius,background:planCommitCardBg,padding:planCommitCardPad,marginBottom:14,display:'flex',flexDirection:'column'}}>
             <div style={{flex:1,minHeight:0}}>
             <div style={{display:'flex',alignItems:'center',marginBottom:8}}>
