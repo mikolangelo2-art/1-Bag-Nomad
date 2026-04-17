@@ -10,6 +10,7 @@ import { BAG_COLORS, CULTURE_GOLD, NOTEBOOK_CAT_COLORS, PACK_CAT_COLORS } from '
 import { CONSOLE_CONTENT_MAX } from '../constants/layout';
 import { buildTripPack, getDefaultPack, mapPackItemsWithVolumes } from '../utils/packHelpers';
 import { formatTripNameDisplay } from '../utils/tripConsoleHelpers';
+import { Icon } from "@iconify/react";
 
 const STORAGE_PACK_EXPANDED = "1bn_pack_expanded";
 function loadPackExpandedCats() {
@@ -160,59 +161,61 @@ function PackItemRow({item,catColor,isLast,onEditOpenChange,isMobile,toggleOwned
   );
 }
 
+const CAT_ICONS = {
+  clothes: "solar:t-shirt-linear",
+  tech: "solar:laptop-minimalistic-linear",
+  dive: "solar:swimming-linear",
+  creator: "solar:video-camera-linear",
+  health: "solar:medical-kit-linear",
+  travel: "solar:suitcase-linear",
+  docs: "solar:document-text-linear",
+  adventure: "solar:hiking-linear",
+  moto: "solar:scooter-linear",
+  safari: "solar:binoculars-linear",
+  work: "solar:case-linear",
+};
+
 // ─── Category Tile (module scope — stable identity vs nested in PackConsole) ─
 function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }) {
   const catItems = itemsForCat(cat.id);
   const ownedInCat = catItems.filter((i) => i.owned).length;
   const catW = catItems.reduce((s, i) => s + (parseFloat(i.weight) || 0), 0) * wM;
-  const needCount = catItems.filter((i) => !i.owned).length;
   const needCost = catItems.filter((i) => !i.owned).reduce((s, i) => s + (parseFloat(i.cost) || 0), 0);
   const pct = catItems.length > 0 ? Math.round((ownedInCat / catItems.length) * 100) : 0;
-  const pctColor = pct >= 100 ? "#5E8B8A" : "#C9A04C";
-  const barFill = pct >= 100 ? "#5E8B8A" : "#C9A04C";
+  const isComplete = pct >= 100;
+  const accentColor = isComplete ? "#5E8B8A" : "#C9A04C";
+
   return (
     <div
       onClick={() => onSelectCategory(cat)}
       style={{
-        ...(isMobile
-          ? {
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(122,111,93,0.35)",
-              borderRadius: 16,
-              animation: `fadeUp 0.3s ease ${idx * 0.05}s both`,
-            }
-          : {
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(122,111,93,0.35)",
-              borderRadius: 16,
-              overflow: "hidden",
-              transition: "border-color 0.2s ease",
-              animation: `fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx * 0.06}s both`,
-            }),
-        padding: isMobile ? "14px 12px" : "14px 16px",
+        background: "#161210",
+        border: "1px solid rgba(122,111,93,0.20)",
+        borderRadius: 14,
+        padding: isMobile ? "14px 12px" : 16,
         marginBottom: 8,
         cursor: "pointer",
         display: "flex",
         flexDirection: "column",
         gap: 8,
+        animation: `fadeUp 0.3s ease ${idx * 0.05}s both`,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <div
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            background: "rgba(201,160,76,0.08)",
-            border: "1px solid rgba(201,160,76,0.18)",
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            background: isComplete ? "rgba(94,139,138,0.10)" : "rgba(201,160,76,0.10)",
+            border: `1px solid ${isComplete ? "rgba(94,139,138,0.20)" : "rgba(201,160,76,0.20)"}`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: 20,
             flexShrink: 0,
           }}
         >
-          {cat.icon}
+          <Icon icon={CAT_ICONS[cat.id] || "solar:bag-linear"} style={{ color: accentColor, fontSize: 18 }} />
         </div>
         <span
           style={{
@@ -221,33 +224,40 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
             fontWeight: 600,
             fontSize: 16,
             color: "#E8DCC8",
-            letterSpacing: "0",
+            letterSpacing: "-0.3px",
           }}
         >
           {cat.label}
         </span>
-        <span style={{ fontSize: 14, fontWeight: 700, color: pctColor }}>{pct}%</span>
-        <span style={{ fontSize: 14, color: "rgba(255,255,255,0.30)", marginLeft: 6 }}>›</span>
+        <span style={{ fontSize: 16, fontWeight: 600, color: accentColor }}>{pct}%</span>
       </div>
-      <div style={{ display: "flex", gap: 12, fontSize: 14, color: "rgba(255,255,255,0.45)", fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif" }}>
-        <span>{catItems.length} items</span>
-        <span>·</span>
-        <span style={{ color: cat.color }}>
-          {catW.toFixed(1)}
+
+      {isComplete ? (
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+          <p style={{ fontSize: 13, fontWeight: 400, color: "rgba(232,220,200,0.50)", margin: 0 }}>
+            {catItems.length} items · {catW.toFixed(1)}
+            {unit}
+          </p>
+          <span style={{ fontSize: 11, fontWeight: 500, color: "#5E8B8A" }}>✓ all owned</span>
+        </div>
+      ) : (
+        <p style={{ fontSize: 13, fontWeight: 400, color: "rgba(232,220,200,0.50)", marginBottom: 6 }}>
+          {catItems.length} items · {catW.toFixed(1)}
           {unit}
-        </span>
-        <span style={{ marginLeft: "auto", color: needCount > 0 ? "#C9A04C" : "#69F0AE" }}>
-          {needCount > 0 ? `$${Math.round(needCost)} still needed` : "✓ all owned"}
-        </span>
-      </div>
-      <div style={{ height: 3, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
+          {needCost > 0 && (
+            <span style={{ float: "right", color: "#C9A04C" }}>${Math.round(needCost)} still needed</span>
+          )}
+        </p>
+      )}
+
+      <div style={{ height: 4, background: "rgba(255,255,255,0.10)", borderRadius: 99, overflow: "hidden" }}>
         <div
           className="pack-cat-progress-fill"
           style={{
             height: "100%",
             width: `${pct}%`,
-            background: barFill,
-            borderRadius: 2,
+            background: accentColor,
+            borderRadius: 99,
           }}
         />
       </div>
@@ -560,15 +570,28 @@ Return ONLY a JSON array:
                 key={s.label}
                 className={s.label === "GEAR READY" && gearPct >= 100 ? "pack-gear-ready-seal--full" : undefined}
                 style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(122,111,93,0.25)",
-                  borderRadius: 10,
-                  padding: "10px 8px",
+                  background: "#161210",
+                  borderRadius: 12,
+                  padding: 14,
+                  display: "flex",
+                  flexDirection: "column",
                   textAlign: "center",
                 }}
               >
-                <div style={{ fontSize: 9, fontWeight: 600, color: "rgba(255,255,255,0.45)", letterSpacing: 1, fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif", marginBottom: 4 }}>{s.label}</div>
-                <div style={{ fontSize: isMobile ? 14 : 18, fontWeight: 700, color: CULTURE_GOLD, fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif" }}>{s.value}</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: "#C9A04C", letterSpacing: "-0.5px", fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif" }}>{s.value}</div>
+                <div
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 600,
+                    letterSpacing: "0.08em",
+                    color: "rgba(232,220,200,0.40)",
+                    textTransform: "uppercase",
+                    marginTop: 2,
+                    fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif",
+                  }}
+                >
+                  {s.label}
+                </div>
               </div>
             ))}
           </div>
@@ -587,6 +610,7 @@ Return ONLY a JSON array:
       <div style={{
         display: "flex",
         gap: 8,
+        width: "100%",
         padding: isMobile ? "12px 12px" : "12px 0",
         overflowX: "auto",
         WebkitOverflowScrolling: "touch",
@@ -605,7 +629,9 @@ Return ONLY a JSON array:
           { id: "weight", label: "Pack Index" },
         ].map((t) => (
           <button key={t.id} type="button" onClick={() => setPackTab(t.id)} style={{
-            padding: "0 16px",
+            flex: 1,
+            minWidth: 0,
+            padding: "0 8px",
             height: isMobile ? 36 : 40,
             borderRadius: 20,
             border: packTab === t.id ? "none" : "1px solid #7A6F5D",
@@ -616,7 +642,6 @@ Return ONLY a JSON array:
             fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif",
             cursor: "pointer",
             whiteSpace: "nowrap",
-            flexShrink: 0,
             transition: "all 0.2s ease",
             position: "relative",
           }}>
