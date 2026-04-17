@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import posthog from "posthog-js";
 import WorldMapBackground from './WorldMapBackground';
-import MissionBottomNav from './MissionBottomNav';
 import BottomSheet from './BottomSheet';
 import HelpTip from './HelpTip';
 import { useMobile } from '../hooks/useMobile';
@@ -497,8 +496,7 @@ Return ONLY a JSON array:
   // shared props for PackItemRow
   const rowProps={isMobile,toggleOwned,updateItem,removeItem,wM,unit,BAGS,BAG_C};
   const selectCategory=(cat)=>{setActiveCategory(cat);setPackView("category");};
-  const packMobileScrollBottom=isMobile?"calc(112px + env(safe-area-inset-bottom))":"32px";
-  const packMobileNavSpacer=isMobile?"calc(88px + env(safe-area-inset-bottom))":"0px";
+  const packMobileScrollBottom=isMobile?"calc(16px + env(safe-area-inset-bottom, 0px))":"32px";
 
   return(
     <div style={{fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",background:"transparent",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
@@ -661,7 +659,6 @@ Return ONLY a JSON array:
       {packTab==="pack"&&packView==="category"&&activeCategory&&(
         <>
           <CategoryDetailPage cat={activeCategory} onBack={()=>{setPackView('dashboard');setActiveCategory(null);}} catItems={items.filter(i=>i.cat===activeCategory.id)} isMobile={isMobile} rowProps={rowProps} addItemToCat={addItemToCat}/>
-          {isMobile&&<div style={{height:packMobileNavSpacer}}/>}
         </>
       )}
       {packTab==="pack"&&packView==="dashboard"&&(
@@ -837,8 +834,6 @@ Return ONLY a JSON array:
         </div>
       )}
       </div>
-      {isMobile&&!isFullscreen&&packView==="dashboard"&&<div style={{height:packMobileNavSpacer}}/>}
-      {isMobile&&!isFullscreen&&<MissionBottomNav activeTab="pack" onTab={t=>{if(t==="pack")return;if(onGoToTab)onGoToTab(t);else onExpedition();}}/>}
       </div>
     </div>
   );

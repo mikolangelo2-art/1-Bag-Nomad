@@ -710,7 +710,7 @@ export default function App() {
     setFounderMode(true);
   }
 
-  const showShellBottomNav=isOperational&&!isDesktop&&screen!=="pack";
+  const showShellBottomNav=isOperational&&!isDesktop;
   const feedbackBottomPad=(tripData?.isDemo?82:72)+(isOperational&&!isDesktop?64:0);
 
   return(
@@ -731,7 +731,7 @@ export default function App() {
       {isOperational&&(
         <div style={{display:"flex",minHeight:"100vh",background:"#0A0705"}}>
           {isDesktop&&<Sidebar activeScreen={screen} onNavigate={handleNavigate}/>}
-          <div style={{flex:1,marginLeft:isDesktop?68:0,marginBottom:isDesktop?0:screen==="pack"?0:64,minHeight:"100vh",overflowY:"auto"}}>
+          <div style={{flex:1,marginLeft:isDesktop?68:0,marginBottom:isDesktop?0:64,minHeight:"100vh",overflowY:"auto"}}>
             {screen==="landing"&&tripData&&<LandingPage tripData={tripData} onNavigate={handleNavigate}/>}
             {(screen==="console"||prevScreen==="console")&&hasTrip&&tripData&&(
               <div style={{position:prevScreen==="console"||slideDir?"fixed":"relative",inset:prevScreen==="console"||slideDir?0:undefined,width:"100%",zIndex:prevScreen==="console"?0:1,animation:prevScreen==="console"?(slideDir==="left"?"consoleSlideOutLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideOutRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):screen==="console"&&slideDir?(slideDir==="right"?"consoleSlideInLeft 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards":"consoleSlideInRight 500ms cubic-bezier(0.25,0.46,0.45,0.94) forwards"):"none",overflow:"hidden"}}>
