@@ -188,18 +188,27 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
   return (
     <div
       onClick={() => onSelectCategory(cat)}
+      onMouseDown={(e) => {
+        e.currentTarget.style.transform = "scale(0.98)";
+      }}
+      onMouseUp={(e) => {
+        e.currentTarget.style.transform = "scale(1)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "scale(1)";
+      }}
       style={{
         background: "rgba(255,255,255,0.04)",
         border: "1px solid rgba(122,111,93,0.35)",
         borderRadius: 16,
-        padding: 16,
-        marginBottom: 10,
+        padding: isMobile ? "14px 12px" : "16px",
+        marginBottom: 8,
         cursor: "pointer",
-        transition: "border-color 0.2s ease",
         display: "flex",
         flexDirection: "column",
-        gap: 0,
+        gap: 8,
         animation: `fadeUp 0.3s ease ${idx * 0.05}s both`,
+        transition: "transform 0.1s ease",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -647,7 +656,8 @@ Return ONLY a JSON array:
                 key={s.label}
                 className={s.label === "GEAR READY" && gearPct >= 100 ? "pack-gear-ready-seal--full" : undefined}
                 style={{
-                  background: "#161210",
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(122,111,93,0.35)",
                   borderRadius: 12,
                   padding: 14,
                   display: "flex",
@@ -700,27 +710,30 @@ Return ONLY a JSON array:
               key={c.view}
               type="button"
               onClick={() => setPackView(c.view)}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = "scale(0.98)";
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+              }}
               style={{
                 width: "100%",
-                background: "#161210",
-                border: "1px solid rgba(201,160,76,0.15)",
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(122,111,93,0.35)",
                 borderRadius: 16,
-                padding: "20px",
+                padding: 20,
                 display: "flex",
                 alignItems: "center",
                 gap: 16,
                 cursor: "pointer",
                 marginBottom: 12,
-                transition: "border-color 0.2s ease",
+                transition: "transform 0.1s ease",
                 textAlign: "left",
                 boxSizing: "border-box",
                 position: "relative",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(201,160,76,0.35)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(201,160,76,0.15)";
               }}
             >
               <div
@@ -760,7 +773,7 @@ Return ONLY a JSON array:
               {c.view === "tailor" && suggestions.length > 0 && (
                 <div style={{ position: "absolute", top: 14, right: 36, width: 7, height: 7, borderRadius: "50%", background: CULTURE_GOLD, boxShadow: `0 0 8px ${CULTURE_GOLD}` }} />
               )}
-              <span style={{ fontSize: 22, color: "rgba(232,220,200,0.35)", flexShrink: 0, lineHeight: 1 }} aria-hidden>
+              <span style={{ fontSize: 18, color: "rgba(232,220,200,0.30)", flexShrink: 0, lineHeight: 1, marginLeft: "auto" }} aria-hidden>
                 ›
               </span>
             </button>

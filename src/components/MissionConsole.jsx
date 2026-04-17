@@ -48,6 +48,31 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
 
       {/* Phase card list */}
       {!phaseDetailView&&(
+        <>
+      <div style={{
+        height: 44,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "sticky",
+        top: 0,
+        zIndex: 10,
+        background: "rgba(10,7,5,0.95)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        flexShrink: 0,
+      }}>
+        <span style={{
+          fontFamily: "'Instrument Sans', sans-serif",
+          fontWeight: 600,
+          fontSize: 18,
+          color: "#E8DCC8",
+          letterSpacing: "-0.3px",
+        }}>
+          My Expedition
+        </span>
+      </div>
         <div style={{
           maxWidth:880,
           margin:'0 auto',
@@ -71,6 +96,7 @@ function MissionConsole({tripData,onNewTrip,onExitDemo,onRevise,onPackConsole,on
 
           {returnPhase&&<PhaseCard key="return" phase={returnPhase} intelData={explorerData} idx={segPhases.length} onTap={null} allSuggestions={null} suggestionsLoading={false}/>}
         </div>
+        </>
       )}
 
       {/* Bottom spacer for mobile nav */}
