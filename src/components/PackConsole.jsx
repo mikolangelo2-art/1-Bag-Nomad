@@ -432,7 +432,6 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const WL=15,KGL=7,VL=45;
   const BAG_C=BAG_COLORS;
 
-  const [packTab,setPackTab]=useState("pack");
   const [packView,setPackView]=useState("dashboard");
   const [activeCategory,setActiveCategory]=useState(null);
   const [items,setItems]=useState(()=>{try{const s=localStorage.getItem("1bn_pack_v5");if(s){const p=JSON.parse(s);if(p?.length>0)return mapPackItemsWithVolumes(p);}}catch(e){}return mapPackItemsWithVolumes(pp?buildTripPack(pp,tripData.travelerProfile||null):getDefaultPack());});
@@ -458,8 +457,8 @@ function PackConsole({tripData,onExpedition,onGoToTab,isFullscreen,setFullscreen
   const packFirstRender=useRef(true);
   const coupleMode=tripData.travelerProfile?.group==="couple";
   useEffect(()=>{try{localStorage.setItem("1bn_pack_v5",JSON.stringify(items));}catch(e){}if(packFirstRender.current){packFirstRender.current=false;return;}setPackSaveFlash(true);if(packSaveRef.current)clearTimeout(packSaveRef.current);packSaveRef.current=setTimeout(()=>setPackSaveFlash(false),2000);},[items]);
-  useEffect(()=>{if(packTab==="tailor"){posthog.capture("tailor_tab_opened");if(!suggestDone&&!suggestLoading){const t=setTimeout(()=>genSuggestions(),800);return()=>clearTimeout(t);}}},[ packTab]);
-  useEffect(()=>{onPackUiContextChange?.({tab:packTab,view:packView});},[packTab,packView,onPackUiContextChange]);
+  useEffect(()=>{if(packView==="tailor"){posthog.capture("tailor_tab_opened");if(!suggestDone&&!suggestLoading){const t=setTimeout(()=>genSuggestions(),800);return()=>clearTimeout(t);}}},[packView]);
+  useEffect(()=>{onPackUiContextChange?.({tab:"pack",view:packView});},[packView,onPackUiContextChange]);
 
   const countries=[...new Set(tripData.phases.map(p=>p.country))];
   const tripTypes=[...new Set(tripData.phases.map(p=>p.type))];
@@ -532,7 +531,7 @@ Return ONLY a JSON array:
     <div style={{fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",background:"transparent",minHeight:"100vh",color:"#FFF",display:"flex",flexDirection:"column",animation:"consoleIn 0.45s cubic-bezier(0.25,0.46,0.45,0.94) both"}}>
       <WorldMapBackground phases={tripData?.phases||[]} console="pack" departureCity={tripData?.departureCity||tripData?.city||""}/>
       <div style={{position:'relative',zIndex:1,display:'flex',flexDirection:'column',flex:1,minHeight:'100vh',background:'transparent'}}>
-      {!isFullscreen && (
+      {!isFullscreen && packView === "dashboard" && (
         <>
           <div style={{
             height: 44,
@@ -583,9 +582,42 @@ Return ONLY a JSON array:
           )}
         </>
       )}
+      {!isFullscreen && (packView === "packlist" || packView === "tailor" || packView === "packindex") && (
+        <div style={{ height: 44, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "#0A0705", flexShrink: 0 }}>
+          <button
+            type="button"
+            onClick={() => setPackView("dashboard")}
+            style={{
+              position: "absolute",
+              left: 20,
+              background: "none",
+              border: "none",
+              color: "rgba(232,220,200,0.70)",
+              fontSize: 20,
+              cursor: "pointer",
+              minWidth: 44,
+              minHeight: 44,
+              display: "flex",
+              alignItems: "center",
+            }}
+            aria-label="Back to Pack main"
+          >
+            ←
+          </button>
+          <span style={{
+            fontFamily: "'Instrument Sans', sans-serif",
+            fontWeight: 600,
+            fontSize: 18,
+            color: "#E8DCC8",
+            letterSpacing: "-0.3px",
+          }}>
+            {packView === "packlist" ? "Pack List" : packView === "tailor" ? "Tailor" : "Pack Index"}
+          </span>
+        </div>
+      )}
       {/* Upper dashboard — desktop side inset matches card column / Trip Console */}
       <div style={isMobile?{padding:'0 12px',width:'100%',boxSizing:'border-box'}:{maxWidth:CONSOLE_CONTENT_MAX,margin:'0 auto',padding:'0 24px',width:'100%',boxSizing:'border-box'}}>
-      {!isFullscreen && (
+      {packView === "dashboard" && !isFullscreen && (
         <div style={{ padding: isMobile ? "16px 12px" : "16px 0" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -642,8 +674,8 @@ Return ONLY a JSON array:
           </div>
         </div>
       )}
-      {/* Built-for strip */}
-      {!isFullscreen&&pp&&(()=>{
+      {/* Built-for strip — dashboard only */}
+      {packView === "dashboard" && !isFullscreen&&pp&&(()=>{
         const getClimateAdvisory=(climate,season)=>{const map={'tropical-hot':{dry:{label:'Tropical',advice:'Pack light — reef-safe sunscreen essential'},wet:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'},default:{label:'Tropical',advice:'Pack light, breathable fabrics only'}},'tropical-wet':{default:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'}},'temperate-cool':{default:{label:'Temperate',advice:'Layer up — mornings cold, afternoons warm'}},'cold-alpine':{default:{label:'Alpine Cold',advice:'Warm layers essential — windproof shell critical'}},'mediterranean':{default:{label:'Mediterranean',advice:'Light clothing + one smart dinner outfit'}},'desert-hot':{default:{label:'Desert',advice:'UV protection critical — cover up at midday'}},'varied':{default:{label:'Mixed Climate',advice:'Pack for range — layers are your friend'}}};return map[climate]?.[season]||map[climate]?.default||{label:'Varied',advice:'Check conditions per destination'};};
         const ca=pp.climate?getClimateAdvisory(pp.climate,pp.season):null;
         const builtForPrimary=`✦ Built for: ${formatTripNameDisplay(tripData.tripName||"Your Trip")} · ${totalNights}n · ${pp.tripType}${coupleMode?" · for 2":""}${ca?` · 🌡 ${ca.label}${pp.tempRange?" · "+pp.tempRange:""}`:""}`;
@@ -652,69 +684,103 @@ Return ONLY a JSON array:
           {ca?.advice && <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 300, fontStyle: "italic", fontSize: 12, color: "rgba(232,220,200,0.4)", textAlign: "center", padding: "0 20px 12px" }}>{ca.advice}</div>}
         </div>;
       })()}
-      <div style={{
-        display: "flex",
-        gap: 8,
-        padding: "12px 20px",
-        overflowX: "auto",
-        WebkitOverflowScrolling: "touch",
-        scrollbarWidth: "none",
-        msOverflowStyle: "none",
-        position: "relative",
-        borderBottom: "1px solid rgba(196,87,30,0.14)",
-        background: "rgba(10,7,5,0.45)",
-        backdropFilter: "blur(14px)",
-        WebkitBackdropFilter: "blur(14px)",
-      }}>
-        {packSaveFlash && <div style={{ position: "absolute", right: 12, top: 4, fontFamily: "'Instrument Sans', sans-serif", fontSize: 13, color: "#69F0AE", opacity: 0.80, letterSpacing: 1, zIndex: 2, pointerEvents: "none" }}>✓ saved</div>}
-        {[
-          { id: "pack", label: "PACK LIST" },
-          { id: "tailor", label: "TAILOR" },
-          { id: "weight", label: "PACK INDEX" },
-        ].map((t) => (
-          <button key={t.id} type="button" onClick={() => setPackTab(t.id)} style={{
-            height: 36,
-            padding: "0 18px",
-            borderRadius: 20,
-            border: packTab === t.id ? "none" : "1px solid #7A6F5D",
-            background: packTab === t.id ? "#C9A04C" : "transparent",
-            color: packTab === t.id ? "#0A0705" : "rgba(232,220,200,0.6)",
-            fontFamily: "'Instrument Sans', sans-serif",
-            fontWeight: 600,
-            fontSize: 12,
-            letterSpacing: "0.8px",
-            cursor: "pointer",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-            textTransform: "uppercase",
-            transition: "all 0.2s ease",
-            position: "relative",
-          }}>
-            <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
-              {t.label}
-              {t.id === "tailor" && <HelpTip compact noLeadingMargin text="Tell your Co-Architect about your trip and get a personalized gear list built around your exact destinations and activities" />}
-            </span>
-            {t.id === "tailor" && suggestions.length > 0 && (
-              <div style={{ position: "absolute", top: -2, right: -2, width: 7, height: 7, borderRadius: "50%", background: CULTURE_GOLD, boxShadow: `0 0 8px ${CULTURE_GOLD}` }} />
-            )}
-          </button>
-        ))}
-      </div>
-      {/* Need to Buy pill (retained as a standalone shortcut) */}
-      {packTab==="pack"&&packView==="dashboard"&&<div style={{display:"flex",padding:isMobile?"8px 12px":"8px 0",borderBottom:"1px solid rgba(169,70,29,0.2)",background:"transparent",flexShrink:0}}>
-        <button onClick={()=>setFilterCat(f=>f==="needtobuy"?"all":"needtobuy")} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 16px",borderRadius:20,border:"1px solid "+(filterCat==="needtobuy"?"rgba(255,107,107,0.85)":"rgba(255,107,107,0.25)"),background:filterCat==="needtobuy"?"rgba(255,107,107,0.18)":"transparent",cursor:"pointer",whiteSpace:"nowrap",minHeight:34,boxShadow:filterCat==="needtobuy"?"0 0 10px rgba(255,107,107,0.30)":"none",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
-          <span style={{fontSize:13}}>{filterCat==="needtobuy"?"←":"🛒"}</span>
-          <span style={{fontSize:11,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.6)",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:filterCat==="needtobuy"?700:400,letterSpacing:1}}>{filterCat==="needtobuy"?"ALL ITEMS":"NEED TO BUY"}</span>
-        </button>
-      </div>}
+      {packView === "dashboard" && !isFullscreen && (
+        <div style={{ position: "relative", padding: isMobile ? "8px 12px 20px" : "8px 0 24px" }}>
+          {packSaveFlash && (
+            <div style={{ position: "absolute", right: isMobile ? 12 : 0, top: 0, fontFamily: "'Instrument Sans', sans-serif", fontSize: 13, color: "#69F0AE", opacity: 0.8, letterSpacing: 1, zIndex: 2, pointerEvents: "none" }}>
+              ✓ saved
+            </div>
+          )}
+          {[
+            { view: "packlist", title: "Pack List", icon: "solar:bag-linear", stat: `${CATS.length} CATEGORIES · ${items.length} ITEMS` },
+            { view: "tailor", title: "Tailor", icon: "solar:magic-stick-linear", stat: suggestions.length > 0 ? `${suggestions.length} SUGGESTIONS READY` : "AI PACK REFINEMENT", help: true },
+            { view: "packindex", title: "Pack Index", icon: "solar:scale-linear", stat: `${(bpW * wM).toFixed(1)}${unit} · ${bpV.toFixed(1)}L` },
+          ].map((c) => (
+            <button
+              key={c.view}
+              type="button"
+              onClick={() => setPackView(c.view)}
+              style={{
+                width: "100%",
+                background: "#161210",
+                border: "1px solid rgba(201,160,76,0.15)",
+                borderRadius: 16,
+                padding: "20px",
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                cursor: "pointer",
+                marginBottom: 12,
+                transition: "border-color 0.2s ease",
+                textAlign: "left",
+                boxSizing: "border-box",
+                position: "relative",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "rgba(201,160,76,0.35)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "rgba(201,160,76,0.15)";
+              }}
+            >
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: "rgba(201,160,76,0.08)",
+                  border: "1px solid rgba(201,160,76,0.18)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <Icon icon={c.icon} style={{ color: CULTURE_GOLD, fontSize: 26 }} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                  <span style={{ fontFamily: "'Fraunces', serif", fontWeight: 400, fontSize: 18, color: "#E8DCC8" }}>{c.title}</span>
+                  {c.help && <HelpTip compact noLeadingMargin text="Tell your Co-Architect about your trip and get a personalized gear list built around your exact destinations and activities" />}
+                </div>
+                <div
+                  style={{
+                    fontFamily: "'Instrument Sans', sans-serif",
+                    fontWeight: 600,
+                    fontSize: 11,
+                    color: "#5E8B8A",
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    marginTop: 4,
+                  }}
+                >
+                  {c.stat}
+                </div>
+              </div>
+              {c.view === "tailor" && suggestions.length > 0 && (
+                <div style={{ position: "absolute", top: 14, right: 36, width: 7, height: 7, borderRadius: "50%", background: CULTURE_GOLD, boxShadow: `0 0 8px ${CULTURE_GOLD}` }} />
+              )}
+              <span style={{ fontSize: 22, color: "rgba(232,220,200,0.35)", flexShrink: 0, lineHeight: 1 }} aria-hidden>
+                ›
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
       {/* Main content — same column as Trip Console (CONSOLE_CONTENT_MAX) */}
-      {packTab==="pack"&&packView==="category"&&activeCategory&&(
+      {packView==="category"&&activeCategory&&(
         <>
-          <CategoryDetailPage cat={activeCategory} onBack={()=>{setPackView('dashboard');setActiveCategory(null);}} catItems={items.filter(i=>i.cat===activeCategory.id)} isMobile={isMobile} rowProps={rowProps} addItemToCat={addItemToCat}/>
+          <CategoryDetailPage cat={activeCategory} onBack={()=>{setPackView('packlist');setActiveCategory(null);}} catItems={items.filter(i=>i.cat===activeCategory.id)} isMobile={isMobile} rowProps={rowProps} addItemToCat={addItemToCat}/>
         </>
       )}
-      {packTab==="pack"&&packView==="dashboard"&&(
+      {packView==="packlist"&&(
         <div className="pack-scroll-dashboard" style={{overflowY:"auto",flex:1,padding:isMobile?`12px 0 ${packMobileScrollBottom}`:"12px 0 32px",boxSizing:"border-box",background:"transparent",backgroundImage:"none",width:"100%"}}>
+          <div style={{display:"flex",padding:isMobile?"8px 12px":"8px 0",borderBottom:"1px solid rgba(169,70,29,0.2)",background:"transparent",flexShrink:0}}>
+            <button type="button" onClick={()=>setFilterCat(f=>f==="needtobuy"?"all":"needtobuy")} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 16px",borderRadius:20,border:"1px solid "+(filterCat==="needtobuy"?"rgba(255,107,107,0.85)":"rgba(255,107,107,0.25)"),background:filterCat==="needtobuy"?"rgba(255,107,107,0.18)":"transparent",cursor:"pointer",whiteSpace:"nowrap",minHeight:34,boxShadow:filterCat==="needtobuy"?"0 0 10px rgba(255,107,107,0.30)":"none",transition:"all 0.30s cubic-bezier(0.25,0.46,0.45,0.94)"}}>
+              <span style={{fontSize:13}}>{filterCat==="needtobuy"?"←":"🛒"}</span>
+              <span style={{fontSize:11,color:filterCat==="needtobuy"?"#FF6B6B":"rgba(255,107,107,0.6)",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:filterCat==="needtobuy"?700:400,letterSpacing:1}}>{filterCat==="needtobuy"?"ALL ITEMS":"NEED TO BUY"}</span>
+            </button>
+          </div>
           {filterCat==="needtobuy"?(()=>{
             const unowned=[...items].filter(i=>!i.owned).sort((a,b)=>(parseFloat(b.cost)||0)-(parseFloat(a.cost)||0));
             const total=unowned.reduce((s,i)=>s+(parseFloat(i.cost)||0),0);
@@ -778,7 +844,7 @@ Return ONLY a JSON array:
           </div>
         </div>
       )}
-      {packTab==="tailor"&&(
+      {packView==="tailor"&&(
         <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 0 ${packMobileScrollBottom}`:"12px 0 32px",boxSizing:"border-box",width:"100%"}}>
           <div style={{background:"linear-gradient(135deg,rgba(169,70,29,0.12),rgba(201,160,76,0.04))",border:"1px solid rgba(201,160,76,0.28)",borderRadius:12,marginBottom:16,overflow:"hidden"}}>
             <button onClick={()=>{const next=!packBriefCollapsed;setPackBriefCollapsed(next);if(next)try{localStorage.setItem(briefKey,"1");}catch(e){}}} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"none",border:"none",cursor:"pointer"}}>
@@ -852,7 +918,7 @@ Return ONLY a JSON array:
           </div>}
         </div>
       )}
-      {packTab==="weight"&&(
+      {packView==="packindex"&&(
         <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 0 ${packMobileScrollBottom}`:"12px 0 32px",boxSizing:"border-box",width:"100%",position:"relative"}}>
           <div style={{ fontFamily: "'Instrument Sans', sans-serif", fontWeight: 600, fontSize: 11, color: "rgba(232,220,200,0.4)", letterSpacing: "1.5px", textTransform: "uppercase", padding: "12px 0 6px" }}>Pack by bag</div>
           <div style={{display:"flex",justifyContent:"flex-end",marginBottom:14}}>
