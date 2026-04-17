@@ -183,39 +183,40 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
   const needCost = catItems.filter((i) => !i.owned).reduce((s, i) => s + (parseFloat(i.cost) || 0), 0);
   const pct = catItems.length > 0 ? Math.round((ownedInCat / catItems.length) * 100) : 0;
   const isComplete = pct >= 100;
-  const accentColor = isComplete ? "#5E8B8A" : "#C9A04C";
+  const pctColor = pct >= 100 ? "#5E8B8A" : "#C9A04C";
 
   return (
     <div
       onClick={() => onSelectCategory(cat)}
       style={{
-        background: "#161210",
-        border: "1px solid rgba(122,111,93,0.20)",
-        borderRadius: 14,
-        padding: isMobile ? "14px 12px" : 16,
-        marginBottom: 8,
+        background: "rgba(255,255,255,0.04)",
+        border: "1px solid rgba(122,111,93,0.35)",
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 10,
         cursor: "pointer",
+        transition: "border-color 0.2s ease",
         display: "flex",
         flexDirection: "column",
-        gap: 8,
+        gap: 0,
         animation: `fadeUp 0.3s ease ${idx * 0.05}s both`,
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <div
           style={{
-            width: 32,
-            height: 32,
-            borderRadius: 8,
-            background: isComplete ? "rgba(94,139,138,0.10)" : "rgba(201,160,76,0.10)",
-            border: `1px solid ${isComplete ? "rgba(94,139,138,0.20)" : "rgba(201,160,76,0.20)"}`,
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            background: isComplete ? "rgba(94,139,138,0.10)" : "rgba(201,160,76,0.08)",
+            border: `1px solid ${isComplete ? "rgba(94,139,138,0.20)" : "rgba(201,160,76,0.18)"}`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
           }}
         >
-          <Icon icon={CAT_ICONS[cat.id] || "solar:bag-linear"} style={{ color: accentColor, fontSize: 18 }} />
+          <Icon icon={CAT_ICONS[cat.id] || "solar:bag-linear"} style={{ color: pctColor, fontSize: 18 }} />
         </div>
         <span
           style={{
@@ -224,24 +225,60 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
             fontWeight: 600,
             fontSize: 16,
             color: "#E8DCC8",
-            letterSpacing: "-0.3px",
           }}
         >
           {cat.label}
         </span>
-        <span style={{ fontSize: 16, fontWeight: 600, color: accentColor }}>{pct}%</span>
+        <span
+          style={{
+            fontFamily: "'Instrument Sans', sans-serif",
+            fontWeight: 600,
+            fontSize: 15,
+            color: pctColor,
+            marginLeft: "auto",
+          }}
+        >
+          {pct}%
+        </span>
       </div>
 
       {isComplete ? (
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-          <p style={{ fontSize: 13, fontWeight: 400, color: "rgba(232,220,200,0.50)", margin: 0 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginTop: 2 }}>
+          <p
+            style={{
+              fontFamily: "'Instrument Sans', sans-serif",
+              fontWeight: 400,
+              fontSize: 13,
+              color: "rgba(232,220,200,0.5)",
+              margin: 0,
+            }}
+          >
             {catItems.length} items · {catW.toFixed(1)}
             {unit}
           </p>
-          <span style={{ fontSize: 11, fontWeight: 500, color: "#5E8B8A" }}>✓ all owned</span>
+          <span
+            style={{
+              fontFamily: "'Instrument Sans', sans-serif",
+              fontWeight: 400,
+              fontSize: 12,
+              color: "#69F0AE",
+              marginTop: 2,
+            }}
+          >
+            ✓ all owned
+          </span>
         </div>
       ) : (
-        <p style={{ fontSize: 13, fontWeight: 400, color: "rgba(232,220,200,0.50)", marginBottom: 6 }}>
+        <p
+          style={{
+            fontFamily: "'Instrument Sans', sans-serif",
+            fontWeight: 400,
+            fontSize: 13,
+            color: "rgba(232,220,200,0.5)",
+            marginTop: 2,
+            marginBottom: 0,
+          }}
+        >
           {catItems.length} items · {catW.toFixed(1)}
           {unit}
           {needCost > 0 && (
@@ -250,14 +287,15 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
         </p>
       )}
 
-      <div style={{ height: 4, background: "rgba(255,255,255,0.10)", borderRadius: 99, overflow: "hidden" }}>
+      <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, marginTop: 12, overflow: "hidden" }}>
         <div
           className="pack-cat-progress-fill"
           style={{
             height: "100%",
             width: `${pct}%`,
-            background: accentColor,
-            borderRadius: 99,
+            background: pct >= 100 ? "#5E8B8A" : "#C9A04C",
+            borderRadius: 2,
+            transition: "width 0.5s ease",
           }}
         />
       </div>
@@ -495,53 +533,60 @@ Return ONLY a JSON array:
       <WorldMapBackground phases={tripData?.phases||[]} console="pack" departureCity={tripData?.departureCity||tripData?.city||""}/>
       <div style={{position:'relative',zIndex:1,display:'flex',flexDirection:'column',flex:1,minHeight:'100vh',background:'transparent'}}>
       {!isFullscreen && (
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          position: "relative",
-          height: 44,
-          padding: "0 20px",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-        }}>
-          <button type="button" onClick={onExpedition} style={{
-            position: "absolute",
-            left: 20,
-            background: "none",
-            border: "none",
-            color: "rgba(255,255,255,0.70)",
-            fontSize: 24,
-            cursor: "pointer",
-            padding: 0,
-            minWidth: 44,
-            minHeight: 44,
+        <>
+          <div style={{
+            height: 44,
             display: "flex",
             alignItems: "center",
-          }} aria-label="Back to landing">←</button>
-          <span style={{
-            fontFamily: "'Fraunces',serif",
-            fontSize: 18,
-            fontWeight: 400,
-            color: "#E8DCC8",
-            letterSpacing: "0.02em",
-          }}>My Pack</span>
-        </div>
+            justifyContent: "center",
+            padding: "0 16px",
+            position: "relative",
+            background: "#0A0705",
+          }}>
+            <button type="button" onClick={onExpedition} style={{
+              position: "absolute",
+              left: 20,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "rgba(232,220,200,0.7)",
+              fontSize: 20,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              minWidth: 44,
+              minHeight: 44,
+              padding: 0,
+            }} aria-label="Back to landing">←</button>
+            <div style={{
+              fontFamily: "'Instrument Sans', sans-serif",
+              fontWeight: 600,
+              fontSize: 18,
+              color: "#E8DCC8",
+              letterSpacing: "-0.3px",
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
+              whiteSpace: "nowrap",
+            }}>My Pack</div>
+          </div>
+          {tripData?.tripName && (
+            <div style={{
+              fontFamily: "'Fraunces', serif",
+              fontWeight: 300,
+              fontStyle: "italic",
+              fontSize: 14,
+              color: "#C9A04C",
+              textAlign: "center",
+              paddingBottom: 8,
+            }}>{formatTripNameDisplay(tripData.tripName)}</div>
+          )}
+        </>
       )}
       {/* Upper dashboard — desktop side inset matches card column / Trip Console */}
       <div style={isMobile?{padding:'0 12px',width:'100%',boxSizing:'border-box'}:{maxWidth:CONSOLE_CONTENT_MAX,margin:'0 auto',padding:'0 24px',width:'100%',boxSizing:'border-box'}}>
       {!isFullscreen && (
         <div style={{ padding: isMobile ? "16px 12px" : "16px 0" }}>
-          {tripData?.tripName && (
-            <div style={{
-              fontFamily: "'Fraunces',serif",
-              fontSize: 14,
-              fontWeight: 300,
-              fontStyle: "italic",
-              color: "#5E8B8A",
-              textAlign: "center",
-              marginBottom: 16,
-            }}>{formatTripNameDisplay(tripData.tripName)}</div>
-          )}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: 1, color: "rgba(255,255,255,0.55)", fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif" }}>WEIGHT</span>
@@ -602,46 +647,46 @@ Return ONLY a JSON array:
         const getClimateAdvisory=(climate,season)=>{const map={'tropical-hot':{dry:{label:'Tropical',advice:'Pack light — reef-safe sunscreen essential'},wet:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'},default:{label:'Tropical',advice:'Pack light, breathable fabrics only'}},'tropical-wet':{default:{label:'Tropical Wet',advice:'Quick-dry everything — waterproof your gear'}},'temperate-cool':{default:{label:'Temperate',advice:'Layer up — mornings cold, afternoons warm'}},'cold-alpine':{default:{label:'Alpine Cold',advice:'Warm layers essential — windproof shell critical'}},'mediterranean':{default:{label:'Mediterranean',advice:'Light clothing + one smart dinner outfit'}},'desert-hot':{default:{label:'Desert',advice:'UV protection critical — cover up at midday'}},'varied':{default:{label:'Mixed Climate',advice:'Pack for range — layers are your friend'}}};return map[climate]?.[season]||map[climate]?.default||{label:'Varied',advice:'Check conditions per destination'};};
         const ca=pp.climate?getClimateAdvisory(pp.climate,pp.season):null;
         const builtForPrimary=`✦ Built for: ${formatTripNameDisplay(tripData.tripName||"Your Trip")} · ${totalNights}n · ${pp.tripType}${coupleMode?" · for 2":""}${ca?` · 🌡 ${ca.label}${pp.tempRange?" · "+pp.tempRange:""}`:""}`;
-        return <div style={{padding:isMobile?"6px 12px":"6px 0",background:"rgba(201,160,76,0.04)",borderBottom:"1px solid rgba(201,160,76,0.12)",overflow:"hidden"}}>
-          <div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",fontWeight:400,color:"rgba(248,245,240,0.70)",lineHeight:1.55,letterSpacing:"0.02em"}}>{builtForPrimary}</div>
-          {ca?.advice&&<div style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",fontWeight:400,color:"rgba(248,245,240,0.45)",lineHeight:1.5,marginTop:6}}>{ca.advice}</div>}
+        return <div style={{ overflow: "hidden" }}>
+          <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 300, fontStyle: "italic", fontSize: 13, color: "rgba(232,220,200,0.65)", lineHeight: 1.5, textAlign: "center", padding: "0 20px 4px" }}>{builtForPrimary}</div>
+          {ca?.advice && <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 300, fontStyle: "italic", fontSize: 12, color: "rgba(232,220,200,0.4)", textAlign: "center", padding: "0 20px 12px" }}>{ca.advice}</div>}
         </div>;
       })()}
       <div style={{
         display: "flex",
         gap: 8,
-        width: "100%",
-        padding: isMobile ? "12px 12px" : "12px 0",
+        padding: "12px 20px",
         overflowX: "auto",
         WebkitOverflowScrolling: "touch",
-        msOverflowStyle: "none",
         scrollbarWidth: "none",
+        msOverflowStyle: "none",
         position: "relative",
         borderBottom: "1px solid rgba(196,87,30,0.14)",
         background: "rgba(10,7,5,0.45)",
         backdropFilter: "blur(14px)",
         WebkitBackdropFilter: "blur(14px)",
       }}>
-        {packSaveFlash && <div style={{ position: "absolute", right: 12, top: 4, fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif", fontSize: 13, color: "#69F0AE", opacity: 0.80, letterSpacing: 1, zIndex: 2, pointerEvents: "none" }}>✓ saved</div>}
+        {packSaveFlash && <div style={{ position: "absolute", right: 12, top: 4, fontFamily: "'Instrument Sans', sans-serif", fontSize: 13, color: "#69F0AE", opacity: 0.80, letterSpacing: 1, zIndex: 2, pointerEvents: "none" }}>✓ saved</div>}
         {[
-          { id: "pack", label: "Pack List" },
-          { id: "tailor", label: "Tailor" },
-          { id: "weight", label: "Pack Index" },
+          { id: "pack", label: "PACK LIST" },
+          { id: "tailor", label: "TAILOR" },
+          { id: "weight", label: "PACK INDEX" },
         ].map((t) => (
           <button key={t.id} type="button" onClick={() => setPackTab(t.id)} style={{
-            flex: 1,
-            minWidth: 0,
-            padding: "0 8px",
-            height: isMobile ? 36 : 40,
+            height: 36,
+            padding: "0 18px",
             borderRadius: 20,
             border: packTab === t.id ? "none" : "1px solid #7A6F5D",
             background: packTab === t.id ? "#C9A04C" : "transparent",
-            color: packTab === t.id ? "#0A0705" : "rgba(232,220,200,0.60)",
-            fontSize: 13,
-            fontWeight: 500,
-            fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif",
+            color: packTab === t.id ? "#0A0705" : "rgba(232,220,200,0.6)",
+            fontFamily: "'Instrument Sans', sans-serif",
+            fontWeight: 600,
+            fontSize: 12,
+            letterSpacing: "0.8px",
             cursor: "pointer",
             whiteSpace: "nowrap",
+            flexShrink: 0,
+            textTransform: "uppercase",
             transition: "all 0.2s ease",
             position: "relative",
           }}>
@@ -742,8 +787,8 @@ Return ONLY a JSON array:
             </button>
             <div style={{maxHeight:packBriefCollapsed?0:400,overflow:"hidden",transition:"max-height 0.28s ease-out"}}>
               <div style={{padding:"0 12px 12px"}}>
-                <div style={{fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontSize:15,fontWeight:400,color:"rgba(255,248,235,0.85)",lineHeight:1.6,marginBottom:10}}>{getPackBrief(pp,tripData)||`Reviewing your pack for a ${goalLabel} trip across ${countries.slice(0,3).join(", ")}${countries.length>3?" +"+(countries.length-3)+" more":""} — ${totalNights} nights.`}</div>
-                <div style={{fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontSize:13,color:"rgba(255,255,255,0.5)",marginBottom:8}}>Built for: {formatTripNameDisplay(tripData?.tripName||"your expedition")} · {totalNights} nights · {pp?.tripType||goalLabel} · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
+                <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 300, fontStyle: "italic", fontSize: 15, color: "rgba(232,220,200,0.8)", lineHeight: 1.65, marginBottom: 10 }}>{getPackBrief(pp,tripData)||`Reviewing your pack for a ${goalLabel} trip across ${countries.slice(0,3).join(", ")}${countries.length>3?" +"+(countries.length-3)+" more":""} — ${totalNights} nights.`}</div>
+                <div style={{ fontFamily: "'Instrument Sans', sans-serif", fontWeight: 400, fontSize: 13, color: "rgba(232,220,200,0.5)", marginBottom: 8 }}>Built for: {formatTripNameDisplay(tripData?.tripName||"your expedition")} · {totalNights} nights · {pp?.tripType||goalLabel} · {pp?.climate?.replace(/-/g," ")||"mixed"}</div>
                 <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{tripTypes.map(t=><span key={t} style={{fontSize:11,color:"rgba(201,160,76,0.85)",background:"rgba(169,70,29,0.18)",border:"1px solid rgba(169,70,29,0.35)",borderRadius:10,padding:"3px 9px",letterSpacing:1,fontWeight:700}}>{TI[t]||"🗺️"} {t}</span>)}</div>
               </div>
             </div>
@@ -799,9 +844,9 @@ Return ONLY a JSON array:
           </div>}
           {suggestDone&&!suggestLoading&&<div style={{borderTop:"1px solid rgba(196,87,30,0.2)",paddingTop:18,marginTop:8}}>
             <div style={{fontFamily:"'Fraunces',serif",fontSize:14,fontStyle:"italic",color:"rgba(201,160,76,0.7)",textAlign:"center",marginBottom:12,lineHeight:1.45}}>✦ Ask Co-Architect for more</div>
-            <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:4}}>
+            <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:8}}>
               {["Stay under 15 lbs","I do laundry weekly","Add rain gear","Pack for heat"].map((p)=>(
-                <button key={p} type="button" onClick={()=>firePackCaChip(p)} style={{background:"rgba(201,160,76,0.08)",border:"1px solid rgba(201,160,76,0.4)",color:CULTURE_GOLD,borderRadius:20,fontSize:13,padding:"6px 14px",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",cursor:"pointer",margin:4}}>{p}</button>
+                <button key={p} type="button" onClick={()=>firePackCaChip(p)} style={{background:"transparent",border:"1px solid #7A6F5D",color:"rgba(232,220,200,0.6)",borderRadius:20,fontSize:12,fontWeight:600,letterSpacing:"0.5px",padding:"8px 16px",fontFamily:"'Instrument Sans', sans-serif",cursor:"pointer",margin:4}}>{p}</button>
               ))}
             </div>
           </div>}
@@ -809,8 +854,9 @@ Return ONLY a JSON array:
       )}
       {packTab==="weight"&&(
         <div style={{overflowY:"auto",flex:1,padding:isMobile?`12px 0 ${packMobileScrollBottom}`:"12px 0 32px",boxSizing:"border-box",width:"100%",position:"relative"}}>
+          <div style={{ fontFamily: "'Instrument Sans', sans-serif", fontWeight: 600, fontSize: 11, color: "rgba(232,220,200,0.4)", letterSpacing: "1.5px", textTransform: "uppercase", padding: "12px 0 6px" }}>Pack by bag</div>
           <div style={{display:"flex",justifyContent:"flex-end",marginBottom:14}}>
-            <button type="button" onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:11,color:"rgba(255,255,255,0.5)",background:"transparent",border:"1px solid rgba(255,255,255,0.25)",borderRadius:20,padding:"4px 12px",cursor:"pointer",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",letterSpacing:0.5,fontWeight:600}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
+            <button type="button" onClick={()=>setUnit(u=>u==="lbs"?"kg":"lbs")} style={{fontSize:11,color:"rgba(255,255,255,0.5)",background:"transparent",border:"1px solid rgba(255,255,255,0.25)",borderRadius:20,padding:"4px 12px",cursor:"pointer",fontFamily:"'Instrument Sans', sans-serif",letterSpacing:0.5,fontWeight:600}}>SWITCH TO {unit==="lbs"?"KG":"LBS"}</button>
           </div>
           {["Backpack","Global Briefcase","Worn","Digital"].map(bagName=>{
             const bagItems=items.filter(i=>i.bag===bagName);
@@ -830,9 +876,9 @@ Return ONLY a JSON array:
                 {bagName==="Backpack"&&<div style={{height:4,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden",marginBottom:11}}><div style={{height:"100%",background:isOver?"linear-gradient(90deg,rgba(201,160,76,0.5),#FF6B6B)":`linear-gradient(90deg,rgba(201,160,76,0.35),${CULTURE_GOLD})`,borderRadius:2,width:Math.min(bagW/wLim*100,100)+"%",transition:"width 0.5s ease"}}/></div>}
                 {bagItems.length===0?<div style={{fontSize:15,color:"rgba(255,255,255,0.35)",textAlign:"center",padding:"10px 0"}}>No items</div>
                 :bagItems.sort((a,b)=>(parseFloat(b.weight)||0)-(parseFloat(a.weight)||0)).map(item=>(
-                  <div key={item.id} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
-                    <div style={{fontSize:13,color:PACK_CREAM,flex:1,minWidth:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.owned?<span style={{color:CULTURE_GOLD,marginRight:4}}>✓</span>:null}{item.name}</div>
-                    <div style={{fontSize:14,color:"rgba(255,255,255,0.65)",flexShrink:0,marginLeft:8,fontWeight:700}}>{parseFloat(item.weight)>0?(parseFloat(item.weight)*wM).toFixed(2)+unit:"—"}</div>
+                  <div key={item.id} style={{display:"flex",alignItems:"center",fontFamily:"'Instrument Sans', sans-serif",fontSize:14,color:"#E8DCC8",padding:"10px 0",borderBottom:"1px solid rgba(122,111,93,0.15)"}}>
+                    <div style={{flex:1,minWidth:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.owned?<span style={{color:"#69F0AE",marginRight:4}}>✓</span>:null}{item.name}</div>
+                    <div style={{fontFamily:"'Instrument Sans', sans-serif",fontSize:13,color:"#C9A04C",marginLeft:"auto",fontWeight:600}}>{parseFloat(item.weight)>0?(parseFloat(item.weight)*wM).toFixed(2)+unit:"—"}</div>
                   </div>
                 ))}
               </div>
