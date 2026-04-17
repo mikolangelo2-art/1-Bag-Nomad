@@ -3,7 +3,7 @@
 // Design System v2 - LOCKED April 15 2026
 // Phase 3 - Full visual implementation
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 const CARD_CONFIG = [
   {
@@ -198,15 +198,28 @@ export default function LandingPage({ tripData, onNavigate }) {
           {CARD_CONFIG.map((card, i) => {
             const stat = getCardStat(card.id, tripData);
             return (
-              <LandingCard
-                key={card.id}
-                card={card}
-                stat={stat}
-                icon={CARD_ICONS[card.id]}
-                onNavigate={onNavigate}
-                animDelay={i * 60}
-                mounted={mounted}
-              />
+              <Fragment key={card.id}>
+                {i === 1 && (
+                  <div
+                    role="separator"
+                    aria-hidden
+                    style={{
+                      height: 1,
+                      background: "linear-gradient(90deg, transparent, rgba(122,111,93,0.45), transparent)",
+                      margin: "4px 0 8px",
+                      border: "none",
+                    }}
+                  />
+                )}
+                <LandingCard
+                  card={card}
+                  stat={stat}
+                  icon={CARD_ICONS[card.id]}
+                  onNavigate={onNavigate}
+                  animDelay={i * 60}
+                  mounted={mounted}
+                />
+              </Fragment>
             );
           })}
         </div>

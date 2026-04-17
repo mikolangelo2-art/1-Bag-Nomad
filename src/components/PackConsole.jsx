@@ -168,31 +168,25 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
   const needCount = catItems.filter((i) => !i.owned).length;
   const needCost = catItems.filter((i) => !i.owned).reduce((s, i) => s + (parseFloat(i.cost) || 0), 0);
   const pct = catItems.length > 0 ? Math.round((ownedInCat / catItems.length) * 100) : 0;
+  const pctColor = pct >= 100 ? "#5E8B8A" : "#C9A04C";
+  const barFill = pct >= 100 ? "#5E8B8A" : "#C9A04C";
   return (
     <div
-      className={isMobile ? undefined : "lux-card-interactive"}
       onClick={() => onSelectCategory(cat)}
       style={{
         ...(isMobile
           ? {
-              background: "rgba(255,255,255,0.015)",
-              border: `1.5px solid rgba(255,255,255,0.16)`,
-              borderTop: `1.5px solid ${cat.color}65`,
-              borderRadius: 12,
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(122,111,93,0.35)",
+              borderRadius: 16,
               animation: `fadeUp 0.3s ease ${idx * 0.05}s both`,
             }
           : {
-              background: "rgba(23,27,32,0.62)",
-              backdropFilter: "blur(10px)",
-              WebkitBackdropFilter: "blur(10px)",
-              border: "1px solid rgba(245,158,11,0.18)",
-              borderTop: "1px solid rgba(245,158,11,0.36)",
-              borderLeft: `3px solid ${cat.color}55`,
-              borderRadius: 18,
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(122,111,93,0.35)",
+              borderRadius: 16,
               overflow: "hidden",
-              boxShadow:
-                "inset 0 1px 0 rgba(248,245,240,0.06), 0 14px 44px rgba(0,0,0,0.42), 0 0 52px rgba(201,160,76,0.08)",
-              transition: "all 0.38s cubic-bezier(0.25,0.46,0.45,0.94)",
+              transition: "border-color 0.2s ease",
               animation: `fadeUp 0.40s cubic-bezier(0.25,0.46,0.45,0.94) ${idx * 0.06}s both`,
             }),
         padding: isMobile ? "14px 12px" : "14px 16px",
@@ -202,48 +196,37 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
         flexDirection: "column",
         gap: 8,
       }}
-      onMouseOver={
-        isMobile
-          ? (e) => {
-              e.currentTarget.style.background = "rgba(255,255,255,0.035)";
-            }
-          : (e) => {
-              e.currentTarget.style.background = "rgba(23,27,32,0.72)";
-              e.currentTarget.style.borderColor = "rgba(245,158,11,0.32)";
-              e.currentTarget.style.borderLeft = `3px solid ${cat.color}66`;
-              e.currentTarget.style.boxShadow =
-                "inset 0 1px 0 rgba(248,245,240,0.08), 0 16px 48px rgba(0,0,0,0.48), 0 0 56px rgba(201,160,76,0.12)";
-            }
-      }
-      onMouseOut={
-        isMobile
-          ? (e) => {
-              e.currentTarget.style.background = "rgba(255,255,255,0.015)";
-            }
-          : (e) => {
-              e.currentTarget.style.background = "rgba(23,27,32,0.62)";
-              e.currentTarget.style.borderColor = "rgba(245,158,11,0.18)";
-              e.currentTarget.style.borderLeft = `3px solid ${cat.color}55`;
-              e.currentTarget.style.boxShadow =
-                "inset 0 1px 0 rgba(248,245,240,0.06), 0 14px 44px rgba(0,0,0,0.42), 0 0 52px rgba(201,160,76,0.08)";
-            }
-      }
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ fontSize: 24 }}>{cat.icon}</span>
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            background: "rgba(201,160,76,0.08)",
+            border: "1px solid rgba(201,160,76,0.18)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 20,
+            flexShrink: 0,
+          }}
+        >
+          {cat.icon}
+        </div>
         <span
           style={{
             flex: 1,
-            fontSize: 14,
+            fontFamily: "'Instrument Sans', sans-serif",
             fontWeight: 600,
-            color: "#F8F5F0",
-            letterSpacing: "0.06em",
-            fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif",
+            fontSize: 16,
+            color: "#E8DCC8",
+            letterSpacing: "0",
           }}
         >
-          {cat.label.toUpperCase()}
+          {cat.label}
         </span>
-        <span style={{ fontSize: 14, fontWeight: 700, color: cat.color }}>{pct}%</span>
+        <span style={{ fontSize: 14, fontWeight: 700, color: pctColor }}>{pct}%</span>
         <span style={{ fontSize: 14, color: "rgba(255,255,255,0.30)", marginLeft: 6 }}>›</span>
       </div>
       <div style={{ display: "flex", gap: 12, fontSize: 14, color: "rgba(255,255,255,0.45)", fontFamily: "'Instrument Sans',system-ui,-apple-system,sans-serif" }}>
@@ -253,7 +236,7 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
           {catW.toFixed(1)}
           {unit}
         </span>
-        <span style={{ marginLeft: "auto", color: "#c9a04c" }}>
+        <span style={{ marginLeft: "auto", color: needCount > 0 ? "#C9A04C" : "#69F0AE" }}>
           {needCount > 0 ? `$${Math.round(needCost)} still needed` : "✓ all owned"}
         </span>
       </div>
@@ -263,9 +246,8 @@ function CatCard({ cat, idx, isMobile, itemsForCat, wM, unit, onSelectCategory }
           style={{
             height: "100%",
             width: `${pct}%`,
-            background: `linear-gradient(90deg,${cat.color}66,${cat.color})`,
+            background: barFill,
             borderRadius: 2,
-            boxShadow: `0 0 8px ${cat.color}90`,
           }}
         />
       </div>
@@ -525,7 +507,7 @@ Return ONLY a JSON array:
             minHeight: 44,
             display: "flex",
             alignItems: "center",
-          }} aria-label="Back to trip">←</button>
+          }} aria-label="Back to landing">←</button>
           <span style={{
             fontFamily: "'Fraunces',serif",
             fontSize: 18,
