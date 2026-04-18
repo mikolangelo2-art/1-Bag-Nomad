@@ -200,6 +200,7 @@ export default function LandingPage({ tripData, onNavigate }) {
             travelBooked={30}
             stayConfirmed={45}
             docsInOrder={75}
+            onNavigate={onNavigate}
           />
         </div>
 
