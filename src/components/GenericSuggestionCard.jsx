@@ -1,9 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { useDestinationPhoto } from "../hooks/useDestinationPhoto";
+import { usePlace, buildPlaceQuery } from "../hooks/usePlace";
+import { VenueIntelBadges } from "./VenueIntelBadges";
 import { useSuggestionPhotoDuplicate } from "./SuggestionPhotoDedupProvider";
 
-/** Split-card hero height — stacked variant only */
-const HERO_H = 200;
+/** Cinematic hero height — 200 desktop, 170 mobile (Session 45) */
+const HERO_H_DESKTOP = 200;
+const HERO_H_MOBILE = 170;
 
 /** DS v2 — fixed tokens (accent prop kept for API compat, not used for chrome) */
 const DS_GOLD = "#C9A04C";
@@ -83,6 +86,21 @@ export default function GenericSuggestionCard({
     else setInnerOpen((o) => !o);
   }
 
+  const HERO_H = isMobile ? HERO_H_MOBILE : HERO_H_DESKTOP;
+
+  // L2 — Google Places venue photo + intel (Session 45)
+  const placeCategory = String(item.category || "").toLowerCase().replace(/[^a-z]/g, "");
+  const placeQueryStr = buildPlaceQuery(
+    destination,
+    placeCategory === "accommodation" || placeCategory === "stay" ? "stay"
+      : placeCategory === "food" || placeCategory === "restaurant" ? "food"
+      : placeCategory === "activities" || placeCategory === "activity" ? "activities"
+      : placeCategory,
+    item.name || ""
+  );
+  const { data: placeData, loading: placeLoading } = usePlace(placeQueryStr);
+
+  // L1 — Unsplash destination photo (existing, fallback)
   const photoCat = photoQueryOverride ?? `${item.category} ${destination}`.trim();
   const photo = useDestinationPhoto(destination, photoCat, country, {
     instanceId,
@@ -92,7 +110,13 @@ export default function GenericSuggestionCard({
     photo.ready && photo.url ? photo.url : null,
     instanceId
   );
-  const showHeroImg = photo.ready && photo.url && !isPhotoDuplicate;
+
+  // Photo fallback chain: Google Places → Unsplash → warm gradient
+  const placesPhotoUrl = placeData?.photoUri || null;
+  const unsplashPhotoUrl = photo.ready && photo.url && !isPhotoDuplicate ? photo.url : null;
+  const heroPhotoUrl = placesPhotoUrl || unsplashPhotoUrl || null;
+  const photoSource = placesPhotoUrl ? "google" : unsplashPhotoUrl ? "unsplash" : null;
+  const showHeroImg = !!heroPhotoUrl;
   const descFallback = useMemo(
     () => String(item.description || item.note || "").trim(),
     [item.description, item.note]
@@ -100,7 +124,7 @@ export default function GenericSuggestionCard({
 
   useEffect(() => {
     setImgLoaded(false);
-  }, [photo.url]);
+  }, [heroPhotoUrl]);
 
   const priceStr =
     typeof item.price === "number"
@@ -142,7 +166,7 @@ export default function GenericSuggestionCard({
     <>
       {showHeroImg ? (
         <>
-          {!imgLoaded && photo.thumb ? (
+          {!imgLoaded && photo.thumb && photoSource === "unsplash" ? (
             <img
               src={photo.thumb}
               alt=""
@@ -159,7 +183,7 @@ export default function GenericSuggestionCard({
                 zIndex: 0,
               }}
             />
-          ) : !imgLoaded && !photo.thumb ? (
+          ) : !imgLoaded ? (
             <div
               style={{
                 position: "absolute",
@@ -171,7 +195,7 @@ export default function GenericSuggestionCard({
             />
           ) : null}
           <img
-            src={photo.url}
+            src={heroPhotoUrl}
             alt=""
             loading="lazy"
             decoding="async"
@@ -200,30 +224,28 @@ export default function GenericSuggestionCard({
             }}
           />
         </>
-      ) : photo.ready && (!photo.url || isPhotoDuplicate) && descFallback ? (
+      ) : !heroPhotoUrl && !placeLoading && photo.ready ? (
+        /* L3 — Warm gradient fallback with venue initial */
         <div
           style={{
-            padding: "20px 16px",
-            background: "rgba(0,8,20,0.6)",
-            borderRadius: fillMode === "expand" ? 0 : "12px 12px 0 0",
-            minHeight: fillMode === "expand" ? "100%" : HERO_H,
-            height: fillMode === "expand" ? "100%" : undefined,
-            boxSizing: "border-box",
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(135deg, #3A2818 0%, #1A0F0A 100%)",
             display: "flex",
             alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <div
+          <span
             style={{
               fontFamily: "'Fraunces', serif",
-              fontSize: 15,
-              fontStyle: "italic",
-              color: "rgba(255,255,255,0.70)",
-              lineHeight: 1.7,
+              fontSize: 48,
+              fontWeight: 300,
+              color: "rgba(201,160,76,0.40)",
             }}
           >
-            {descFallback}
-          </div>
+            {String(item.name || "").charAt(0).toUpperCase()}
+          </span>
         </div>
       ) : (
         <div
@@ -281,24 +303,25 @@ export default function GenericSuggestionCard({
           fontWeight: 400,
           color: "rgba(255,245,220,0.94)",
           lineHeight: 1.25,
-          marginBottom: 6,
+          marginBottom: 4,
           wordBreak: "break-word",
         }}
       >
         {item.name}
       </div>
+      <VenueIntelBadges intel={placeData} />
       <div
         style={{
           fontSize: 14,
           fontFamily: "Instrument Sans, sans-serif",
-          color: "rgba(245,158,11,0.90)",
+          color: DS_GOLD,
           fontWeight: 600,
         }}
       >
         {priceStr}
-        {item.rating != null ? (
+        {!placeData?.rating && item.rating != null ? (
           <span style={{ color: "rgba(255,255,255,0.55)", fontWeight: 500, marginLeft: 8 }}>
-            <span style={{ color: "rgba(245,158,11,0.90)" }}>★</span> {item.rating}/10
+            <span style={{ color: DS_GOLD }}>★</span> {item.rating}/10
           </span>
         ) : null}
       </div>
@@ -318,7 +341,19 @@ export default function GenericSuggestionCard({
   );
 
   const photoCredit =
-    photo.htmlLink ? (
+    photoSource === "google" ? (
+      <div style={{ textAlign: "right", marginTop: 6 }}>
+        <span
+          style={{
+            fontSize: 10,
+            color: "rgba(255,255,255,0.4)",
+            fontFamily: "Instrument Sans, sans-serif",
+          }}
+        >
+          Photo via Google
+        </span>
+      </div>
+    ) : photo.htmlLink ? (
       <div style={{ textAlign: "right", marginTop: 6 }}>
         <a
           href={photo.htmlLink}
@@ -345,7 +380,7 @@ export default function GenericSuggestionCard({
             fontWeight: 300,
             fontStyle: "italic",
             fontSize: 15,
-            color: "rgba(232,220,200,0.75)",
+            color: "rgba(232,220,200,0.78)",
             lineHeight: 1.6,
             marginBottom: 10,
           }}
@@ -356,7 +391,7 @@ export default function GenericSuggestionCard({
       {item.description ? (
         <div
           style={{
-            fontSize: 14,
+            fontSize: 15,
             color: "rgba(255,245,220,0.78)",
             lineHeight: 1.5,
             marginBottom: 10,
@@ -545,6 +580,9 @@ export default function GenericSuggestionCard({
         >
           {item.name}
         </span>
+      </div>
+      <VenueIntelBadges intel={placeData} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
         <span
           style={{
             fontFamily: "Instrument Sans, sans-serif",
@@ -557,7 +595,7 @@ export default function GenericSuggestionCard({
           {priceStr}
         </span>
       </div>
-      {item.rating != null ? (
+      {!placeData?.rating && item.rating != null ? (
         <div
           style={{
             display: "flex",
