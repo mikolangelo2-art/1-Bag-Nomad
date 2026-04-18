@@ -39,7 +39,10 @@ github-recovery-codes.txt
 *.zip
 
 # Local folders
-.claude/skills/
+# Claude agent skills ARE tracked — per-user Claude config is not
+.claude/*
+!.claude/skills/
+!.claude/skills/**
 Landing Page folder/
 Logos/
 Vercel/

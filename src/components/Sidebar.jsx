@@ -1,13 +1,15 @@
 // src/components/Sidebar.jsx
 // 1 Bag Nomad — Desktop Left Sidebar
-// Design System v2 — LOCKED April 15 2026
+// DS v2.1 §7d — 72px icon-only with hover tooltips (Sprint Day 20)
+
+import { SIDEBAR_WIDTH } from '../constants/layout';
 
 export const NAV_ITEMS = [
-  { id: 'trip',     label: 'TRIP',     icon: '✈',  screen: 'landing'  },
-  { id: 'pack',     label: 'PACK',     icon: '◻',  screen: 'pack'     },
-  { id: 'maps',     label: 'MAPS',     icon: '◎',  screen: 'maps'     },
-  { id: 'calendar', label: 'CALENDAR', icon: '▦',  screen: 'calendar' },
-  { id: 'profile',  label: 'PROFILE',  icon: '◯',  screen: 'profile'  },
+  { id: 'trip',     label: 'Trip',     icon: '✈',  screen: 'landing'  },
+  { id: 'pack',     label: 'Pack',     icon: '◻',  screen: 'pack'     },
+  { id: 'maps',     label: 'Maps',     icon: '◎',  screen: 'maps'     },
+  { id: 'calendar', label: 'Calendar', icon: '▦',  screen: 'calendar' },
+  { id: 'profile',  label: 'Profile',  icon: '◯',  screen: 'profile'  },
 ];
 
 export default function Sidebar({ activeScreen, onNavigate }) {
@@ -16,15 +18,15 @@ export default function Sidebar({ activeScreen, onNavigate }) {
       position: 'fixed',
       top: 0,
       left: 0,
-      width: 68,
+      width: SIDEBAR_WIDTH,
       height: '100vh',
       background: '#0A0705',
       borderRight: '1px solid rgba(201,160,76,0.15)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      paddingTop: 24,
-      paddingBottom: 24,
+      paddingTop: 32,
+      paddingBottom: 32,
       zIndex: 1000,
       backgroundImage: `
         radial-gradient(circle, rgba(201,160,76,0.06) 1px, transparent 1px),
@@ -32,17 +34,20 @@ export default function Sidebar({ activeScreen, onNavigate }) {
       `,
       backgroundSize: '20px 20px, 100% 100%',
     }}>
-      {/* Logo mark */}
-      <div style={{
-        width: 32, height: 32, marginBottom: 32,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 18, color: '#C9A04C',
-      }}>
+      {/* Logo mark top — 32px padding above handled by paddingTop */}
+      <div
+        aria-label="1 Bag Nomad"
+        style={{
+          width: 32, height: 32, marginBottom: 40,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 20, color: '#C9A04C',
+        }}
+      >
         ✈
       </div>
 
-      {/* Nav items */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1, width: '100%' }}>
+      {/* Nav items — icon-only, 28px gap per §7d */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 28, flex: 1, width: '100%', alignItems: 'center' }}>
         {NAV_ITEMS.map(item => {
           const isActive = activeScreen === item.screen
             || (item.screen === 'landing' && activeScreen === 'console');
@@ -50,58 +55,56 @@ export default function Sidebar({ activeScreen, onNavigate }) {
             <button
               key={item.id}
               onClick={() => onNavigate(item.screen)}
+              title={item.label}
+              aria-label={item.label}
               style={{
                 position: 'relative',
-                display: 'flex', flexDirection: 'column',
-                alignItems: 'center', gap: 4,
-                padding: '12px 0',
+                display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                width: 44, height: 44,
                 background: 'none', border: 'none',
-                cursor: 'pointer', width: '100%',
+                cursor: 'pointer',
+                padding: 0,
               }}
             >
               {isActive && (
                 <div style={{
-                  position: 'absolute', left: 0,
+                  position: 'absolute', left: -14,
                   top: '50%', transform: 'translateY(-50%)',
-                  width: 3, height: 24,
+                  width: 3, height: 44,
                   borderRadius: '0 2px 2px 0',
                   background: '#C9A04C',
                 }} />
               )}
-              <div style={{
-                fontSize: 20, lineHeight: 1,
-                color: isActive ? '#C9A04C' : 'rgba(232,220,200,0.4)',
+              <span style={{
+                fontSize: 22, lineHeight: 1,
+                color: isActive ? '#C9A04C' : 'rgba(232,220,200,0.5)',
                 transition: 'color 0.2s ease',
               }}>
                 {item.icon}
-              </div>
-              <span style={{
-                fontFamily: 'Instrument Sans, sans-serif',
-                fontSize: 9, fontWeight: 500,
-                color: isActive ? '#C9A04C' : 'rgba(232,220,200,0.4)',
-                letterSpacing: '0.8px', transition: 'color 0.2s ease', lineHeight: 1,
-              }}>
-                {item.label}
               </span>
             </button>
           );
         })}
       </div>
 
-      {/* Profile avatar anchored bottom */}
+      {/* Profile avatar anchored bottom — 32px from bottom handled by paddingBottom */}
       <button
         onClick={() => onNavigate('profile')}
+        title="Profile"
+        aria-label="Profile"
         style={{
-          width: 36, height: 36, borderRadius: '50%',
+          width: 32, height: 32, borderRadius: '50%',
           background: 'rgba(201,160,76,0.15)',
-          border: `2px solid ${activeScreen === 'profile' ? '#C9A04C' : 'rgba(201,160,76,0.3)'}`,
+          border: `1px solid ${activeScreen === 'profile' ? '#C9A04C' : 'rgba(201,160,76,0.3)'}`,
           cursor: 'pointer', display: 'flex',
           alignItems: 'center', justifyContent: 'center',
-          fontSize: 16, overflow: 'hidden',
+          overflow: 'hidden',
           transition: 'border-color 0.2s ease',
+          padding: 0,
         }}
       >
-        <span style={{ color: '#C9A04C', fontSize: 14 }}>◯</span>
+        <span style={{ color: '#C9A04C', fontSize: 13 }}>◯</span>
       </button>
     </aside>
   );
