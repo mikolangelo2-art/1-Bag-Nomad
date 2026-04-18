@@ -4,6 +4,7 @@
 // Phase 3 - Full visual implementation
 
 import { Fragment, useEffect, useState } from "react";
+import TripReadinessBar from "../components/TripReadinessBar";
 
 const CARD_CONFIG = [
   {
@@ -192,6 +193,14 @@ export default function LandingPage({ tripData, onNavigate }) {
           >
             {tripName}
           </div>
+
+          {/* DS v2.1 §5d — Trip Readiness Bar (hardcoded values for Phase 1A) */}
+          <TripReadinessBar
+            packReady={62}
+            travelBooked={30}
+            stayConfirmed={45}
+            docsInOrder={75}
+          />
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
