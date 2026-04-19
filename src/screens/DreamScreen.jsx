@@ -12,6 +12,9 @@ import { runDreamExpeditionBuild } from "../utils/dreamVisionBuild";
 
 const STORAGE_KEY = "1bn_dream_draft_v1";
 
+const DREAM_VISION_PLACEHOLDER =
+  "Speak from the heart. Don't say where you want to go \u2014 say how you want to FEEL. The reefs you need to dive. The city you need to disappear into. The road that's been calling you. The version of yourself you're chasing. The more passion you pour in, the more magic your co-architect returns.";
+
 const TRAVEL_STYLES = [
   { id: "cultural", label: "Cultural" },
   { id: "adventure", label: "Adventure" },
@@ -289,11 +292,11 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
       <div
         style={{
           position: "fixed",
-          top: 0,
+          top: "15%",
           left: 0,
           right: 0,
-          height: "40%",
-          background: "radial-gradient(ellipse at 50% 0%, rgba(169,70,29,0.10) 0%, transparent 70%)",
+          height: "50%",
+          background: "radial-gradient(ellipse at 50% 0%, rgba(169,70,29,0.18) 0%, transparent 70%)",
           pointerEvents: "none",
           zIndex: 0,
         }}
@@ -359,7 +362,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
             marginBottom: 4,
           }}
         >
-          {"Describe your journey\u2026 speak from your heart"}
+          {"Describe your journey\u2026"}
         </div>
 
         {/* Vision textarea */}
@@ -377,8 +380,11 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           <textarea
             value={vision}
             onChange={(e) => setVision(e.target.value)}
-            placeholder="Describe your journey..."
+            placeholder={DREAM_VISION_PLACEHOLDER}
             style={{
+              width: "100%",
+              display: "block",
+              boxSizing: "border-box",
               minHeight: 140,
               background: "transparent",
               border: "none",
@@ -390,38 +396,6 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
               fontSize: 15,
               color: "#E8DCC8",
               lineHeight: 1.65,
-              caretColor: "#C9A04C",
-            }}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <div
-            style={{
-              fontFamily: "Instrument Sans, sans-serif",
-              fontWeight: 600,
-              fontSize: 11,
-              color: "rgba(232,220,200,0.5)",
-              letterSpacing: "1.5px",
-              textTransform: "uppercase",
-            }}
-          >
-            Journey Name
-          </div>
-          <input
-            value={journeyName}
-            onChange={(e) => setJourneyName(e.target.value)}
-            placeholder="e.g. The Japanese Feast"
-            style={{
-              background: "transparent",
-              border: "none",
-              borderBottom: "1px solid rgba(122,111,93,0.5)",
-              outline: "none",
-              fontFamily: "Instrument Sans, sans-serif",
-              fontWeight: 400,
-              fontSize: 14,
-              color: "#E8DCC8",
-              padding: "8px 0",
               caretColor: "#C9A04C",
             }}
           />
