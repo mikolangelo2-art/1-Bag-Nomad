@@ -1,0 +1,148 @@
+/* BrandHeaderTier3.css
+ * 1 Bag Nomad — Tier 3 Brand Header (Emotional Variant)
+ * DS v2.1 §7b · Session 54H · April 18, 2026
+ *
+ * Architecture: 176px total height · 88px rows · centered lockup + tagline
+ * Palette: cream #E8DCC8 wordmark · gold #C9A04C tagline · warm espresso backdrop
+ */
+
+/* ═══ ROOT ═══ */
+.bh3-root {
+  position: relative;
+  height: 176px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 7, 5, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.bh3-sticky {
+  position: sticky;
+  top: 0;
+}
+
+/* ═══ FILM GRAIN OVERLAY ═══ */
+.bh3-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='1'/></svg>");
+}
+
+/* ═══ ROWS ═══ */
+.bh3-row {
+  flex: 0 0 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* ═══ ROW 1 · CENTERED LOCKUP ═══ */
+.bh3-lockup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bh3-wordmark-part {
+  font-family: 'Fraunces', 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1;
+  color: #E8DCC8;
+  letter-spacing: -0.01em;
+}
+
+.bh3-logo-mark {
+  width: 32px;
+  height: 32px;
+  display: block;
+  flex-shrink: 0;
+  transform: translateY(-2px);
+}
+
+/* ═══ ROW 2 · TAGLINE ═══ */
+.bh3-tagline-big {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: 28px;
+  line-height: 1;
+  color: #C9A04C;
+  letter-spacing: 0.08em;
+  position: relative;
+  overflow: hidden;
+}
+
+.bh3-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 0% 40%,
+    rgba(255, 245, 220, 0.18) 50%,
+    transparent 60% 100%
+  );
+  background-size: 200% 100%;
+  animation: bh3-shimmer-pass 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes bh3-shimmer-pass {
+  0%, 85% { background-position: 200% 0; }
+  95%, 100% { background-position: -50% 0; }
+}
+
+.bh3-divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(201, 160, 76, 0.35);
+  margin: 0 18px;
+  flex-shrink: 0;
+}
+
+.bh3-tagline-light {
+  font-family: 'Fraunces', serif;
+  font-weight: 100;
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1;
+  color: #C9A04C;
+  letter-spacing: 0.02em;
+}
+
+/* ═══ DESKTOP SCALE · DS v2.1 §2b ═══ */
+@media (min-width: 1024px) {
+  .bh3-wordmark-part { font-size: 30px; }
+  .bh3-logo-mark     { width: 36px; height: 36px; }
+  .bh3-tagline-big   { font-size: 40px; }
+  .bh3-tagline-light { font-size: 18px; }
+  .bh3-divider       { height: 28px; margin: 0 22px; }
+  .bh3-lockup        { gap: 12px; }
+}
+
+/* ═══ SMALL MOBILE SAFETY NET (<360px) ═══ */
+@media (max-width: 359px) {
+  .bh3-wordmark-part { font-size: 22px; }
+  .bh3-logo-mark     { width: 28px; height: 28px; }
+  .bh3-tagline-big   { font-size: 24px; letter-spacing: 0.06em; }
+  .bh3-divider       { margin: 0 12px; }
+  .bh3-tagline-light { font-size: 14px; }
+  .bh3-lockup        { gap: 8px; }
+}
+
+/* ═══ REDUCED MOTION ═══ */
+@media (prefers-reduced-motion: reduce) {
+  .bh3-shimmer::after {
+    animation: none;
+  }
+}
