@@ -659,7 +659,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
                           addCustomInterest();
                         }
                       }}
-                      placeholder="Add your own\u2026"
+                      placeholder={"Add your own\u2026"}
                       style={{
                         flex: 1,
                         background: "rgba(255,255,255,0.03)",
@@ -820,7 +820,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
                     type="text"
                     value={budget}
                     onChange={(e) => setBudget(e.target.value)}
-                    placeholder="e.g. $5,000 \u00B7 No limit \u00B7 Dream big"
+                    placeholder={"e.g. $5,000 \u00B7 No limit \u00B7 Dream big"}
                     style={{
                       background: "transparent",
                       border: "none",
