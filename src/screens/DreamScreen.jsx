@@ -6,7 +6,11 @@
 import { useEffect, useState } from "react";
 import DatePickerInput from "../components/DatePickerInput";
 import VisionReveal from "../components/VisionReveal";
+import BrandHeaderTier3 from "../components/BrandHeaderTier3";
+import WorldMapBackground from "../components/WorldMapBackground";
 import { runDreamExpeditionBuild } from "../utils/dreamVisionBuild";
+
+const STORAGE_KEY = "1bn_dream_draft_v1";
 
 const TRAVEL_STYLES = [
   { id: "cultural", label: "Cultural" },
@@ -78,10 +82,62 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState("");
   const [revealPayload, setRevealPayload] = useState(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     if (prefilledVision) setVision(prefilledVision);
   }, [prefilledVision]);
+
+  /* Draft restore: single mount read from localStorage (Session 58) */
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved.vision && !prefilledVision) setVision(saved.vision);
+        if (saved.journeyName) setJourneyName(saved.journeyName);
+        if (saved.travelerType) setTravelerType(saved.travelerType);
+        if (saved.selectedStyle) setSelectedStyle(saved.selectedStyle);
+        if (Array.isArray(saved.selectedInterests)) setSelectedInterests(saved.selectedInterests);
+        if (saved.departureDate) setDepartureDate(saved.departureDate);
+        if (saved.departureIso) setDepartureIso(saved.departureIso);
+        if (saved.duration) setDuration(saved.duration);
+        if (saved.budget) setBudget(saved.budget);
+      }
+    } catch {
+      // Silent: corrupted storage ignored
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount only; prefilledVision is initial-route snapshot
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      try {
+        const payload = {
+          vision,
+          journeyName,
+          travelerType,
+          selectedStyle,
+          selectedInterests,
+          departureDate,
+          departureIso,
+          duration,
+          budget,
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch {
+        // Silent
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, [vision, journeyName, travelerType, selectedStyle, selectedInterests, departureDate, departureIso, duration, budget]);
 
   const canBuild = vision.trim().length > 20;
 
@@ -118,6 +174,11 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
         selectedGoal: selectedStyle || "custom",
       });
       if (result.ok) {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch {
+          // Silent
+        }
         setRevealPayload({
           visionData: result.parsed,
           selectedGoal: selectedStyle || "custom",
@@ -133,27 +194,38 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
       } else {
         setLoadError(result.error || "Could not build expedition.");
       }
-    } catch (e) {
-      setLoadError(e?.message || "Something went wrong.");
+    } catch (err) {
+      setLoadError(err?.message || "Something went wrong.");
     }
     setLoading(false);
   }
 
-  const triggerPillStyle = (id) => ({
-    width: "100%",
-    minHeight: 52,
-    borderRadius: 16,
-    background: "rgba(255,255,255,0.05)",
-    border: `1px solid ${openPill === id ? "rgba(201,160,76,0.4)" : "rgba(255,255,255,0.10)"}`,
-    backdropFilter: "blur(12px)",
-    WebkitBackdropFilter: "blur(12px)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 18px",
-    cursor: "pointer",
-    transition: "border-color 0.2s ease",
-  });
+  const pillAccent = {
+    style: "#5E8B8A",
+    interests: "#C9A04C",
+    dates: "#8B6F47",
+  };
+
+  const triggerPillStyle = (id) => {
+    const acc = pillAccent[id] || "#C9A04C";
+    const left = openPill === id ? acc : `${acc}60`;
+    return {
+      width: "100%",
+      minHeight: 52,
+      borderRadius: 16,
+      background: "rgba(255,255,255,0.05)",
+      border: "1px solid rgba(255,255,255,0.10)",
+      borderLeft: `2px solid ${left}`,
+      backdropFilter: "blur(12px)",
+      WebkitBackdropFilter: "blur(12px)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "0 18px",
+      cursor: "pointer",
+      transition: "border-color 0.2s ease",
+    };
+  };
 
   const triggerLabelStyle = {
     fontFamily: "Instrument Sans, sans-serif",
@@ -185,6 +257,8 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
     );
   }
 
+  const contentMax = isDesktop ? 640 : 480;
+
   return (
     <div
       style={{
@@ -194,6 +268,24 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
         overflow: "hidden",
       }}
     >
+      <style>{`
+        @keyframes dream-textarea-breath {
+          0%, 100% {
+            box-shadow: 0 0 0 rgba(201,160,76,0);
+          }
+          50% {
+            box-shadow: 0 0 24px rgba(201,160,76,0.18);
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .dream-textarea-wrapper {
+            animation: none !important;
+          }
+        }
+      `}</style>
+
+      <WorldMapBackground dream={true} />
+
       <div
         style={{
           position: "fixed",
@@ -219,11 +311,13 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
         }}
       />
 
+      <BrandHeaderTier3 sticky={true} shimmer={true} />
+
       <div
         style={{
           position: "relative",
           zIndex: 1,
-          maxWidth: 480,
+          maxWidth: contentMax,
           margin: "0 auto",
           padding: "24px 20px 120px",
           display: "flex",
@@ -253,54 +347,31 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           </button>
         )}
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingTop: 16 }}>
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: "50%",
-              border: "1px solid rgba(201,160,76,0.3)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 8,
-            }}
-          >
-            <span style={{ fontSize: 16, color: "#C9A04C" }}>{"\u2708"}</span>
-          </div>
-          <div
-            style={{
-              fontFamily: "Instrument Sans, sans-serif",
-              fontWeight: 400,
-              fontSize: 13,
-              color: "rgba(232,220,200,0.55)",
-              letterSpacing: "0.2px",
-            }}
-          >
-            Your expedition starts now.
-          </div>
-          <div
-            style={{
-              fontFamily: "Fraunces, serif",
-              fontWeight: 900,
-              fontStyle: "italic",
-              fontSize: 22,
-              color: "#C9A04C",
-              lineHeight: 1.1,
-            }}
-          >
-            {"Let's go."}
-          </div>
+        <div
+          style={{
+            fontFamily: "Fraunces, serif",
+            fontWeight: 300,
+            fontStyle: "italic",
+            fontSize: isDesktop ? 18 : 16,
+            color: "rgba(232,220,200,0.75)",
+            lineHeight: 1.4,
+            textAlign: "center",
+            marginBottom: 4,
+          }}
+        >
+          {"Describe your journey\u2026 speak from your heart"}
         </div>
 
         {/* Vision textarea */}
         <div
+          className="dream-textarea-wrapper"
           style={{
             border: "1px solid rgba(201,160,76,0.35)",
             borderLeft: "2px solid rgba(201,160,76,0.6)",
             borderRadius: 14,
             padding: "14px 16px",
             background: "rgba(255,255,255,0.02)",
+            animation: "dream-textarea-breath 2.8s ease-in-out infinite",
           }}
         >
           <textarea
@@ -708,8 +779,10 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           flexDirection: "column",
           alignItems: "center",
           gap: 0,
-          maxWidth: 480,
+          maxWidth: contentMax,
           margin: "0 auto",
+          boxSizing: "border-box",
+          width: "100%",
         }}
       >
         <button
@@ -718,8 +791,16 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           disabled={!canBuild || loading}
           style={{
             width: "100%",
+            maxWidth: contentMax,
             height: 52,
-            background: canBuild ? "#C9A04C" : "rgba(201,160,76,0.35)",
+            background:
+              canBuild && !loading
+                ? "linear-gradient(180deg, #D4AE5C 0%, #C9A04C 55%, #A8842E 100%)"
+                : "rgba(201,160,76,0.35)",
+            boxShadow:
+              canBuild && !loading
+                ? "inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.12), 0 4px 14px rgba(201,160,76,0.22), 0 1px 3px rgba(0,0,0,0.25)"
+                : "none",
             color: "#0A0705",
             border: "none",
             borderRadius: 14,
@@ -728,11 +809,11 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
             fontSize: 14,
             letterSpacing: "1px",
             textTransform: "uppercase",
-            cursor: canBuild ? "pointer" : "not-allowed",
-            transition: "background 0.2s ease, transform 0.1s ease",
+            cursor: canBuild && !loading ? "pointer" : "not-allowed",
+            transition: "background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease",
           }}
           onMouseDown={(e) => {
-            if (canBuild) e.currentTarget.style.transform = "scale(0.98)";
+            if (canBuild && !loading) e.currentTarget.style.transform = "scale(0.98)";
           }}
           onMouseUp={(e) => {
             e.currentTarget.style.transform = "scale(1)";
