@@ -82,7 +82,12 @@
 /* ═══ ROW 2 · TAGLINE ═══ */
 .bh3-tagline-big {
   font-family: 'Fraunces', serif;
-  font-weight: 900;
+  /* Mobile weight 700 (down from 900) — structural fix per vault doc:
+   * at 28px, 900 weight creates a visual anvil that no travel-light
+   * compensation can balance. 700 preserves display presence without
+   * crushing the italic partner. Desktop stays at 900 (see override).
+   * See vault/BrandVoice_Typography_DreamBigTravelLight.md */
+  font-weight: 700;
   font-size: 28px;
   line-height: 1;
   color: #C9A04C;
@@ -138,7 +143,7 @@
 @media (min-width: 1024px) {
   .bh3-wordmark-part { font-size: 30px; }
   .bh3-logo-mark     { width: 36px; height: 36px; }
-  .bh3-tagline-big   { font-size: 40px; }
+  .bh3-tagline-big   { font-size: 40px; font-weight: 900; }
   .bh3-tagline-light { font-size: 38px; }
   .bh3-divider       { height: 28px; margin: 0 22px; }
   .bh3-lockup        { gap: 12px; }
