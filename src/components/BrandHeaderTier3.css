@@ -15,9 +15,25 @@
   background: rgba(10, 7, 5, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   z-index: 10;
   box-sizing: border-box;
+}
+
+/* Gold hairline — spotlit center (Phase 4.2) */
+.bh3-root::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(201, 160, 76, 0.15) 0%,
+    rgba(201, 160, 76, 0.5) 50%,
+    rgba(201, 160, 76, 0.15) 100%
+  );
+  pointer-events: none;
 }
 
 .bh3-sticky {
@@ -80,6 +96,15 @@
 }
 
 /* ═══ ROW 2 · TAGLINE ═══ */
+/* Full tagline row: shimmer covers DREAM BIG + divider + travel light */
+.bh3-tagline-lockup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
 .bh3-tagline-big {
   font-family: 'Fraunces', serif;
   /* Mobile weight 700 (down from 900) — structural fix per vault doc:
@@ -92,11 +117,10 @@
   line-height: 1;
   color: #C9A04C;
   letter-spacing: 0.08em;
-  position: relative;
-  overflow: hidden;
+  flex-shrink: 0;
 }
 
-.bh3-shimmer::after {
+.bh3-tagline-lockup.bh3-shimmer::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -124,6 +148,14 @@
   flex-shrink: 0;
 }
 
+/* Keep tagline copy above shimmer overlay */
+.bh3-tagline-lockup .bh3-tagline-big,
+.bh3-tagline-lockup .bh3-divider,
+.bh3-tagline-lockup .bh3-tagline-light {
+  position: relative;
+  z-index: 1;
+}
+
 .bh3-tagline-light {
   font-family: 'Fraunces', serif;
   /* Brand principle: travel light is equal voice to DREAM BIG.
@@ -137,6 +169,7 @@
   line-height: 1;
   color: #C9A04C;
   letter-spacing: 0.02em;
+  flex-shrink: 0;
 }
 
 /* ═══ DESKTOP SCALE · DS v2.1 §2b ═══ */
@@ -159,9 +192,26 @@
   .bh3-lockup        { gap: 8px; }
 }
 
+/* ═══ MOBILE TIER 3 — 120px total (Phase 4.2) — tagline sizes LOCKED per BrandVoice ═══ */
+@media (max-width: 1023px) {
+  .bh3-root {
+    height: 120px;
+    min-height: 120px;
+  }
+  .bh3-row {
+    flex: 0 0 60px;
+  }
+  .bh3-row-1 {
+    padding: 0 16px 6px;
+  }
+  .bh3-row-2 {
+    padding: 6px 16px 0;
+  }
+}
+
 /* ═══ REDUCED MOTION ═══ */
 @media (prefers-reduced-motion: reduce) {
-  .bh3-shimmer::after {
+  .bh3-tagline-lockup.bh3-shimmer::after {
     animation: none;
   }
 }

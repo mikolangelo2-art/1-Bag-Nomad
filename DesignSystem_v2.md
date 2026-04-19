@@ -646,6 +646,8 @@ Row 2 (Stats):
 ### Tier 3 — Brand . 176px
 Emotional invitation only.
 
+**Mobile variant (< 1024px):** Tier 3 header compresses to 120px total height. Tagline DREAM BIG | travel light typography remains locked per BrandVoice doc; container padding adjusts to achieve compression. Locked April 19, 2026 (Phase 4.2).
+
 **Screens:** Welcome . Dream . Vision Reveal . Loading overlays
 
 **Layout:**
