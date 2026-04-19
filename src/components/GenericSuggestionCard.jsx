@@ -73,6 +73,7 @@ export default function GenericSuggestionCard({
 }) {
   const [imgLoaded, setImgLoaded] = useState(false);
   const [innerOpen, setInnerOpen] = useState(false);
+  const [prevPhotoUrl, setPrevPhotoUrl] = useState(null);
   const isStacked = variant === "stacked";
   const isExpandVariant = variant === "expand";
   const expanded = isStacked
@@ -123,6 +124,8 @@ export default function GenericSuggestionCard({
   );
 
   useEffect(() => {
+    // Double-buffered crossfade: keep previous url visible while new one loads
+    if (heroPhotoUrl) setPrevPhotoUrl((prev) => prev || heroPhotoUrl);
     setImgLoaded(false);
   }, [heroPhotoUrl]);
 
@@ -194,12 +197,32 @@ export default function GenericSuggestionCard({
               }}
             />
           ) : null}
+          {/* Previous image stays visible during new image load — buttery crossfade */}
+          {prevPhotoUrl && prevPhotoUrl !== heroPhotoUrl && !imgLoaded ? (
+            <img
+              src={prevPhotoUrl}
+              alt=""
+              decoding="async"
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                zIndex: 1,
+                opacity: 1,
+              }}
+            />
+          ) : null}
           <img
             src={heroPhotoUrl}
             alt=""
             loading="lazy"
             decoding="async"
-            onLoad={() => setImgLoaded(true)}
+            onLoad={() => {
+              setImgLoaded(true);
+              setPrevPhotoUrl(heroPhotoUrl);
+            }}
             style={{
               position: "absolute",
               inset: 0,
@@ -208,8 +231,8 @@ export default function GenericSuggestionCard({
               objectFit: "cover",
               display: "block",
               opacity: imgLoaded ? 1 : 0,
-              transition: "opacity 0.4s ease",
-              zIndex: 1,
+              transition: "opacity 0.6s ease",
+              zIndex: 2,
             }}
           />
           <div
@@ -220,7 +243,7 @@ export default function GenericSuggestionCard({
               background:
                 "linear-gradient(180deg, rgba(201,160,76,0.12) 0%, rgba(0,0,0,0.45) 100%)",
               pointerEvents: "none",
-              zIndex: 2,
+              zIndex: 3,
             }}
           />
         </>
@@ -679,23 +702,6 @@ export default function GenericSuggestionCard({
           }}
         >
           <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 12 }}>
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: 10,
-                background: "rgba(201,160,76,0.08)",
-                border: "1px solid rgba(201,160,76,0.18)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-                color: DS_GOLD,
-                fontSize: 16,
-              }}
-            >
-              {collapseIconChar}
-            </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <span
                 style={{
@@ -817,23 +823,6 @@ export default function GenericSuggestionCard({
                 boxSizing: "border-box",
               }}
             >
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  background: "rgba(201,160,76,0.08)",
-                  border: "1px solid rgba(201,160,76,0.18)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                  color: DS_GOLD,
-                  fontSize: 16,
-                }}
-              >
-                {collapseIconChar}
-              </div>
               <span
                 style={{
                   fontFamily: "Instrument Sans, sans-serif",

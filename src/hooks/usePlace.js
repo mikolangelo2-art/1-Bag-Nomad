@@ -27,18 +27,28 @@ function writeCache(key, data) {
 /**
  * Build a search query for Google Places based on destination, category, and item name.
  * Strips filler words from item names for better match accuracy.
+ * Appends a category qualifier (hotel/restaurant/attraction) so Google returns the right TYPE.
  */
 export function buildPlaceQuery(destination, category, itemName = '') {
   const d = String(destination || '').trim();
   if (!d) return '';
 
+  // Category qualifier — tells Google what KIND of place we want
+  const qualifier =
+    category === 'stay'       ? 'hotel'
+    : category === 'food'       ? 'restaurant'
+    : category === 'activities' ? 'attraction'
+    : '';
+
   if (itemName) {
-    // Clean item name for best match — strip filler words, cap 3-4 tokens
     const clean = String(itemName)
       .replace(/\b(tour|trip|day|with|and|the|a|an|of|to|at|in|for|full|private|guided|admission|ticket|experience)\b/gi, '')
       .replace(/\s+/g, ' ').trim()
       .split(' ').slice(0, 4).join(' ');
-    return clean ? `${clean} ${d}` : d;
+    if (clean) {
+      return qualifier ? `${clean} ${qualifier} ${d}` : `${clean} ${d}`;
+    }
+    return d;
   }
 
   if (category === 'food')       return `${d} restaurant`;
