@@ -1,6 +1,6 @@
 // src/screens/WelcomeScreen.jsx
 // 1 Bag Nomad — Welcome Screen
-// Phase 3A Polish v4 · Session 54H · Sprint Day 22 · April 19, 2026
+// Phase 3A Polish v5 · Session 54H · Sprint Day 22 · April 19, 2026
 // DS v2.1 §7b Tier 3 Brand Header + DS v2.2 "Emotional CTA via Brand Mark"
 // See: vault/WelcomeLogoButton_Spec.md
 
@@ -62,11 +62,11 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
         transition: "opacity 400ms ease, transform 400ms ease",
       }}
     >
-      {/* Atmospheric radial glow — centered where logo sits */}
+      {/* Atmospheric radial glow — follows logo at true viewport center */}
       <div
         style={{
           position: "absolute",
-          top: "55%",
+          top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: 520,
@@ -97,17 +97,18 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
         <BrandHeaderTier3 />
       </div>
 
-      {/* Main — space-between strategy: hero at top, logo+label group at true
-          vertical center, demo link at bottom. Flex distributes whitespace
-          so the logo-group lands dead center regardless of viewport height. */}
+      {/* Main — center stack + asymmetric stack margins + balanced footer chrome
+          land the logo at true viewport center (within ~2px). Desktop uses
+          marginBottom biasing; mobile keeps the v3 center+gap rhythm. */}
       <main
         style={{
           flex: 1,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "space-between",
-          padding: isMobile ? "20px 20px 16px" : "32px 20px 24px",
+          justifyContent: "center",
+          gap: isMobile ? 20 : 0,
+          padding: isMobile ? "16px 20px" : "0 20px",
           position: "relative",
           zIndex: 1,
           opacity: mounted ? 1 : 0,
@@ -124,6 +125,7 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
             color: "#E8DCC8",
             textAlign: "center",
             lineHeight: 1.25,
+            marginBottom: isMobile ? 0 : 30,
           }}
         >
           Your expedition
@@ -131,13 +133,16 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
           is waiting.
         </div>
 
-        {/* Logo + label group — middle child in space-between, lands at true center */}
+        {/* Logo + label group — asymmetric marginBottom biases stack so logo
+            center aligns with stack center; combined with balanced footer,
+            logo sits at true viewport center on desktop. */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             gap: 20,
+            marginBottom: isMobile ? 0 : 84,
           }}
         >
         {/* Living Logo — the primary CTA */}
@@ -219,10 +224,11 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
         </button>
       </main>
 
-      {/* Brand creed footer */}
+      {/* Brand creed footer — desktop padding rebalances to match 176px header,
+          so main's center sits at viewport center (instead of 70px below). */}
       <footer
         style={{
-          padding: "0 20px 24px",
+          padding: isMobile ? "0 20px 24px" : "130px 20px 35px",
           display: "flex",
           justifyContent: "center",
           position: "relative",
