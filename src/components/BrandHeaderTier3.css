@@ -122,11 +122,13 @@
 .bh3-tagline-light {
   font-family: 'Fraunces', serif;
   /* Brand principle: travel light is equal voice to DREAM BIG.
-   * Weight 300 (up from 100) compensates for DREAM BIG's 900 stroke mass
-   * without losing the italic delicacy. See vault/BrandVoice_Typography_DreamBigTravelLight.md */
+   * Weight 300 (up from 100) compensates for DREAM BIG's 900 stroke mass.
+   * Mobile size 26px gives ratio 28:26 = 1.08x (matches approved desktop
+   * 40:38 = 1.05x proportionally). Desktop override bumps to 38px.
+   * See vault/BrandVoice_Typography_DreamBigTravelLight.md */
   font-weight: 300;
   font-style: italic;
-  font-size: 22px;
+  font-size: 26px;
   line-height: 1;
   color: #C9A04C;
   letter-spacing: 0.02em;
