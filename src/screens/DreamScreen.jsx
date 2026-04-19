@@ -12,38 +12,46 @@ import { runDreamExpeditionBuild } from "../utils/dreamVisionBuild";
 
 const STORAGE_KEY = "1bn_dream_draft_v1";
 
-const DREAM_VISION_PLACEHOLDER =
+const DREAM_VISION_PLACEHOLDER_DESKTOP =
   "Speak from the heart. Don't say where you want to go \u2014 say how you want to FEEL. The reefs you need to dive. The city you need to disappear into. The road that's been calling you. The version of yourself you're chasing. The more passion you pour in, the more magic your co-architect returns.";
+
+const DREAM_VISION_PLACEHOLDER_MOBILE =
+  "Speak from the heart. Don't say where you want to go \u2014 say how you want to FEEL. The more passion you pour in, the more magic your co-architect returns.";
 
 const TRAVEL_STYLES = [
   { id: "cultural", label: "Cultural" },
   { id: "adventure", label: "Adventure" },
-  { id: "culinary", label: "Culinary" },
-  { id: "diving", label: "Diving" },
   { id: "wellness", label: "Wellness" },
-  { id: "photography", label: "Photography" },
-  { id: "surfing", label: "Surfing" },
-  { id: "backpacking", label: "Backpacking" },
   { id: "luxury", label: "Luxury" },
-  { id: "remote", label: "Off-Grid" },
+  { id: "backpacking", label: "Backpacking" },
+  { id: "offgrid", label: "Off-Grid" },
+  { id: "wanderer", label: "Wanderer" },
 ];
 
 const INTEREST_GROUPS = [
   {
     label: "Nature & Outdoors",
-    items: ["Beaches", "Mountains", "Jungle", "Desert", "Wildlife", "National Parks"],
+    items: ["Beaches", "Mountains", "Jungle", "Wildlife", "Safari"],
   },
   {
     label: "Culture & History",
-    items: ["Temples", "Museums", "Architecture", "Local Markets", "Ancient Ruins"],
+    items: ["Temples", "Museums", "Local Markets", "Ancient Ruins", "Festivals"],
   },
   {
     label: "Food & Drink",
-    items: ["Street Food", "Fine Dining", "Wine", "Coffee Culture", "Cooking Classes"],
+    items: ["Street Food", "Fine Dining", "Wine", "Cooking Classes"],
   },
   {
     label: "Adventure & Sport",
-    items: ["Scuba Diving", "Surfing", "Trekking", "Rock Climbing", "Cycling"],
+    items: ["Scuba Diving", "Surfing", "Trekking", "Climbing", "Cycling", "Sailing"],
+  },
+  {
+    label: "Wellness & Spiritual",
+    items: ["Yoga", "Meditation", "Retreats", "Sacred Sites"],
+  },
+  {
+    label: "Creative & Arts",
+    items: ["Photography", "Music", "Galleries", "Live Performance"],
   },
 ];
 
@@ -77,11 +85,12 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
   const [openPill, setOpenPill] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [selectedInterests, setSelectedInterests] = useState([]);
-  const [departureDate, setDepartureDate] = useState("");
-  /** YYYY-MM-DD from calendar; free-text window stays in `departureDate`. */
   const [departureIso, setDepartureIso] = useState("");
+  const [dateMode, setDateMode] = useState("specific");
+  const [returnDateIso, setReturnDateIso] = useState("");
   const [duration, setDuration] = useState("");
   const [budget, setBudget] = useState("");
+  const [customInterestInput, setCustomInterestInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState("");
   const [revealPayload, setRevealPayload] = useState(null);
@@ -107,10 +116,16 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
         if (saved.vision && !prefilledVision) setVision(saved.vision);
         if (saved.journeyName) setJourneyName(saved.journeyName);
         if (saved.travelerType) setTravelerType(saved.travelerType);
-        if (saved.selectedStyle) setSelectedStyle(saved.selectedStyle);
+        if (saved.selectedStyle) {
+          if (saved.selectedStyle === "remote") setSelectedStyle("offgrid");
+          else setSelectedStyle(saved.selectedStyle);
+        }
         if (Array.isArray(saved.selectedInterests)) setSelectedInterests(saved.selectedInterests);
-        if (saved.departureDate) setDepartureDate(saved.departureDate);
         if (saved.departureIso) setDepartureIso(saved.departureIso);
+        if (saved.dateMode === "specific" || saved.dateMode === "duration" || saved.dateMode === "wandering") {
+          setDateMode(saved.dateMode);
+        }
+        if (saved.returnDateIso) setReturnDateIso(saved.returnDateIso);
         if (saved.duration) setDuration(saved.duration);
         if (saved.budget) setBudget(saved.budget);
       }
@@ -129,8 +144,9 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           travelerType,
           selectedStyle,
           selectedInterests,
-          departureDate,
           departureIso,
+          dateMode,
+          returnDateIso,
           duration,
           budget,
         };
@@ -140,7 +156,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
       }
     }, 400);
     return () => clearTimeout(t);
-  }, [vision, journeyName, travelerType, selectedStyle, selectedInterests, departureDate, departureIso, duration, budget]);
+  }, [vision, journeyName, travelerType, selectedStyle, selectedInterests, departureIso, dateMode, returnDateIso, duration, budget]);
 
   const canBuild = vision.trim().length > 20;
 
@@ -152,15 +168,30 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
     setSelectedInterests((prev) => (prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]));
   }
 
+  function addCustomInterest() {
+    const trimmed = customInterestInput.trim();
+    if (trimmed && !selectedInterests.includes(trimmed)) {
+      setSelectedInterests((prev) => [...prev, trimmed]);
+      setCustomInterestInput("");
+    }
+  }
+
   async function handleBuild() {
     if (!canBuild || loading) return;
     setLoading(true);
     setLoadError("");
     const { mode, amount } = parseBudget(budget);
     const travelStyleLabel = TRAVEL_STYLES.find((s) => s.id === selectedStyle)?.label || "";
-    const nights = parseInt(duration, 10) || 14;
-    const effectiveDeparture = departureIso || departureDate || "";
-    const returnDate = computeReturnDate(departureIso || departureDate, nights);
+    const effectiveDeparture = departureIso || "";
+    let returnDate = "";
+    if (dateMode === "specific") {
+      returnDate = returnDateIso || "";
+    } else if (dateMode === "duration") {
+      const nights = parseInt(duration, 10) || 14;
+      returnDate = computeReturnDate(departureIso, nights);
+    } else {
+      returnDate = "";
+    }
     try {
       const result = await runDreamExpeditionBuild({
         vision: vision.trim(),
@@ -230,10 +261,38 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
     };
   };
 
+  const sectionLabelStyle = {
+    fontFamily: "Instrument Sans, sans-serif",
+    fontWeight: 600,
+    fontSize: isDesktop ? 12 : 11,
+    color: "rgba(201,160,76,0.85)",
+    letterSpacing: "1.5px",
+    textTransform: "uppercase",
+  };
+
+  const helperLabelStyle = {
+    fontFamily: "Instrument Sans, sans-serif",
+    fontWeight: 500,
+    fontSize: isDesktop ? 12 : 11,
+    color: "rgba(232,220,200,0.5)",
+    marginBottom: 6,
+    letterSpacing: "0.3px",
+  };
+
+  const interestCategoryHeaderStyle = {
+    fontFamily: "Instrument Sans, sans-serif",
+    fontWeight: 600,
+    fontSize: isDesktop ? 15 : 13,
+    color: "rgba(201,160,76,0.85)",
+    letterSpacing: "1.5px",
+    textTransform: "uppercase",
+    marginBottom: 10,
+  };
+
   const triggerLabelStyle = {
     fontFamily: "Instrument Sans, sans-serif",
     fontWeight: 500,
-    fontSize: 14,
+    fontSize: isDesktop ? 16 : 14,
     color: "rgba(232,220,200,0.75)",
   };
 
@@ -261,6 +320,36 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
   }
 
   const contentMax = isDesktop ? 640 : 480;
+
+  const datesPillSummary = (() => {
+    const parts = [];
+    if (departureIso) parts.push(departureIso);
+    if (dateMode === "specific" && returnDateIso) parts.push(`\u2192 ${returnDateIso}`);
+    if (dateMode === "duration" && duration) parts.push(`${duration} nights`);
+    if (dateMode === "wandering") parts.push("Wandering");
+    if (budget.trim()) parts.push(budget);
+    return parts.length ? parts.join(" \u00B7 ") : null;
+  })();
+
+  const datePickerFieldStyle = {
+    width: "100%",
+    minHeight: 44,
+    background: "rgba(255,255,255,0.03)",
+    border: "1px solid rgba(122,111,93,0.45)",
+    borderRadius: 10,
+    fontFamily: "Instrument Sans, sans-serif",
+    fontWeight: 400,
+    fontSize: isDesktop ? 15 : 14,
+    color: "#E8DCC8",
+    padding: "10px 42px 10px 12px",
+    caretColor: "#C9A04C",
+  };
+
+  const datePickerButtonStyle = {
+    border: "1px solid rgba(201,160,76,0.4)",
+    background: "rgba(201,160,76,0.12)",
+    borderRadius: 8,
+  };
 
   return (
     <div
@@ -316,47 +405,61 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
 
       <BrandHeaderTier3 sticky={true} shimmer={true} />
 
+      {typeof onBackToWelcome === "function" && (
+        <button
+          type="button"
+          onClick={() => onBackToWelcome()}
+          style={{
+            position: "fixed",
+            top: isDesktop ? 196 : 136,
+            left: isDesktop ? 32 : 16,
+            zIndex: 50,
+            background: "transparent",
+            border: "none",
+            padding: "8px 12px",
+            cursor: "pointer",
+            fontFamily: "Instrument Sans, sans-serif",
+            fontSize: isDesktop ? 14 : 12,
+            fontWeight: 500,
+            color: "rgba(201,160,76,0.85)",
+            opacity: isDesktop ? 0.75 : 0.4,
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            minHeight: 44,
+            transition: "opacity 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = "1";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = isDesktop ? "0.75" : "0.4";
+          }}
+        >
+          {"\u2190 Back"}
+        </button>
+      )}
+
       <div
         style={{
           position: "relative",
           zIndex: 1,
           maxWidth: contentMax,
           margin: "0 auto",
-          padding: "24px 20px 120px",
+          padding: "24px 20px 40px",
           display: "flex",
           flexDirection: "column",
           gap: 24,
         }}
       >
-        {typeof onBackToWelcome === "function" && (
-          <button
-            type="button"
-            onClick={() => onBackToWelcome()}
-            style={{
-              alignSelf: "flex-start",
-              background: "transparent",
-              border: "none",
-              padding: "8px 0",
-              cursor: "pointer",
-              fontFamily: "Instrument Sans, sans-serif",
-              fontSize: 13,
-              fontWeight: 500,
-              color: "rgba(201,160,76,0.72)",
-              textDecoration: "underline",
-              textUnderlineOffset: 4,
-            }}
-          >
-            {"\u2190 Back to welcome"}
-          </button>
-        )}
-
         <div
           style={{
             fontFamily: "Fraunces, serif",
             fontWeight: 300,
             fontStyle: "italic",
-            fontSize: isDesktop ? 18 : 16,
-            color: "rgba(232,220,200,0.75)",
+            fontSize: isDesktop ? 20 : 16,
+            color: "rgba(201,160,76,0.85)",
             lineHeight: 1.4,
             textAlign: "center",
             marginBottom: 4,
@@ -380,12 +483,12 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           <textarea
             value={vision}
             onChange={(e) => setVision(e.target.value)}
-            placeholder={DREAM_VISION_PLACEHOLDER}
+            placeholder={isDesktop ? DREAM_VISION_PLACEHOLDER_DESKTOP : DREAM_VISION_PLACEHOLDER_MOBILE}
             style={{
               width: "100%",
               display: "block",
               boxSizing: "border-box",
-              minHeight: 140,
+              minHeight: isDesktop ? 140 : 180,
               background: "transparent",
               border: "none",
               outline: "none",
@@ -393,7 +496,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
               fontFamily: "Fraunces, serif",
               fontWeight: 300,
               fontStyle: vision ? "normal" : "italic",
-              fontSize: 15,
+              fontSize: isDesktop ? 17 : 15,
               color: "#E8DCC8",
               lineHeight: 1.65,
               caretColor: "#C9A04C",
@@ -416,7 +519,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
                 color: travelerType === type ? "#C9A04C" : "rgba(232,220,200,0.6)",
                 fontFamily: "Instrument Sans, sans-serif",
                 fontWeight: 500,
-                fontSize: 14,
+                fontSize: isDesktop ? 15 : 14,
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -467,7 +570,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
                       color: selectedStyle === s.id ? "#C9A04C" : "rgba(232,220,200,0.7)",
                       fontFamily: "Instrument Sans, sans-serif",
                       fontWeight: 500,
-                      fontSize: 13,
+                      fontSize: isDesktop ? 15 : 13,
                       cursor: "pointer",
                       transition: "all 0.15s ease",
                     }}
@@ -501,18 +604,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
               >
                 {INTEREST_GROUPS.map((group) => (
                   <div key={group.label}>
-                    <div
-                      style={{
-                        fontFamily: "Fraunces, serif",
-                        fontWeight: 300,
-                        fontSize: 13,
-                        color: "rgba(232,220,200,0.5)",
-                        marginBottom: 10,
-                        letterSpacing: "0.3px",
-                      }}
-                    >
-                      {group.label}
-                    </div>
+                    <div style={interestCategoryHeaderStyle}>{group.label}</div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                       {group.items.map((item) => {
                         const selected = selectedInterests.includes(item);
@@ -530,7 +622,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
                               color: selected ? "#C9A04C" : "rgba(232,220,200,0.6)",
                               fontFamily: "Instrument Sans, sans-serif",
                               fontWeight: 500,
-                              fontSize: 13,
+                              fontSize: isDesktop ? 15 : 13,
                               cursor: "pointer",
                               transition: "all 0.15s ease",
                             }}
@@ -542,6 +634,66 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
                     </div>
                   </div>
                 ))}
+                <div style={{ marginTop: 8 }}>
+                  <div
+                    style={{
+                      fontFamily: "Instrument Sans, sans-serif",
+                      fontWeight: 600,
+                      fontSize: isDesktop ? 12 : 11,
+                      color: "rgba(201,160,76,0.85)",
+                      letterSpacing: "1.5px",
+                      textTransform: "uppercase",
+                      marginBottom: 10,
+                    }}
+                  >
+                    Something else?
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input
+                      type="text"
+                      value={customInterestInput}
+                      onChange={(e) => setCustomInterestInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addCustomInterest();
+                        }
+                      }}
+                      placeholder="Add your own\u2026"
+                      style={{
+                        flex: 1,
+                        background: "rgba(255,255,255,0.03)",
+                        border: "1px solid rgba(122,111,93,0.4)",
+                        borderRadius: 10,
+                        outline: "none",
+                        fontFamily: "Instrument Sans, sans-serif",
+                        fontWeight: 400,
+                        fontSize: isDesktop ? 15 : 14,
+                        color: "#E8DCC8",
+                        padding: "10px 14px",
+                        caretColor: "#C9A04C",
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={addCustomInterest}
+                      style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 10,
+                        background: customInterestInput.trim() ? "rgba(201,160,76,0.15)" : "transparent",
+                        border: "1px solid rgba(201,160,76,0.4)",
+                        color: "#C9A04C",
+                        fontSize: 18,
+                        fontWeight: 400,
+                        cursor: customInterestInput.trim() ? "pointer" : "not-allowed",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {"\u002B"}
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -549,14 +701,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           <div>
             <button type="button" onClick={() => togglePill("dates")} style={triggerPillStyle("dates")}>
               <span style={triggerLabelStyle}>
-                {departureIso || departureDate || duration
-                  ? [
-                      departureIso || departureDate,
-                      duration ? `${duration} nights` : null,
-                    ]
-                      .filter(Boolean)
-                      .join(" \u00B7 ")
-                  : "Dates & Budget"}
+                {datesPillSummary || "Dates & Budget"}
               </span>
               <span style={chevronStyle("dates")}>{"\u25BE"}</span>
             </button>
@@ -574,24 +719,108 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
                   animation: "fadeUp 0.25s ease",
                 }}
               >
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  <div
-                    style={{
-                      fontFamily: "Instrument Sans, sans-serif",
-                      fontWeight: 600,
-                      fontSize: 11,
-                      color: "rgba(232,220,200,0.45)",
-                      letterSpacing: "1.5px",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    WHEN ARE YOU THINKING?
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div style={sectionLabelStyle}>WHEN ARE YOU GOING?</div>
+                  <div>
+                    <div style={helperLabelStyle}>The day your expedition begins</div>
+                    <DatePickerInput
+                      value={departureIso}
+                      onChange={setDepartureIso}
+                      aria-label="Start date"
+                      style={datePickerFieldStyle}
+                      buttonStyle={datePickerButtonStyle}
+                    />
                   </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {[
+                      { id: "specific", label: "Return date" },
+                      { id: "duration", label: "Duration" },
+                      { id: "wandering", label: "Wandering" },
+                    ].map((mode) => (
+                      <button
+                        key={mode.id}
+                        type="button"
+                        onClick={() => setDateMode(mode.id)}
+                        style={{
+                          flex: 1,
+                          height: 40,
+                          borderRadius: 12,
+                          background: dateMode === mode.id ? "rgba(201,160,76,0.10)" : "transparent",
+                          border: `1px solid ${dateMode === mode.id ? "#C9A04C" : "rgba(122,111,93,0.5)"}`,
+                          color: dateMode === mode.id ? "#C9A04C" : "rgba(232,220,200,0.6)",
+                          fontFamily: "Instrument Sans, sans-serif",
+                          fontWeight: 500,
+                          fontSize: isDesktop ? 14 : 13,
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        {mode.label}
+                      </button>
+                    ))}
+                  </div>
+                  {dateMode === "specific" && (
+                    <div>
+                      <div style={helperLabelStyle}>The day you return home</div>
+                      <DatePickerInput
+                        value={returnDateIso}
+                        onChange={setReturnDateIso}
+                        aria-label="Return date"
+                        style={datePickerFieldStyle}
+                        buttonStyle={datePickerButtonStyle}
+                      />
+                    </div>
+                  )}
+                  {dateMode === "duration" && (
+                    <div>
+                      <div style={helperLabelStyle}>How many nights?</div>
+                      <input
+                        type="number"
+                        value={duration}
+                        onChange={(e) => setDuration(e.target.value)}
+                        placeholder="e.g. 21"
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          borderBottom: "1px solid rgba(122,111,93,0.4)",
+                          outline: "none",
+                          fontFamily: "Instrument Sans, sans-serif",
+                          fontWeight: 400,
+                          fontSize: isDesktop ? 15 : 14,
+                          color: "#E8DCC8",
+                          padding: "6px 0",
+                          caretColor: "#C9A04C",
+                          colorScheme: "dark",
+                        }}
+                      />
+                    </div>
+                  )}
+                  {dateMode === "wandering" && (
+                    <div
+                      style={{
+                        padding: "12px 16px",
+                        background: "rgba(201,160,76,0.05)",
+                        borderLeft: "2px solid rgba(201,160,76,0.4)",
+                        borderRadius: 8,
+                        fontFamily: "Fraunces, serif",
+                        fontStyle: "italic",
+                        fontWeight: 300,
+                        fontSize: isDesktop ? 15 : 14,
+                        color: "rgba(232,220,200,0.8)",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {"No fixed return. Your co-architect will help you decide as you go."}
+                    </div>
+                  )}
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <div style={sectionLabelStyle}>BUDGET</div>
                   <input
                     type="text"
-                    value={departureDate}
-                    onChange={(e) => setDepartureDate(e.target.value)}
-                    placeholder="e.g. September 2026 or Sep 16, 2026"
+                    value={budget}
+                    onChange={(e) => setBudget(e.target.value)}
+                    placeholder="e.g. $5,000 \u00B7 No limit \u00B7 Dream big"
                     style={{
                       background: "transparent",
                       border: "none",
@@ -599,101 +828,14 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
                       outline: "none",
                       fontFamily: "Instrument Sans, sans-serif",
                       fontWeight: 400,
-                      fontSize: 14,
+                      fontSize: isDesktop ? 15 : 14,
                       color: "#E8DCC8",
                       padding: "6px 0",
                       caretColor: "#C9A04C",
                       colorScheme: "dark",
                     }}
                   />
-                  <div style={{ marginTop: 4, width: "100%" }}>
-                    <div
-                      style={{
-                        fontFamily: "Instrument Sans, sans-serif",
-                        fontSize: 11,
-                        fontWeight: 500,
-                        color: "rgba(232,220,200,0.35)",
-                        marginBottom: 6,
-                        letterSpacing: "0.3px",
-                      }}
-                    >
-                      Or pick a date
-                    </div>
-                    <DatePickerInput
-                      value={departureIso}
-                      onChange={setDepartureIso}
-                      aria-label="Departure date"
-                      style={{
-                        width: "100%",
-                        minHeight: 44,
-                        background: "rgba(255,255,255,0.03)",
-                        border: "1px solid rgba(122,111,93,0.45)",
-                        borderRadius: 10,
-                        fontFamily: "Instrument Sans, sans-serif",
-                        fontWeight: 400,
-                        fontSize: 14,
-                        color: "#E8DCC8",
-                        padding: "10px 42px 10px 12px",
-                        caretColor: "#C9A04C",
-                      }}
-                      buttonStyle={{
-                        border: "1px solid rgba(201,160,76,0.4)",
-                        background: "rgba(201,160,76,0.12)",
-                        borderRadius: 8,
-                      }}
-                    />
-                  </div>
                 </div>
-                {[
-                  {
-                    label: "HOW LONG? (NIGHTS)",
-                    value: duration,
-                    setter: setDuration,
-                    type: "number",
-                    placeholder: "e.g. 21",
-                  },
-                  {
-                    label: "BUDGET",
-                    value: budget,
-                    setter: setBudget,
-                    type: "text",
-                    placeholder: "e.g. $5,000 \u00B7 No limit \u00B7 Dream big",
-                  },
-                ].map((field) => (
-                  <div key={field.label} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    <div
-                      style={{
-                        fontFamily: "Instrument Sans, sans-serif",
-                        fontWeight: 600,
-                        fontSize: 11,
-                        color: "rgba(232,220,200,0.45)",
-                        letterSpacing: "1.5px",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      {field.label}
-                    </div>
-                    <input
-                      type={field.type}
-                      value={field.value}
-                      onChange={(e) => field.setter(e.target.value)}
-                      placeholder={field.placeholder}
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        borderBottom: "1px solid rgba(122,111,93,0.4)",
-                        outline: "none",
-                        fontFamily: "Instrument Sans, sans-serif",
-                        fontWeight: 400,
-                        fontSize: 14,
-                        color: "#E8DCC8",
-                        padding: "6px 0",
-                        caretColor: "#C9A04C",
-                        colorScheme: "dark",
-                      }}
-                    />
-                  </div>
-                ))}
               </div>
             )}
           </div>
@@ -738,63 +880,44 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
             {loadError}
           </div>
         )}
-      </div>
 
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: "16px 20px",
-          background: "linear-gradient(to top, #0A0705 60%, transparent)",
-          zIndex: 100,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 0,
-          maxWidth: contentMax,
-          margin: "0 auto",
-          boxSizing: "border-box",
-          width: "100%",
-        }}
-      >
-        <button
-          type="button"
-          onClick={handleBuild}
-          disabled={!canBuild || loading}
-          style={{
-            width: "100%",
-            maxWidth: contentMax,
-            height: 52,
-            background:
-              canBuild && !loading
-                ? "linear-gradient(180deg, #D4AE5C 0%, #C9A04C 55%, #A8842E 100%)"
-                : "rgba(201,160,76,0.35)",
-            boxShadow:
-              canBuild && !loading
-                ? "inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.12), 0 4px 14px rgba(201,160,76,0.22), 0 1px 3px rgba(0,0,0,0.25)"
-                : "none",
-            color: "#0A0705",
-            border: "none",
-            borderRadius: 14,
-            fontFamily: "Instrument Sans, sans-serif",
-            fontWeight: 600,
-            fontSize: 14,
-            letterSpacing: "1px",
-            textTransform: "uppercase",
-            cursor: canBuild && !loading ? "pointer" : "not-allowed",
-            transition: "background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease",
-          }}
-          onMouseDown={(e) => {
-            if (canBuild && !loading) e.currentTarget.style.transform = "scale(0.98)";
-          }}
-          onMouseUp={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        >
-          {loading ? "Building..." : "Build My Expedition"}
-        </button>
+        <div style={{ marginTop: 16, width: "100%" }}>
+          <button
+            type="button"
+            onClick={handleBuild}
+            disabled={!canBuild || loading}
+            style={{
+              width: "100%",
+              height: isDesktop ? 56 : 52,
+              background:
+                canBuild && !loading
+                  ? "linear-gradient(180deg, #D4AE5C 0%, #C9A04C 55%, #A8842E 100%)"
+                  : "rgba(201,160,76,0.35)",
+              boxShadow:
+                canBuild && !loading
+                  ? "inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.12), 0 4px 14px rgba(201,160,76,0.22), 0 1px 3px rgba(0,0,0,0.25)"
+                  : "none",
+              color: "#0A0705",
+              border: "none",
+              borderRadius: 14,
+              fontFamily: "Instrument Sans, sans-serif",
+              fontWeight: 600,
+              fontSize: isDesktop ? 15 : 14,
+              letterSpacing: "1px",
+              textTransform: "uppercase",
+              cursor: canBuild && !loading ? "pointer" : "not-allowed",
+              transition: "background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease",
+            }}
+            onMouseDown={(e) => {
+              if (canBuild && !loading) e.currentTarget.style.transform = "scale(0.98)";
+            }}
+            onMouseUp={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+            }}
+          >
+            {loading ? "Building..." : "Build My Expedition"}
+          </button>
+        </div>
       </div>
     </div>
   );
