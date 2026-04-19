@@ -1,6 +1,6 @@
 // src/screens/WelcomeScreen.jsx
 // 1 Bag Nomad — Welcome Screen
-// Phase 3A Polish · Session 54H · Sprint Day 22 · April 19, 2026
+// Phase 3A Polish v3 · Session 54H · Sprint Day 22 · April 19, 2026
 // DS v2.1 §7b Tier 3 Brand Header + DS v2.2 "Emotional CTA via Brand Mark"
 // See: vault/WelcomeLogoButton_Spec.md
 
@@ -11,7 +11,7 @@ import { SharegoodLogo } from "../components/SharegoodLogo";
 export default function WelcomeScreen({ onBuild, onDemo }) {
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [celebrating, setCelebrating] = useState(false);
+  const [exiting, setExiting] = useState(false);
   const [demoHover, setDemoHover] = useState(false);
   const [logoPressed, setLogoPressed] = useState(false);
   const [logoFocus, setLogoFocus] = useState(false);
@@ -30,7 +30,8 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
   }, []);
 
   function handleLogoTap() {
-    if (celebrating) return; // debounce double-taps
+    if (exiting) return; // debounce
+
     const prefersReduced =
       typeof window !== "undefined" &&
       window.matchMedia &&
@@ -41,10 +42,9 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
       return;
     }
 
-    setCelebrating(true);
-    setTimeout(() => {
-      onBuild();
-    }, 600);
+    // Option B — whole screen fades and scales back slightly, like the door closing
+    setExiting(true);
+    setTimeout(() => onBuild(), 500);
   }
 
   return (
@@ -56,9 +56,13 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
         flexDirection: "column",
         position: "relative",
         overflow: "hidden",
+        opacity: exiting ? 0 : 1,
+        transform: exiting ? "scale(0.98)" : "scale(1)",
+        transformOrigin: "center center",
+        transition: "opacity 400ms ease, transform 400ms ease",
       }}
     >
-      {/* Atmospheric radial glow — repositioned to ~55% to follow new content centroid */}
+      {/* Atmospheric radial glow — centered where logo sits */}
       <div
         style={{
           position: "absolute",
@@ -88,12 +92,12 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
         }}
       />
 
-      {/* Tier 3 Brand Header — the crown */}
+      {/* Tier 3 Brand Header */}
       <div style={{ width: "100%", zIndex: 2, position: "relative" }}>
         <BrandHeaderTier3 />
       </div>
 
-      {/* Main content — flex:1 fills remaining vertical space, contents centered */}
+      {/* Main — gap rhythm keeps items evenly spaced so logo lands at visual center */}
       <main
         style={{
           flex: 1,
@@ -101,7 +105,8 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "24px 20px",
+          gap: isMobile ? 20 : 28,
+          padding: "16px 20px",
           position: "relative",
           zIndex: 1,
           opacity: mounted ? 1 : 0,
@@ -118,19 +123,18 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
             color: "#E8DCC8",
             textAlign: "center",
             lineHeight: 1.25,
-            marginBottom: isMobile ? 28 : 40,
           }}
         >
-          Your first expedition
+          Your expedition
           <br />
           is waiting.
         </div>
 
-        {/* Living Logo — the primary CTA */}
+        {/* Living Logo — the primary CTA, visual center of the page */}
         <button
           type="button"
           onClick={handleLogoTap}
-          aria-label="Begin your first expedition"
+          aria-label="Begin your expedition"
           onMouseDown={() => setLogoPressed(true)}
           onMouseUp={() => setLogoPressed(false)}
           onMouseLeave={() => setLogoPressed(false)}
@@ -153,16 +157,15 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
           }}
         >
           <SharegoodLogo
-            size={isMobile ? 180 : 220}
-            animationState={celebrating ? "celebrating" : "idle"}
+            size={180}
+            animationState="idle"
             animate={true}
           />
         </button>
 
-        {/* "click to enter" whisper label */}
+        {/* "click to enter" whisper */}
         <div
           style={{
-            marginTop: 20,
             fontFamily: "Fraunces, serif",
             fontWeight: 300,
             fontStyle: "italic",
@@ -184,7 +187,6 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
           onMouseEnter={() => setDemoHover(true)}
           onMouseLeave={() => setDemoHover(false)}
           style={{
-            marginTop: 24,
             background: "none",
             border: "none",
             color: demoHover
@@ -206,7 +208,7 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
         </button>
       </main>
 
-      {/* Brand creed footer — natural flow, always at viewport bottom */}
+      {/* Brand creed footer */}
       <footer
         style={{
           padding: "0 20px 24px",

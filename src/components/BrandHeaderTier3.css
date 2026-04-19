@@ -123,7 +123,7 @@
   font-family: 'Fraunces', serif;
   font-weight: 100;
   font-style: italic;
-  font-size: 16px;
+  font-size: 22px;
   line-height: 1;
   color: #C9A04C;
   letter-spacing: 0.02em;
@@ -134,7 +134,7 @@
   .bh3-wordmark-part { font-size: 30px; }
   .bh3-logo-mark     { width: 36px; height: 36px; }
   .bh3-tagline-big   { font-size: 40px; }
-  .bh3-tagline-light { font-size: 22px; }
+  .bh3-tagline-light { font-size: 30px; }
   .bh3-divider       { height: 28px; margin: 0 22px; }
   .bh3-lockup        { gap: 12px; }
 }
