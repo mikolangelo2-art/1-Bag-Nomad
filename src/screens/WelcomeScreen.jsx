@@ -1,24 +1,51 @@
 // src/screens/WelcomeScreen.jsx
 // 1 Bag Nomad — Welcome Screen
-// Phase 3A · Session 54H · Sprint Day 22 · April 19, 2026
-// DS v2.1 §7b Tier 3 Brand Header + DS v2.2 Living Metal CTA (Welcome-exclusive)
+// Phase 3A Polish · Session 54H · Sprint Day 22 · April 19, 2026
+// DS v2.1 §7b Tier 3 Brand Header + DS v2.2 "Emotional CTA via Brand Mark"
+// See: vault/WelcomeLogoButton_Spec.md
 
 import { useEffect, useState } from "react";
 import BrandHeaderTier3 from "../components/BrandHeaderTier3";
+import { SharegoodLogo } from "../components/SharegoodLogo";
 
 export default function WelcomeScreen({ onBuild, onDemo }) {
   const [mounted, setMounted] = useState(false);
-  const [breathing, setBreathing] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [celebrating, setCelebrating] = useState(false);
+  const [demoHover, setDemoHover] = useState(false);
+  const [logoPressed, setLogoPressed] = useState(false);
+  const [logoFocus, setLogoFocus] = useState(false);
 
   useEffect(() => {
     const tMount = setTimeout(() => setMounted(true), 60);
-    // Option B — button begins breathing 1.5s after fade-in settles
-    const tBreath = setTimeout(() => setBreathing(true), 60 + 600 + 1500);
+
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     return () => {
       clearTimeout(tMount);
-      clearTimeout(tBreath);
+      window.removeEventListener("resize", checkMobile);
     };
   }, []);
+
+  function handleLogoTap() {
+    if (celebrating) return; // debounce double-taps
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReduced) {
+      onBuild();
+      return;
+    }
+
+    setCelebrating(true);
+    setTimeout(() => {
+      onBuild();
+    }, 600);
+  }
 
   return (
     <div
@@ -27,53 +54,28 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
         background: "#0A0705",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        padding: 0,
         position: "relative",
         overflow: "hidden",
       }}
     >
-      {/* Scoped keyframes for Living Metal breath */}
-      <style>{`
-        @keyframes wc-button-breath {
-          0%, 100% {
-            box-shadow:
-              inset 0 1px 0 rgba(255,255,255,0.15),
-              inset 0 -1px 0 rgba(0,0,0,0.12),
-              0 4px 14px rgba(201,160,76,0.22),
-              0 1px 3px rgba(0,0,0,0.25);
-          }
-          50% {
-            box-shadow:
-              inset 0 1px 0 rgba(255,255,255,0.15),
-              inset 0 -1px 0 rgba(0,0,0,0.12),
-              0 4px 20px rgba(201,160,76,0.34),
-              0 1px 3px rgba(0,0,0,0.25);
-          }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .wc-build-button { animation: none !important; }
-        }
-      `}</style>
-
-      {/* Atmospheric radial glow — unchanged */}
+      {/* Atmospheric radial glow — repositioned to ~55% to follow new content centroid */}
       <div
         style={{
           position: "absolute",
-          top: "30%",
+          top: "55%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 400,
-          height: 400,
+          width: 520,
+          height: 520,
           borderRadius: "50%",
           background:
-            "radial-gradient(circle, rgba(201,160,76,0.07) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(201,160,76,0.08) 0%, transparent 70%)",
           pointerEvents: "none",
+          zIndex: 0,
         }}
       />
 
-      {/* Film grain — unchanged */}
+      {/* Film grain overlay */}
       <div
         style={{
           position: "absolute",
@@ -82,6 +84,7 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
           opacity: 0.09,
           mixBlendMode: "overlay",
           pointerEvents: "none",
+          zIndex: 0,
         }}
       />
 
@@ -90,32 +93,32 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
         <BrandHeaderTier3 />
       </div>
 
-      {/* Centered hero + CTAs column */}
-      <div
+      {/* Main content — flex:1 fills remaining vertical space, contents centered */}
+      <main
         style={{
           flex: 1,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: 28,
-          width: "100%",
-          maxWidth: 360,
-          padding: "0 20px",
+          padding: "24px 20px",
+          position: "relative",
+          zIndex: 1,
           opacity: mounted ? 1 : 0,
           transform: mounted ? "translateY(0)" : "translateY(14px)",
           transition: "opacity 0.6s ease, transform 0.6s ease",
-          zIndex: 1,
         }}
       >
+        {/* Hero */}
         <div
           style={{
             fontFamily: "Fraunces, serif",
             fontWeight: 300,
-            fontSize: 30,
+            fontSize: isMobile ? 28 : 34,
             color: "#E8DCC8",
             textAlign: "center",
             lineHeight: 1.25,
+            marginBottom: isMobile ? 28 : 40,
           }}
         >
           Your first expedition
@@ -123,84 +126,93 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
           is waiting.
         </div>
 
-        {/* Living Metal CTA — antique gold gradient + breathing glow */}
+        {/* Living Logo — the primary CTA */}
         <button
           type="button"
-          onClick={onBuild}
-          className="wc-build-button"
-          style={{
-            width: "100%",
-            height: 52,
-            background:
-              "linear-gradient(180deg, #D4AE5C 0%, #C9A04C 55%, #A8842E 100%)",
-            color: "#0A0705",
-            border: "none",
-            borderRadius: 14,
-            fontFamily: "Instrument Sans, sans-serif",
-            fontWeight: 600,
-            fontSize: 14,
-            letterSpacing: "1px",
-            textTransform: "uppercase",
-            cursor: "pointer",
-            marginTop: 4,
-            position: "relative",
-            boxShadow:
-              "inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.12), 0 4px 14px rgba(201,160,76,0.22), 0 1px 3px rgba(0,0,0,0.25)",
-            animation: breathing
-              ? "wc-button-breath 4s ease-in-out infinite"
-              : "none",
-            transition:
-              "filter 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.filter = "brightness(1.06)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.filter = "brightness(1)";
-          }}
-          onMouseDown={(e) => {
-            e.currentTarget.style.transform = "scale(0.98)";
-          }}
-          onMouseUp={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-          onFocus={(e) => {
-            e.currentTarget.style.outline = "2px solid rgba(201,160,76,0.6)";
-            e.currentTarget.style.outlineOffset = "2px";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.outline = "none";
-          }}
-        >
-          Build My Expedition
-        </button>
-
-        <button
-          type="button"
-          onClick={onDemo}
+          onClick={handleLogoTap}
+          aria-label="Begin your first expedition"
+          onMouseDown={() => setLogoPressed(true)}
+          onMouseUp={() => setLogoPressed(false)}
+          onMouseLeave={() => setLogoPressed(false)}
+          onFocus={() => setLogoFocus(true)}
+          onBlur={() => setLogoFocus(false)}
           style={{
             background: "none",
             border: "none",
-            color: "rgba(232,220,200,0.45)",
+            padding: 0,
+            margin: 0,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "50%",
+            outline: "none",
+            boxShadow: logoFocus ? "0 0 0 2px rgba(201,160,76,0.6)" : "none",
+            transform: logoPressed ? "scale(0.96)" : "scale(1)",
+            transition: "transform 80ms ease, box-shadow 200ms ease",
+          }}
+        >
+          <SharegoodLogo
+            size={isMobile ? 180 : 220}
+            animationState={celebrating ? "celebrating" : "idle"}
+            animate={true}
+          />
+        </button>
+
+        {/* "click to enter" whisper label */}
+        <div
+          style={{
+            marginTop: 20,
+            fontFamily: "Fraunces, serif",
+            fontWeight: 300,
+            fontStyle: "italic",
+            fontSize: isMobile ? 15 : 16,
+            color: "rgba(232,220,200,0.55)",
+            letterSpacing: "0.3px",
+            textAlign: "center",
+            pointerEvents: "none",
+            userSelect: "none",
+          }}
+        >
+          click to enter
+        </div>
+
+        {/* Demo link — prominent verbal secondary CTA */}
+        <button
+          type="button"
+          onClick={onDemo}
+          onMouseEnter={() => setDemoHover(true)}
+          onMouseLeave={() => setDemoHover(false)}
+          style={{
+            marginTop: 24,
+            background: "none",
+            border: "none",
+            color: demoHover
+              ? "rgba(232,220,200,0.95)"
+              : "rgba(232,220,200,0.70)",
             fontFamily: "Instrument Sans, sans-serif",
-            fontSize: 14,
+            fontWeight: 500,
+            fontSize: isMobile ? 14 : 15,
             cursor: "pointer",
             letterSpacing: "0.2px",
+            padding: "4px 0",
+            borderBottom: demoHover
+              ? "1px solid rgba(201,160,76,0.4)"
+              : "1px solid transparent",
+            transition: "color 0.3s ease, border-color 0.3s ease",
           }}
         >
           {"or explore a demo expedition \u2192"}
         </button>
-      </div>
+      </main>
 
-      {/* Brand creed footer — USPTO line removed */}
-      <div
+      {/* Brand creed footer — natural flow, always at viewport bottom */}
+      <footer
         style={{
-          position: "absolute",
-          bottom: 24,
-          left: 0,
-          right: 0,
+          padding: "0 20px 24px",
           display: "flex",
           justifyContent: "center",
+          position: "relative",
           zIndex: 1,
         }}
       >
@@ -217,7 +229,7 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
         >
           {"Freedom \u00B7 Independence \u00B7 Discovery"}
         </div>
-      </div>
+      </footer>
     </div>
   );
 }

@@ -36,14 +36,23 @@
 }
 
 /* ═══ ROWS ═══ */
+/* Rows pull toward each other to compress vertical space between wordmark and tagline.
+ * Row 1 content anchors to its bottom edge; Row 2 content anchors to its top edge.
+ * Symmetric padding keeps them from touching — 16px breathing room between rows. */
 .bh3-row {
   flex: 0 0 88px;
   display: flex;
-  align-items: center;
   justify-content: center;
   position: relative;
-  padding: 0 20px;
   box-sizing: border-box;
+}
+.bh3-row-1 {
+  align-items: flex-end;
+  padding: 0 20px 16px;
+}
+.bh3-row-2 {
+  align-items: flex-start;
+  padding: 16px 20px 0;
 }
 
 /* ═══ ROW 1 · CENTERED LOCKUP ═══ */
@@ -125,7 +134,7 @@
   .bh3-wordmark-part { font-size: 30px; }
   .bh3-logo-mark     { width: 36px; height: 36px; }
   .bh3-tagline-big   { font-size: 40px; }
-  .bh3-tagline-light { font-size: 18px; }
+  .bh3-tagline-light { font-size: 22px; }
   .bh3-divider       { height: 28px; margin: 0 22px; }
   .bh3-lockup        { gap: 12px; }
 }

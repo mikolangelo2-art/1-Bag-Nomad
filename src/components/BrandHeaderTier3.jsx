@@ -31,6 +31,7 @@ export default function BrandHeaderTier3({
       <div className="bh3-row bh3-row-1">
         <div className="bh3-lockup" aria-label="1 Bag Nomad">
           <span className="bh3-wordmark-part">1</span>
+          <span className="bh3-wordmark-part">Bag</span>
           <img src={LogoMark} alt="" className="bh3-logo-mark" aria-hidden />
           <span className="bh3-wordmark-part">Nomad</span>
         </div>
