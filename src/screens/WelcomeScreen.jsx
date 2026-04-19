@@ -1,6 +1,6 @@
 // src/screens/WelcomeScreen.jsx
 // 1 Bag Nomad — Welcome Screen
-// Phase 3A Polish v3 · Session 54H · Sprint Day 22 · April 19, 2026
+// Phase 3A Polish v4 · Session 54H · Sprint Day 22 · April 19, 2026
 // DS v2.1 §7b Tier 3 Brand Header + DS v2.2 "Emotional CTA via Brand Mark"
 // See: vault/WelcomeLogoButton_Spec.md
 
@@ -97,16 +97,17 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
         <BrandHeaderTier3 />
       </div>
 
-      {/* Main — gap rhythm keeps items evenly spaced so logo lands at visual center */}
+      {/* Main — space-between strategy: hero at top, logo+label group at true
+          vertical center, demo link at bottom. Flex distributes whitespace
+          so the logo-group lands dead center regardless of viewport height. */}
       <main
         style={{
           flex: 1,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
-          gap: isMobile ? 20 : 28,
-          padding: "16px 20px",
+          justifyContent: "space-between",
+          padding: isMobile ? "20px 20px 16px" : "32px 20px 24px",
           position: "relative",
           zIndex: 1,
           opacity: mounted ? 1 : 0,
@@ -130,7 +131,16 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
           is waiting.
         </div>
 
-        {/* Living Logo — the primary CTA, visual center of the page */}
+        {/* Logo + label group — middle child in space-between, lands at true center */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 20,
+          }}
+        >
+        {/* Living Logo — the primary CTA */}
         <button
           type="button"
           onClick={handleLogoTap}
@@ -178,6 +188,7 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
           }}
         >
           click to enter
+        </div>
         </div>
 
         {/* Demo link — prominent verbal secondary CTA */}
