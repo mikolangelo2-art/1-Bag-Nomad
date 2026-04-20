@@ -81,7 +81,6 @@ function parseBudget(s) {
 
 export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "", onBackToWelcome }) {
   const [vision, setVision] = useState(prefilledVision || "");
-  const [journeyName, setJourneyName] = useState("");
   const [travelerType, setTravelerType] = useState("solo");
   const [openPill, setOpenPill] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState(null);
@@ -115,7 +114,6 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
       if (raw) {
         const saved = JSON.parse(raw);
         if (saved.vision && !prefilledVision) setVision(saved.vision);
-        if (saved.journeyName) setJourneyName(saved.journeyName);
         if (saved.travelerType) setTravelerType(saved.travelerType);
         if (saved.selectedStyle) {
           if (saved.selectedStyle === "remote") setSelectedStyle("offgrid");
@@ -141,7 +139,6 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
       try {
         const payload = {
           vision,
-          journeyName,
           travelerType,
           selectedStyle,
           selectedInterests,
@@ -157,7 +154,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
       }
     }, 400);
     return () => clearTimeout(t);
-  }, [vision, journeyName, travelerType, selectedStyle, selectedInterests, departureIso, dateMode, returnDateIso, duration, budget]);
+  }, [vision, travelerType, selectedStyle, selectedInterests, departureIso, dateMode, returnDateIso, duration, budget]);
 
   const canBuild = vision.trim().length > 20;
 
@@ -196,7 +193,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
     try {
       const buildPromise = runDreamExpeditionBuild({
         vision: vision.trim(),
-        tripName: journeyName || "My Expedition",
+        tripName: "",
         city: "",
         date: effectiveDeparture,
         returnDate,
