@@ -333,7 +333,7 @@ Return ONLY valid JSON:
                 <div
                   style={{
                     fontSize: isMobile ? 11 : 13,
-                    color: "rgba(255,255,255,0.45)",
+                    color: "rgba(94,139,138,0.75)",
                     letterSpacing: isMobile ? 1 : 1.5,
                     marginBottom: 4,
                     fontFamily: sans,
@@ -496,7 +496,7 @@ Return ONLY valid JSON:
                         style={{
                           fontSize: isMobile ? 12 : 14,
                           fontWeight: 500,
-                          color: "rgba(255,255,255,0.72)",
+                          color: "rgba(94,139,138,0.65)",
                           marginBottom: 0,
                           letterSpacing: 0.4,
                           fontFamily: sans,
