@@ -967,36 +967,14 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
             type="button"
             onClick={handleBuild}
             disabled={!canBuild || loading}
+            aria-busy={loading}
+            className={`cta-build-btn${loading ? " is-loading" : ""}`}
             style={{
               width: "100%",
-              height: isDesktop ? 56 : 52,
-              background:
-                canBuild && !loading
-                  ? "linear-gradient(180deg, #D4AE5C 0%, #C9A04C 55%, #A8842E 100%)"
-                  : "rgba(201,160,76,0.35)",
-              boxShadow:
-                canBuild && !loading
-                  ? "inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.12), 0 4px 14px rgba(201,160,76,0.22), 0 1px 3px rgba(0,0,0,0.25)"
-                  : "none",
-              color: "#0A0705",
-              border: "none",
-              borderRadius: 14,
-              fontFamily: "Instrument Sans, sans-serif",
-              fontWeight: 600,
-              fontSize: isDesktop ? 15 : 14,
-              letterSpacing: "1px",
-              textTransform: "uppercase",
-              cursor: canBuild && !loading ? "pointer" : "not-allowed",
-              transition: "background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease",
-            }}
-            onMouseDown={(e) => {
-              if (canBuild && !loading) e.currentTarget.style.transform = "scale(0.98)";
-            }}
-            onMouseUp={(e) => {
-              e.currentTarget.style.transform = "scale(1)";
+              minHeight: isDesktop ? 56 : 52,
             }}
           >
-            {loading ? "Building..." : "Build My Expedition"}
+            {loading ? "Building\u2026" : "Build My Expedition"}
           </button>
         </div>
       </div>

@@ -237,7 +237,8 @@ input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.45)!important;
 .cta-build-btn{width:100%;padding:16px 20px;min-height:52px;border:none;border-radius:14px;background:linear-gradient(135deg,#D4AE5C 0%,#C9A04C 50%,#A8842E 100%);color:#0A0705;font-family:'Instrument Sans',system-ui,-apple-system,sans-serif;font-size:15px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.18),0 2px 12px rgba(201,160,76,0.22);animation:cta-breath 2.8s ease-in-out infinite;transition:transform 0.2s ease,box-shadow 0.2s ease}
 .cta-build-btn:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.22),0 10px 28px rgba(201,160,76,0.32)}
 .cta-build-btn:active{transform:translateY(0) scale(0.99)}
-.cta-build-btn:disabled{cursor:wait}
+.cta-build-btn:disabled:not(.is-loading){animation:none;opacity:0.4;cursor:not-allowed;box-shadow:inset 0 1px 0 rgba(255,255,255,0.08)}
+.cta-build-btn:disabled.is-loading{cursor:wait;opacity:1}
 .cta-build-btn.is-loading{animation:cta-breath-fast 1.4s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){.cta-build-btn,.cta-build-btn.is-loading{animation:none}}
 .build-root{font-family:var(--lux-font-body,'Instrument Sans',system-ui,-apple-system,sans-serif);background:var(--lux-bg-main,#0A0705);min-height:100vh;color:var(--lux-text-primary,#f8f5f0);display:flex;flex-direction:column}

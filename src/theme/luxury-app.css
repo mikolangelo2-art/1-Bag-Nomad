@@ -159,3 +159,17 @@ button:focus-visible,
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(201, 160, 76, 0.38);
 }
+
+/* Universal primary CTA — Living Metal (see App.jsx for full set). Calm when
+   unusable (e.g. Dream before min chars); :not(.is-loading) keeps fast pulse
+   when disabled during launch. */
+.cta-build-btn:disabled:not(.is-loading) {
+  animation: none;
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.cta-build-btn:disabled.is-loading {
+  cursor: wait;
+  opacity: 1;
+}

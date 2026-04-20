@@ -181,7 +181,7 @@ Return ONLY valid JSON:
       }}
     >
       <div className="dream-glow" />
-      <BrandHeaderTier3 sticky={true} shimmer={true} />
+      <BrandHeaderTier3 shimmer={true} />
       <div className="dream-content" style={{ maxWidth: 880, position: "relative", zIndex: 10 }}>
         <div
           className="narrative-card"
