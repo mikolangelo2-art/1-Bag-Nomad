@@ -460,7 +460,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
 
       <BrandHeaderTier3 sticky={true} shimmer={true} />
 
-      {typeof onBackToWelcome === "function" && (
+      {typeof onBackToWelcome === "function" && isDesktop && (
         <button
           type="button"
           onClick={() => onBackToWelcome()}
