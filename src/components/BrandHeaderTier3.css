@@ -188,16 +188,6 @@
   .bh3-lockup        { gap: 12px; }
 }
 
-/* ═══ SMALL MOBILE SAFETY NET (<360px) ═══ */
-@media (max-width: 359px) {
-  .bh3-wordmark-part { font-size: 22px; }
-  .bh3-logo-mark     { width: 28px; height: 28px; }
-  .bh3-tagline-big   { font-size: 24px; letter-spacing: 0.06em; }
-  .bh3-divider       { margin: 0 12px; }
-  .bh3-tagline-light { font-size: 14px; }
-  .bh3-lockup        { gap: 8px; }
-}
-
 /* ═══ MOBILE TIER 3 — 120px total (Phase 4.2) — tagline sizes LOCKED per BrandVoice ═══ */
 @media (max-width: 1023px) {
   .bh3-root {
@@ -213,6 +203,30 @@
   .bh3-row-2 {
     padding: 6px 16px 0;
   }
+
+  /* Closer scale than desktop 40/38 — caps + bold still read first, but
+   * travel light is not dwarfed (was 28/26; very small phones had 24/14). */
+  .bh3-tagline-big {
+    font-size: 24px;
+  }
+  .bh3-tagline-light {
+    font-size: 22px;
+  }
+  .bh3-divider {
+    height: 20px;
+    margin: 0 14px;
+  }
+}
+
+/* ═══ SMALL MOBILE SAFETY NET (<360px) — must follow max-width 1023 so tagline
+   * sizes here override the general mobile pair (22/20 vs 24/22). ═══ */
+@media (max-width: 359px) {
+  .bh3-wordmark-part { font-size: 22px; }
+  .bh3-logo-mark     { width: 28px; height: 28px; }
+  .bh3-tagline-big   { font-size: 22px; letter-spacing: 0.06em; }
+  .bh3-divider       { margin: 0 10px; height: 18px; }
+  .bh3-tagline-light { font-size: 20px; }
+  .bh3-lockup        { gap: 8px; }
 }
 
 /* ═══ REDUCED MOTION ═══ */
