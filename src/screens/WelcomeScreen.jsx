@@ -116,6 +116,29 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
           transition: "opacity 0.6s ease, transform 0.6s ease",
         }}
       >
+        {/* Philosophical subtitle — Phase 4.3 (whisper; staggered after main mount) */}
+        <div
+          style={{
+            fontFamily: "'Fraunces', serif",
+            fontStyle: "italic",
+            fontWeight: 300,
+            fontSize: isMobile ? 16 : 20,
+            color: "rgba(232,220,200,0.7)",
+            textAlign: "center",
+            lineHeight: 1.5,
+            maxWidth: isMobile ? 320 : 480,
+            margin: "0 auto",
+            marginBottom: isMobile ? 0 : 20,
+            padding: isMobile ? "0 20px" : "0",
+            letterSpacing: "0.01em",
+            opacity: mounted ? 1 : 0,
+            transform: mounted ? "translateY(0)" : "translateY(8px)",
+            transition: "opacity 700ms ease 400ms, transform 700ms ease 400ms",
+          }}
+        >
+          {"Every expedition starts with a feeling. Tell me what's driving yours."}
+        </div>
+
         {/* Hero */}
         <div
           style={{

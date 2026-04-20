@@ -369,9 +369,64 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
             box-shadow: 0 0 24px rgba(201,160,76,0.18);
           }
         }
+
+        @keyframes dream-fade-up {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes dream-signature-arrive {
+          from {
+            opacity: 0;
+            transform: scale(0.96);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        .dream-hero-line-1 {
+          opacity: 0;
+          animation: dream-fade-up 600ms ease forwards;
+          animation-delay: 200ms;
+        }
+
+        .dream-hero-line-2 {
+          opacity: 0;
+          animation: dream-fade-up 600ms ease forwards;
+          animation-delay: 400ms;
+        }
+
+        .dream-hero-signature {
+          opacity: 0;
+          animation: dream-signature-arrive 700ms cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+          animation-delay: 700ms;
+        }
+
+        .dream-hero-attribution {
+          opacity: 0;
+          animation: dream-fade-up 500ms ease forwards;
+          animation-delay: 1050ms;
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .dream-textarea-wrapper {
             animation: none !important;
+          }
+          .dream-hero-line-1,
+          .dream-hero-line-2,
+          .dream-hero-signature,
+          .dream-hero-attribution {
+            animation: none;
+            opacity: 1;
+            transform: none;
           }
         }
       `}</style>
@@ -453,6 +508,74 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           gap: 24,
         }}
       >
+        {/* Hero block - Phase 4.3 soul restoration */}
+        <div
+          className="dream-hero-block"
+          style={{
+            textAlign: "center",
+            marginBottom: isDesktop ? 24 : 16,
+            marginTop: 8,
+          }}
+        >
+          <div
+            className="dream-hero-line-1"
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontWeight: 300,
+              fontSize: isDesktop ? 40 : 28,
+              color: "#E8DCC8",
+              lineHeight: 1.1,
+              letterSpacing: "-0.01em",
+            }}
+          >
+            Your expedition
+          </div>
+          <div
+            className="dream-hero-line-2"
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontWeight: 300,
+              fontSize: isDesktop ? 40 : 28,
+              color: "#E8DCC8",
+              lineHeight: 1.1,
+              letterSpacing: "-0.01em",
+              marginBottom: isDesktop ? 20 : 14,
+            }}
+          >
+            starts now.
+          </div>
+
+          <div
+            className="dream-hero-signature"
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontStyle: "italic",
+              fontWeight: 400,
+              fontSize: isDesktop ? 52 : 36,
+              color: "#C9A04C",
+              lineHeight: 1,
+              letterSpacing: "0.005em",
+              marginBottom: 6,
+            }}
+          >
+            {"Let's go."}
+          </div>
+
+          <div
+            className="dream-hero-attribution"
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontStyle: "italic",
+              fontWeight: 300,
+              fontSize: isDesktop ? 13 : 11,
+              color: "rgba(201,160,76,0.65)",
+              letterSpacing: "0.04em",
+            }}
+          >
+            {"\u2014 your co-architect"}
+          </div>
+        </div>
+
         <div
           style={{
             fontFamily: "Fraunces, serif",
