@@ -228,12 +228,18 @@ input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.45)!important;
 .launch-btn.on{background:linear-gradient(135deg,#3d2e18 0%,#5c4522 28%,#8a6b32 55%,#c9a04c 100%);color:#FFF;animation:launchPulse 2.8s ease-in-out infinite;box-shadow:0 0 24px rgba(201,160,76,0.32),0 0 48px rgba(201,160,76,0.14)}
 .launch-btn.on:hover{box-shadow:0 10px 38px rgba(201,160,76,0.4),0 0 48px rgba(201,160,76,0.2),0 4px 28px rgba(94,139,138,0.08);animation:none}
 .launch-btn.loading{background:linear-gradient(135deg,#4a3820,#6b5228,#4a3820);color:rgba(255,255,255,0.92);cursor:wait;animation:launchPulse 1.4s ease-in-out infinite!important}
-.narrative-card{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(169,70,29,0.14),rgba(201,160,76,0.05));border:1px solid rgba(201,160,76,0.45);box-shadow:0 0 0 1px rgba(201,160,76,0.1),0 12px 40px rgba(0,0,0,0.45),0 0 48px rgba(201,160,76,0.12);border-radius:18px;padding:24px;margin-bottom:22px;animation:fadeUp 0.5s ease}
+.narrative-card{animation:fadeUp 0.5s ease}
 .vibe-tag{background:rgba(169,70,29,0.22);border:1px solid rgba(169,70,29,0.55);border-radius:20px;padding:4px 12px;font-size:12px;color:#c9a04c;letter-spacing:2.5px}
 .stat-card{background:rgba(44,44,44,0.45);border:1px solid rgba(201,160,76,0.28);border-radius:17px;padding:12px 10px;text-align:center;box-shadow:0 8px 28px rgba(0,0,0,0.35),0 0 0 1px rgba(0,0,0,0.2)}
 .phase-row{display:flex;gap:14px;padding:16px 18px;background:rgba(44,44,44,0.35);border:1px solid rgba(201,160,76,0.22);border-radius:18px;align-items:flex-start;border-left:3px solid transparent;box-shadow:0 10px 36px rgba(0,0,0,0.38),0 0 0 1px rgba(201,160,76,0.06)}
-.cta-build-btn{width:100%;padding:16px;border-radius:13px;border:none;background:linear-gradient(135deg,#A9461D 0%,#C4571E 38%,#69F0AE 100%);color:#060A0F;font-size:12px;font-weight:900;cursor:pointer;letter-spacing:2.5px;font-family:'Instrument Sans',system-ui,-apple-system,sans-serif;animation:consolePulse 2.8s ease-in-out infinite;transition:transform 0.2s}
-.cta-build-btn:hover{animation:none}
+@keyframes cta-breath{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,0.18),0 2px 12px rgba(201,160,76,0.22)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,0.22),0 4px 22px rgba(201,160,76,0.36)}}
+@keyframes cta-breath-fast{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,0.22),0 0 32px rgba(201,160,76,0.32)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,0.25),0 0 56px rgba(201,160,76,0.55)}}
+.cta-build-btn{width:100%;padding:16px 20px;min-height:52px;border:none;border-radius:14px;background:linear-gradient(135deg,#D4AE5C 0%,#C9A04C 50%,#A8842E 100%);color:#0A0705;font-family:'Instrument Sans',system-ui,-apple-system,sans-serif;font-size:15px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.18),0 2px 12px rgba(201,160,76,0.22);animation:cta-breath 2.8s ease-in-out infinite;transition:transform 0.2s ease,box-shadow 0.2s ease}
+.cta-build-btn:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.22),0 10px 28px rgba(201,160,76,0.32)}
+.cta-build-btn:active{transform:translateY(0) scale(0.99)}
+.cta-build-btn:disabled{cursor:wait}
+.cta-build-btn.is-loading{animation:cta-breath-fast 1.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.cta-build-btn,.cta-build-btn.is-loading{animation:none}}
 .build-root{font-family:var(--lux-font-body,'Instrument Sans',system-ui,-apple-system,sans-serif);background:var(--lux-bg-main,#0A0705);min-height:100vh;color:var(--lux-text-primary,#f8f5f0);display:flex;flex-direction:column}
 .mc-root{font-family:var(--lux-font-body,'Instrument Sans',system-ui,-apple-system,sans-serif);background:radial-gradient(ellipse at 50% 0%,rgba(94,139,138,0.06) 0%,transparent 55%) no-repeat fixed,var(--lux-bg-trip,#0A0705);min-height:100vh;color:var(--lux-text-primary,#f8f5f0);display:flex;flex-direction:column}@media(min-width:600px){.mc-root{background:radial-gradient(ellipse at 50% 0%,rgba(94,139,138,0.06) 0%,transparent 55%) no-repeat fixed,transparent}}.mc-root.mc-trip-bleed{max-width:100%!important;width:100%!important}
 .dream-root.dream-bleed{max-width:100%!important;width:100%!important}

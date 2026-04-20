@@ -93,8 +93,7 @@ button:focus-visible,
   transform: translateY(-1px) scale(1.03);
 }
 
-.launch-btn.on:hover,
-.cta-build-btn:hover {
+.launch-btn.on:hover {
   transform: scale(1.03) translateY(-2px);
   box-shadow:
     0 0 42px var(--lux-glow-gold-30),
