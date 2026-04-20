@@ -165,7 +165,7 @@ export default function WelcomeScreen({ onBuild, onDemo }) {
             flexDirection: "column",
             alignItems: "center",
             gap: 20,
-            marginBottom: isMobile ? 0 : 84,
+            marginBottom: isMobile ? 50 : 144,
           }}
         >
         {/* Living Logo — the primary CTA */}
