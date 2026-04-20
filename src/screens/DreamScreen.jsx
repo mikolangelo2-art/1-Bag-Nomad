@@ -466,30 +466,33 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           onClick={() => onBackToWelcome()}
           style={{
             position: "fixed",
-            top: isDesktop ? 196 : 136,
-            left: isDesktop ? 32 : 16,
+            top: isDesktop ? 196 : 128,
+            left: isDesktop ? 32 : 14,
             zIndex: 50,
-            background: "transparent",
+            background: isDesktop ? "transparent" : "rgba(10,7,5,0.55)",
             border: "none",
-            padding: "8px 12px",
+            padding: isDesktop ? "8px 12px" : "5px 10px",
+            borderRadius: isDesktop ? 0 : 12,
+            backdropFilter: isDesktop ? "none" : "blur(8px)",
+            WebkitBackdropFilter: isDesktop ? "none" : "blur(8px)",
             cursor: "pointer",
             fontFamily: "Instrument Sans, sans-serif",
             fontSize: isDesktop ? 14 : 12,
             fontWeight: 500,
             color: "rgba(201,160,76,0.85)",
-            opacity: isDesktop ? 0.75 : 0.4,
+            opacity: isDesktop ? 0.75 : 0.55,
             textDecoration: "none",
             display: "flex",
             alignItems: "center",
             gap: 4,
-            minHeight: 44,
+            minHeight: isDesktop ? 44 : 0,
             transition: "opacity 0.2s ease",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.opacity = "1";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.opacity = isDesktop ? "0.75" : "0.4";
+            e.currentTarget.style.opacity = isDesktop ? "0.75" : "0.55";
           }}
         >
           {"\u2190 Back"}
@@ -513,7 +516,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           className="dream-hero-block"
           style={{
             textAlign: "center",
-            marginBottom: isDesktop ? 24 : 16,
+            marginBottom: isDesktop ? 24 : 12,
             marginTop: 8,
           }}
         >
@@ -522,7 +525,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
             style={{
               fontFamily: "'Fraunces', serif",
               fontWeight: 300,
-              fontSize: isDesktop ? 40 : 28,
+              fontSize: isDesktop ? 40 : 22,
               color: "#E8DCC8",
               lineHeight: 1.1,
               letterSpacing: "-0.01em",
@@ -535,11 +538,11 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
             style={{
               fontFamily: "'Fraunces', serif",
               fontWeight: 300,
-              fontSize: isDesktop ? 40 : 28,
+              fontSize: isDesktop ? 40 : 22,
               color: "#E8DCC8",
               lineHeight: 1.1,
               letterSpacing: "-0.01em",
-              marginBottom: isDesktop ? 20 : 14,
+              marginBottom: isDesktop ? 20 : 10,
             }}
           >
             starts now.
@@ -551,11 +554,11 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
               fontFamily: "'Fraunces', serif",
               fontStyle: "italic",
               fontWeight: 400,
-              fontSize: isDesktop ? 52 : 36,
+              fontSize: isDesktop ? 52 : 28,
               color: "#C9A04C",
               lineHeight: 1,
               letterSpacing: "0.005em",
-              marginBottom: 6,
+              marginBottom: isDesktop ? 6 : 4,
             }}
           >
             {"Let's go."}

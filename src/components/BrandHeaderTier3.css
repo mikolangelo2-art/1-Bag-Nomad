@@ -115,7 +115,7 @@
    * See vault/BrandVoice_Typography_DreamBigTravelLight.md */
   font-weight: 700;
   font-size: 28px;
-  line-height: 1;
+  line-height: 1.2;
   color: #C9A04C;
   letter-spacing: 0.08em;
   flex-shrink: 0;
@@ -167,7 +167,7 @@
   font-weight: 300;
   font-style: italic;
   font-size: 26px;
-  line-height: 1;
+  line-height: 1.2;
   color: #C9A04C;
   letter-spacing: 0.02em;
   flex-shrink: 0;
