@@ -586,8 +586,9 @@ Return ONLY valid JSON:
                                 fontSize: isMobile ? 13 : 15,
                                 color: "rgba(255,255,255,0.75)",
                                 fontWeight: 600,
-                                width: isMobile ? 90 : 110,
+                                minWidth: isMobile ? 90 : 110,
                                 flexShrink: 0,
+                                whiteSpace: "nowrap",
                                 fontFamily: sans,
                               }}
                             >
@@ -631,8 +632,9 @@ Return ONLY valid JSON:
                             fontSize: isMobile ? 13 : 15,
                             color: "rgba(255,255,255,0.9)",
                             fontWeight: 700,
-                            width: isMobile ? 90 : 110,
+                            minWidth: isMobile ? 90 : 110,
                             flexShrink: 0,
+                            whiteSpace: "nowrap",
                             fontFamily: sans,
                           }}
                         >
