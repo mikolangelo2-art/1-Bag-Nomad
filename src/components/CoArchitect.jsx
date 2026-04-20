@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import posthog from "posthog-js";
 import { useMobile } from '../hooks/useMobile';
-import ConsoleHeader from './ConsoleHeader';
-import { DreamConsoleColumn } from './DreamHeader';
+import BrandHeaderTier3 from './BrandHeaderTier3';
+import { Icon } from "@iconify/react";
 import { askAI, parseJSON } from '../utils/aiHelpers';
 import { estCost } from '../utils/priceHelpers';
 import { fmt } from '../utils/dateHelpers';
@@ -18,15 +18,13 @@ function coerceNightsInit(v){
   const n=parseInt(String(v),10);
   return Number.isFinite(n)?Math.max(1,n):1;
 }
-function buildCoArchitectWelcomeMessage(items,countries,totalNights){
-  const cc=countries.length;
-  const first=(items[0]?.destination||"").trim();
-  const last=items.length>1?(items[items.length-1]?.destination||"").trim():"";
-  const route=first&&last&&first!==last?`${first} to ${last}`:first;
-  const dive=items.some(i=>String(i.type||"").toLowerCase().includes("dive"));
-  if(dive&&route)return `${totalNights} nights, ${cc} ${cc===1?"country":"countries"} — ${route}. Let's make every dive count.`;
-  if(items.length>=4||cc>=5)return `${cc} countries, ${totalNights} nights — this is an expedition. Let's build it right.`;
-  return `${totalNights} nights across ${cc} ${cc===1?"country":"countries"}${route?` — ${route}`:""}. Let's make every one count.`;
+function buildCoArchitectWelcomeMessage(tripName, items, countries, totalNights) {
+  const cc = countries.length;
+  const dive = items.some(i => String(i.type || "").toLowerCase().includes("dive"));
+  const tn = tripName ? `${tripName} — ` : "";
+  if (dive) return `${tn}${totalNights} nights, ${cc} ${cc === 1 ? "country" : "countries"}. Let's make every dive count.`;
+  if (items.length >= 4 || cc >= 5) return `${tn}${cc} countries, ${totalNights} nights. This is an expedition — let's build it right.`;
+  return `${tn}${totalNights} nights across ${cc} ${cc === 1 ? "country" : "countries"}. Let's make every one count.`;
 }
 function initialItemsFromVision(visionData,colors){
   return(visionData.phases||[]).filter(p=>p.type!=="Return").map((p,i)=>({id:i,destination:p.destination,country:p.country,type:p.type||"Exploration",nights:p.nights||7,cost:p.budget||estCost(p.destination,p.country,p.type,p.nights||7),flag:p.flag||"🌍",color:colors[i%8],why:p.why||"",caActivities:Array.isArray(p.caActivities)?p.caActivities.slice():[]}));
@@ -49,7 +47,7 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
     const its=initialItemsFromVision(visionData,PALETTE_8);
     const cc=[...new Set(its.map(i=>i.country))];
     const tn=its.reduce((s,i)=>s+coerceNightsInit(i.nights),0);
-    return[{role:"ai",text:buildCoArchitectWelcomeMessage(its,cc,tn)}];
+    return[{role:"ai",text:buildCoArchitectWelcomeMessage(data.tripName,its,cc,tn)}];
   });
   const [input,setInput]=useState("");
   const [loading,setLoading]=useState(false);
@@ -74,18 +72,12 @@ function CoArchitect({data,visionData,onLaunch,onBack}) {
     const last=[...chat].reverse().find(m=>m.role==="ai");
     if(last?.text)try{sessionStorage.setItem("1bn_ca_peek_v1",JSON.stringify({text:last.text}));}catch(e){}
   },[chat]);
-  useEffect(()=>{const t=setTimeout(()=>genInsight(),2000);return()=>clearTimeout(t);},[]);
   const totalNights=items.reduce((s,i)=>s+coerceNightsVal(i.nights),0);
   const totalCost=items.reduce((s,i)=>s+coerceCostVal(i.cost),0);
   const countries=[...new Set(items.map(i=>i.country))];
   function getDates(){let cur=new Date(startDate);return items.map(p=>{const arr=new Date(cur);const n=coerceNightsVal(p.nights);cur.setDate(cur.getDate()+n);return{arrival:arr,departure:new Date(cur)};});}
   const dates=getDates();
   function fmtD(d){return d.toLocaleDateString("en-US",{month:"short",day:"numeric"});}
-  async function genInsight(){
-    setLoading(true);
-    const res=await askAI(`Co-architect. Goal:"${goalLabel}". Vision:"${data.vision}". ${data.budgetMode!=="dream"?"Budget: "+data.budgetAmount:"No budget."} Items:${JSON.stringify(items.map(i=>({destination:i.destination,type:i.type,nights:i.nights})))} Open with one sentence of genuine enthusiasm about a specific detail of their trip (do not prefix with a label like "Excitement:" — start directly with the substance). Then ONE clarifying question. Max 3 sentences total.`,350,0.7);
-    setChat(p=>[...p,{role:"ai",text:res}]);setLoading(false);
-  }
   async function sendMsg(){
     if(!input.trim())return;
     const msg=input;setInput("");setChat(p=>[...p,{role:"user",text:msg}]);setLoading(true);
@@ -198,41 +190,22 @@ RULES:
   }
   return(
     <div className="build-root" style={{opacity:mounted?1:0,transform:mounted?"translateY(0)":"translateY(32px)",transition:"opacity 0.55s ease,transform 0.55s cubic-bezier(0.22,1,0.36,1)",overflowX:"hidden"}}>
-      <DreamConsoleColumn>
-      <ConsoleHeader console="dream" isMobile={isMobile} screenLabel="CO-ARCHITECT" rightSlot={(
-        <div style={{display:"flex",gap:6,alignItems:"center",justifyContent:"center"}}>
-          {[1,2,3,4].map(n=>(
-            <div
-              key={n}
-              style={{
-                width:5,
-                height:5,
-                borderRadius:"50%",
-                background:n===1?"rgba(255,159,67,0.85)":n===2?"rgba(255,159,67,0.55)":n===3?"#c9a04c":"rgba(0,229,255,0.15)",
-                boxShadow:n===1?"0 0 6px rgba(255,159,67,0.5)":n===3?"0 0 8px rgba(201,160,76,0.7)":"none",
-                transition:"all 0.3s ease",
-                flexShrink:0,
-              }}
-            />
-          ))}
-        </div>
-      )}/>
-      </DreamConsoleColumn>
+      <BrandHeaderTier3 shimmer={true} />
       <div style={{display:"flex",border:"none",background:"#080D14",flexShrink:0}}>
-        {(isMobile?[{label:"STOPS",val:items.length,c:"#FFFFFF"},{label:"COUNTRIES",val:countries.length,c:"#FFFFFF"},{label:"NIGHTS",val:totalNights,c:"#FFFFFF"},{label:"BUDGET",val:fmt(totalCost),c:"#D4AF37"}]:[{label:"STOPS",val:items.length,c:"#00E5FF"},{label:"COUNTRIES",val:countries.length,c:"#69F0AE"},{label:"NIGHTS",val:totalNights,c:"#A29BFE"},{label:"BUDGET",val:fmt(totalCost),c:"#c9a04c"}]).map((s,i)=>(
-          <div key={s.label} style={{flex:1,minWidth:0,padding:isMobile?"6px 4px":"8px 6px",textAlign:"center",borderRight:i<3?"1px solid #111D2A":"none"}}>
-            <div style={{fontSize:isMobile?8:13,color:isMobile?"rgba(255,255,255,0.5)":"rgba(255,255,255,0.35)",letterSpacing:isMobile?0.5:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textTransform:isMobile?"uppercase":"none"}}>{s.label}</div>
-            <div style={{fontSize:isMobile?13:15,fontWeight:700,color:s.c,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.val}</div>
+        {[{label:"STOPS",val:items.length},{label:"COUNTRIES",val:countries.length},{label:"NIGHTS",val:totalNights},{label:"BUDGET",val:fmt(totalCost)}].map((s,i)=>(
+          <div key={s.label} style={{flex:1,minWidth:0,padding:isMobile?"6px 4px":"8px 6px",textAlign:"center",borderRight:i<3?"1px solid rgba(122,111,93,0.18)":"none"}}>
+            <div style={{fontSize:isMobile?9:11,color:"rgba(94,139,138,0.75)",letterSpacing:1.5,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textTransform:"uppercase",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:500}}>{s.label}</div>
+            <div style={{fontSize:isMobile?14:16,fontWeight:700,color:"#C9A04C",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{s.val}</div>
           </div>
         ))}
       </div>
-      <div style={{display:"flex",alignItems:"center",gap:12,padding:isMobile?"8px 12px":"8px 14px",background:"rgba(255,255,255,0.02)",borderBottom:"1px solid #111D2A",flexShrink:0}}>
-        <span style={{fontSize:isMobile?9:11,fontWeight:700,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",color:isMobile?"rgba(255,255,255,0.45)":"rgba(255,255,255,0.4)",letterSpacing:2}}>DEPARTURE</span>
-        <div style={{flex:1,minWidth:0,maxWidth:isMobile?"100%":220}}><DatePickerInput value={startDate} onChange={setStartDate} style={{background:isMobile?"rgba(255,255,255,0.06)":"rgba(255,255,255,0.04)",border:isMobile?"1px solid rgba(255,255,255,0.14)":"1px solid rgba(255,255,255,0.18)",borderRadius:6,color:isMobile?"#FFFFFF":"rgba(0,229,255,0.85)",fontSize:isMobile?13:14,padding:"3px 8px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",colorScheme:"dark"}} onFocus={e=>{e.target.style.borderColor=isMobile?"rgba(201,160,76,0.55)":"rgba(255,159,67,0.5)";e.target.style.boxShadow=isMobile?"0 0 0 2px rgba(201,160,76,0.12)":"0 0 0 2px rgba(255,159,67,0.10)";}} onBlur={e=>{e.target.style.borderColor=isMobile?"rgba(255,255,255,0.14)":"rgba(255,255,255,0.18)";e.target.style.boxShadow="none";}} aria-label="Departure date" buttonStyle={isMobile?{border:"1px solid rgba(201,160,76,0.42)",background:"rgba(201,160,76,0.12)"}:{border:"1px solid rgba(0,229,255,0.28)",background:"rgba(0,229,255,0.08)"}}/></div>
-        <span style={{fontSize:isMobile?11:13,color:isMobile?"#FFFFFF":"rgba(255,255,255,0.35)",marginLeft:"auto",fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>{totalNights}n</span>
+      <div style={{display:"flex",alignItems:"center",gap:12,padding:isMobile?"8px 12px":"8px 14px",background:"rgba(255,255,255,0.02)",borderBottom:"1px solid rgba(122,111,93,0.18)",flexShrink:0}}>
+        <span style={{fontSize:isMobile?9:11,fontWeight:600,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",color:"rgba(94,139,138,0.75)",letterSpacing:1.5}}>DEPARTURE</span>
+        <div style={{flex:1,minWidth:0,maxWidth:isMobile?"100%":220}}><DatePickerInput value={startDate} onChange={setStartDate} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(201,160,76,0.42)",borderRadius:6,color:"#C9A04C",fontSize:isMobile?13:14,padding:"3px 8px",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",outline:"none",transition:"border-color 0.30s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.30s cubic-bezier(0.25,0.46,0.45,0.94)",colorScheme:"dark"}} onFocus={e=>{e.target.style.borderColor="rgba(201,160,76,0.7)";e.target.style.boxShadow="0 0 0 2px rgba(201,160,76,0.15)";}} onBlur={e=>{e.target.style.borderColor="rgba(201,160,76,0.42)";e.target.style.boxShadow="none";}} aria-label="Departure date" buttonStyle={{border:"1px solid rgba(201,160,76,0.42)",background:"rgba(201,160,76,0.12)",borderRadius:8}}/></div>
+        <span style={{fontSize:isMobile?11:13,color:"#C9A04C",marginLeft:"auto",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontWeight:600}}>{totalNights}n</span>
       </div>
-      {isMobile&&<div style={{display:"flex",borderBottom:"1px solid #1a2535",background:"#080D14",flexShrink:0}}>
-        {["chat","itinerary"].map(t=><button key={t} onClick={()=>setMobileTab(t)} style={{flex:1,padding:"10px 0",background:"none",border:"none",borderBottom:mobileTab===t?"2px solid #00D4FF":"2px solid transparent",color:mobileTab===t?"#00D4FF":"rgba(255,255,255,0.4)",fontSize:11,cursor:"pointer",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",letterSpacing:2,minHeight:44}}>{t==="itinerary"?"🗺️ ITINERARY":"✨ TRIP BRIEF"}</button>)}
+      {isMobile&&<div style={{display:"flex",borderBottom:"1px solid rgba(122,111,93,0.18)",background:"#080D14",flexShrink:0}}>
+        {["chat","itinerary"].map(t=><button key={t} onClick={()=>setMobileTab(t)} style={{flex:1,padding:"10px 0",background:"none",border:"none",borderBottom:mobileTab===t?"2px solid #C9A04C":"2px solid transparent",color:mobileTab===t?"#C9A04C":"rgba(232,220,200,0.5)",fontSize:11,cursor:"pointer",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",letterSpacing:2,minHeight:44,fontWeight:600}}>{t==="itinerary"?"ITINERARY":"TRIP BRIEF"}</button>)}
       </div>}
       <div style={{display:"flex",flex:1,overflow:"hidden",minHeight:0,...(isMobile?{flexDirection:"column"}:{})}}>
         {(!isMobile||mobileTab==="itinerary")&&(
@@ -260,8 +233,8 @@ RULES:
                 <div key={item.id} style={{marginBottom:7,background:"#0C1520",borderRadius:11,overflow:"hidden",border:`1px solid ${c}22`,borderLeft:`3px solid ${c}`}}>
                   <div onClick={()=>setEditingId(isEd?null:item.id)} style={{padding:isMobile?"8px 10px":"10px 12px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,minHeight:44}}>
                     <div style={{width:18,height:18,borderRadius:"50%",background:`${c}18`,border:`1px solid ${c}44`,color:c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,flexShrink:0}}>{i+1}</div>
-                    <div style={{flex:1}}><div style={{fontSize:isMobile?13:15,fontWeight:700,color:"#FFF"}}>{item.flag} {item.destination}</div><div style={{fontSize:isMobile?11:15,color:"rgba(255,255,255,0.75)"}}><span style={{color:isMobile?"rgba(16,185,129,0.7)":"#c9a04c",fontWeight:700}}>{item.country}</span> · {TI[item.type]} {item.type} · {fmtD(dates[i]?.arrival)}→{fmtD(dates[i]?.departure)}</div></div>
-                    <div style={{textAlign:"right",flexShrink:0,paddingRight:4}}><div style={{fontSize:15,fontWeight:900,color:isMobile?"rgba(0,212,255,0.75)":"#00D4FF",paddingRight:2}}>{coerceNightsVal(item.nights)}n</div><div style={{fontSize:15,color:isMobile?"rgba(212,175,55,0.8)":"#c9a04c"}}>{fmt(coerceCostVal(item.cost))}</div></div>
+                    <div style={{flex:1}}><div style={{fontSize:isMobile?13:15,fontWeight:700,color:"#E8DCC8"}}>{item.flag} {item.destination}</div><div style={{fontSize:isMobile?11:14,color:"rgba(232,220,200,0.7)",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}><span style={{color:"rgba(94,139,138,0.75)",fontWeight:600}}>{item.country}</span> · {TI[item.type]} {item.type} · {fmtD(dates[i]?.arrival)}→{fmtD(dates[i]?.departure)}</div></div>
+                    <div style={{textAlign:"right",flexShrink:0,paddingRight:4}}><div style={{fontSize:15,fontWeight:700,color:"#C9A04C",paddingRight:2,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{coerceNightsVal(item.nights)}n</div><div style={{fontSize:13,color:"rgba(201,160,76,0.7)",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{fmt(coerceCostVal(item.cost))}</div></div>
                     <span style={{fontSize:15,color:"rgba(255,255,255,0.25)",marginLeft:6}}>{isEd?"▲":"▼"}</span>
                   </div>
                   {isEd&&<div style={{padding:"10px 12px 12px",borderTop:"1px solid rgba(255,255,255,0.05)",background:"rgba(0,0,0,0.2)",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
@@ -273,33 +246,50 @@ RULES:
               );
             })}
             <div style={{padding:"10px 12px",background:"#0C1520",border:"1px solid rgba(201,160,76,0.45)",borderRadius:10,display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
-              <div><div style={{fontSize:15,color:"rgba(255,255,255,0.35)"}}>{items.length} stops · {countries.length} countries</div><div style={{fontSize:15,color:"rgba(105,240,174,0.85)"}}>~{fmt(Math.round(totalCost/Math.max(totalNights,1)))}/night</div></div>
-              <div style={{fontSize:20,fontWeight:900,color:"#c9a04c"}}>{fmt(totalCost)}</div>
+              <div><div style={{fontSize:13,color:"rgba(232,220,200,0.55)",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{items.length} stops · {countries.length} countries</div><div style={{fontSize:13,color:"rgba(232,220,200,0.4)",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>~{fmt(Math.round(totalCost/Math.max(totalNights,1)))}/night</div></div>
+              <div style={{fontSize:20,fontWeight:700,color:"#C9A04C",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif"}}>{fmt(totalCost)}</div>
             </div>
-            <button style={{margin:"12px 0 0 0",width:"100%",padding:12,borderRadius:10,border:"none",background:"linear-gradient(135deg,#00E5FF,#69F0AE)",color:"#060A0F",fontSize:15,fontWeight:900,cursor:"pointer",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",animation:"consolePulse 2.8s ease-in-out infinite"}} onClick={()=>onLaunch(buildHandoff())}>{data.isRevision?"✅  UPDATE":"🚀  LAUNCH TRIP CONSOLE"}</button>
+            <button
+                  type="button"
+                  className="cta-build-btn"
+                  style={{ marginTop: 12, minHeight: 52 }}
+                  onClick={() => onLaunch(buildHandoff())}
+                >
+                  {data.isRevision ? "Update Expedition" : "Launch Trip Console"}
+                </button>
           </div>
         )}
         {(!isMobile||mobileTab==="chat")&&(
           <div style={{flex:1,display:"flex",flexDirection:"column",borderRight:isMobile?"none":"1px solid #111D2A",...(isMobile?{flex:1,borderTop:"1px solid #111D2A"}:{})}}>
-            <div style={{display:isMobile?"none":"block",padding:"6px 11px 5px",borderBottom:"1px solid #111D2A",fontSize:13,fontWeight:600,color:"rgba(196,87,30,0.7)",letterSpacing:2,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",flexShrink:0}}>{data.isRevision?"✏️ REVISE YOUR EXPEDITION":"✦ CO-ARCHITECT"}</div>
+            <div style={{display:isMobile?"none":"flex",alignItems:"center",gap:8,padding:"8px 14px 6px",borderBottom:"1px solid rgba(122,111,93,0.18)",fontSize:13,fontWeight:600,color:"#C9A04C",letterSpacing:2,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",flexShrink:0}}>
+                  <Icon icon={data.isRevision?"solar:pen-bold":"solar:stars-bold"} width="14" height="14" style={{color:"#C9A04C"}} aria-hidden />
+                  <span>{data.isRevision?"REVISE YOUR EXPEDITION":"CO-ARCHITECT"}</span>
+                </div>
             <div style={{flex:1,overflowY:"auto",padding:isMobile?"6px 12px 16px":"6px 20px 20px",display:"flex",flexDirection:"column",gap:10}}>
               {chat.map((msg,i)=>(
                 <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",flexDirection:msg.role==="user"?"row-reverse":"row",animation:"msgIn 0.25s ease"}}>
-                  <div style={{width:22,height:22,borderRadius:"50%",background:msg.role==="ai"?"#A9461D":"#1a2535",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{msg.role==="ai"?"✨":"👤"}</div>
+                  <div style={{width:22,height:22,borderRadius:"50%",background:msg.role==="ai"?"rgba(201,160,76,0.18)":"#1a2535",border:msg.role==="ai"?"1px solid rgba(201,160,76,0.4)":"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0,color:msg.role==="ai"?"#C9A04C":"rgba(255,255,255,0.5)"}}>
+                    {msg.role==="ai" ? <Icon icon="solar:stars-bold" width="12" height="12" style={{color:"#C9A04C"}} aria-hidden /> : "·"}
+                  </div>
                   {msg.role==="ai"
-                    ?<div style={{flex:1,minWidth:0,width:"100%",maxWidth:isMobile?"100%":"92%",background:"#0C1520",border:"1px solid rgba(201,160,76,0.5)",borderRadius:12,boxSizing:"border-box",padding:isMobile?"14px 12px":"18px 20px",fontSize:isMobile?16:17,fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:400,color:"rgba(255,255,255,0.92)",lineHeight:1.75,whiteSpace:"pre-wrap",wordBreak:"break-word",boxShadow:"0 4px 24px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.05)",textShadow:"0 1px 2px rgba(0,0,0,0.35)"}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>
-                    :<div style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:"10px 14px",fontSize:13,fontFamily:"'Inter',system-ui,-apple-system,sans-serif",fontStyle:"normal",fontWeight:400,color:"#FFF",lineHeight:1.5,maxWidth:isMobile?"100%":"92%"}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>}
+                    ?<div style={{flex:1,minWidth:0,width:"100%",maxWidth:isMobile?"100%":"92%",background:"#1F1A14",border:"1px solid rgba(122,111,93,0.50)",borderRadius:14,boxSizing:"border-box",padding:isMobile?"14px 16px":"18px 22px",fontSize:isMobile?15:17,fontFamily:"'Fraunces',serif",fontStyle:"italic",fontWeight:400,color:"#E8DCC8",lineHeight:1.75,whiteSpace:"pre-wrap",wordBreak:"break-word",boxShadow:"inset 0 1px 0 rgba(255,255,255,0.05)"}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>
+                    :<div style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:"10px 14px",fontSize:13,fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",fontStyle:"normal",fontWeight:400,color:"#E8DCC8",lineHeight:1.5,maxWidth:isMobile?"100%":"92%"}}>{(msg.text||"").replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')}</div>}
                 </div>
               ))}
-              {loading&&<div style={{display:"flex",gap:6,animation:"msgIn 0.25s ease"}}><div style={{width:20,height:20,borderRadius:"50%",background:"#A9461D",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>✨</div><div style={{fontSize:15,color:"rgba(169,70,29,0.7)",animation:"shimmer 1s infinite",padding:"4px 0"}}>thinking...</div></div>}
+              {loading&&<div style={{display:"flex",gap:8,alignItems:"center",animation:"msgIn 0.25s ease"}}>
+                <div style={{width:22,height:22,borderRadius:"50%",background:"rgba(201,160,76,0.18)",border:"1px solid rgba(201,160,76,0.4)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                  <Icon icon="solar:stars-bold" width="12" height="12" style={{color:"#C9A04C"}} aria-hidden />
+                </div>
+                <div style={{fontSize:13,color:"rgba(201,160,76,0.7)",animation:"shimmer 1s infinite",padding:"4px 0",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",letterSpacing:0.5}}>thinking...</div>
+              </div>}
               <div ref={chatEnd}/>
             </div>
             <div style={{padding:isMobile?"10px 12px":"10px",paddingRight:isMobile?72:10,borderTop:"1px solid #111D2A",display:"flex",gap:5,flexWrap:isMobile?"nowrap":"wrap",overflowX:"auto",flexShrink:0}}>
-              {QUICK_ACTIONS.map(a=><button type="button" key={a} onClick={()=>setInput(a)} onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.10)";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)";}} onTouchStart={e=>{e.currentTarget.style.background="rgba(255,255,255,0.10)";}} onTouchEnd={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)";}} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:20,padding:isMobile?"6px 12px":"7px 14px",fontSize:isMobile?11:15,fontWeight:700,color:"#c9a04c",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",minHeight:isMobile?32:36,transition:"background 0.2s ease,border-color 0.2s ease",WebkitTapHighlightColor:"transparent"}}>{a}</button>)}
+              {QUICK_ACTIONS.map(a=><button type="button" key={a} onClick={()=>setInput(a)} onMouseEnter={e=>{e.currentTarget.style.background="rgba(201,160,76,0.10)";}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)";}} onTouchStart={e=>{e.currentTarget.style.background="rgba(201,160,76,0.10)";}} onTouchEnd={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)";}} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(201,160,76,0.25)",borderRadius:20,padding:isMobile?"6px 12px":"7px 14px",fontSize:isMobile?11:13,fontWeight:600,color:"#C9A04C",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",minHeight:isMobile?32:36,transition:"background 0.2s ease,border-color 0.2s ease",WebkitTapHighlightColor:"transparent"}}>{a}</button>)}
             </div>
             <div style={{padding:isMobile?"8px 12px":"8px 10px",borderTop:"1px solid #111D2A",display:"flex",gap:7,flexShrink:0,alignItems:"stretch",position:"relative",zIndex:700}}>
               <div className="ca-chat-input-wrap" style={{flex:1,minWidth:0,display:"flex",alignItems:"stretch",borderRadius:8,overflow:"hidden",backgroundColor:"#0C1520",boxSizing:"border-box",border:"1px solid rgba(201,160,76,0.5)"}}>
-                <input className="ca-chat-input" style={{flex:1,width:"100%",minWidth:0,backgroundColor:"#0C1520",color:"#FFF",fontSize:isMobile?14:15,padding:"8px 10px",fontFamily:"'Inter',system-ui,-apple-system,sans-serif",outline:"none",minHeight:44,colorScheme:"dark"}} value={input} onChange={e=>setInput(e.target.value)} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();sendMsg();}}} placeholder="Refine, redirect, dream bigger..."/>
+                <input className="ca-chat-input" style={{flex:1,width:"100%",minWidth:0,backgroundColor:"#0C1520",color:"#E8DCC8",fontSize:isMobile?14:15,padding:"8px 10px",fontFamily:"'Instrument Sans',system-ui,-apple-system,sans-serif",outline:"none",minHeight:44,colorScheme:"dark"}} value={input} onChange={e=>setInput(e.target.value)} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();sendMsg();}}} placeholder="Refine, redirect, dream bigger..."/>
               </div>
               <button type="button" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.16)",borderRadius:8,color:"rgba(201,160,76,0.95)",fontSize:15,padding:"8px 11px",cursor:"pointer",minWidth:44,minHeight:44,alignSelf:"stretch"}} onClick={sendMsg}>↑</button>
             </div>
