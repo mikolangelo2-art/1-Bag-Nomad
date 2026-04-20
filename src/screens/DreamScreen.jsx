@@ -549,11 +549,15 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
         <div
           className="dream-textarea-wrapper"
           style={{
-            border: "1px solid rgba(201,160,76,0.35)",
-            borderLeft: "2px solid rgba(201,160,76,0.6)",
-            borderRadius: 14,
-            padding: "14px 16px",
-            background: "rgba(255,255,255,0.02)",
+            border: isDesktop
+              ? "2px solid rgba(201,160,76,0.5)"
+              : "1px solid rgba(201,160,76,0.35)",
+            borderLeft: isDesktop
+              ? "5px solid rgba(201,160,76,0.85)"
+              : "2px solid rgba(201,160,76,0.6)",
+            borderRadius: isDesktop ? 18 : 14,
+            padding: isDesktop ? "20px 22px" : "14px 16px",
+            background: isDesktop ? "rgba(255,255,255,0.035)" : "rgba(255,255,255,0.02)",
             animation: "dream-textarea-breath 2.8s ease-in-out infinite",
           }}
         >
@@ -565,7 +569,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
               width: "100%",
               display: "block",
               boxSizing: "border-box",
-              minHeight: isDesktop ? 140 : 180,
+              minHeight: isDesktop ? 240 : 180,
               background: "transparent",
               border: "none",
               outline: "none",
