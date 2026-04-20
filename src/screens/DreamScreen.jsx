@@ -6,6 +6,7 @@
 import { useEffect, useState } from "react";
 import DatePickerInput from "../components/DatePickerInput";
 import VisionReveal from "../components/VisionReveal";
+import GenerationScreen from "../components/GenerationScreen";
 import BrandHeaderTier3 from "../components/BrandHeaderTier3";
 import WorldMapBackground from "../components/WorldMapBackground";
 import { runDreamExpeditionBuild } from "../utils/dreamVisionBuild";
@@ -193,7 +194,7 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
       returnDate = "";
     }
     try {
-      const result = await runDreamExpeditionBuild({
+      const buildPromise = runDreamExpeditionBuild({
         vision: vision.trim(),
         tripName: journeyName || "My Expedition",
         city: "",
@@ -207,6 +208,8 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
         specialtyInterests: [],
         selectedGoal: selectedStyle || "custom",
       });
+      const minDelayPromise = new Promise((resolve) => setTimeout(resolve, 7000));
+      const [result] = await Promise.all([buildPromise, minDelayPromise]);
       if (result.ok) {
         try {
           localStorage.removeItem(STORAGE_KEY);
@@ -302,6 +305,10 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
     transform: openPill === id ? "rotate(180deg)" : "rotate(0deg)",
     transition: "transform 0.3s ease",
   });
+
+  if (loading && !revealPayload) {
+    return <GenerationScreen onComplete={() => {}} />;
+  }
 
   if (revealPayload) {
     return (
