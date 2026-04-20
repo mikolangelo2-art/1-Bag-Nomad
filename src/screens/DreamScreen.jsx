@@ -357,7 +357,9 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
         minHeight: "100vh",
         background: "#0A0705",
         position: "relative",
-        overflow: "hidden",
+        overflowX: "hidden",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <style>{`
@@ -381,17 +383,6 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           }
         }
 
-        @keyframes dream-signature-arrive {
-          from {
-            opacity: 0;
-            transform: scale(0.96);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-
         .dream-hero-line-1 {
           opacity: 0;
           animation: dream-fade-up 600ms ease forwards;
@@ -404,26 +395,12 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
           animation-delay: 400ms;
         }
 
-        .dream-hero-signature {
-          opacity: 0;
-          animation: dream-signature-arrive 700ms cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
-          animation-delay: 700ms;
-        }
-
-        .dream-hero-attribution {
-          opacity: 0;
-          animation: dream-fade-up 500ms ease forwards;
-          animation-delay: 1050ms;
-        }
-
         @media (prefers-reduced-motion: reduce) {
           .dream-textarea-wrapper {
             animation: none !important;
           }
           .dream-hero-line-1,
-          .dream-hero-line-2,
-          .dream-hero-signature,
-          .dream-hero-attribution {
+          .dream-hero-line-2 {
             animation: none;
             opacity: 1;
             transform: none;
@@ -503,21 +480,25 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
         style={{
           position: "relative",
           zIndex: 1,
-          maxWidth: contentMax,
-          margin: "0 auto",
-          padding: "24px 20px 40px",
+          flex: 1,
           display: "flex",
           flexDirection: "column",
-          gap: 24,
+          justifyContent: "center",
+          minHeight: 0,
+          width: "100%",
+          maxWidth: contentMax,
+          margin: "0 auto",
+          padding: isDesktop ? "8px 20px 40px" : "16px 20px 40px",
+          gap: isDesktop ? 20 : 18,
         }}
       >
-        {/* Hero block - Phase 4.3 soul restoration */}
+        {/* Hero block - two-line headline only (signature lines removed for vertical balance) */}
         <div
           className="dream-hero-block"
           style={{
             textAlign: "center",
-            marginBottom: isDesktop ? 24 : 12,
-            marginTop: 8,
+            marginBottom: isDesktop ? 16 : 10,
+            marginTop: 0,
           }}
         >
           <div
@@ -542,40 +523,10 @@ export default function DreamScreen({ onGoGen, onLoadDemo, prefilledVision = "",
               color: "#E8DCC8",
               lineHeight: 1.1,
               letterSpacing: "-0.01em",
-              marginBottom: isDesktop ? 20 : 10,
+              marginBottom: 0,
             }}
           >
             starts now.
-          </div>
-
-          <div
-            className="dream-hero-signature"
-            style={{
-              fontFamily: "'Fraunces', serif",
-              fontStyle: "italic",
-              fontWeight: 400,
-              fontSize: isDesktop ? 52 : 28,
-              color: "#C9A04C",
-              lineHeight: 1,
-              letterSpacing: "0.005em",
-              marginBottom: isDesktop ? 6 : 4,
-            }}
-          >
-            {"Let's go."}
-          </div>
-
-          <div
-            className="dream-hero-attribution"
-            style={{
-              fontFamily: "'Fraunces', serif",
-              fontStyle: "italic",
-              fontWeight: 300,
-              fontSize: isDesktop ? 13 : 11,
-              color: "rgba(201,160,76,0.65)",
-              letterSpacing: "0.04em",
-            }}
-          >
-            {"\u2014 your co-architect"}
           </div>
         </div>
 

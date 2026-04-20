@@ -40,7 +40,11 @@ export default function BrandHeaderTier3({
       {/* Row 2 · Tagline — single lockup so shimmer sweeps DREAM BIG | travel light */}
       <div className="bh3-row bh3-row-2">
         <div className={`bh3-tagline-lockup ${shimmer ? "bh3-shimmer" : ""}`}>
-          <span className="bh3-tagline-big">DREAM BIG</span>
+          <span className="bh3-tagline-big">
+            <span className="bh3-tagline-dream">DREAM</span>
+            {" "}
+            <span className="bh3-tagline-big-accent">BIG</span>
+          </span>
           <span className="bh3-divider" aria-hidden />
           <span className="bh3-tagline-light">travel light</span>
         </div>
